@@ -3,7 +3,7 @@
 '''
 
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import warnings
 
@@ -12,10 +12,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import openpyxl
 
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA
-from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
-from support.env_flinc_p62_stea import ENV_FLINC_P62_STEA
-from support.env_flinc_p62_fib import ENV_FLINC_P62_FIB
+from env_flinc_he_stea import ENV_FLINC_HE_STEA
+from env_flinc_he_fib import ENV_FLINC_HE_FIB
+from env_flinc_p62_stea import ENV_FLINC_P62_STEA
+from env_flinc_p62_fib import ENV_FLINC_P62_FIB
+
 
 def parse_flinc_clinical_elsx(xlsx_filepath, aim_columns=['steatosis_score', 'lobular_inflammation_score',
                                                           'ballooning_score', 'fibrosis_score']):
@@ -49,7 +50,7 @@ def count_clinical_labels(label_dicts, aim_label_names=['steatosis_score']):
     '''
     statistic the distribution of some clinical label
     '''
-    
+
     count_dicts = []
     for i, label_name in enumerate(aim_label_names):
         annotation_dict = label_dicts[label_name]
@@ -93,7 +94,7 @@ def count_flinc_stain_labels(slide_label_dict_list, stain_type, aim_label_name):
     ax.pie(counts, labels=labels, autopct=absolute_value)
     ax.set_title('{}-{}'.format(stain_type, aim_label_name))
     plt.tight_layout()
-    plt.show()
+    plt.savefig('{}-{}.png'.format(stain_type, aim_label_name), bbox_inches='tight')
     
 
 def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):

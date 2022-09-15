@@ -1,8 +1,8 @@
 '''
 @author: Yang Hu
 '''
-from support.parames import parames_task
-from support.env import ENV
+from parames import parames_task
+from env import ENV
 
 ENV_GTEX_SEG = parames_task(
     project_name=ENV.PROJECT_NAME,

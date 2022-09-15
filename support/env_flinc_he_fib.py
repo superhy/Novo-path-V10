@@ -2,8 +2,8 @@
 @author: Yang Hu
 '''
 
-from support.env import ENV
-from support.parames import parames_task
+from env import ENV
+from parames import parames_task
 
 
 ENV_FLINC_HE_FIB = parames_task(

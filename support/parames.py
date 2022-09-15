@@ -31,7 +31,12 @@ class parames_basic():
         
         self.OS_NAME = platform.system()
         self.PROJECT_NAME = project_name
-        self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME) if self.OS_NAME == 'Windows' else os.path.join('/well/rittscher/users/lec468/workspace', self.PROJECT_NAME)
+        if self.OS_NAME == 'Windows':
+            self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
+        elif self.OS_NAME == 'Darwin':
+            self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
+        else:
+            self.PROJECT_DIR = os.path.join('/well/rittscher/users/lec468/workspace', self.PROJECT_NAME)
         self.SLIDE_TYPE = slide_type
         self.SCALE_FACTOR = scale_factor
         self.TILE_H_SIZE = tile_size
