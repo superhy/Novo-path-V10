@@ -3,7 +3,7 @@
 '''
 import torch
 
-from support.parames import parames_basic
+from parames import parames_basic
 
 
 devices = torch.device('cuda')
