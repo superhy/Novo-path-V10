@@ -22,21 +22,21 @@ def train_segmentation(ENV_task, net, seg_trainset, optimizer, loss):
     '''
     '''
     seg_trainloader = get_data_loader(dataset=seg_trainset,
-                                      batch_size=ENV_task.MINI_BATCH,
-                                      num_workers=ENV_task.NUM_WORKER,
+                                      seg_batch_size=ENV_task.MINI_BATCH,
+                                      SEG_NUM_WORKERs=ENV_task.SEG_NUM_WORKER,
                                       sf=True)
     
-    num_epoch = ENV_task.NUM_EPOCH
-    for epoch in range(num_epoch):
+    SEG_NUM_EPOCH = ENV_task.SEG_NUM_EPOCH
+    for epoch in range(SEG_NUM_EPOCH):
         print('In training... ', end='')
         train_epoch(train_loader=seg_trainloader,
                     net=net,
                     loss=loss,
                     optimizer=optimizer,
-                    epoch_info=(epoch, num_epoch))
+                    epoch_info=(epoch, SEG_NUM_EPOCH))
         
         if (epoch + 1) % 500 == 0:
-            init_obj_dict = {'epoch': num_epoch}
+            init_obj_dict = {'epoch': SEG_NUM_EPOCH}
             store_filepath = store_net(store_dir=ENV_task.MODEL_FOLDER_PATH,
                                        trained_net=net, algorithm_name=ENV_task.TASK_NAME + '-{}-'.format(str(epoch + 1)),
                                        optimizer=optimizer, init_obj_dict=init_obj_dict)
@@ -48,7 +48,7 @@ def pred_slide_mask(slide_tiles_dataset, net, org_slide, pred_mask_path, green=F
     '''
     '''
     slide_tiles_loader = get_data_loader(dataset=slide_tiles_dataset,
-                                         batch_size=1, num_workers=0, sf=False)
+                                         seg_batch_size=1, SEG_NUM_WORKERs=0, sf=False)
     net.eval()
     
     large_w, large_h = org_slide.dimensions

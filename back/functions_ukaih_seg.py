@@ -16,23 +16,23 @@ def train_segmentation(ENV_task, net, seg_trainset, seg_testset,
     '''
     '''
     seg_trainloader = get_data_loader(dataset=seg_trainset,
-                                      batch_size=ENV_task.MINI_BATCH, 
-                                      num_workers=ENV_task.NUM_WORKER,
+                                      seg_batch_size=ENV_task.MINI_BATCH, 
+                                      SEG_NUM_WORKERs=ENV_task.SEG_NUM_WORKER,
                                       sf=True)
     seg_testloader = get_data_loader(dataset=seg_testset,
-                                     batch_size=ENV_task.MINI_BATCH, 
-                                     num_workers=ENV_task.NUM_WORKER, 
+                                     seg_batch_size=ENV_task.MINI_BATCH, 
+                                     SEG_NUM_WORKERs=ENV_task.SEG_NUM_WORKER, 
                                      sf=False)
     
-    num_epoch = ENV_task.NUM_EPOCH
+    SEG_NUM_EPOCH = ENV_task.SEG_NUM_EPOCH
     best_loss, store_finalpath = 1e6, None
-    for epoch in range(num_epoch):
+    for epoch in range(SEG_NUM_EPOCH):
         print('In training... ', end='')
         train_epoch(train_loader=seg_trainloader, 
                     net=net, 
                     loss=loss, 
                     optimizer=optimizer, 
-                    epoch_info=(epoch, num_epoch))
+                    epoch_info=(epoch, SEG_NUM_EPOCH))
         if record_best:
             print('In testing... ', end='')
             test_loss = test_epoch(test_loader=seg_testloader, 
@@ -55,8 +55,8 @@ def pred_segmentation_nuclei_filter(ENV_task, net, model_path, loss, seg_testset
     '''
     '''
     seg_testloader = get_data_loader(dataset=seg_testset,
-                                     batch_size=ENV_task.MINI_BATCH, 
-                                     num_workers=ENV_task.NUM_WORKER, 
+                                     seg_batch_size=ENV_task.MINI_BATCH, 
+                                     SEG_NUM_WORKERs=ENV_task.SEG_NUM_WORKER, 
                                      sf=False)
     if not os.path.exists(ENV_task.PREDICTION_FOLDER_PATH):
         print('Create prediction folder: {}'.format(ENV_task.PREDICTION_FOLDER_PATH))

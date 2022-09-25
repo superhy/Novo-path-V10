@@ -24,7 +24,7 @@ ENV_FLINC_HE_FIB = parames_task(
     model_folder_name = 'seg_models',
     tiles_folder_name = 'tiles',
     stain_type='HE',
-    batch_size=4,
-    num_worker=4,
-    num_epoch=20000
+    seg_batch_size=4,
+    seg_num_worker=4,
+    seg_num_epoch=20000
     )

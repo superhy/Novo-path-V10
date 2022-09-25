@@ -96,9 +96,9 @@ def get_transform(resize=512):
     return transform_augs
 
 ''' ------ data loader ------ '''
-def get_data_loader(dataset, batch_size, num_workers=4, sf=False, p_mem=True):
-    data_loader = DataLoader(dataset, batch_size=batch_size,
-                             num_workers=num_workers, shuffle=sf, pin_memory=p_mem)
+def get_data_loader(dataset, seg_batch_size, SEG_NUM_WORKERs=4, sf=False, p_mem=True):
+    data_loader = DataLoader(dataset, seg_batch_size=seg_batch_size,
+                             SEG_NUM_WORKERs=SEG_NUM_WORKERs, shuffle=sf, pin_memory=p_mem)
     return data_loader
 
 

@@ -57,21 +57,22 @@ class parames_task(parames_basic):
                  task_name,
                  server_root,
                  pc_root,
+                 mac_root,
                  meta_folder_name,
-                 train_folder_name,
-                 test_folder_name,
-                 pred_folder_name,
-                 stat_folder_name,
+                 seg_train_folder_name,
+                 seg_test_folder_name,
+                 seg_pred_folder_name,
+                 seg_stat_folder_name,
                  model_folder_name,
                  tiles_folder_name,
                  stain_type='HE',
-                 batch_size=2,
-                 num_worker=2,
-                 num_epoch=20):
+                 seg_batch_size=2,
+                 seg_num_worker=2,
+                 seg_num_epoch=20):
         """
         Args:
-            train_folder_name:
-            test_folder_name:
+            seg_train_folder_name:
+            seg_test_folder_name:
         """
         
         super(parames_task, self).__init__(project_name, 
@@ -87,23 +88,32 @@ class parames_task(parames_basic):
         self.OS_NAME = platform.system()
         self.SERVER_ROOT = server_root
         self.PC_ROOT = pc_root
+        self.MAC_ROOT = mac_root
         self.META_FOLDER = os.path.join(self.PROJECT_DIR, 'data/{}'.format(meta_folder_name))
         
+        # segmentation params
         if self.OS_NAME == 'Windows':
-            self.TRAIN_FOLDER_PATH = os.path.join(self.PC_ROOT, train_folder_name)
-            self.TEST_FOLDER_PATH = os.path.join(self.PC_ROOT, test_folder_name)
+            self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.PC_ROOT, seg_train_folder_name)
+            self.SEG_TEST_FOLDER_PATH = os.path.join(self.PC_ROOT, seg_test_folder_name)
+        elif self.OS_NAME == 'Darwin':
+            self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.MAC_ROOT, seg_train_folder_name)
+            self.SEG_TEST_FOLDER_PATH = os.path.join(self.MAC_ROOT, seg_test_folder_name)
         else:
-            self.TRAIN_FOLDER_PATH = os.path.join(self.SERVER_ROOT, train_folder_name)
-            self.TEST_FOLDER_PATH = os.path.join(self.SERVER_ROOT, test_folder_name)
-        self.PREDICTION_FOLDER_PATH = os.path.join(self.TEST_FOLDER_PATH, pred_folder_name)
-        self.STATISTIC_FOLDER_PATH = os.path.join(self.TEST_FOLDER_PATH, stat_folder_name)
+            self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.SERVER_ROOT, seg_train_folder_name)
+            self.SEG_TEST_FOLDER_PATH = os.path.join(self.SERVER_ROOT, seg_test_folder_name)
+        self.SEG_PREDICTION_FOLDER_PATH = os.path.join(self.SEG_TEST_FOLDER_PATH, seg_pred_folder_name)
+        self.SEG_STATISTIC_FOLDER_PATH = os.path.join(self.SEG_TEST_FOLDER_PATH, seg_stat_folder_name)
         
+        self.SEG_TILES_FOLDER_PATH = os.path.join(self.PC_ROOT, tiles_folder_name) if self.OS_NAME == 'Windows' else os.path.join(self.SERVER_ROOT, tiles_folder_name)
+        
+        self.SEG_MINI_BATCH = seg_batch_size
+        self.SEG_NUM_WORKER = seg_num_worker
+        self.SEG_NUM_EPOCH = seg_num_epoch
+
+        # classification params
+
+        # for all case
         self.MODEL_FOLDER_PATH = os.path.join(self.PC_ROOT, model_folder_name) if self.OS_NAME == 'Windows' else os.path.join(self.SERVER_ROOT, model_folder_name)
-        self.TILES_FOLDER_PATH = os.path.join(self.PC_ROOT, tiles_folder_name) if self.OS_NAME == 'Windows' else os.path.join(self.SERVER_ROOT, tiles_folder_name)
-        
-        self.MINI_BATCH = batch_size
-        self.NUM_WORKER = num_worker
-        self.NUM_EPOCH = num_epoch
         
             
         

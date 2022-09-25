@@ -79,7 +79,7 @@ def pred_slide_nuclei_mask(ENV_task, slide_tiles_dataset, net, org_slide, pred_m
     '''
     time = Time()
     slide_tiles_loader = get_data_loader(dataset=slide_tiles_dataset,
-                                         batch_size=1, num_workers=0, sf=False)
+                                         seg_batch_size=1, SEG_NUM_WORKERs=0, sf=False)
     net.eval()
     
     large_w, large_h = org_slide.dimensions
