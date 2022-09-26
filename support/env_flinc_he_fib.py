@@ -8,7 +8,6 @@ from parames import parames_task
 
 ENV_FLINC_HE_FIB = parames_task(
     project_name=ENV.PROJECT_NAME,
-    slide_type=ENV.SLIDE_TYPE,
     scale_factor=ENV.SCALE_FACTOR,
     tile_size=ENV.TILE_H_SIZE,
     tp_tiles_threshold=ENV.TP_TILES_THRESHOLD,
@@ -21,7 +20,6 @@ ENV_FLINC_HE_FIB = parames_task(
     test_folder_name='train',
     pred_folder_name = 'prediction',
     stat_folder_name = 'statistic',
-    model_folder_name = 'seg_models',
     tiles_folder_name = 'tiles',
     stain_type='HE',
     seg_batch_size=4,
