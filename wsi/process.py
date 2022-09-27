@@ -3,17 +3,19 @@
 '''
 
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import pickle
 import sys
 
-from support.env import ENV
 import numpy as np
+from support import env_monuseg, env_gtex_seg
+from support.env import ENV
 from wsi import filter_tools
 from wsi import slide_tools
 from wsi import tiles_tools
 from wsi.tiles_tools import parse_slideid_from_filepath
-from support import env_monuseg, env_gtex_seg
+
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+
 
 
 sys.path.append("..")       
@@ -53,11 +55,12 @@ def parse_filesystem_slide(slide_dir):
     return slide_path_list
 
         
-def slide_tiles_split_keep_object(slides_folder):
+def slide_tiles_split_keep_object_seg(slides_folder):
     """
     conduct the whole pipeline of slide's tiles split, by Sequential process
     store the tiles Object [.pkl] on disk
     
+    without train/test separation, for segmentation task only  
     
     Args:
         slides_folder: the folder path of slides ready for segmentation
@@ -71,8 +74,8 @@ def slide_tiles_split_keep_object(slides_folder):
         
         shape_set_img = (large_w, large_h, small_w, small_h)
         tiles_list = tiles_tools.get_slide_tiles(np_small_filtered_img, shape_set_img, slide_path,
-                                                   ENV.TILE_W_SIZE, ENV.TILE_H_SIZE,
-                                                   t_p_threshold=ENV.TP_TILES_THRESHOLD, load_small_tile=False)
+                                                 ENV.TILE_W_SIZE, ENV.TILE_H_SIZE,
+                                                 t_p_threshold=ENV.TP_TILES_THRESHOLD, load_small_tile=False)
         
         print('generate tiles for slide: %s, keep [%d] tile objects in (.pkl) list.' % (slide_path, len(tiles_list)))
         if len(tiles_list) == 0:
@@ -87,18 +90,34 @@ def slide_tiles_split_keep_object(slides_folder):
         
         with open(pkl_path, 'wb') as f_pkl:
             pickle.dump(tiles_list, f_pkl)
+        return pkl_path
+    
+def slide_tiles_split_keep_object_cls(ENV_task, test_num_set: tuple=None):
+    '''
+    conduct the whole pipeline of slide's tiles split, by Sequential process
+    store the tiles Object [.pkl] on disk
+    
+    with train/test separation, for classification task
+    
+    Args:
+        ENV_task:
+        test_num_set: list of number of test samples for 
+        delete_old_files = True, this is a parameter be deprecated but setup as [True] default
+    '''
+    
+    
             
 def _run_monuseg_slide_tiles_split(ENV_task):
     '''
     '''
-    slides_folder = os.path.join(ENV_task.TRAIN_FOLDER_PATH, 'images')
-    slide_tiles_split_keep_object(slides_folder)
+    slides_folder = os.path.join(ENV_task.SEG_TRAIN_FOLDER_PATH, 'images')
+    _ = slide_tiles_split_keep_object_seg(slides_folder)
     
 def _run_gtexseg_slide_tiles_split(ENV_task):
     '''
     '''
-    slides_folder = ENV_task.TRAIN_FOLDER_PATH
-    slide_tiles_split_keep_object(slides_folder)
+    slides_folder = ENV_task.SEG_TRAIN_FOLDER_PATH
+    _ = slide_tiles_split_keep_object_seg(slides_folder)
     
 
 if __name__ == '__main__': 

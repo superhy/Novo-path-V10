@@ -11,6 +11,7 @@ class parames_basic():
                  scale_factor=32,
                  tile_size=256,
                  tp_tiles_threshold=70,
+                 pil_image_file_format='.png',
                  debug_mode=False):
         """
         Args:
@@ -41,6 +42,7 @@ class parames_basic():
         self.TILE_W_SIZE = self.TILE_H_SIZE
         self.TRANSFORMS_RESIZE = self.TILE_H_SIZE
         self.TP_TILES_THRESHOLD = tp_tiles_threshold
+        self.PIL_IMAGE_FILE_FORMAT = pil_image_file_format
         self.DEBUG_MODE = debug_mode
 
 class parames_task(parames_basic):
@@ -50,6 +52,7 @@ class parames_task(parames_basic):
                  scale_factor,
                  tile_size,
                  tp_tiles_threshold,
+                 pil_image_file_format,
                  debug_mode,
                  task_name,
                  server_root,
@@ -61,12 +64,25 @@ class parames_task(parames_basic):
                  fold_suffix,
                  loss_package,
                  num_att_epoch,
-                 mini_batch_slidemat,
+                 slidemat_batch_size,
                  slidemat_dataloader_worker,
                  num_last_eval_epochs,
                  reset_optim,
                  num_round,
-                 mini_batch_tile,
+                 tile_batch_size,
+                 tile_dataloader_worker,
+                 num_init_s_epoch,
+                 num_inround_s_epoch,
+                 num_inround_t_epoch,
+                 num_inround_rev_t_epoch,
+                 attpool_stop_loss,
+                 attpool_stop_maintains,
+                 overall_stop_loss,
+                 att_k,
+                 sup_k,
+                 reverse_n,
+                 reverse_gradient_alpha,
+                 his_record_rounds,
                  lr_slide,
                  lr_tile,
                  seg_train_folder_name,
@@ -87,7 +103,8 @@ class parames_task(parames_basic):
         super(parames_task, self).__init__(project_name, 
                                            scale_factor, 
                                            tile_size, 
-                                           tp_tiles_threshold, 
+                                           tp_tiles_threshold,
+                                           pil_image_file_format,
                                            debug_mode)
         
         self.TASK_NAME = task_name
@@ -116,10 +133,10 @@ class parames_task(parames_basic):
         self.TASK_REPO_DIR = os.path.join(self.DATA_DIR, self.EXPERIMENTS_DIR + '/{}'.format(self.TASK_NAME))
         self.FOLD_SUFFIX = fold_suffix
         self.TILESIZE_DIR = str(self.TILE_H_SIZE) + self.FOLD_SUFFIX # make different folders for multi-fold train/test
-        self.TASK_TILE_PKL_TRAIN_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/train_tile'.format(self.EXPERIMENTS_DIR,
+        self.TASK_TILE_PKL_TRAIN_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/train_pkl'.format(self.EXPERIMENTS_DIR,
                                                                                                 self.TASK_NAME, 
                                                                                                 self.TILESIZE_DIR))
-        self.TASK_TILE_PKL_TEST_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/test_tile'.format(self.EXPERIMENTS_DIR, 
+        self.TASK_TILE_PKL_TEST_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/test_pkl'.format(self.EXPERIMENTS_DIR, 
                                                                                               self.TASK_NAME, 
                                                                                               self.TILESIZE_DIR))
         self.LOG_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/logs'.format(self.TASK_NAME))
@@ -132,27 +149,43 @@ class parames_task(parames_basic):
         self.LOSS_PACKAGE = loss_package
         # att mil method
         self.NUM_ATT_EPOCH = num_att_epoch
-        self.MINI_BATCH_SLIDEMAT = mini_batch_slidemat
+        self.MINI_BATCH_SLIDEMAT = slidemat_batch_size
         self.SLIDEMAT_DATALOADER_WORKER = slidemat_dataloader_worker
         self.ATTPOOL_RECORD_EPOCHS = [self.NUM_ATT_EPOCH - 1]
         self.NUM_LAST_EVAL_EPOCHS = num_last_eval_epochs
         self.SLIDE_ENCODES_DIR = 'encodes'
-        self.TASK_PROJECT_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/train_tile'.format(self.TASK_NAME,
+        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/train_encode'.format(self.TASK_NAME,
                                                                                                        self.SLIDE_ENCODES_DIR,
                                                                                                        self.TILESIZE_DIR))
-        self.TASK_SLIDE_MATRIX_TRAIN_DIR = self.TASK_PROJECT_TRAIN_DIR.replace('train_tile', 'train_encode')
-        self.TASK_PROJECT_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/test_tile'.format(self.TASK_NAME,
+        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/test_encode'.format(self.TASK_NAME,
                                                                                                      self.SLIDE_ENCODES_DIR,
                                                                                                      self.TILESIZE_DIR))
-        self.TASK_SLIDE_MATRIX_TEST_DIR = self.TASK_PROJECT_TEST_DIR.replace('test_tile', 'test_encode')
         # lcsb mil method
         self.RESET_OPTIMIZER = reset_optim
         self.NUM_ROUND = num_round
-        self.MINI_BATCH_TILE = mini_batch_tile
+        self.MINI_BATCH_TILE = tile_batch_size
+        self.TILE_DATALOADER_WORKER = tile_dataloader_worker
+        self.NUM_INIT_S_EPOCH = num_init_s_epoch
+        self.NUM_INROUND_S_EPOCH = num_inround_s_epoch
+        self.NUM_INROUND_REV_T_EPOCH = num_inround_rev_t_epoch
+        self.NUM_INROUND_T_EPOCH = num_inround_t_epoch
+        self.ATTPOOL_STOP_LOSS = attpool_stop_loss
+        self.ATTPOOL_STOP_MAINTAINS = attpool_stop_maintains
+        self.OVERALL_STOP_LOSS = overall_stop_loss
+        self.ATT_K = att_k
+        self.SUP_K = sup_k
+        self.REVERSE_N = reverse_n
+        self.REVERSE_GRADIENT_ALPHA = reverse_gradient_alpha
+        self.HIS_RECORD_ROUNDS = his_record_rounds
         # learning rate
         self.LR_SLIDE = lr_slide
         self.LR_TILE = lr_tile
-        # TODO:
+        # suit for window test env
+        if self.OS_NAME == 'Windows' or self.OS_NAME == 'Darwin':
+            self.MINI_BATCH_SLIDEMAT = int(self.MINI_BATCH_SLIDEMAT / 2)
+            self.MINI_BATCH_TILE = int(self.MINI_BATCH_TILE / 8)
+            self.SLIDEMAT_DATALOADER_WORKER = int(self.SLIDEMAT_DATALOADER_WORKER / 2)
+            self.TILE_DATALOADER_WORKER = int(self.TILE_DATALOADER_WORKER / 4)
         
         ''' --- segmentation params --- '''
         self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.DATA_DIR, seg_train_folder_name)
@@ -165,6 +198,27 @@ class parames_task(parames_basic):
         self.SEG_MINI_BATCH = seg_batch_size
         self.SEG_NUM_WORKER = seg_num_worker
         self.SEG_NUM_EPOCH = seg_num_epoch
+    
+    def refresh_fold_suffix(self, new_fold_suffix):
+        '''
+        refresh the fold_suffix for validation or training on batch
+        and change some necessary parameters
+        '''
+        self.FOLD_SUFFIX = new_fold_suffix
+        self.TILESIZE_DIR = str(self.TILE_H_SIZE) + self.FOLD_SUFFIX
+        
+        self.TASK_TILE_PKL_TRAIN_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/train_pkl'.format(self.EXPERIMENTS_DIR,
+                                                                                                self.TASK_NAME, 
+                                                                                                self.TILESIZE_DIR))
+        self.TASK_TILE_PKL_TEST_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/test_pkl'.format(self.EXPERIMENTS_DIR, 
+                                                                                              self.TASK_NAME, 
+                                                                                              self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/train_encode'.format(self.TASK_NAME,
+                                                                                                       self.SLIDE_ENCODES_DIR,
+                                                                                                       self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/test_encode'.format(self.TASK_NAME,
+                                                                                                     self.SLIDE_ENCODES_DIR,
+                                                                                                     self.TILESIZE_DIR))
         
             
         

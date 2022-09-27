@@ -2,20 +2,24 @@
 @author: Yang Hu
 '''
 
+import csv
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
 import warnings
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import openpyxl
 
-from env_flinc_he_stea import ENV_FLINC_HE_STEA
 from env_flinc_he_fib import ENV_FLINC_HE_FIB
-from env_flinc_p62_stea import ENV_FLINC_P62_STEA
+from env_flinc_he_stea import ENV_FLINC_HE_STEA
 from env_flinc_p62_fib import ENV_FLINC_P62_FIB
+from env_flinc_p62_stea import ENV_FLINC_P62_STEA
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+
+
 
 
 def parse_flinc_clinical_elsx(xlsx_filepath, aim_columns=['steatosis_score', 'lobular_inflammation_score',
@@ -161,6 +165,27 @@ def _load_clinical_labels():
         slide_label_dict_list = make_flinc_slide_label(task_env, clinical_label_dicts,
                                                        xlsx_filepath=xlsx_path_slide_list[i])
         count_flinc_stain_labels(slide_label_dict_list, task_env.STAIN_TYPE, task_env.TASK_NAME)
+        
+        
+def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
+    f_start_string = ENV_task.TASK_NAME
+    if task_csv_filename == None:
+        for f in os.listdir(ENV_task.METADATA_REPO_DIR):
+            if f.startswith(f_start_string) and f.endswith('.csv'):
+                print('automatically find CSV file: {}'.format(f))
+                task_csv_filename = f
+                break
+            
+    task_csv_filepath = os.path.join(ENV_task.METADATA_REPO_DIR, task_csv_filename)
+    task_label_dict = {}
+    with open(task_csv_filepath, 'r', newline='') as task_csv_file:
+        csv_reader = csv.reader(task_csv_file)
+        for l, csv_line in enumerate(csv_reader):
+            if l == 0:
+                continue
+            task_label_dict[csv_line[0]] = int(csv_line[1])
+            
+    return task_label_dict
 
 
 if __name__ == '__main__':
