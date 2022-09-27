@@ -18,10 +18,6 @@ import pandas as pd
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-
-
-
-
 def parse_flinc_clinical_elsx(xlsx_filepath, aim_columns=['steatosis_score', 'lobular_inflammation_score',
                                                           'ballooning_score', 'fibrosis_score']):
     '''
