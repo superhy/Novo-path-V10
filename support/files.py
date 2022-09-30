@@ -95,7 +95,7 @@ def move_he_slide_dir_2_dir(source_dir, target_dir, mode='move',
     slide_path_list = parse_filesystem_slide(source_dir)
     ''' filtering the slide paths, with 
     '''
-    
+    # TODO:
 
 if __name__ == '__main__':
     # test_s_filepath = 'D:/FLINC_dataset/transfer/23910-157_part/23910-157_Sl001.ndpi'
