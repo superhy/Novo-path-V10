@@ -11,10 +11,10 @@ devices_cpu = torch.device('cpu')
 
 ENV = parames_basic(
         project_name='Novo-path-V10',
-        slide_type='dx',
-        scale_factor=8,
+        scale_factor=32,
         tile_size=512,
-        tp_tiles_threshold=2,
+        tp_tiles_threshold=70,
+        pil_image_file_format='.png',
         debug_mode=False
     )
 

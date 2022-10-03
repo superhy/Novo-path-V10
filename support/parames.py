@@ -31,7 +31,7 @@ class parames_basic():
         self.OS_NAME = platform.system()
         self.PROJECT_NAME = project_name
         if self.OS_NAME == 'Windows':
-            self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
+            self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
         elif self.OS_NAME == 'Darwin':
             self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
         else:
@@ -59,7 +59,6 @@ class parames_task(parames_basic):
                  pc_root,
                  mac_root,
                  meta_folder_name,
-                 slide_folder_name,
                  test_part_prop,
                  fold_suffix,
                  loss_package,
@@ -78,6 +77,8 @@ class parames_task(parames_basic):
                  attpool_stop_loss,
                  attpool_stop_maintains,
                  overall_stop_loss,
+                 pos_refersh_pluse,
+                 neg_refersh_pluse,
                  att_k,
                  sup_k,
                  reverse_n,
@@ -124,7 +125,7 @@ class parames_task(parames_basic):
         
         self.META_FOLDER = os.path.join(self.PROJECT_DIR, 'data/{}'.format(meta_folder_name))
         # the slide folder should copy the slide from transfer folder specifically for training, isolated from NOVO's transfer folder 
-        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'slide/{}'.format(slide_folder_name))
+        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'slides/{}'.format(self.STAIN_TYPE))
         self.MODEL_FOLDER = os.path.join(self.DATA_DIR, 'models')
         
         ''' --- slide process & general file storage params --- '''
@@ -172,6 +173,8 @@ class parames_task(parames_basic):
         self.ATTPOOL_STOP_LOSS = attpool_stop_loss
         self.ATTPOOL_STOP_MAINTAINS = attpool_stop_maintains
         self.OVERALL_STOP_LOSS = overall_stop_loss
+        self.POS_REFRESH_PULSE = pos_refersh_pluse
+        self.NEG_REFRESH_PULSE = neg_refersh_pluse
         self.ATT_K = att_k
         self.SUP_K = sup_k
         self.REVERSE_N = reverse_n

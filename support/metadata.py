@@ -10,8 +10,6 @@ import openpyxl
 
 from env_flinc_he_fib import ENV_FLINC_HE_FIB
 from env_flinc_he_stea import ENV_FLINC_HE_STEA
-from env_flinc_p62_fib import ENV_FLINC_P62_FIB
-from env_flinc_p62_stea import ENV_FLINC_P62_STEA
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -129,7 +127,9 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
     for i, row in enumerate(sheet.iter_rows()):
         if i == 0:
             continue
-        if row[stain_column].value == stain_type:
+        if row[stain_column].value is None:
+            continue
+        if row[stain_column].value.find(stain_type):
             slide_idstr = 'Sl%03d' % row[slide_column].value
             if row[subject_id_column].value in annotation_dict.keys():
                 slide_aim_label = annotation_dict[row[subject_id_column].value]
@@ -143,11 +143,43 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
     print('<Make csv annotations file at: {}>'.format(csv_test_path))
     
     return slide_label_dict_list
+
+
+def count_flinc_stain_amount(ENV_task, xlsx_filepath):
+    '''
+    counting the number of slides for each staining type
+    '''
+    stain_type = ENV_task.STAIN_TYPE
+    
+    wb = openpyxl.load_workbook(xlsx_filepath)
+    sheet = wb['SlideList']
+     
+    nb_column = sheet. max_column
+    stain_column = None
+    for col_id in range(nb_column):
+        if sheet.cell(row=1, column=col_id + 1).value == 'Stain':
+            stain_column = col_id
+            
+    if stain_column is None:
+        warnings.warn('miss stain column...')
+        return
+    
+    nb_stain_slides = 0
+    for i, row in enumerate(sheet.iter_rows()):
+        if i == 0:
+            continue
+        if row[stain_column].value is None:
+            continue
+        if row[stain_column].value.find(stain_type):
+            nb_stain_slides += 1
+            
+    print('count stain: %s with slides: %d' % (ENV_task.STAIN_TYPE, nb_stain_slides))
+    return nb_stain_slides
     
     
 def _load_clinical_labels():
     
-    TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_P62_STEA, ENV_FLINC_P62_FIB]
+    TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB]
     
     xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
@@ -161,6 +193,17 @@ def _load_clinical_labels():
         slide_label_dict_list = make_flinc_slide_label(task_env, clinical_label_dicts,
                                                        xlsx_filepath=xlsx_path_slide_list[i])
         count_flinc_stain_labels(slide_label_dict_list, task_env.STAIN_TYPE, task_env.TASK_NAME)
+        
+def _count_stain_amount():
+    
+    TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB]
+    
+    xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
+    xlsx_path_slide_2 = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
+    xlsx_path_slide_list = [xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_2, xlsx_path_slide_2]
+    
+    for i, task_env in enumerate(TASK_ENVS):
+        _ = count_flinc_stain_amount(task_env, xlsx_filepath=xlsx_path_slide_list[i])
         
         
 def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
@@ -185,6 +228,7 @@ def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
 
 
 if __name__ == '__main__':
-    _load_clinical_labels()
+    # _load_clinical_labels()
+    _count_stain_amount()
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
