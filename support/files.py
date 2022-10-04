@@ -4,6 +4,11 @@
 import os
 import shutil
 
+from metadata import extract_slideid_subid_for_stain
+from env_flinc_he_fib import ENV_FLINC_HE_FIB
+from env_flinc_he_stea import ENV_FLINC_HE_STEA
+from env_flinc_psr_fib import ENV_FLINC_PSR_FIB
+
 
 def move_file(src_path, dst_path, mode='move'):
     """
@@ -45,7 +50,7 @@ def parse_filesystem_slide(slide_dir):
                 
     return slide_path_list
 
-def parse_23910_slide_caseid_from_filepath(slide_filepath):
+def parse_23910_slide_caseid_from_filepath(slide_filepath, old_name=False):
     """
     get the case id from slide's filepath, for 23910 cohort
     
@@ -53,7 +58,9 @@ def parse_23910_slide_caseid_from_filepath(slide_filepath):
         slide_filepath: as name
         cut_range: filepath string cut range to get the TCGA case_id
     """
-    case_id = slide_filepath[slide_filepath.find('_Sl') + 1: slide_filepath.find('.ndpi')]
+    slide_filename = slide_filepath.split(os.sep)[-1]
+    end_ind = '.ndpi' if old_name else '-C'
+    case_id = slide_filename[slide_filename.find('_Sl') + 1: slide_filename.find(end_ind)]
     return case_id
 
 def parse_visit_slide_caseid_from_filepath(slide_filepath):
@@ -64,7 +71,8 @@ def parse_visit_slide_caseid_from_filepath(slide_filepath):
         slide_filepath: as name
         cut_range: filepath string cut range to get the TCGA case_id
     """
-    case_id = slide_filepath[slide_filepath.find('_images') + 8: slide_filepath.find('_V')]
+    slide_filename = slide_filepath.split(os.sep)[-1]
+    case_id = slide_filename[: slide_filename.find('_V')]
     return case_id
 
 def parse_slide_caseid_from_filepath(slide_filepath):
@@ -83,26 +91,49 @@ def parse_slide_caseid_from_filepath(slide_filepath):
     
     return case_id
 
-def move_he_slide_dir_2_dir(source_dir, target_dir, mode='move', 
-                            sp_pattern=None, filter_annotated_slide=True):
+def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
+                                source_dir, target_dir, mode='move'):
     """
+    move the slides of a specific staining type from original folder to a specific folder
     """
-    label_dict = None
+    # extract_slideid_subid_for_stain(xlsx_filepath, stain_type='HE')
     
+    label_dict = None
+    filter_annotated_slide = True
     if label_dict is None or len(label_dict) == 0:
         filter_annotated_slide = False
         
     slide_path_list = parse_filesystem_slide(source_dir)
-    ''' filtering the slide paths, with 
+    ''' filtering the slide paths, with slide_id '''
+    for i, path in enumerate(slide_path_list):
+        old_filename = path.split(os.sep)[-1]
+        slide_id = parse_23910_slide_caseid_from_filepath(path, old_name=True)
+        if slide_id in slideid_subid_dict.keys():
+            clinical_id = slideid_subid_dict[slide_id]
+            new_filename = old_filename.replace(slide_id, '{}-C{}-{}'.format(slide_id, clinical_id, stain_type))
+            dst_path = os.path.join(target_dir, new_filename)
+            move_file(path, dst_path, mode='copy')
+            print('')
+        
+def _move_slides_multi_stains():
     '''
-    # TODO:
+    '''
+    source_dir = 'D:\\FLINC_dataset\\transfer\\23910-157'
+    TASK_ENVS = [ENV_FLINC_PSR_FIB]
+    
+    stain_type = TASK_ENVS[0].STAIN_TYPE
+    xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
+    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_slide_1, stain_type)
+    print(slideid_subid_dict)
+    
+    move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, None)
 
 if __name__ == '__main__':
     # test_s_filepath = 'D:/FLINC_dataset/transfer/23910-157_part/23910-157_Sl001.ndpi'
     # case_id = parse_23910_slide_caseid_from_filepath(test_s_filepath)
     # print(case_id)
     
-    pass
+    _move_slides_multi_stains()
 
 
 
