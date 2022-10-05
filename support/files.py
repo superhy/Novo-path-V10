@@ -92,13 +92,12 @@ def parse_slide_caseid_from_filepath(slide_filepath):
     return case_id
 
 def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
-                                source_dir, target_dir, mode='move'):
+                                source_dir, target_dir, label_dict= None, mode='move'):
     """
     move the slides of a specific staining type from original folder to a specific folder
     """
     # extract_slideid_subid_for_stain(xlsx_filepath, stain_type='HE')
     
-    label_dict = None
     filter_annotated_slide = True
     if label_dict is None or len(label_dict) == 0:
         filter_annotated_slide = False
@@ -112,21 +111,24 @@ def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
             clinical_id = slideid_subid_dict[slide_id]
             new_filename = old_filename.replace(slide_id, '{}-C{}-{}'.format(slide_id, clinical_id, stain_type))
             dst_path = os.path.join(target_dir, new_filename)
-            move_file(path, dst_path, mode='copy')
-            print('')
+            move_file(path, dst_path, mode)
+            print('{} slide from {} -> {}'.format(mode, os.path.join(source_dir, old_filename), dst_path ) )
+        
         
 def _move_slides_multi_stains():
     '''
     '''
-    source_dir = 'D:\\FLINC_dataset\\transfer\\23910-157'
     TASK_ENVS = [ENV_FLINC_PSR_FIB]
+    source_dir = os.path.join(TASK_ENVS[0].TRANSFER_DIR, '23910-157')
+    target_dir = os.path.join(TASK_ENVS[0].DATA_DIR, 'tissues')
     
     stain_type = TASK_ENVS[0].STAIN_TYPE
     xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_slide_1, stain_type)
-    print(slideid_subid_dict)
     
-    move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, None)
+    move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, target_dir, mode='copy')
+    
+
 
 if __name__ == '__main__':
     # test_s_filepath = 'D:/FLINC_dataset/transfer/23910-157_part/23910-157_Sl001.ndpi'

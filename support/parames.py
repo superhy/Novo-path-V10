@@ -30,12 +30,20 @@ class parames_basic():
         
         self.OS_NAME = platform.system()
         self.PROJECT_NAME = project_name
+        
+        ''' some default dirs '''
         if self.OS_NAME == 'Windows':
             self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
         elif self.OS_NAME == 'Darwin':
             self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
         else:
             self.PROJECT_DIR = os.path.join('/well/rittscher/users/lec468/workspace', self.PROJECT_NAME)
+            
+        if self.OS_NAME == 'Windows':
+            self.TRANSFER_DIR = 'D:/FLINC_dataset/transfer'
+        else:
+            self.TRANSFER_DIR = '/data/transfer'
+            
 #         self.SLIDE_TYPE = slide_type
         self.SCALE_FACTOR = scale_factor
         self.TILE_H_SIZE = tile_size
@@ -125,7 +133,7 @@ class parames_task(parames_basic):
         
         self.META_FOLDER = os.path.join(self.PROJECT_DIR, 'data/{}'.format(meta_folder_name))
         # the slide folder should copy the slide from transfer folder specifically for training, isolated from NOVO's transfer folder 
-        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'slides/{}'.format(self.STAIN_TYPE))
+        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'tissues/{}'.format(self.STAIN_TYPE))
         self.MODEL_FOLDER = os.path.join(self.DATA_DIR, 'models')
         
         ''' --- slide process & general file storage params --- '''
@@ -140,11 +148,11 @@ class parames_task(parames_basic):
         self.TASK_TILE_PKL_TEST_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/test_pkl'.format(self.EXPERIMENTS_DIR, 
                                                                                               self.TASK_NAME, 
                                                                                               self.TILESIZE_DIR))
-        self.LOG_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/logs'.format(self.TASK_NAME))
-        self.RECORDS_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/records'.format(self.TASK_NAME))
-        self.HEATMAP_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/heatmap')
-        self.PLOT_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/plot')
-        self.STATISTIC_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/statistic')
+        self.LOG_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/logs'.format(self.STAIN_TYPE, self.TASK_NAME))
+        self.RECORDS_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/records'.format(self.STAIN_TYPE, self.TASK_NAME))
+        self.HEATMAP_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/heatmap')
+        self.PLOT_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/plot')
+        self.STATISTIC_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/statistic')
         
         ''' --- classification params --- '''
         self.LOSS_PACKAGE = loss_package
@@ -155,12 +163,14 @@ class parames_task(parames_basic):
         self.ATTPOOL_RECORD_EPOCHS = [self.NUM_ATT_EPOCH - 1]
         self.NUM_LAST_EVAL_EPOCHS = num_last_eval_epochs
         self.SLIDE_ENCODES_DIR = 'encodes'
-        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/train_encode'.format(self.TASK_NAME,
-                                                                                                       self.SLIDE_ENCODES_DIR,
-                                                                                                       self.TILESIZE_DIR))
-        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/test_encode'.format(self.TASK_NAME,
-                                                                                                     self.SLIDE_ENCODES_DIR,
-                                                                                                     self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/{}/{}/train_encode'.format(self.STAIN_TYPE,
+                                                                                                                 self.TASK_NAME,
+                                                                                                                 self.SLIDE_ENCODES_DIR,
+                                                                                                                 self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/{}/{}/test_encode'.format(self.STAIN_TYPE,
+                                                                                                               self.TASK_NAME,
+                                                                                                               self.SLIDE_ENCODES_DIR,
+                                                                                                               self.TILESIZE_DIR))
         # lcsb mil method
         self.RESET_OPTIMIZER = reset_optim
         self.NUM_ROUND = num_round
@@ -211,17 +221,19 @@ class parames_task(parames_basic):
         self.TILESIZE_DIR = str(self.TILE_H_SIZE) + self.FOLD_SUFFIX
         
         self.TASK_TILE_PKL_TRAIN_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/train_pkl'.format(self.EXPERIMENTS_DIR,
-                                                                                                self.TASK_NAME, 
-                                                                                                self.TILESIZE_DIR))
+                                                                                               self.TASK_NAME, 
+                                                                                               self.TILESIZE_DIR))
         self.TASK_TILE_PKL_TEST_DIR = os.path.join(self.DATA_DIR, '{}/{}/{}/test_pkl'.format(self.EXPERIMENTS_DIR, 
-                                                                                              self.TASK_NAME, 
-                                                                                              self.TILESIZE_DIR))
-        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/train_encode'.format(self.TASK_NAME,
-                                                                                                       self.SLIDE_ENCODES_DIR,
-                                                                                                       self.TILESIZE_DIR))
-        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}/{}/{}/test_encode'.format(self.TASK_NAME,
-                                                                                                     self.SLIDE_ENCODES_DIR,
-                                                                                                     self.TILESIZE_DIR))
+                                                                                             self.TASK_NAME, 
+                                                                                             self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TRAIN_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/{}/{}/train_encode'.format(self.STAIN_TYPE,
+                                                                                                                 self.TASK_NAME,
+                                                                                                                 self.SLIDE_ENCODES_DIR,
+                                                                                                                 self.TILESIZE_DIR))
+        self.TASK_SLIDE_MATRIX_TEST_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/{}/{}/test_encode'.format(self.STAIN_TYPE,
+                                                                                                               self.TASK_NAME,
+                                                                                                               self.SLIDE_ENCODES_DIR,
+                                                                                                               self.TILESIZE_DIR))
         
             
         

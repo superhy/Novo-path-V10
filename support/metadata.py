@@ -183,6 +183,14 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
     
     return slide_label_dict_list
 
+def combine_slide_labels_group_c2(groups=None):
+    '''
+    combine the labels into 2 groups
+    '''
+    if groups is None:
+        groups = {[0, 1, 2]: 0, [3, 4]: 1}
+    
+    # TODO:
 
 def count_flinc_stain_amount(ENV_task, xlsx_filepath):
     '''
@@ -248,7 +256,7 @@ def _count_stain_amount():
         
         
 def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
-    f_start_string = ENV_task.TASK_NAME
+    f_start_string = '{}_{}'.format(ENV_task.STAIN_TYPE, ENV_task.TASK_NAME)
     if task_csv_filename == None:
         for f in os.listdir(ENV_task.METADATA_REPO_DIR):
             if f.startswith(f_start_string) and f.endswith('.csv'):
@@ -261,7 +269,7 @@ def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
     with open(task_csv_filepath, 'r', newline='') as task_csv_file:
         csv_reader = csv.reader(task_csv_file)
         for l, csv_line in enumerate(csv_reader):
-            if l == 0:
+            if l == 0: # skip the first line for title
                 continue
             task_label_dict[csv_line[0]] = int(csv_line[1])
             

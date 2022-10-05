@@ -402,7 +402,7 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     
     if print_info == True:
         print('Filter noise of various colors and objects that are too small')
-    mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
+    mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info) # this may only for H&E
 #     rgb_not_green = image_tools.mask_rgb(np_rgb, mask_not_green)
 #     save_display(save, display, info, rgb_not_green, slide_num, 2, "Not Green", "np_rgb-not-green")
     
@@ -418,7 +418,8 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     mask_no_blue_pen = filter_blue_pen(np_rgb)
 #     rgb_no_blue_pen = image_tools.mask_rgb(np_rgb, mask_no_blue_pen)
     
-    mask_gray_green_pens = mask_not_gray & mask_not_green & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+    # mask_gray_green_pens = mask_not_gray & mask_not_green & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+    mask_gray_green_pens = mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
 #     rgb_gray_green_pens = image_tools.mask_rgb(np_rgb, mask_gray_green_pens)
 
     if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():
