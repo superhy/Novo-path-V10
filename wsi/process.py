@@ -9,10 +9,13 @@ import sys
 import numpy as np
 from support import env_monuseg, env_gtex_seg
 from support.env import ENV
+from support.files import clear_dir
+from support.metadata import query_task_label_dict_fromcsv
 from wsi import filter_tools
 from wsi import slide_tools
 from wsi import tiles_tools
 from wsi.tiles_tools import parse_slideid_from_filepath
+
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
@@ -105,7 +108,26 @@ def slide_tiles_split_keep_object_cls(ENV_task, test_num_set: tuple=None):
         delete_old_files = True, this is a parameter be deprecated but setup as [True] default
     '''
     
+    ''' preparing some file parames '''
+    test_prop = ENV_task.TEST_PART_PROP
+    label_type = ENV_task.LABEL_TYPE
+    _env_slide_dir = ENV_task.SLIDE_FOLDER
+    _env_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    _env_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
+    _env_tp_tiles_threshold = ENV_task.TP_TILES_THRESHOLD
+    _env_tile_w_size = ENV_task.TILE_W_SIZE
+    _env_tile_h_size = ENV_task.TILE_H_SIZE
     
+    slide_dir = _env_slide_dir
+    slide_path_list = parse_filesystem_slide(slide_dir, original_download=False)
+    # default do this
+    clear_dir([_env_tile_pkl_train_dir, _env_tile_pkl_test_dir])
+    
+    label_dict = query_task_label_dict_fromcsv(ENV_task)
+    label_items = []
+    for case_id in label_dict.keys():
+        pass
+    # TODO:
             
 def _run_monuseg_slide_tiles_split(ENV_task):
     '''

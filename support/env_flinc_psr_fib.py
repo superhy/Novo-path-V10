@@ -57,14 +57,14 @@ ENV_FLINC_PSR_FIB = parames_task(
     )
 
 # combine the scores into 2 groups, [0, 1, 2], [3, 4]
-ENV_FLINC_PSR_FIB_C2 = parames_task(
+ENV_FLINC_PSR_FIB_C3 = parames_task(
     project_name=ENV.PROJECT_NAME,
     scale_factor=ENV.SCALE_FACTOR,
     tile_size=ENV.TILE_H_SIZE,
     tp_tiles_threshold=ENV.TP_TILES_THRESHOLD,
     pil_image_file_format=ENV.PIL_IMAGE_FILE_FORMAT,
     debug_mode=False,
-    task_name='fibrosis_score_c2',
+    task_name='fibrosis_score_c3',
     server_root='/data/slides/yang_psr_fib',
     pc_root='D:/FLINC_dataset/slides/yang_psr_fib',
     mac_root='',

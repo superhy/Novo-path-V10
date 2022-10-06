@@ -4,17 +4,22 @@
 
 import csv
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import warnings
 
 import openpyxl
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 
 from env_flinc_he_fib import ENV_FLINC_HE_FIB
 from env_flinc_he_stea import ENV_FLINC_HE_STEA
 from env_flinc_psr_fib import ENV_FLINC_PSR_FIB
+from env_flinc_psr_fib import ENV_FLINC_PSR_FIB_C3
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+
 
 
 def parse_flinc_clinical_elsx(xlsx_filepath, aim_columns=['steatosis_score', 'lobular_inflammation_score',
@@ -170,9 +175,15 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
         if row[stain_column].value.find(stain_type) != -1:
             # print(row[stain_column].value)
             slide_idstr = 'Sl%03d' % row[slide_column].value
+            # print(row[subject_id_column].value, type(row[subject_id_column].value), type(row[subject_id_column].value) == str)
             if row[subject_id_column].value in annotation_dict.keys():
                 slide_aim_label = annotation_dict[row[subject_id_column].value]
                 slide_label_dict_list.append({'slide_id': slide_idstr, aim_label_name: slide_aim_label})
+                print('loaded subject_id: {} with label: {}'.format(row[subject_id_column].value, slide_aim_label) )
+            elif type(row[subject_id_column].value) == str and row[subject_id_column].value.startswith('HV'):
+                slide_label_dict_list.append({'slide_id': slide_idstr, aim_label_name: 0})
+                print('loaded subject_id: {} with label: {}'.format(row[subject_id_column].value, 0) )
+                
     print('<Get slide:{}_label:{}_dict>, length:{}\n like: \n'.format(stain_type, aim_label_name, len(slide_label_dict_list)), slide_label_dict_list)
     
 #     csv_test_path = 'D:/workspace/Liver-path-V10/data/FLINC/meta/HE_steatosis_score.csv'
@@ -183,14 +194,28 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
     
     return slide_label_dict_list
 
-def combine_slide_labels_group_c2(groups=None):
+def combine_slide_labels_group_cx(slide_label_dict_list, groups):
     '''
-    combine the labels into 2 groups
+    combine the labels into 3 groups, cx means c? (c2, c3, ...)
     '''
-    if groups is None:
-        groups = {[0, 1, 2]: 0, [3, 4]: 1}
+    group_label_dict, group_label_count = {}, {}
+    for group_value in groups.keys():
+        group_label_count[group_value] = 0
+        for item in groups[group_value]: # the list of group_items
+            group_label_dict[item] = group_value
+    print('group mapping as: {}'.format(group_label_dict))
     
-    # TODO:
+    new_slide_label_dict_list = []
+    label_dist_titles = list(slide_label_dict_list[0].keys())
+    label_name = label_dist_titles[1] if label_dist_titles[0] == 'slide_id' else label_dist_titles[0]
+    for dict_item in slide_label_dict_list:
+        org_label = int(dict_item[label_name])
+        new_slide_label_dict_list.append({'slide_id': dict_item['slide_id'], label_name: group_label_dict[org_label]} )
+        group_label_count[group_label_dict[org_label] ] += 1
+    print('Combine the labels into groups, with new dict:')
+    for group_label in group_label_count.keys():
+        print('group label -> {}, number: {}'.format(group_label, group_label_count[group_label]) )
+    return new_slide_label_dict_list
 
 def count_flinc_stain_amount(ENV_task, xlsx_filepath):
     '''
@@ -243,6 +268,22 @@ def _load_clinical_labels():
                                                        xlsx_filepath=xlsx_path_slide_list[i])
         count_flinc_stain_labels(slide_label_dict_list, task_env.STAIN_TYPE, task_env.TASK_NAME)
         
+def _prod_combine_labels():
+    '''
+    produce the combined label csv file from ENV_task, for C_ENV_task
+    '''
+    ENV_task = ENV_FLINC_PSR_FIB
+    C_ENV_task = ENV_FLINC_PSR_FIB_C3
+    
+    slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task)
+    new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups={0: [0, 1], 1: [2], 2: [3, 4]})
+    
+    csv_test_path = '{}/{}_{}.csv'.format(C_ENV_task.META_FOLDER, C_ENV_task.STAIN_TYPE, C_ENV_task.TASK_NAME)
+    csv_to_df = pd.DataFrame(new_slide_label_dict_list)
+    csv_to_df.to_csv(csv_test_path, index=False)
+    print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
+    return new_slide_label_dict_list
+        
 def _count_stain_amount():
     
     TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
@@ -254,17 +295,46 @@ def _count_stain_amount():
     for i, task_env in enumerate(TASK_ENVS):
         _ = count_flinc_stain_amount(task_env, xlsx_filepath=xlsx_path_slide_list[i])
         
+
+def auto_find_task_csvname(ENV_task):
+    '''
+    auto detect the task_csv_filename
+    '''
+    f_start_string = '{}_{}'.format(ENV_task.STAIN_TYPE, ENV_task.TASK_NAME)
+    for f in os.listdir(ENV_task.META_FOLDER):
+        if f.startswith(f_start_string) and f.endswith('.csv'):
+            print('automatically find CSV file: {}'.format(f))
+            task_csv_filename = f
+            break
+    return task_csv_filename
+
+def query_task_label_dict_list_fromcsv(ENV_task, task_csv_filename=None):
+    '''
+    load the task label dict list (to maintain the sort of keys) from csv
+    '''
+    if task_csv_filename == None:
+        task_csv_filename = auto_find_task_csvname(ENV_task)
+    
+    task_csv_filepath = os.path.join(ENV_task.META_FOLDER, task_csv_filename)
+    slide_label_dict_list = []
+    column_1, column_2 = 'slide_id', ''
+    with open(task_csv_filepath, 'r', newline='') as task_csv_file:
+        csv_reader = csv.reader(task_csv_file)
+        for l, csv_line in enumerate(csv_reader):
+            if l == 0: # skip the first line for title
+                column_1, column_2 = csv_line[0], csv_line[1]
+            else:
+                slide_label_dict_list.append({column_1: csv_line[0], column_2: csv_line[1]})
+    return slide_label_dict_list
         
 def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
-    f_start_string = '{}_{}'.format(ENV_task.STAIN_TYPE, ENV_task.TASK_NAME)
+    '''
+    load the task label dict from csv
+    '''
     if task_csv_filename == None:
-        for f in os.listdir(ENV_task.METADATA_REPO_DIR):
-            if f.startswith(f_start_string) and f.endswith('.csv'):
-                print('automatically find CSV file: {}'.format(f))
-                task_csv_filename = f
-                break
+        task_csv_filename = auto_find_task_csvname(ENV_task)
             
-    task_csv_filepath = os.path.join(ENV_task.METADATA_REPO_DIR, task_csv_filename)
+    task_csv_filepath = os.path.join(ENV_task.META_FOLDER, task_csv_filename)
     task_label_dict = {}
     with open(task_csv_filepath, 'r', newline='') as task_csv_file:
         csv_reader = csv.reader(task_csv_file)
@@ -277,7 +347,8 @@ def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
 
 
 if __name__ == '__main__':
-    _load_clinical_labels()
+    # _load_clinical_labels()
     # _count_stain_amount()
+    _prod_combine_labels()
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
