@@ -133,7 +133,7 @@ class parames_task(parames_basic):
         
         self.META_FOLDER = os.path.join(self.PROJECT_DIR, 'data/{}'.format(meta_folder_name))
         # the slide folder should copy the slide from transfer folder specifically for training, isolated from NOVO's transfer folder 
-        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'tissues/{}'.format(self.STAIN_TYPE))
+        self.SLIDE_FOLDER = os.path.join(self.DATA_DIR, 'tissues')
         self.MODEL_FOLDER = os.path.join(self.DATA_DIR, 'models')
         
         ''' --- slide process & general file storage params --- '''

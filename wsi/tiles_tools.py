@@ -325,6 +325,8 @@ def parse_slideid_from_filepath(original_slide_filepath):
         slide_id = original_slide_filepath[original_slide_filepath.find('TCGA'):]
     elif original_slide_filepath.find('GTEX') != -1:
         slide_id = original_slide_filepath[original_slide_filepath.find('GTEX'):]
+    elif original_slide_filepath.find('23910') != -1:
+        slide_id = original_slide_filepath[original_slide_filepath.find('23910'):]
     else:
         slide_id = original_slide_filepath[-10:]
     slide_id = slide_id.split('.')[0]

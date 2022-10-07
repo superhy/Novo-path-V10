@@ -14,6 +14,8 @@ import sys
 import cv2
 from numpy import dtype
 from skimage import morphology
+from skimage import feature
+import scipy.ndimage.morphology as sc_morph
 
 import numpy as np
 from support import tools
@@ -71,8 +73,46 @@ def filter_green_channel(np_img, green_thresh=200, avoid_overmask=True, overmask
     
     return np_img
 
+def filter_rgb_to_grayscale(np_img, output_type="uint8"):
+    """
+    Convert an RGB NumPy array to a grayscale NumPy array.
+    Shape (h, w, c) to (h, w).
+    Args:
+      np_img: RGB Image as a NumPy array.
+      output_type: Type of array to return (float or uint8)
+    Returns:
+      Grayscale image as NumPy array with shape (h, w).
+    """
+    t = Time()
+    # Another common RGB ratio possibility: [0.299, 0.587, 0.114]
+    grayscale = np.dot(np_img[..., :3], [0.2125, 0.7154, 0.0721])
+    if output_type != "float":
+        grayscale = grayscale.astype("uint8")
+    return grayscale
 
-def filter_grays(rgb, tolerance=15, output_type="bool", show_np_info=False):
+def filter_canny(np_img, sigma=1, low_threshold=0, high_threshold=25, output_type="uint8"):
+    """
+    Filter image based on Canny algorithm edges.
+    Args:
+      np_img: Image as a NumPy array.
+      sigma: Width (std dev) of Gaussian.
+      low_threshold: Low hysteresis threshold value.
+      high_threshold: High hysteresis threshold value.
+      output_type: Type of array to return (bool, float, or uint8).
+    Returns:
+      NumPy array (bool, float, or uint8) representing Canny edge map (binary image).
+    """
+    t = Time()
+    can = feature.canny(np_img, sigma=sigma, low_threshold=low_threshold, high_threshold=high_threshold)
+    if output_type == "bool":
+        pass
+    elif output_type == "float":
+        can = can.astype(float)
+    else:
+        can = can.astype("uint8") * 255
+    return can
+
+def filter_grays(rgb, tolerance=20, output_type="bool", show_np_info=False):
     """
     Create a mask to filter out pixels where the red, green, and blue channel values are similar.
     
@@ -104,6 +144,28 @@ def filter_grays(rgb, tolerance=15, output_type="bool", show_np_info=False):
         
     return result
 
+def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8"):
+    """
+    Dilate a binary object (bool, float, or uint8).
+    Args:
+      np_img: Binary image as a NumPy array.
+      disk_size: Radius of the disk structuring element used for dilation.
+      iterations: How many times to repeat the dilation.
+      output_type: Type of array to return (bool, float, or uint8).
+    Returns:
+      NumPy array (bool, float, or uint8) where edges have been dilated.
+    """
+    t = Time()
+    if np_img.dtype == "uint8":
+        np_img = np_img / 255
+    result = sc_morph.binary_dilation(np_img, morphology.disk(disk_size), iterations=iterations)
+    if output_type == "bool":
+        pass
+    elif output_type == "float":
+        result = result.astype(float)
+    else:
+        result = result.astype("uint8") * 255
+    return result
 
 def filter_red(rgb, red_lower_thresh, green_upper_thresh, blue_upper_thresh, output_type="bool"):
     """
@@ -408,6 +470,7 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     
     mask_not_gray = filter_grays(np_rgb)
 #     rgb_not_gray = image_tools.mask_rgb(np_rgb, mask_not_gray)
+    mask_bin_dilation = filter_binary_dilation(mask_not_gray, disk_size=2)
     
     mask_no_red_pen = filter_red_pen(np_rgb)
 #     rgb_no_red_pen = image_tools.mask_rgb(np_rgb, mask_no_red_pen)
@@ -420,6 +483,7 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     
     # mask_gray_green_pens = mask_not_gray & mask_not_green & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
     mask_gray_green_pens = mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+    # mask_gray_green_pens = mask_bin_dilation & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
 #     rgb_gray_green_pens = image_tools.mask_rgb(np_rgb, mask_gray_green_pens)
 
     if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():

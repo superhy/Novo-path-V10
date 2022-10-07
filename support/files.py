@@ -4,10 +4,10 @@
 import os
 import shutil
 
-from metadata import extract_slideid_subid_for_stain
-from env_flinc_he_fib import ENV_FLINC_HE_FIB
-from env_flinc_he_stea import ENV_FLINC_HE_STEA
-from env_flinc_psr_fib import ENV_FLINC_PSR_FIB
+from support.metadata import extract_slideid_subid_for_stain
+from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
+from support.env_flinc_he_stea import ENV_FLINC_HE_STEA
+from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB
 
 
 def move_file(src_path, dst_path, mode='move'):

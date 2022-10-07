@@ -2,8 +2,8 @@
 @author: Yang Hu
 '''
 
-from env import ENV
-from parames import parames_task
+from support.env import ENV
+from support.parames import parames_task
 
 
 ENV_FLINC_HE_FIB = parames_task(
@@ -18,7 +18,7 @@ ENV_FLINC_HE_FIB = parames_task(
     pc_root='D:/FLINC_dataset/',
     mac_root='',
     meta_folder_name='FLINC/meta',
-    test_part_prop=0.8,
+    test_part_prop=0.3,
     fold_suffix='-0',
     loss_package=('ce'),
     num_att_epoch=80,
