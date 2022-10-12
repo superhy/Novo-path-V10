@@ -1,241 +1,365 @@
 '''
 @author: Yang Hu
 '''
-import glob
 import os
-import random
 
-from PIL import Image
-import PIL
-import cv2
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 
-import matplotlib.pyplot as plt
 import numpy as np
-from wsi.image_tools import pil_to_np_rgb
+from support.env import ENV
+from support.files import parse_slide_caseid_from_filepath, \
+    parse_slideid_from_filepath
 from wsi.process import recovery_tiles_list_from_pkl
-from wsi.slide_tools import original_slide_and_scaled_pil_image
 
 
-def tnd_reshape_3channels(img):
-    '''
-    '''
-    new_img = []
-    for i in range(3):
-        new_img.append(img[:, :, i])
-    new_img = np.asarray(new_img)
-    return new_img
-
-class UKAIH_fat_Dataset(Dataset):
-    ''' UKAIH dataset '''
+def load_richtileslist_fromfile(ENV_task, for_train=True):
+    """
+    laod the full dictionary information of all tiles list for training/test set
     
-    def __init__(self, folder_path, data_aug=False, istest=False):
-        self.folder_path = folder_path
-        self.images_path = glob.glob(os.path.join(self.folder_path, 'images/*.jpg'))
-        self.data_aug = data_aug
-        self.istest = istest
+    need to prepare parmes:
+        _env_process_slide_tile_pkl_train_dir,
+        _env_process_slide_tile_pkl_test_dir,
+        _env_process_slide_tumor_tile_pkl_train_dir,
+        _env_process_slide_tumor_tile_pkl_test_dir,
+        (label_type)
         
-    def aug_flip(self, image, flip_code):
-        flip = cv2.flip(image, flip_code)
-        return flip
+    Args:
+        ENV_task: the task environment object
+        for_train:
+        
+    Return:
+        tiles_all_list: all tile list with tile-object
+        tileidx_slideid_dict: mapping dictionary from tile_idx in tiles_all_list to slide_id
+        slide_tileidxs_dict: mapping dictionary from slide_id to tile_idxs (as a list)
     
+    """
+    
+    ''' prepare the parames '''
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TEST_DIR
+    _env_process_slide_tumor_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TEST_DIR
+#     label_type = ENV_task.LABEL_TYPE
+    
+    pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
+    pkl_files = os.listdir(pkl_dir)
+    
+    tileidx_slideid_dict = {}
+    slide_tileidxs_dict = {}
+    tiles_all_list = []
+    tileidx = 0
+    for pkl_f in pkl_files:
+        # each slide each pkl
+        tiles_slide_list = recovery_tiles_list_from_pkl(os.path.join(pkl_dir, pkl_f))
+        slide_id = tiles_slide_list[0].query_slideid()
+        slide_tileidxs_dict[slide_id] = []
+        for i in range(len(tiles_slide_list)): 
+            tileidx_slideid_dict[tileidx] = slide_id
+            slide_tileidxs_dict[slide_id].append(tileidx)
+            tileidx += 1
+        tiles_all_list.extend(tiles_slide_list)
+        
+    return tiles_all_list, tileidx_slideid_dict, slide_tileidxs_dict
+
+def load_slides_tileslist(ENV_task, for_train=True):
+    """
+    a simplify version for above function, only return the dict of slide -> tiles' objects
+    
+    need to prepare parmes:
+        _env_process_slide_tile_pkl_train_dir,
+        _env_process_slide_tile_pkl_test_dir,
+        _env_process_slide_tumor_tile_pkl_train_dir,
+        _env_process_slide_tumor_tile_pkl_test_dir,
+        (label_type)
+        
+    Args:
+        ENV_task: the task environment object
+        for_train:
+        
+    Return:
+        slide_tiles_dict: dict of slide -> tiles' objects
+    
+    """
+    
+    ''' prepare the parames '''
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TEST_DIR
+    _env_process_slide_tumor_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TEST_DIR
+#     label_type = ENV_task.LABEL_TYPE
+    
+    pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
+    
+    pkl_files = os.listdir(pkl_dir)
+    
+    slide_tiles_dict = {}
+    for pkl_f in pkl_files:
+        # each slide each pkl
+        tiles_list = recovery_tiles_list_from_pkl(os.path.join(pkl_dir, pkl_f))
+        slide_id = tiles_list[0].query_slideid()
+        slide_tiles_dict[slide_id] = tiles_list
+        
+    return slide_tiles_dict
+
+    
+class Simple_Tile_Dataset(Dataset):
+    
+    '''
+    dataset only provides tiles from a tile list
+    
+    Args:
+        tiles_list: a tile list, can be a slide tile list or a combination tile list
+    '''
+    
+    def __init__(self, tiles_list, transform: transforms):
+        self.tiles_list = tiles_list
+        
+        self.transform = transform
+        ''' make slide cache in memory '''
+        self.cache_slide = ('none', None)
+        
     def __getitem__(self, index):
-        image_path = self.images_path[index]
-        label_path = image_path.replace('images', 'masks')
+        tile = self.tiles_list[index]
         
-        image = cv2.imread(image_path)
-        label = cv2.imread(label_path)
-        
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        label = cv2.cvtColor(label, cv2.COLOR_BGR2GRAY)
-        image = tnd_reshape_3channels(image)
-        label = label.reshape(1, label.shape[0], label.shape[1])
-        image = image.astype(np.float32)
-        label = label.astype(np.float32)
-        
-        if label.max() > 1:
-            label = label / 255
-            
-        if self.data_aug:
-            flip_code = random.choice([-1, 0, 1, 2])
-            if flip_code != 2:
-                image = self.aug_flip(image, flip_code)
-                label = self.aug_flip(label, flip_code)
-        
-        if self.istest:
-            return image, label, image_path.replace('images', 'prediction')
+        ''' using slide cache '''
+        loading_slide_id = parse_slideid_from_filepath(tile.original_slide_filepath)
+        if loading_slide_id == self.cache_slide[0]:
+            preload_slide = self.cache_slide[1]
         else:
-            return image, label
+            _, preload_slide = tile.get_pil_scaled_slide()
+            self.cache_slide = (loading_slide_id, preload_slide)
+            
+        image = tile.get_pil_tile(preload_slide)
+        image = self.transform(image)
+        return image
+        
+    def __len__(self):
+        return len(self.tiles_list)
+
+
+'''
+------------ datasets for aggregator training -------------
+'''
+
+class SlideMatrix_Dataset(Dataset):
+    
+    def __init__(self, slide_matrix_file_sets, label_dict, preload_slide_matrix_sets=None):
+        '''
+        Args:
+            slide_matrix_file_sets: list: [(slide_id, len of tiles in this slide, slide matrix numpy filepath),
+                                           (...), ...]
+            label_dict: {case_id (can be parse from slide_id): label (0, 1)}
+            preload_slide_matrix_sets: list: [(slide_id, len of tiles in this slide, slide matrix numpy ndarray),
+                                              (...), ...]
+                                       default: None
+            batch_loader: if 'True': load the slide matrix in each batch by __getitem__();
+                          if 'False': load all slides' matrices once in __init__()
+        '''
+        self.slide_matrix_file_sets = slide_matrix_file_sets
+        self.label_dict = label_dict
+        self.slide_matrix_sets = preload_slide_matrix_sets
+        self.batch_loader = True
+        
+        if self.slide_matrix_sets != None:
+            self.batch_loader = False
+        
+        if self.batch_loader == False:
+            if self.slide_matrix_sets == None or len(self.slide_matrix_file_sets) != len(self.slide_matrix_sets):
+                self.slide_matrix_sets = []
+                for file_set in self.slide_matrix_file_sets:
+#                     slide_id = file_set[0]
+#                     slide_matrix = np.load(file_set[1])
+                    self.slide_matrix_sets.append((file_set[0], file_set[1], np.load(file_set[2])))
+        else:
+            pass
+        
+    def refresh_data(self, slide_matrix_file_sets):
+        '''
+        refresh the matrix sets after get new slide matrices
+        '''
+        self.slide_matrix_file_sets = slide_matrix_file_sets
+        if self.slide_matrix_sets == None or len(self.slide_matrix_file_sets) != len(self.slide_matrix_sets):
+            self.slide_matrix_sets = []
+            for file_set in self.slide_matrix_file_sets:
+#                     slide_id = file_set[0]
+#                     slide_matrix = np.load(file_set[1])
+                self.slide_matrix_sets.append((file_set[0], file_set[1], np.load(file_set[2])))
+            
+    def __getitem__(self, index):
+        if self.batch_loader == False:
+            slide_id = self.slide_matrix_sets[index][0]
+            case_id = slide_id[:slide_id.find('_') ] if slide_id.find('_') != -1 else slide_id
+            matrix = self.slide_matrix_sets[index][2]
+            bag_dim = self.slide_matrix_sets[index][1]
+            label = self.label_dict[case_id]
+            return matrix, bag_dim, label
+        else:
+            slide_id = self.slide_matrix_file_sets[index][0]
+            case_id = slide_id[:slide_id.find('_')] if slide_id.find('_') != -1 else slide_id
+            matrix = np.load(self.slide_matrix_file_sets[index][2])
+            bag_dim = self.slide_matrix_file_sets[index][1]
+            label = self.label_dict[case_id]
+            return matrix, bag_dim, label
+            
+    def __len__(self):
+        return len(self.slide_matrix_file_sets)
+    
+    
+class SlideMatrix_Pairs_Dataset(Dataset):
+    
+    def __init__(self, slide_matrix_pair_file_sets, label_dict):
+        '''
+        Only using batch_loader, because the pre-training dataset is much bigger
+        Args:
+            slide_matrix_pair_file_sets: 
+                list: [(slide_id_1, bag_dim_1, slide_mat_nd_file_1, slide_id_2, bag_dim_2, slide_mat_nd_file_2),
+                        ...]
+            label_dict: {case_id (can be parse from slide_id): label (0, 1)}
+        '''
+        self.slide_matrix_pair_file_sets = slide_matrix_pair_file_sets
+        self.label_dict = label_dict
+        
+    def refresh_data(self, slide_matrix_pair_file_sets):
+        '''
+        refresh another random cohort of slide_matrix_pair_file_sets
+        '''
+        self.slide_matrix_pair_file_sets = slide_matrix_pair_file_sets
+        
+    def __getitem__(self, index):
+        slide_id_1 = self.slide_matrix_pair_file_sets[index][0]
+        slide_id_2 = self.slide_matrix_pair_file_sets[index][3]
+        case_id_1 = slide_id_1[:slide_id_1.find('_') ] if slide_id_1.find('_') != -1 else slide_id_1
+        case_id_2 = slide_id_2[:slide_id_2.find('_') ] if slide_id_2.find('_') != -1 else slide_id_2
+        mat_1 = np.load(self.slide_matrix_pair_file_sets[index][2])
+        mat_2 = np.load(self.slide_matrix_pair_file_sets[index][5])
+        bag_dim_1, bag_dim_2 = self.slide_matrix_pair_file_sets[index][1], self.slide_matrix_pair_file_sets[index][4]
+        sim_label = 0 if self.label_dict[case_id_1] == self.label_dict[case_id_2] else 1
+        
+        return mat_1, bag_dim_1, mat_2, bag_dim_2, sim_label
     
     def __len__(self):
-        return len(self.images_path)
+        return len(self.slide_matrix_pair_file_sets)
+    
+'''
+    -------------------------------------------------------------------------------
+    functions and Dataset mainly for Look Closer to See Better (LCSB) MIL algorithm
+        this approach will partly use the same logic previously
+    -------------------------------------------------------------------------------
+'''
    
-   
-''' MoNuSeg dataset '''
-   
-def plt_img_mask(img, mask=None):
+class AttK_MIL_Dataset(Dataset):
     
-    if mask is None:
-        mask = np.zeros(img.shape)
-    
-    fig = plt.figure()
-    ax1 = fig.add_subplot(1, 2, 1)
-    ax2 = fig.add_subplot(1, 2, 2)
-    ax1.imshow(img)
-    ax2.imshow(mask)
-    plt.show()
-   
-def load_MoNuSeg_images_masks(images_folder):
-    '''
-    '''
-    images_path = glob.glob(os.path.join(images_folder, 'images/*.tif') )
-    
-    images, masks = [], []
-    for i, image_path in enumerate(images_path):
-        img, _ = original_slide_and_scaled_pil_image(slide_filepath=image_path, 
-                                                     scale_factor=1, print_opening=True)
-        img = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
-        img = tnd_reshape_3channels(img)
-        img = img.astype(np.float32)
+    def __init__(self, tiles_list, label_dict, transform: transforms):
+        self.tiles_list = tiles_list
+        self.tiles_idxs_train_pool = []
+        self.tiles_list_train_pool = tiles_list # will be refresh when training
+        self.label_dict = label_dict
         
-        label_path = image_path.replace('images', 'masks')
-        label_path = label_path.replace('.tif', '_mask.bmp')
-        label = cv2.imread(label_path)
-        label = cv2.cvtColor(label, cv2.COLOR_BGR2GRAY)
-        label = label.reshape(1, label.shape[0], label.shape[1])
+        self.transform = transform
+        ''' make slide cache in memory '''
+        self.cache_slide = ('none', None)
         
-        label = label.astype(np.float32)
-        if label.max() > 1:
-            label = label / 255
+    def refresh_data(self, filter_attK_slide_tileidx_dict):
+        '''
+        must be called before training
+        '''
         
-        images.append(img)
-        masks.append(label)
-        
-    return images, masks
-        
-class MoNuSeg_Dataset(Dataset):
-    
-    def __init__(self, images_list, masks_list, random_crop_size=0, flip=False, transforms: transforms=None):
-        self.images_list = images_list
-        self.masks_list = masks_list 
-        self.random_crop_size = random_crop_size 
-        self.flip = flip
-        self.transforms = transforms
-            
-    def aug_crop(self, image, crop_h_s, crop_w_s):
-        crop = image[:, crop_h_s: crop_h_s + self.random_crop_size, crop_w_s: crop_w_s + self.random_crop_size]
-        return crop
-    
-    def aug_flip(self, image, flip_code):
-        flip = cv2.flip(image, flip_code)
-        return flip
+        self.tiles_idxs_train_pool = []
+        for _, tile_idx_list in filter_attK_slide_tileidx_dict.items():
+            for idx in tile_idx_list:
+                self.tiles_idxs_train_pool.append(idx)
+                    
+        self.tiles_list_train_pool = []
+        for idx in self.tiles_idxs_train_pool:
+            self.tiles_list_train_pool.append(self.tiles_list[idx])
+        print('Dataset Info: [refresh training tile list, now with: %d tiles...]' % len(self.tiles_list_train_pool))
     
     def __getitem__(self, index):
-        image = self.images_list[index]
-        label = self.masks_list[index]
+        tile = self.tiles_list_train_pool[index]
+        case_id = parse_slide_caseid_from_filepath(tile.original_slide_filepath)
         
-        if self.random_crop_size > 32:
-            img_h, img_w = image.shape[-2], image.shape[-1]
-            crop_h_s = random.randint(0, img_h - self.random_crop_size)
-            crop_w_s = random.randint(0, img_w - self.random_crop_size)
-            image = self.aug_crop(image, crop_h_s, crop_w_s)
-            label = self.aug_crop(label, crop_h_s, crop_w_s)
-        if self.flip:
-            flip_code = random.choice([-1, 0, 1, 2])
-            if flip_code != 2:
-                image = self.aug_flip(image, flip_code)
-                label = self.aug_flip(label, flip_code)
-        image = image.astype(np.float32)
-        label = label.astype(np.float32)
-                
-        if self.transforms is not None:
-            image = self.transforms(image)
-            label = self.transforms(label)
+        ''' using slide cache '''
+        loading_slide_id = parse_slideid_from_filepath(tile.original_slide_filepath)
+        if loading_slide_id == self.cache_slide[0]:
+            preload_slide = self.cache_slide[1]
+        else:
+            _, preload_slide = tile.get_pil_scaled_slide()
+            self.cache_slide = (loading_slide_id, preload_slide)
+            
+        image = tile.get_pil_tile(preload_slide)
+        image = self.transform(image)
+        label = self.label_dict[case_id]
         
         return image, label
-    
-    def __len__(self):
-        return len(self.images_list)
-    
-    
-''' some with GTEx_seg dataset '''
-   
-def tile_img_pad_white(broken_tile_img, resize_shape):
-    '''
-    '''
-    old_img = np.asarray(broken_tile_img)
-#     print(old_img.shape)
-    
-    new_img = []
-    for i in range(3):
-        ext_img = np.ones((resize_shape, resize_shape)) * 255
-        ext_img[0:old_img.shape[-2], 0:old_img.shape[-1]] = old_img[i]
-        new_img.append(ext_img)
-    new_img = np.asarray(new_img)
-    
-    return new_img
-
-
-class Naive_Tiles_Dataset(Dataset):
-    
-    def __init__(self, tile_list, uni_tile_size,
-                 preload_slide=None,
-                 transforms: transforms=None):
-        self.tile_list = tile_list
-        self.uni_tile_size = uni_tile_size
-        self.preload_slide = preload_slide
-        self.transforms = transforms
         
-    def query_tile(self, index):
-        return self.tile_list[index]
+    def __len__(self):
+        return len(self.tiles_list_train_pool)
     
+'''
+    -------------------------------------------------------------------------------
+    functions and Dataset mainly for dual (reversed) Look Closer to See Better (LCSB) MIL algorithm
+        this approach will partly use the same logic previously
+    -------------------------------------------------------------------------------
+'''
+
+
+class Rev_AttK_MIL_Dataset(Dataset):
+     
+    def __init__(self, tiles_list, label_dict, transform: transforms):
+        self.tiles_list = tiles_list
+        self.tiles_idxs_train_pool_neg = []
+        self.tiles_list_train_pool_neg = tiles_list
+         
+        self.label_dict = label_dict
+         
+        self.transform = transform
+        ''' make slide cache in memory '''
+        self.cache_slide_neg = ('none', None)
+         
+    def refresh_data(self, filter_revgN_slide_tileidx_dict):
+        '''
+        must be called before training
+        '''
+ 
+        self.tiles_idxs_train_pool_neg = []
+        for _, tile_idx_list in filter_revgN_slide_tileidx_dict.items():
+            for idx in tile_idx_list:
+                self.tiles_idxs_train_pool_neg.append(idx) 
+                     
+        self.tiles_list_train_pool_neg = []
+        for idx in self.tiles_idxs_train_pool_neg:
+            self.tiles_list_train_pool_neg.append(self.tiles_list[idx])
+        print('Dataset Info: [refresh reversed gradient training tile list, now with: %d negative tiles...]' % (len(self.tiles_idxs_train_pool_neg)))
+     
     def __getitem__(self, index):
-        tile = self.tile_list[index]
-        if self.preload_slide is None:
-            _, self.preload_slide = tile.get_pil_scaled_slide()
-        tile_img = tile.get_pil_tile(self.preload_slide)
-        np_tile_img = cv2.cvtColor(np.asarray(tile_img), cv2.COLOR_RGB2BGR)
-        np_tile_img = tnd_reshape_3channels(np_tile_img)
-        
-        w_s, w_e, h_s, h_e = tile.large_w_s, tile.large_w_e, tile.large_h_s, tile.large_h_e
-        
-        if w_e - w_s < self.uni_tile_size or h_e - h_s < self.uni_tile_size:
-            np_tile_img = tile_img_pad_white(np_tile_img, self.uni_tile_size)
-        np_tile_img = np_tile_img.astype(np.float32)
-            
-        if self.transforms is not None:
-            np_tile_img = self.transforms(np_tile_img)
-        
-        return np_tile_img, w_s, w_e, h_s, h_e, index
-    
+        tile_neg = self.tiles_list_train_pool_neg[index]
+         
+        case_id_neg = parse_slide_caseid_from_filepath(tile_neg.original_slide_filepath)
+         
+        ''' using slide cache '''
+        loading_slide_neg_id = parse_slideid_from_filepath(tile_neg.original_slide_filepath)
+         
+        if loading_slide_neg_id == self.cache_slide_neg[0]:
+            preload_slide_neg = self.cache_slide_neg[1]
+        else:
+            _, preload_slide_neg = tile_neg.get_pil_scaled_slide()
+            self.cache_slide_neg = (loading_slide_neg_id, preload_slide_neg)
+             
+        image_neg = tile_neg.get_pil_tile(preload_slide_neg)
+        image_neg = self.transform(image_neg)
+        label_neg = self.label_dict[case_id_neg]
+         
+        return image_neg, label_neg
+         
     def __len__(self):
-        return len(self.tile_list) 
+        return len(self.tiles_list_train_pool_neg)
 
 
-def load_slides_tile_images(tiles_folder, tile_size):
-    '''
-    '''
-    slide_tiles_path = glob.glob(os.path.join(tiles_folder, '*.pkl'))
-    
-    for i, tile_pth in enumerate(slide_tiles_path):
-        tiles_list = recovery_tiles_list_from_pkl(tile_pth)
-        # list the tiles in this slide
-        preload_slide = None
-        for j, tile in enumerate(tiles_list):
-            _, preload_slide = tile.get_pil_scaled_slide()
-            np_tile_img = tile.get_np_tile(preload_slide)
-            np_tile_img = np_tile_img.reshape(3, np_tile_img.shape[0], np_tile_img.shape[1])
-            org_img_shape = [np_tile_img.shape[-2], np_tile_img.shape[-1]]
-            if org_img_shape[0] < tile_size or org_img_shape[1] < tile_size:
-                np_tile_img = tile_img_pad_white(np_tile_img, [tile_size, tile_size])
-            print(np_tile_img)
-                
-#             print(np_tile_img)
-              
-            
+
 if __name__ == '__main__':
-    load_slides_tile_images('D:/LIVER_NASH_dataset/MoNuSeg/tiles', 512)
+    pass
+
 
 
 

@@ -14,6 +14,7 @@ import sys
 import cv2
 from numpy import dtype
 from skimage import morphology
+from skimage import filters
 from skimage import feature
 import scipy.ndimage.morphology as sc_morph
 
@@ -83,12 +84,65 @@ def filter_rgb_to_grayscale(np_img, output_type="uint8"):
     Returns:
       Grayscale image as NumPy array with shape (h, w).
     """
-    t = Time()
     # Another common RGB ratio possibility: [0.299, 0.587, 0.114]
     grayscale = np.dot(np_img[..., :3], [0.2125, 0.7154, 0.0721])
     if output_type != "float":
         grayscale = grayscale.astype("uint8")
     return grayscale
+
+def filter_complement(np_img, output_type="uint8"):
+    """
+    Obtain the complement of an image as a NumPy array.
+    Args:
+      np_img: Image as a NumPy array.
+      type: Type of array to return (float or uint8).
+    Returns:
+      Complement image as Numpy array.
+    """
+    if output_type == "float":
+        complement = 1.0 - np_img
+    else:
+        complement = 255 - np_img
+    return complement
+
+def filter_hysteresis_threshold(np_img, low=50, high=100, output_type="uint8"):
+    """
+    Apply two-level (hysteresis) threshold to an image as a NumPy array, returning a binary image.
+    Args:
+      np_img: Image as a NumPy array.
+      low: Low threshold.
+      high: High threshold.
+      output_type: Type of array to return (bool, float, or uint8).
+    Returns:
+      NumPy array (bool, float, or uint8) where True, 1.0, and 255 represent a pixel above hysteresis threshold.
+    """
+    hyst = filters.apply_hysteresis_threshold(np_img, low, high)
+    if output_type == "bool":
+        pass
+    elif output_type == "float":
+        hyst = hyst.astype(float)
+    else:
+        hyst = (255 * hyst).astype("uint8")
+    return hyst
+
+def filter_otsu_threshold(np_img, output_type="uint8"):
+    """
+    Compute Otsu threshold on image as a NumPy array and return binary image based on pixels above threshold.
+    Args:
+      np_img: Image as a NumPy array.
+      output_type: Type of array to return (bool, float, or uint8).
+    Returns:
+      NumPy array (bool, float, or uint8) where True, 1.0, and 255 represent a pixel above Otsu threshold.
+    """
+    otsu_thresh_value = filters.threshold_otsu(np_img)
+    otsu = (np_img > otsu_thresh_value)
+    if output_type == "bool":
+        pass
+    elif output_type == "float":
+        otsu = otsu.astype(float)
+    else:
+        otsu = otsu.astype("uint8") * 255
+    return otsu
 
 def filter_canny(np_img, sigma=1, low_threshold=0, high_threshold=25, output_type="uint8"):
     """
@@ -102,7 +156,6 @@ def filter_canny(np_img, sigma=1, low_threshold=0, high_threshold=25, output_typ
     Returns:
       NumPy array (bool, float, or uint8) representing Canny edge map (binary image).
     """
-    t = Time()
     can = feature.canny(np_img, sigma=sigma, low_threshold=low_threshold, high_threshold=high_threshold)
     if output_type == "bool":
         pass
@@ -112,7 +165,7 @@ def filter_canny(np_img, sigma=1, low_threshold=0, high_threshold=25, output_typ
         can = can.astype("uint8") * 255
     return can
 
-def filter_grays(rgb, tolerance=20, output_type="bool", show_np_info=False):
+def filter_grays(rgb, tolerance=15, output_type="bool", show_np_info=False):
     """
     Create a mask to filter out pixels where the red, green, and blue channel values are similar.
     
@@ -155,7 +208,6 @@ def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8
     Returns:
       NumPy array (bool, float, or uint8) where edges have been dilated.
     """
-    t = Time()
     if np_img.dtype == "uint8":
         np_img = np_img / 255
     result = sc_morph.binary_dilation(np_img, morphology.disk(disk_size), iterations=iterations)
@@ -441,9 +493,70 @@ def tissue_percent(np_img):
     return 100 - mask_percent(np_img)
 
 
-def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=True, print_info=True):
+def apply_image_filters_psr(np_img, tumor_region_jsonpath=None, tumor_or_background=True, print_info=True):
     """
-    Apply filters to image as NumPy array and optionally save and/or display filtered images.
+    Apply filters to image as NumPy array and optionally save and/or display filtered images. For PSR staining
+    
+    Args:
+      np_img: Image as NumPy array.
+      tumor_or_background: True: the filter only left tumor area; False: the filter only left background area
+      
+      @attention: removed
+      <slide_num=None, info=None, save=False, display=False>
+      
+          slide_num: The slide number (used for saving/displaying).
+          info: Dictionary of slide information (used for HTML display).
+          save: If True, save image.
+          display: If True, display image.
+    
+    Returns:
+      Resulting filtered image as a NumPy array.
+    """
+    np_rgb = np_img
+    
+    if print_info == True:
+        print('Filter noise of various colors and objects that are too small')
+        
+    grayscale = filter_rgb_to_grayscale(np_rgb)
+    complement = filter_complement(grayscale)
+    mask_hyst = filter_hysteresis_threshold(complement)
+    
+    mask_not_gray = filter_grays(np_rgb, tolerance=15)
+    
+    mask_no_red_pen = filter_red_pen(np_rgb)
+    
+    mask_no_green_pen = filter_green_pen(np_rgb)
+    
+    mask_no_blue_pen = filter_blue_pen(np_rgb)
+    
+    mask_gray_green_pens = mask_hyst & mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+
+    if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():
+        # check the tumor area annotation file
+        region_border_list = parse_tumor_region_annotations(tumor_region_jsonpath)
+        scaled_slide_dimensions = np_rgb.shape[:-1]
+        # filter left only tumor or background
+        if tumor_or_background == True:
+            tumor_back_mask, _ = generate_tumor_mask(scaled_slide_dimensions, region_border_list)
+        else:
+            _, tumor_back_mask = generate_tumor_mask(scaled_slide_dimensions, region_border_list)
+                    
+        mask_all = mask_gray_green_pens & tumor_back_mask
+    else:
+        mask_all = mask_gray_green_pens
+    
+    mask_remove_small = filter_remove_small_objects(mask_all, min_size=500, output_type="bool", print_over_info=print_info)
+    show_np_info = True if print_info == True else False
+    rgb_remove_small = image_tools.mask_rgb(np_rgb, mask_remove_small, show_np_info=show_np_info)
+    
+    np_filtered_img = rgb_remove_small
+    
+    return np_filtered_img
+
+
+def apply_image_filters_he(np_img, tumor_region_jsonpath=None, tumor_or_background=True, print_info=True):
+    """
+    Apply filters to image as NumPy array and optionally save and/or display filtered images. For HE staining
     
     Args:
       np_img: Image as NumPy array.
@@ -470,7 +583,6 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     
     mask_not_gray = filter_grays(np_rgb)
 #     rgb_not_gray = image_tools.mask_rgb(np_rgb, mask_not_gray)
-    mask_bin_dilation = filter_binary_dilation(mask_not_gray, disk_size=2)
     
     mask_no_red_pen = filter_red_pen(np_rgb)
 #     rgb_no_red_pen = image_tools.mask_rgb(np_rgb, mask_no_red_pen)
@@ -481,9 +593,7 @@ def apply_image_filters(np_img, tumor_region_jsonpath=None, tumor_or_background=
     mask_no_blue_pen = filter_blue_pen(np_rgb)
 #     rgb_no_blue_pen = image_tools.mask_rgb(np_rgb, mask_no_blue_pen)
     
-    # mask_gray_green_pens = mask_not_gray & mask_not_green & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
-    mask_gray_green_pens = mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
-    # mask_gray_green_pens = mask_bin_dilation & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+    mask_gray_green_pens = mask_not_gray & mask_not_green & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
 #     rgb_gray_green_pens = image_tools.mask_rgb(np_rgb, mask_gray_green_pens)
 
     if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():
@@ -514,7 +624,7 @@ def apply_image_roi_filters(np_img, tumor_region_jsonpath, print_info=True):
     """
     Apply filters to image as NumPy array after filtering left only ROI regions.
     
-    except the mask regions, similar with function <apply_image_filters>
+    except the mask regions, similar with function <apply_image_filters_he>
     Args:
       np_img: Image as NumPy array.
       

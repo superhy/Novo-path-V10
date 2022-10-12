@@ -1,7 +1,7 @@
 '''
 @author: Yang Hu
 '''
-from support import env_flinc_psr_fib
+from support import env_flinc_psr_fib, env_flinc_he_stea
 '''
 task_id:
     0: parse and produce the annotation csv
@@ -23,8 +23,9 @@ from openslide import open_slide
 
 task_ids = [2]
 
+ENV_task = env_flinc_he_stea.ENV_FLINC_HE_STEA_C2
 # ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB
-ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB_C3
+# ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB_C3
 
 
 if __name__ == '__main__':

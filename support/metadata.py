@@ -9,7 +9,7 @@ import warnings
 import openpyxl
 
 from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA
+from support.env_flinc_he_stea import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
 from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB
 from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB_C3
 import matplotlib.pyplot as plt
@@ -272,11 +272,15 @@ def _prod_combine_labels():
     '''
     produce the combined label csv file from ENV_task, for C_ENV_task
     '''
-    ENV_task = ENV_FLINC_PSR_FIB
-    C_ENV_task = ENV_FLINC_PSR_FIB_C3
+    # ENV_task = ENV_FLINC_PSR_FIB
+    # C_ENV_task = ENV_FLINC_PSR_FIB_C3
+    # groups = {0: [0, 1], 1: [2], 2: [3, 4]}
+    ENV_task = ENV_FLINC_HE_STEA
+    C_ENV_task = ENV_FLINC_HE_STEA_C2
+    groups = {0: [0, 1], 1: [2, 3]}
     
     slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task)
-    new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups={0: [0, 1], 1: [2], 2: [3, 4]})
+    new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups=groups)
     
     csv_test_path = '{}/{}_{}.csv'.format(C_ENV_task.META_FOLDER, C_ENV_task.STAIN_TYPE, C_ENV_task.TASK_NAME)
     csv_to_df = pd.DataFrame(new_slide_label_dict_list)
