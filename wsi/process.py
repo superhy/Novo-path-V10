@@ -3,22 +3,21 @@
 '''
 
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import pickle
 import random
 import sys
 
 import numpy as np
-# from support import env_monuseg, env_gtex_seg
 from support.env import ENV
-from support.files import clear_dir, parse_slide_caseid_from_filepath
+from support.files import clear_dir, parse_slide_caseid_from_filepath, \
+    parse_slideid_from_filepath
 from support.metadata import query_task_label_dict_fromcsv
 from wsi import filter_tools
 from wsi import slide_tools
 from wsi import tiles_tools
-from wsi.tiles_tools import parse_slideid_from_filepath
+# from support import env_monuseg, env_gtex_seg
 
-
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 
@@ -59,7 +58,7 @@ def parse_filesystem_slide(slide_dir):
     return slide_path_list
 
         
-def slide_tiles_split_keep_object_seg(slides_folder):
+def slide_tiles_split_keep_object_seg(slides_folder, stain_type='HE'):
     """
     conduct the whole pipeline of slide's tiles split, by Sequential process
     store the tiles Object [.pkl] on disk
@@ -74,7 +73,10 @@ def slide_tiles_split_keep_object_seg(slides_folder):
     slide_path_list = parse_filesystem_slide(slides_folder)
     for i, slide_path in enumerate(slide_path_list):
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(slide_path)
-        np_small_filtered_img = filter_tools.apply_image_filters(np_small_img)
+        if stain_type == 'PSR':
+            np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        else:
+            np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         
         shape_set_img = (large_w, large_h, small_w, small_h)
         tiles_list = tiles_tools.get_slide_tiles(np_small_filtered_img, shape_set_img, slide_path,
@@ -150,7 +152,10 @@ def slide_tiles_split_keep_object_cls(ENV_task):
         train_allcls_path_list.extend(cls_path_dict[label_item][:-cls_test_num_dict[label_item]] )
     for train_slide_path in train_allcls_path_list:
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(train_slide_path)
-        np_small_filtered_img = filter_tools.apply_image_filters(np_small_img)
+        if ENV_task.STAIN_TYPE == 'PSR':
+            np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        else:
+            np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)
         tiles_list = tiles_tools.get_slide_tiles(np_small_filtered_img, shape_set_img, train_slide_path,
                                                  _env_tile_w_size, _env_tile_h_size,
@@ -170,7 +175,10 @@ def slide_tiles_split_keep_object_cls(ENV_task):
         test_allcls_path_list.extend(cls_path_dict[label_item][-cls_test_num_dict[label_item]:] )
     for test_slide_path in test_allcls_path_list:
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(test_slide_path)
-        np_small_filtered_img = filter_tools.apply_image_filters(np_small_img)
+        if ENV_task.STAIN_TYPE == 'PSR':
+            np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        else:
+            np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)
         tiles_list = tiles_tools.get_slide_tiles(np_small_filtered_img, shape_set_img, test_slide_path,
                                                  _env_tile_w_size, _env_tile_h_size,

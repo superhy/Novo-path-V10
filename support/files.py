@@ -91,6 +91,21 @@ def parse_slide_caseid_from_filepath(slide_filepath):
     
     return case_id
 
+def parse_slideid_from_filepath(original_slide_filepath):
+    """
+    """
+    if original_slide_filepath.find('TCGA') != -1:
+        slide_id = original_slide_filepath[original_slide_filepath.find('TCGA'):]
+    elif original_slide_filepath.find('GTEX') != -1:
+        slide_id = original_slide_filepath[original_slide_filepath.find('GTEX'):]
+    elif original_slide_filepath.find('23910') != -1:
+        slide_id = original_slide_filepath[original_slide_filepath.find('23910'):]
+    else:
+        slide_id = original_slide_filepath[-10:]
+    slide_id = slide_id.split('.')[0]
+    
+    return slide_id
+
 def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
                                 source_dir, target_dir, label_dict= None, mode='move'):
     """
@@ -118,24 +133,26 @@ def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
 def _move_slides_multi_stains():
     '''
     '''
-    TASK_ENVS = [ENV_FLINC_PSR_FIB]
-    source_dir = os.path.join(TASK_ENVS[0].TRANSFER_DIR, '23910-157')
-    target_dir = os.path.join(TASK_ENVS[0].DATA_DIR, 'tissues')
-    
-    stain_type = TASK_ENVS[0].STAIN_TYPE
-    xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
-    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_slide_1, stain_type)
-    
-    move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, target_dir, mode='copy')
+    TASK_ENVS = [ENV_FLINC_PSR_FIB, ENV_FLINC_HE_STEA]
+    for i, task_env in enumerate(TASK_ENVS):
+        source_dir = os.path.join(task_env.TRANSFER_DIR, '23910-157')
+        target_dir = os.path.join(task_env.DATA_DIR, 'tissues')
+        
+        stain_type = task_env.STAIN_TYPE
+        xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(task_env.META_FOLDER)
+        slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_slide_1, stain_type)
+        
+        move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, target_dir, mode='copy')
     
 
 
 if __name__ == '__main__':
-    # test_s_filepath = 'D:/FLINC_dataset/transfer/23910-157_part/23910-157_Sl001.ndpi'
-    # case_id = parse_23910_slide_caseid_from_filepath(test_s_filepath)
-    # print(case_id)
+    test_s_filepath = 'D:/FLINC_dataset/slides/yang_he_stea/tissues/23910-157_Sl049-C32-HE.ndpi'
+    case_id = parse_23910_slide_caseid_from_filepath(test_s_filepath)
+    slide_id = parse_slideid_from_filepath(test_s_filepath)
+    print(case_id, slide_id)
     
-    _move_slides_multi_stains()
+    # _move_slides_multi_stains()
 
 
 

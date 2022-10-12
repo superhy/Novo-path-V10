@@ -13,6 +13,7 @@ from openslide import open_slide
 import matplotlib.pyplot as plt
 import numpy as np
 from support.env import ENV
+from support.files import parse_slideid_from_filepath
 from wsi import image_tools, slide_tools, filter_tools
 from wsi.filter_tools import tissue_percent
 
@@ -215,7 +216,7 @@ class Tile:
                                                                      scale_factor,
                                                                      print_opening=False)
         np_img = image_tools.pil_to_np_rgb(img)
-        np_img = filter_tools.apply_image_filters(np_img, print_info=False)
+        np_img = filter_tools.apply_image_filters_he(np_img, print_info=False)
         img = image_tools.np_to_pil(np_img)
         return img, slide
     
@@ -224,7 +225,7 @@ class Tile:
                                                                              scale_factor,
                                                                              print_opening=False)
         np_img = image_tools.pil_to_np_rgb(img)
-        np_img = filter_tools.apply_image_filters(np_img, print_info=False)
+        np_img = filter_tools.apply_image_filters_he(np_img, print_info=False)
         return np_img, slide
     
     
@@ -317,21 +318,6 @@ def sort_tiles_by_tissue_percentage(tiles):
     """
     sorted_tiles_list = sorted(tiles, key=lambda t: t.tissue_percentage, reverse=True)
     return sorted_tiles_list
-
-def parse_slideid_from_filepath(original_slide_filepath):
-    """
-    """
-    if original_slide_filepath.find('TCGA') != -1:
-        slide_id = original_slide_filepath[original_slide_filepath.find('TCGA'):]
-    elif original_slide_filepath.find('GTEX') != -1:
-        slide_id = original_slide_filepath[original_slide_filepath.find('GTEX'):]
-    elif original_slide_filepath.find('23910') != -1:
-        slide_id = original_slide_filepath[original_slide_filepath.find('23910'):]
-    else:
-        slide_id = original_slide_filepath[-10:]
-    slide_id = slide_id.split('.')[0]
-    return slide_id
-    
 
 def get_slide_tiles(np_scaled_img, shape_set_img, original_slide_filepath,
                     _env_tile_w_size, _env_tile_h_size,
