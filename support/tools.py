@@ -2,7 +2,7 @@
 @author: Yang Hu
 '''
 import datetime
-
+import numpy as np
 
 class Time:
     """
@@ -21,6 +21,10 @@ class Time:
         self.end = datetime.datetime.now()
         time_elapsed = self.end - self.start
         return time_elapsed
+    
+def normalization(data):
+    _range = np.max(data) - np.min(data)
+    return (data - np.min(data) + 1e-8) / (_range + 1e-8)
     
 def np_info(np_arr, name=None, elapsed=None, full_np_info=False):
     """

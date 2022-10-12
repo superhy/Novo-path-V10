@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import pandas as pd
 from models.datasets import plt_img_mask, Naive_Tiles_Dataset
-from models.functions import get_data_loader, train_epoch, dice_bce_loss, \
+from models.functions import get_data_loader, train_seg_epoch, dice_bce_loss, \
     optimizer_adam_basic, optimizer_rmsprop_basic, bce_loss, dice_loss, \
     get_transform, bce_logits_loss, mse_loss
 from models.seg_networks import store_net, UNet, reload_net

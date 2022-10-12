@@ -10,7 +10,7 @@ import torch
 
 from models.datasets import load_MoNuSeg_images_masks, MoNuSeg_Dataset, \
     plt_img_mask, Naive_Tiles_Dataset
-from models.functions import get_data_loader, train_epoch, dice_bce_loss, \
+from models.functions import get_data_loader, train_seg_epoch, dice_bce_loss, \
     optimizer_adam_basic, optimizer_rmsprop_basic, bce_loss, dice_loss, \
     get_transform, bce_logits_loss, mse_loss
 from models.seg_networks import store_net, UNet, reload_net
@@ -29,7 +29,7 @@ def train_segmentation(ENV_task, net, seg_trainset, optimizer, loss):
     SEG_NUM_EPOCH = ENV_task.SEG_NUM_EPOCH
     for epoch in range(SEG_NUM_EPOCH):
         print('In training... ', end='')
-        train_epoch(train_loader=seg_trainloader,
+        train_seg_epoch(train_loader=seg_trainloader,
                     net=net,
                     loss=loss,
                     optimizer=optimizer,

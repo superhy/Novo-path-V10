@@ -14,10 +14,10 @@ from torch.nn.functional import softmax
 from models import functions_attpool, functions
 from models.datasets import load_richtileslist_fromfile, SlideMatrix_Dataset, \
     AttK_MIL_Dataset
-from models.functions import train_agt_epoch, train_epoch, regular_evaluation, \
-    store_evaluation_roc
+from models.functions import train_agt_epoch, regular_evaluation, \
+    store_evaluation_roc, train_enc_epoch
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
-    reload_net, store_net, ViT_Tiny, ViT_D6_H8
+    reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12
 import numpy as np
 from support.env import devices
 from support.metadata import query_task_label_dict_fromcsv
@@ -315,7 +315,7 @@ class LCSB_MIL():
             self.criterion_t = functions.cel_loss()
         self.optimizer_s = functions.optimizer_adam_basic(self.aggregator, lr=ENV_task.LR_SLIDE \
                                                           if self.pt_agt_name == None else ENV_task.LR_SLIDE_PT)
-        self.optimizer_t = functions.optimizer_adam_pretrained(self.encoder, lr=ENV_task.LR_TILE)
+        self.optimizer_t = functions.optimizer_adam_basic(self.encoder, lr=ENV_task.LR_TILE)
         
         # prepare the initial Dataset
         if len(self.train_slidemat_file_sets) > 0:
@@ -391,7 +391,7 @@ class LCSB_MIL():
     
     def tile_pos_epoch(self, inround_t_epoch, train_attK_tile_loader):
         
-        train_log_t = train_epoch(self.encoder, train_attK_tile_loader,
+        train_log_t = train_enc_epoch(self.encoder, train_attK_tile_loader,
                                   self.criterion_t, self.optimizer_t,
                                   epoch_info=(inround_t_epoch, self.num_inround_t_epoch))
         print(train_log_t)
@@ -586,10 +586,11 @@ def load_modelpaths_dict(ENV_task, modelpaths_dict_filename):
 
 ''' ---------------- running functions can be directly called ---------------- '''
 
-''' training functions (temporarily not in use) '''
-def _run_train_lcsb_gated_attpool_vit_pc(ENV_task, vit_pt_name=None, pt_agt_name=None):
-    vit_encoder = ViT_Tiny(image_size=ENV_task.TRANSFORMS_RESIZE,
-                           patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+''' training functions with ViT backbone '''
+def _run_train_lcsb_gated_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, pt_agt_name=None):
+    ''' only used for test on PC '''
+    vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     if vit_pt_name is not None:
         vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_STORE_DIR, vit_pt_name))
         
@@ -604,8 +605,17 @@ def _run_train_lcsb_gated_attpool_vit_6_8(ENV_task, vit_pt_name=None, pt_agt_nam
         
     method = LCSB_MIL(ENV_task, vit_encoder, 'GatedAttPool', pt_agt_name)
     method.optimize()
+    
+def _run_train_lcsb_gated_attpool_vit_9_12(ENV_task, vit_pt_name=None, pt_agt_name=None):
+    vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
+                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+    if vit_pt_name is not None:
+        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_STORE_DIR, vit_pt_name))
+        
+    method = LCSB_MIL(ENV_task, vit_encoder, 'GatedAttPool', pt_agt_name)
+    method.optimize()
 
-''' training functions '''
+''' training functions with resnet backbone '''
 def _run_train_lcsb_attpool_resnet18(ENV_task, pt_agt_name=None):
     encoder = BasicResNet18(output_dim=2)
     method = LCSB_MIL(ENV_task, encoder, 'AttPool', pt_agt_name)

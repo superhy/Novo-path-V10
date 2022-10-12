@@ -12,8 +12,8 @@ from torch.nn.functional import softmax
 from models import functions
 from models.datasets import load_slides_tileslist, Simple_Tile_Dataset, \
     SlideMatrix_Dataset
-from models.functions import train_agt_epoch, regular_evaluation, \
-    store_evaluation_roc
+from models.functions import regular_evaluation, store_evaluation_roc, \
+    train_agt_epoch
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net, store_net
 import numpy as np
@@ -76,16 +76,13 @@ def recovery_slide_matrix_filesets(ENV_task, round_id=None, for_train=False):
     if round_id is not None:
         slide_matrix_dir = slide_matrix_dir.replace(str(_env_tile_size_dir), '{}_[{}]'.format(_env_tile_size_dir, round_id))
     
-    if ENV.APPLY_TUMOR_ROI == True:
-        pkl_dir = _env_process_slide_tumor_tile_pkl_train_dir if for_train == True else _env_process_slide_tumor_tile_pkl_test_dir
-    else:
-        pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
+    pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
     
     for slide_matrix_file in os.listdir(slide_matrix_dir):
         slide_id = slide_matrix_file[:slide_matrix_file.find('-(tiles')]
         # get the tiles len from pkl tiles_list
-        slide_tiles_len = len(recovery_tiles_list_from_pkl(os.path.join(pkl_dir, slide_id + '-(tiles{}_list).pkl'.format('_tumor' if ENV.APPLY_TUMOR_ROI else ''))))
-        slide_matrix_file_sets.append((slide_id, slide_tiles_len, os.path.join(slide_matrix_dir, slide_matrix_file)))
+        slide_tiles_len = len(recovery_tiles_list_from_pkl(os.path.join(pkl_dir, slide_id + '-(tiles_list).pkl')) )
+        slide_matrix_file_sets.append((slide_id, slide_tiles_len, os.path.join(slide_matrix_dir, slide_matrix_file)) )
         
     return slide_matrix_file_sets
 
@@ -246,7 +243,7 @@ class AttPool_MIL():
     MIL with Attention Pooling based method
     '''
     def __init__(self, ENV_task, encoder=None, aggregator_name='GatedAttPool', 
-                 model_filename=None, test_epoch=1, test_mode=False):
+                 model_filename=None, test_seg_epoch=1, test_mode=False):
         
         if model_filename is None and test_mode is True:
             warnings.warn('no trained model for testing, please check!')
@@ -277,7 +274,7 @@ class AttPool_MIL():
         self.last_eval_epochs = self.ENV_task.NUM_LAST_EVAL_EPOCHS
         self.overall_stop_loss = self.ENV_task.OVERALL_STOP_LOSS if model_filename is None or \
             model_filename.find('PTAGT') == -1 else self.ENV_task.OVERALL_STOP_LOSS_PT
-        self.test_epoch = test_epoch
+        self.test_seg_epoch = test_seg_epoch
         self.record_points = self.ENV_task.ATTPOOL_RECORD_EPOCHS
         
         if encoder is None:
@@ -396,7 +393,7 @@ class AttPool_MIL():
             overall_epoch_stop = self.slide_epoch(epoch, train_slidemat_loader, overall_epoch_stop)
             
             # evaluation
-            if not self.test_epoch == None and epoch + 1 >= self.test_epoch:
+            if not self.test_seg_epoch == None and epoch + 1 >= self.test_seg_epoch:
                 print('>>> In testing...', end='')
                 test_log, test_loss, y_pred_scores, y_labels = self.predict(test_slidemat_loader)
                 test_acc, _, _, test_auc = functions.regular_evaluation(y_pred_scores, y_labels)

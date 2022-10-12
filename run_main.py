@@ -28,7 +28,7 @@ class Logger(object):
 
 if __name__ == '__main__':
     
-    os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+#     os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     
     log_name = 'running_log-{}-{}.log'.format(env_monuseg.ENV_MONUSEG.TASK_NAME, str(tools.Time().start)[:13].replace(' ', '-'))
     sys.stdout = Logger(log_name)

@@ -97,64 +97,6 @@ class BasicResNet18(nn.Module):
         output = self.fc(x)  
         return output
     
-''' ------------------ gradient reversed networks (encoder) ------------------ '''
-   
-class ReverseGrad_Layer(Function):
-
-    @staticmethod
-    def forward(ctx, x, alpha):
-        ctx.alpha = alpha
-        return x.view_as(x)
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        output = grad_output.neg() * ctx.alpha
-        return output, None
-
-    
-class ReverseResNet18(nn.Module):
-    
-    def __init__(self, output_dim, imagenet_pretrained=True):
-        super(ReverseResNet18, self).__init__()
-        """
-        Args: 
-            output_dim: number of classes
-            imagenet_pretrained: use the weight with pre-trained on ImageNet
-        """
-        
-        self.name = 'ReResNet18'
-        
-        self.backbone = models.resnet18(pretrained=imagenet_pretrained)
-        self.fc_id = nn.Identity()
-        self.backbone.fc = self.fc_id
-        
-        self.fc = nn.Linear(in_features=512, out_features=output_dim, bias=True)
-        
-    def forward_ahd(self, X_pos):
-        x_pos = self.backbone(X_pos)
-
-        output_pos = self.fc(x_pos)
-        return output_pos
-    
-    def forward_rev(self, X_neg, alpha):
-        x_neg = self.backbone(X_neg)
-        x_reversed = ReverseGrad_Layer.apply(x_neg, alpha)
-        
-        output_neg = self.fc(x_reversed)
-        return output_neg
-    
-    def forward(self, X, ahead=True, alpha=1e-4):
-        '''
-        ahead (ahd) means with normal gradient BP
-        otherwise with reversed gradient BP
-        '''
-        if ahead == True:
-            output = self.forward_ahd(X)
-        else:
-            output = self.forward_rev(X, alpha)
-          
-        return output
-    
 ''' ------------------- Transformer (encoder) --------------------- '''
 class ViT_base(nn.Module):
     
@@ -202,7 +144,7 @@ class ViT_base(nn.Module):
             hidden_layer = 'to_latent',        # hidden layer name or index, from which to extract the embedding
             projection_hidden_size = 256,      # projector network hidden dimension
             projection_layers = 6,             # number of layers in projection network
-            num_classes_K = 50,             # output logits dimensions (referenced as K in paper)
+            num_classes_K = 50,                # output logits dimensions (referenced as K in paper)
             student_temp = 0.9,                # student temperature
             teacher_temp = 0.04,               # teacher temperature, needs to be annealed from 0.04 to 0.07 over 30 epochs
             local_upper_crop_scale = 0.4,      # upper bound for local crop - 0.4 was recommended in the paper 
@@ -274,94 +216,13 @@ class ViT_D9_H12(ViT_base):
         super(ViT_D9_H12, self).__init__(image_size, patch_size, output_dim, 
                                          depth, heads)
         self.name = 'ViT-9-12'
-        
-''' ------------------- Reversed Transformer (encoder) --------------------- '''
-class ReverseViT_D6_H8(ViT_base):
+
     
+''' --- some test encoders with Transformer --- '''
+class ViT_D3_H4_T(ViT_base):
     def __init__(self, image_size, patch_size, output_dim):
-        ''' 
-        D6(6 in name): depth
-        H8(8 in name): heads
-        Dino: Dino self-supervised learner
-        '''
-        depth, heads = 6, 8
-        super(ReverseViT_D6_H8, self).__init__(image_size, patch_size, output_dim,
-                                               depth, heads)
-        self.name = 'ReViT-6-8'
-    
-    def forward_ahd(self, X_pos):
-        e_pos = self.backbone(X_pos)
-        # in case with pytorch wrapper and produce 2 outcomes
-        x_pos = e_pos[0] if self.with_wrapper else e_pos
-        output_pos = self.fc(x_pos)  
-        return output_pos
-    
-    def forward_rev(self, X_neg, alpha):
-        # in case with pytorch wrapper
-        if self.with_wrapper:
-            self.discard_wrapper()
-        x = self.backbone(X_neg)
-        x_reversed = ReverseGrad_Layer.apply(x, alpha)
-        output = self.fc(x_reversed)
-        return output
-    
-    def forward(self, X, ahead=True, alpha=0.1):
-        '''
-        ahead (ahd) means with normal gradient BP
-        otherwise with reversed gradient BP
-        '''
-        if ahead == True:
-            output = self.forward_ahd(X)
-        else:
-            output = self.forward_rev(X, alpha)
-          
-        return output
-        
-class ReverseViT_D9_H12(ViT_base):
-    
-    def __init__(self, image_size, patch_size, output_dim):
-        ''' 
-        D6(6 in name): depth
-        H8(8 in name): heads
-        Dino: Dino self-supervised learner
-        '''
-        depth, heads = 9, 12
-        super(ReverseViT_D9_H12, self).__init__(image_size, patch_size, output_dim,
-                                                depth, heads)
-        self.name = 'ReViT-9-12'
-    
-    def forward_ahd(self, X_pos):
-        e_pos = self.backbone(X_pos)
-        # in case with pytorch wrapper and produce 2 outcomes
-        x_pos = e_pos[0] if self.with_wrapper else e_pos
-        output_pos = self.fc(x_pos)  
-        return output_pos
-    
-    def forward_rev(self, X_neg, alpha):
-        # in case with pytorch wrapper
-        if self.with_wrapper:
-            self.discard_wrapper()
-        x = self.backbone(X_neg)
-        x_reversed = ReverseGrad_Layer.apply(x, alpha)
-        output = self.fc(x_reversed)
-        return output
-    
-    def forward(self, X, ahead=True, alpha=0.1):
-        '''
-        ahead (ahd) means with normal gradient BP
-        otherwise with reversed gradient BP
-        '''
-        if ahead == True:
-            output = self.forward_ahd(X)
-        else:
-            output = self.forward_rev(X, alpha)
-          
-        return output
-    
-''' xxxxxxxxxxxxxxxx some test encoders with Transformer xxxxxxxxxxxxxxx'''
-class ViT_Tiny(ViT_base):
-    def __init__(self, image_size, patch_size, output_dim):
-        super(ViT_Tiny, self).__init__(image_size, patch_size, output_dim, depth=3, heads=4)       
+        ''' tiny (T) ViT encoder for test on PC '''
+        super(ViT_D3_H4_T, self).__init__(image_size, patch_size, output_dim, depth=3, heads=4)       
         self.image_size = image_size
         self.dim = int(64) # 256 for size: 256, 512 for size: 512
         self.mlp_dim = int(self.dim / 2) # 128 for dim: 256, 256 for dim: 512
@@ -396,7 +257,7 @@ class ViT_Tiny(ViT_base):
             hidden_layer = 'to_latent',        # hidden layer name or index, from which to extract the embedding
             projection_hidden_size = 256,      # projector network hidden dimension
             projection_layers = 2,             # number of layers in projection network
-            num_classes_K = 20,             # output logits dimensions (referenced as K in paper)
+            num_classes_K = 20,                # output logits dimensions (referenced as K in paper)
             student_temp = 0.9,                # student temperature
             teacher_temp = 0.04,               # teacher temperature, needs to be annealed from 0.04 to 0.07 over 30 epochs
             local_upper_crop_scale = 0.4,      # upper bound for local crop - 0.4 was recommended in the paper 
@@ -424,100 +285,7 @@ class ViT_Tiny(ViT_base):
         learner.to(device)
         return learner
     
-class ReverseViT_Tiny(ViT_base):
-    def __init__(self, image_size, patch_size, output_dim):
-        super(ReverseViT_Tiny, self).__init__(image_size, patch_size, output_dim, depth=3, heads=4)       
-        self.image_size = image_size
-        self.dim = int(64) # 256 for size: 256, 512 for size: 512
-        self.mlp_dim = int(self.dim / 2) # 128 for dim: 256, 256 for dim: 512
-        self.backbone = ViT(
-            image_size = self.image_size,
-            patch_size = patch_size,
-            num_classes = output_dim,
-            dim = self.dim,
-            depth = 3,
-            heads = 4,
-            mlp_dim = self.mlp_dim,
-            dropout = 0.1,
-            emb_dropout = 0.1
-            )
-        ''' 
-        cut the output head of the original network and extract the backbone for accessing images' encoding
-        re-put another fc layer for classification output
-        '''
-        self.backbone.mlp_head = nn.Identity()
-        self.fc = nn.Linear(in_features=self.dim, out_features=output_dim, bias=True)
-        
-        self.name = 'ReViT-Tiny'
-        
-    def get_dino_learner(self):
-        ''' 
-        setup the Dino self-supervision learner for ViT
-        https://openaccess.thecvf.com/content/ICCV2021/html/Caron_Emerging_Properties_in_Self-Supervised_Vision_Transformers_ICCV_2021_paper.html
-        '''
-        learner = Dino(
-            self.backbone,
-            image_size = self.image_size,
-            hidden_layer = 'to_latent',        # hidden layer name or index, from which to extract the embedding
-            projection_hidden_size = 256,      # projector network hidden dimension
-            projection_layers = 2,             # number of layers in projection network
-            num_classes_K = 20,             # output logits dimensions (referenced as K in paper)
-            student_temp = 0.9,                # student temperature
-            teacher_temp = 0.04,               # teacher temperature, needs to be annealed from 0.04 to 0.07 over 30 epochs
-            local_upper_crop_scale = 0.4,      # upper bound for local crop - 0.4 was recommended in the paper 
-            global_lower_crop_scale = 0.5,     # lower bound for global crop - 0.5 was recommended in the paper
-            moving_average_decay = 0.9,        # moving average of encoder - paper showed anywhere from 0.9 to 0.999 was ok
-            center_moving_average_decay = 0.9, # moving average of teacher centers - paper showed anywhere from 0.9 to 0.999 was ok
-            )
-        
-        # in Dino's code, has already copy the learner to same device with backbone
-        return learner
-    
-    def get_mae_learner(self):
-        ''' 
-        setup the MAE self-supervision learner for ViT
-        https://arxiv.org/abs/2111.06377
-        '''
-        learner = MAE(
-            encoder = self.backbone,
-            masking_ratio = 0.75,   # the paper recommended 75% masked patches
-            decoder_dim = 128,      # paper showed good results with just 512
-            decoder_depth = 6       # anywhere from 1 to 8
-            )
-        
-        device = get_module_device(self.backbone)
-        learner.to(device)
-        return learner
-    
-    def forward_ahd(self, X_pos):
-        e_pos = self.backbone(X_pos)
-        # in case with pytorch wrapper and produce 2 outcomes
-        x_pos = e_pos[0] if self.with_wrapper else e_pos
-        output_pos = self.fc(x_pos)  
-        return output_pos
-    
-    def forward_rev(self, X_neg, alpha):
-        # in case with pytorch wrapper
-        if self.with_wrapper:
-            self.discard_wrapper()
-        x = self.backbone(X_neg)
-        x_reversed = ReverseGrad_Layer.apply(x, alpha)
-        output = self.fc(x_reversed)
-        return output
-    
-    def forward(self, X, ahead=True, alpha=0.1):
-        '''
-        ahead (ahd) means with normal gradient BP
-        otherwise with reversed gradient BP
-        '''
-        if ahead == True:
-            output = self.forward_ahd(X)
-        else:
-            output = self.forward_rev(X, alpha)
-          
-        return output
-    
-    
+
 ''' 
 ---------------- attention based feature aggregation networks -----------------
 '''
@@ -644,43 +412,6 @@ class GatedAttentionPool(nn.Module):
 
         return output, att_r, att_H
     
-
-''' 
----------------- aggregator pre-training similarity calculation networks -----------------
-'''
-class AgtMatMultiplication(nn.Module):
-    '''
-    calculate the dot product similarity for two tiles-bag (slide) matrices
-    which are encoded by aggregator
-    
-    PS: if the aggregator is already on CUDA, don't need to put it on CUDA again.
-    '''
-    def __init__(self, aggregator):
-        '''
-        Args:
-            aggregator: AttentionPool or GatedAttentionPool object
-        '''
-        super(AgtMatMultiplication, self).__init__()
-        
-        self.name = 'AgtSim'
-        self.aggregator = aggregator
-        
-    def forward(self, X_e1, bag_lens1, X_e2, bag_lens2):
-        """
-        two batches of same input format with aggregator
-        
-        if two mats from same subtype, the logit should be 0 (the dot-prod similarity should be bigger)
-        else, the mats from diff subtype, the logit should be 1 (1 - sim should be bigger)
-        """
-        _, _, att_H1 = self.aggregator(X_e1, bag_lens1)
-        _, _, att_H2 = self.aggregator(X_e2, bag_lens2)
-        att_H1 = nn.functional.normalize(att_H1, dim=-1).squeeze(1)
-        att_H2 = nn.functional.normalize(att_H2, dim=-1).squeeze(1)
-        
-        e_sim = torch.einsum('nc,nc->n', [att_H1, att_H2]).unsqueeze(-1)
-        logits = torch.cat([e_sim, 1 - e_sim], dim=1)
-        
-        return logits
 
 if __name__ == '__main__':
     pass
