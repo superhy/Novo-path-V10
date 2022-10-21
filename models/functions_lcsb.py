@@ -16,8 +16,9 @@ from models.datasets import load_richtileslist_fromfile, SlideMatrix_Dataset, \
     AttK_MIL_Dataset
 from models.functions import train_agt_epoch, regular_evaluation, \
     store_evaluation_roc, train_enc_epoch
-from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
+from models.networks import GatedAttentionPool, AttentionPool, \
     reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12
+from models.networks_timm import BasicResNet18
 import numpy as np
 from support.env import devices
 from support.metadata import query_task_label_dict_fromcsv
@@ -190,13 +191,12 @@ class LCSB_MIL():
         _env_loss_package = self.ENV_task.LOSS_PACKAGE
         self.history_record_rounds = self.ENV_task.HIS_RECORD_ROUNDS
         
-        self.apply_tumor_roi = self.ENV_task.APPLY_TUMOR_ROI
-        self.model_store_dir = self.ENV_task.MODEL_STORE_DIR
+        self.model_store_dir = self.ENV_task.MODEL_FOLDER
         pt_prefix = 'pt_' if pt_agt_name is not None else ''
         if test_mode is True:
             pt_prefix = 'pt_' if model_filename_tuple[0].find('-pt_') != -1 else ''
-        self.alg_name = '{}{}LCSB_{}{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
-                                                self.ENV_task.SLIDE_TYPE, self.ENV_task.FOLD_SUFFIX, _env_task_name)
+        self.alg_name = '{}{}LCSB_{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
+                                                self.ENV_task.FOLD_SUFFIX, _env_task_name)
         
         continue_train = model_filename_tuple[0] != None and model_filename_tuple[1] != None
         if continue_train is False and test_mode is True:
@@ -278,7 +278,7 @@ class LCSB_MIL():
         
         if self.pt_agt_name is not None and continue_train is False:
             '''use pre-trained weights for aggregator, not suitable for continue training '''
-            self.aggregator, _ = reload_net(self.aggregator, os.path.join(ENV_task.MODEL_STORE_DIR, self.pt_agt_name))
+            self.aggregator, _ = reload_net(self.aggregator, os.path.join(ENV_task.MODEL_FOLDER, self.pt_agt_name))
             
         self.check_point_s, self.check_point_t = None, None
         if continue_train:
@@ -308,8 +308,8 @@ class LCSB_MIL():
         self.label_dict = query_task_label_dict_fromcsv(self.ENV_task)
         
         if _env_loss_package[0] == 'wce':
-            self.criterion_s = functions.weighted_cel_loss(_env_loss_package[1][0])
-            self.criterion_t = functions.weighted_cel_loss(_env_loss_package[1][0])
+            self.criterion_s = functions.weighted_cel_loss(_env_loss_package[1])
+            self.criterion_t = functions.weighted_cel_loss(_env_loss_package[1])
         else:
             self.criterion_s = functions.cel_loss()
             self.criterion_t = functions.cel_loss()
@@ -345,7 +345,7 @@ class LCSB_MIL():
                                                     'resnet': []}}
         
         self.modelpaths_log_path = os.path.join(_env_records_dir,
-                                                'recorded_modelpaths_{}{}.json'.format(self.alg_name, '_TROI' if self.apply_tumor_roi == True else ''))
+                                                'recorded_modelpaths_{}.json'.format(self.alg_name))
                 
     def reset_optim(self):
         ''' check and reset the optimizer_s and optimizer_t '''
@@ -516,14 +516,14 @@ class LCSB_MIL():
         alg_milestone_name = self.alg_name + '_[{}]'.format(now_round)
         
         milestone_obj_dict_s = {'epoch': inround_s_epoch, 'round': now_round}
-        milestone_filepath_s = store_net(self.apply_tumor_roi, self.model_store_dir, self.aggregator,
+        milestone_filepath_s = store_net(self.model_store_dir, self.aggregator,
                                          alg_milestone_name, self.optimizer_s, milestone_obj_dict_s)
         self.stored_modelpath_dict['milestone']['attpool'].append(milestone_filepath_s)
         
         milestone_filepath_t = 'N/A'
         if now_round < self.num_round - 1 and overall_round_stop == False:
             milestone_obj_dict_t = {'epoch': inround_t_epoch, 'round': now_round}
-            milestone_filepath_t = store_net(self.apply_tumor_roi, self.model_store_dir, self.encoder,
+            milestone_filepath_t = store_net(self.model_store_dir, self.encoder,
                                              alg_milestone_name, self.optimizer_t, milestone_obj_dict_t)
             self.stored_modelpath_dict['milestone']['resnet'].append(milestone_filepath_t)
         
@@ -592,7 +592,7 @@ def _run_train_lcsb_gated_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, pt_agt_n
     vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     if vit_pt_name is not None:
-        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_STORE_DIR, vit_pt_name))
+        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         
     method = LCSB_MIL(ENV_task, vit_encoder, 'GatedAttPool', pt_agt_name)
     method.optimize()
@@ -601,7 +601,7 @@ def _run_train_lcsb_gated_attpool_vit_6_8(ENV_task, vit_pt_name=None, pt_agt_nam
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     if vit_pt_name is not None:
-        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_STORE_DIR, vit_pt_name))
+        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         
     method = LCSB_MIL(ENV_task, vit_encoder, 'GatedAttPool', pt_agt_name)
     method.optimize()
@@ -610,7 +610,7 @@ def _run_train_lcsb_gated_attpool_vit_9_12(ENV_task, vit_pt_name=None, pt_agt_na
     vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
                              patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     if vit_pt_name is not None:
-        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_STORE_DIR, vit_pt_name))
+        vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         
     method = LCSB_MIL(ENV_task, vit_encoder, 'GatedAttPool', pt_agt_name)
     method.optimize()
@@ -629,7 +629,7 @@ def _run_train_lcsb_gated_attpool_resnet18(ENV_task, pt_agt_name=None):
 ''' testing functions ''' 
 def _run_test_lcsb_gated_attpool_resnet18(ENV_task, model_s_filename, model_t_filename):
     encoder = BasicResNet18(output_dim=2)
-    encoder, _ = reload_net(encoder, os.path.join(ENV_task.MODEL_STORE_DIR, model_t_filename))
+    encoder, _ = reload_net(encoder, os.path.join(ENV_task.MODEL_FOLDER, model_t_filename))
     method = LCSB_MIL(ENV_task=ENV_task, encoder=encoder,
                       aggregator_name='GatedAttPool', 
                       model_filename_tuple=(model_s_filename, model_t_filename), 

@@ -1,7 +1,6 @@
 '''
 @author: Yang Hu
 '''
-from support import env_flinc_psr_fib, env_flinc_he_stea
 '''
 task_id:
     0: parse and produce the annotation csv
@@ -16,12 +15,14 @@ from copy import copy
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
+
+from support import env_flinc_psr_fib, env_flinc_he_stea
+from support.files import _move_slides_multi_stains
 from wsi import process
 
-from openslide import open_slide
 
 
-task_ids = [2]
+task_ids = [1, 2]
 
 ENV_task = env_flinc_he_stea.ENV_FLINC_HE_STEA_C2
 # ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB
@@ -29,6 +30,8 @@ ENV_task = env_flinc_he_stea.ENV_FLINC_HE_STEA_C2
 
 
 if __name__ == '__main__':
+    if 1 in task_ids:
+        _move_slides_multi_stains()
     if 2 in task_ids:
         # fold_suffix_list = ['-0']
         fold_suffix_list = ['-0', '-1', '-2', '-3', '-4']

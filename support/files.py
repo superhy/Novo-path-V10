@@ -6,8 +6,8 @@ import shutil
 
 from support.metadata import extract_slideid_subid_for_stain
 from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA
-from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB
+from support.env_flinc_he_stea import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
 
 
 def move_file(src_path, dst_path, mode='move'):
@@ -93,6 +93,7 @@ def parse_slide_caseid_from_filepath(slide_filepath):
 
 def parse_slideid_from_filepath(original_slide_filepath):
     """
+    get the slide_id from slides' filepath
     """
     if original_slide_filepath.find('TCGA') != -1:
         slide_id = original_slide_filepath[original_slide_filepath.find('TCGA'):]
@@ -105,6 +106,20 @@ def parse_slideid_from_filepath(original_slide_filepath):
     slide_id = slide_id.split('.')[0]
     
     return slide_id
+
+def parse_caseid_from_slideid(slide_id):
+    '''
+    get the case_id from slide_id
+    '''
+    if slide_id.startswith('TCGA'):
+        case_id = slide_id[:slide_id.find('_') ]
+    elif slide_id.startswith('23910'):
+        case_id = slide_id[slide_id.find('_Sl') + 1: slide_id.find('-C')]
+    else:
+        case_id = slide_id
+        
+    return case_id
+    
 
 def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
                                 source_dir, target_dir, label_dict= None, mode='move'):
@@ -132,14 +147,17 @@ def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,
         
 def _move_slides_multi_stains():
     '''
+    running the slides move(copy) from data transfer folder to full-accessed data-read-write folder
     '''
-    TASK_ENVS = [ENV_FLINC_PSR_FIB, ENV_FLINC_HE_STEA]
+    TASK_ENVS = [ENV_FLINC_PSR_FIB_C3, ENV_FLINC_HE_STEA_C2]
+    s_dir_names = ['23910-157', '23910-157']
+    xmeta_names = ['FLINC_23910-157_withSubjectID.xlsx', 'FLINC_23910-157_withSubjectID.xlsx']
     for i, task_env in enumerate(TASK_ENVS):
-        source_dir = os.path.join(task_env.TRANSFER_DIR, '23910-157')
+        source_dir = os.path.join(task_env.TRANSFER_DIR, s_dir_names[i])
         target_dir = os.path.join(task_env.DATA_DIR, 'tissues')
         
         stain_type = task_env.STAIN_TYPE
-        xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(task_env.META_FOLDER)
+        xlsx_path_slide_1 = '{}/{}'.format(task_env.META_FOLDER, xmeta_names[i])
         slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_slide_1, stain_type)
         
         move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type, source_dir, target_dir, mode='copy')

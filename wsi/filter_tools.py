@@ -493,9 +493,66 @@ def tissue_percent(np_img):
     return 100 - mask_percent(np_img)
 
 
+def apply_image_filters_cd45(np_img, tumor_region_jsonpath=None, tumor_or_background=True, print_info=True):
+    """
+    Apply filters to image as NumPy array and optionally save and/or display filtered images. For IHC-CD45 staining
+    
+    Args:
+      np_img: Image as NumPy array.
+      tumor_or_background: True: the filter only left tumor area; False: the filter only left background area
+      
+      @attention: removed
+      <slide_num=None, info=None, save=False, display=False>
+      
+          slide_num: The slide number (used for saving/displaying).
+          info: Dictionary of slide information (used for HTML display).
+          save: If True, save image.
+          display: If True, display image.
+    
+    Returns:
+      Resulting filtered image as a NumPy array.
+    """
+    np_rgb = np_img
+    
+    if print_info == True:
+        print('Filter noise of various colors and objects that are too small')
+        
+    mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
+    mask_not_gray = filter_grays(np_rgb, tolerance=10.5)
+    
+    mask_no_red_pen = filter_red_pen(np_rgb)
+    
+    mask_no_green_pen = filter_green_pen(np_rgb)
+    
+    mask_no_blue_pen = filter_blue_pen(np_rgb)
+    
+    mask_gray_green_pens = mask_not_green & mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+
+    if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():
+        # check the tumor area annotation file
+        region_border_list = parse_tumor_region_annotations(tumor_region_jsonpath)
+        scaled_slide_dimensions = np_rgb.shape[:-1]
+        # filter left only tumor or background
+        if tumor_or_background == True:
+            tumor_back_mask, _ = generate_tumor_mask(scaled_slide_dimensions, region_border_list)
+        else:
+            _, tumor_back_mask = generate_tumor_mask(scaled_slide_dimensions, region_border_list)
+                    
+        mask_all = mask_gray_green_pens & tumor_back_mask
+    else:
+        mask_all = mask_gray_green_pens
+    
+    mask_remove_small = filter_remove_small_objects(mask_all, min_size=500, output_type="bool", print_over_info=print_info)
+    show_np_info = True if print_info == True else False
+    rgb_remove_small = image_tools.mask_rgb(np_rgb, mask_remove_small, show_np_info=show_np_info)
+    
+    np_filtered_img = rgb_remove_small
+    
+    return np_filtered_img
+
 def apply_image_filters_psr(np_img, tumor_region_jsonpath=None, tumor_or_background=True, print_info=True):
     """
-    Apply filters to image as NumPy array and optionally save and/or display filtered images. For PSR staining
+    Apply filters to image as NumPy array and optionally save and/or display filtered images. For IHC-PSR staining
     
     Args:
       np_img: Image as NumPy array.

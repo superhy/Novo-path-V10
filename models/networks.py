@@ -6,7 +6,6 @@ the list:
     https://github.com/pytorch/vision
     https://github.com/lucidrains/vit-pytorch
 '''
-
 '''
 ------------------ some basic functions for networks -------------------
 '''
@@ -17,6 +16,7 @@ from torch import nn
 import torch
 from torch.autograd.function import Function
 from torchvision import models
+from torchvision.models.resnet import ResNet18_Weights
 from vit_pytorch.dino import Dino, get_module_device
 from vit_pytorch.extractor import Extractor
 from vit_pytorch.mae import MAE
@@ -27,7 +27,7 @@ from support.tools import Time
 import torch.nn.functional as F
 
 
-def store_net(apply_tumor_roi, store_dir, trained_net, 
+def store_net(store_dir, trained_net, 
               algorithm_name, optimizer, init_obj_dict={}):
     """
     store the trained models
@@ -43,8 +43,7 @@ def store_net(apply_tumor_roi, store_dir, trained_net,
     if not os.path.exists(store_dir):
         os.makedirs(store_dir)
     
-    tumor_roi_flag = '-TROI' if apply_tumor_roi == True else ''
-    store_filename = 'checkpoint_' + trained_net.name + '-' + algorithm_name + '{}-'.format(tumor_roi_flag) + Time().date + '.pth'
+    store_filename = 'checkpoint_' + trained_net.name + '-' + algorithm_name + Time().date + '.pth'
     init_obj_dict.update({'state_dict': trained_net.state_dict(),
                           'optimizer': optimizer.state_dict()})
     
@@ -69,33 +68,6 @@ def reload_net(model_net, model_filepath):
     print('load model from: {}'.format(model_filepath))
     
     return model_net, checkpoint
-
-'''
-------------------- CNN (encoder) --------------------
-'''
-
-class BasicResNet18(nn.Module):
-    
-    def __init__(self, output_dim, imagenet_pretrained=True):
-        super(BasicResNet18, self).__init__()
-        """
-        Args: 
-            output_dim: number of classes
-            imagenet_pretrained: use the weight with pre-trained on ImageNet
-        """
-        
-        self.name = 'ResNet18'
-        
-        self.backbone = models.resnet18(pretrained=imagenet_pretrained)
-        self.fc_id = nn.Identity()
-        self.backbone.fc = self.fc_id
-        
-        self.fc = nn.Linear(in_features=512, out_features=output_dim, bias=True)
-    
-    def forward(self, X):
-        x = self.backbone(X)
-        output = self.fc(x)  
-        return output
     
 ''' ------------------- Transformer (encoder) --------------------- '''
 class ViT_base(nn.Module):

@@ -14,8 +14,9 @@ from models.datasets import load_slides_tileslist, Simple_Tile_Dataset, \
     SlideMatrix_Dataset
 from models.functions import regular_evaluation, store_evaluation_roc, \
     train_agt_epoch
-from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
-    reload_net, store_net
+from models.networks import GatedAttentionPool, AttentionPool, \
+    reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12
+from models.networks_timm import BasicResNet18
 import numpy as np
 from support.env import ENV, devices
 from support.files import clear_dir
@@ -33,8 +34,8 @@ def store_slide_tilesmatrix(ENV_task, slide_id, slide_matrix, for_train=True, pr
     """
     
     ''' prepare some parames '''
-    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TRAIN_DIR
-    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TEST_DIR
+    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_SLIDE_MATRIX_TRAIN_DIR
+    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_SLIDE_MATRIX_TEST_DIR
     
     slide_matrix_dir = _env_pretrain_slide_mat_train_dir if for_train == True else _env_pretrain_slide_mat_test_dir
     if not os.path.exists(slide_matrix_dir):
@@ -62,12 +63,10 @@ def recovery_slide_matrix_filesets(ENV_task, round_id=None, for_train=False):
     """
     
     ''' prepare some parames '''
-    _env_process_slide_tumor_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TEST_DIR
-    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TEST_DIR
-    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TRAIN_DIR
-    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TEST_DIR
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
+    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_SLIDE_MATRIX_TRAIN_DIR
+    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_SLIDE_MATRIX_TEST_DIR
     _env_tile_size_dir = ENV_task.TILESIZE_DIR
 
     slide_matrix_file_sets = []
@@ -169,8 +168,8 @@ def check_load_slide_matrix_files(ENV_task, batch_size_ontiles, tile_loader_num_
     """
     
     ''' prepare some parameters '''
-    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TRAIN_DIR
-    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_PRETRAIN_REPO_SLIDE_MATRIX_TEST_DIR
+    _env_pretrain_slide_mat_train_dir = ENV_task.TASK_SLIDE_MATRIX_TRAIN_DIR
+    _env_pretrain_slide_mat_test_dir = ENV_task.TASK_SLIDE_MATRIX_TEST_DIR
     
     slide_matrix_dir = _env_pretrain_slide_mat_train_dir if for_train else _env_pretrain_slide_mat_test_dir
     if os.path.exists(slide_matrix_dir) and len(os.listdir(slide_matrix_dir)) > 0 and force_refresh == False:
@@ -254,13 +253,12 @@ class AttPool_MIL():
         _env_task_name = self.ENV_task.TASK_NAME
         _env_loss_package = self.ENV_task.LOSS_PACKAGE
 
-        self.apply_tumor_roi = self.ENV_task.APPLY_TUMOR_ROI
-        self.model_store_dir = self.ENV_task.MODEL_STORE_DIR
+        self.model_store_dir = self.ENV_task.MODEL_FOLDER
         pt_prefix = 'pt_' if model_filename is not None and model_filename.find('PTAGT') != -1 else ''
         if test_mode is True:
             pt_prefix = 'pt_' if model_filename.find('-pt_') != -1 else ''
-        self.alg_name = '{}{}Pool_{}{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
-                                                self.ENV_task.SLIDE_TYPE, self.ENV_task.FOLD_SUFFIX, _env_task_name)
+        self.alg_name = '{}{}Pool_{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
+                                                self.ENV_task.FOLD_SUFFIX, _env_task_name)
         
         print('![Initial Stage] test mode: {}'.format(test_mode))
         print('Initializing the training/testing slide matrices...', end=', ')
@@ -330,7 +328,7 @@ class AttPool_MIL():
         self.label_dict = query_task_label_dict_fromcsv(self.ENV_task)
         
         if _env_loss_package[0] == 'wce':
-            self.criterion = functions.weighted_cel_loss(_env_loss_package[1][0])
+            self.criterion = functions.weighted_cel_loss(_env_loss_package[1])
         else:
             self.criterion = functions.cel_loss()
         self.optimizer = functions.optimizer_adam_basic(self.aggregator, lr=ENV_task.LR_SLIDE if model_filename is None or \
@@ -420,7 +418,7 @@ class AttPool_MIL():
         alg_store_name = self.alg_name + '_[{}]'.format(epoch + 1)
         init_obj_dict = {'epoch': epoch + 1,
                          'auc': checkpoint_auc}
-        store_filepath = store_net(self.apply_tumor_roi, self.model_store_dir, self.aggregator, alg_store_name, self.optimizer, init_obj_dict)
+        store_filepath = store_net(self.model_store_dir, self.aggregator, alg_store_name, self.optimizer, init_obj_dict)
         print('store the milestone point<{}>, '.format(store_filepath), end='')
         
     
@@ -466,6 +464,24 @@ def _run_train_attpool_resnet18(ENV_task, exist_model_name=None):
 def _run_train_gated_attpool_resnet18(ENV_task, exist_model_name=None):
     encoder = BasicResNet18(output_dim=2)
     method = AttPool_MIL(ENV_task, encoder, 'GatedAttPool', model_filename=exist_model_name)
+    method.optimize()
+    
+def _run_train_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, exist_model_name=None):
+    vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
+                              patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+    method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
+    method.optimize()
+    
+def _run_train_attpool_vit_6_8(ENV_task, vit_pt_name=None, exist_model_name=None):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+    method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
+    method.optimize()
+    
+def _run_train_attpool_vit_9_12(ENV_task, vit_pt_name=None, exist_model_name=None):
+    vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
+                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+    method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
 
 ''' testing functions '''

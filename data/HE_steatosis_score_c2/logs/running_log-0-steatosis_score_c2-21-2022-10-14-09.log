@@ -1,0 +1,8 @@
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/test_encode'].
+train slides: 20, test slides: 9, time: 0:21:42.504181
+On-standby: g_Pool_-0_steatosis_score_c2 algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: HE_steatosis_score_c2.csv
+![Training Stage]
+In training...

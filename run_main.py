@@ -5,11 +5,54 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import sys
 
-from models import functions_monu_seg, functions_gtex_seg
-from wsi.process import _run_gtexseg_slide_tiles_split
-from support import env_monuseg, env_gtex_seg
-from support import tools
 
+
+'''
+for different task id, with different meanning!
+
+1: algorithm Try MIL
+2: algorithm attention MIL
+5. algorithm LCSB MIL
+7. algorithm reLCSB MIL
+
+For algorithm 1 (Try-MIL): <deprecated>
+    10: topK MIL from Thomas J. Fuchs's paper
+For algorithm 2 (attention-MIL):
+    20: Attentional Pool MIL, encoder: ResNet18 <deprecated>
+    21: Gated Attentional Pool MIL, encoder: ResNet18 <*>
+    26: Gated Attentional Pool MIL, encoder: ViT-6-8 <*>
+    27: Gated Attentional Pool MIL, encoder: ViT-9-12
+    29: Gated Attentional Pool MIL, encoder: ViT-3-4-t
+For algorithm 5 (LCSB MIL)
+    50: LCSB with Attention Pool, encoder: ResNet18 <deprecated>
+    51: LCSB with Gated Attention Pool, encoder: ResNet18 <*>
+    56: LCSB with Gated Attention Pool, encoder: ViT-6-8 <*>
+    57: LCSB with Gated Attention Pool, encoder: ViT-9-12
+    59: LCSB with Gated Attention Pool, encoder: ViT-3-4-t
+For algorithm 7 (reversed gradient LCSB MIL) <deprecated>
+    70: reversed LCSB with Attention Pool, encoder: ResNet18
+    71: reversed LCSB with Gated Attention Pool, encoder: ResNet18
+    76: reversed LCSB with Gated Attention Pool, encoder: ViT-6-8
+    77: reversed LCSB with Gated Attention Pool, encoder: ViT-9-12
+    79: reversed LCSB with Gated Attention Pool, encoder: ViT-3-4-t
+For algorithm 0 (pre-training of aggregator in MIL) <deprecated>
+    01(1): pre-training the Attention Pool
+    02(2): pre-training the Gated Attention Pool
+'''
+
+'''
+Experiments running process:
+
+pre-processing part
+1. task-1 in run_pre.py: copy slides from folder <transfer> to specific <tissues> folders (the folder we have full access to read and write)
+2. task-2 in run_pre.py: split the train/test sets (in 5-folds for this moment) and generate the tiles-list pkl for them
+
+training part:
+3. running any task in above (except the deprecated)
+
+testing part:
+4. 
+'''
 
 
 class Logger(object):
@@ -27,23 +70,6 @@ class Logger(object):
 
 
 if __name__ == '__main__':
-    
-#     os.environ['CUDA_VISIBLE_DEVICES'] = "0"
-    
-    log_name = 'running_log-{}-{}.log'.format(env_monuseg.ENV_MONUSEG.TASK_NAME, str(tools.Time().start)[:13].replace(' ', '-'))
-    sys.stdout = Logger(log_name)
-    
-    ''' something training '''
-#     functions_ukaih_seg._run_seg_train_unet(env_ukaih_fat.ENV_UKAIH_FAT)
-#     functions_monu_seg._run_seg_train_unet(env_monuseg.ENV_MONUSEG)
-    
-    ''' something testing/prediction'''
-#     functions_monu_seg._run_segmentation_slides_unet(env_monuseg.ENV_MONUSEG,
-#                                                      os.path.join(env_monuseg.ENV_MONUSEG.MODEL_FOLDER_PATH, 'checkpoint_UNet-MoNuSeg-800-2022-05-15.pth'))
-    
-#     _run_gtexseg_slide_tiles_split(env_gtex_seg.ENV_GTEX_SEG)
-    
-    functions_gtex_seg._run_segmentation_slides_unet(env_gtex_seg.ENV_GTEX_SEG,
-                                                     os.path.join(env_monuseg.ENV_MONUSEG.MODEL_FOLDER_PATH, 'checkpoint_UNet-MoNuSeg-1000-2022-05-15.pth'))
+    pass
     
     

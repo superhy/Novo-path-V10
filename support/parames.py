@@ -18,7 +18,6 @@ class parames_basic():
             project_name:, 
             project_dir: use project_name construct the project dir path,
             slide_type: dx or tx, default dx,
-            apply_tumor_roi: default False,
             scale_factor: scale ratio when visualization,
             tile_h_size: patch size to separate the whole slide image,
             tile_w_size,
@@ -37,7 +36,7 @@ class parames_basic():
         elif self.OS_NAME == 'Darwin':
             self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
         else:
-            self.PROJECT_DIR = os.path.join('/well/rittscher/users/lec468/workspace', self.PROJECT_NAME)
+            self.PROJECT_DIR = os.path.join('/home/cqj236/workspace', self.PROJECT_NAME)
             
         if self.OS_NAME == 'Windows':
             self.TRANSFER_DIR = 'D:/FLINC_dataset/transfer'
@@ -87,6 +86,9 @@ class parames_task(parames_basic):
                  overall_stop_loss,
                  pos_refersh_pluse,
                  neg_refersh_pluse,
+                 top_range_rate,
+                 sup_range_rate,
+                 neg_range_rate,
                  att_k,
                  sup_k,
                  reverse_n,
@@ -185,6 +187,9 @@ class parames_task(parames_basic):
         self.OVERALL_STOP_LOSS = overall_stop_loss
         self.POS_REFRESH_PULSE = pos_refersh_pluse
         self.NEG_REFRESH_PULSE = neg_refersh_pluse
+        self.TOP_RANGE_RATE = top_range_rate # the ratio of all tiles in one slides, for [:TOP_RANGE_RATE]
+        self.SUP_RANGE_RATE = sup_range_rate # the ratio of all tiles in one slides, for [SUP_RANGE_RATE[0]: SUP_RANGE_RATE[1]]
+        self.NEG_RANGE_RATE = neg_range_rate # the ratio of all tiles in one slides, for [NEG_RANGE_RATE:]
         self.ATT_K = att_k
         self.SUP_K = sup_k
         self.REVERSE_N = reverse_n

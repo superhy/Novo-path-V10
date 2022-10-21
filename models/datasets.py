@@ -9,7 +9,7 @@ from torchvision import transforms
 import numpy as np
 from support.env import ENV
 from support.files import parse_slide_caseid_from_filepath, \
-    parse_slideid_from_filepath
+    parse_slideid_from_filepath, parse_caseid_from_slideid
 from wsi.process import recovery_tiles_list_from_pkl
 
 
@@ -36,10 +36,8 @@ def load_richtileslist_fromfile(ENV_task, for_train=True):
     """
     
     ''' prepare the parames '''
-    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TEST_DIR
-    _env_process_slide_tumor_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TEST_DIR
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
 #     label_type = ENV_task.LABEL_TYPE
     
     pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
@@ -83,10 +81,8 @@ def load_slides_tileslist(ENV_task, for_train=True):
     """
     
     ''' prepare the parames '''
-    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TILE_PKL_TEST_DIR
-    _env_process_slide_tumor_tile_pkl_train_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TRAIN_DIR
-    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_REPO_SLIDE_TUMOR_TILE_PKL_TEST_DIR
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
 #     label_type = ENV_task.LABEL_TYPE
     
     pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
@@ -189,14 +185,14 @@ class SlideMatrix_Dataset(Dataset):
     def __getitem__(self, index):
         if self.batch_loader == False:
             slide_id = self.slide_matrix_sets[index][0]
-            case_id = slide_id[:slide_id.find('_') ] if slide_id.find('_') != -1 else slide_id
+            case_id = parse_caseid_from_slideid(slide_id)
             matrix = self.slide_matrix_sets[index][2]
             bag_dim = self.slide_matrix_sets[index][1]
             label = self.label_dict[case_id]
             return matrix, bag_dim, label
         else:
             slide_id = self.slide_matrix_file_sets[index][0]
-            case_id = slide_id[:slide_id.find('_')] if slide_id.find('_') != -1 else slide_id
+            case_id = parse_caseid_from_slideid(slide_id)
             matrix = np.load(self.slide_matrix_file_sets[index][2])
             bag_dim = self.slide_matrix_file_sets[index][1]
             label = self.label_dict[case_id]
@@ -205,41 +201,6 @@ class SlideMatrix_Dataset(Dataset):
     def __len__(self):
         return len(self.slide_matrix_file_sets)
     
-    
-class SlideMatrix_Pairs_Dataset(Dataset):
-    
-    def __init__(self, slide_matrix_pair_file_sets, label_dict):
-        '''
-        Only using batch_loader, because the pre-training dataset is much bigger
-        Args:
-            slide_matrix_pair_file_sets: 
-                list: [(slide_id_1, bag_dim_1, slide_mat_nd_file_1, slide_id_2, bag_dim_2, slide_mat_nd_file_2),
-                        ...]
-            label_dict: {case_id (can be parse from slide_id): label (0, 1)}
-        '''
-        self.slide_matrix_pair_file_sets = slide_matrix_pair_file_sets
-        self.label_dict = label_dict
-        
-    def refresh_data(self, slide_matrix_pair_file_sets):
-        '''
-        refresh another random cohort of slide_matrix_pair_file_sets
-        '''
-        self.slide_matrix_pair_file_sets = slide_matrix_pair_file_sets
-        
-    def __getitem__(self, index):
-        slide_id_1 = self.slide_matrix_pair_file_sets[index][0]
-        slide_id_2 = self.slide_matrix_pair_file_sets[index][3]
-        case_id_1 = slide_id_1[:slide_id_1.find('_') ] if slide_id_1.find('_') != -1 else slide_id_1
-        case_id_2 = slide_id_2[:slide_id_2.find('_') ] if slide_id_2.find('_') != -1 else slide_id_2
-        mat_1 = np.load(self.slide_matrix_pair_file_sets[index][2])
-        mat_2 = np.load(self.slide_matrix_pair_file_sets[index][5])
-        bag_dim_1, bag_dim_2 = self.slide_matrix_pair_file_sets[index][1], self.slide_matrix_pair_file_sets[index][4]
-        sim_label = 0 if self.label_dict[case_id_1] == self.label_dict[case_id_2] else 1
-        
-        return mat_1, bag_dim_1, mat_2, bag_dim_2, sim_label
-    
-    def __len__(self):
-        return len(self.slide_matrix_pair_file_sets)
     
 '''
     -------------------------------------------------------------------------------
@@ -295,65 +256,6 @@ class AttK_MIL_Dataset(Dataset):
         
     def __len__(self):
         return len(self.tiles_list_train_pool)
-    
-'''
-    -------------------------------------------------------------------------------
-    functions and Dataset mainly for dual (reversed) Look Closer to See Better (LCSB) MIL algorithm
-        this approach will partly use the same logic previously
-    -------------------------------------------------------------------------------
-'''
-
-
-class Rev_AttK_MIL_Dataset(Dataset):
-     
-    def __init__(self, tiles_list, label_dict, transform: transforms):
-        self.tiles_list = tiles_list
-        self.tiles_idxs_train_pool_neg = []
-        self.tiles_list_train_pool_neg = tiles_list
-         
-        self.label_dict = label_dict
-         
-        self.transform = transform
-        ''' make slide cache in memory '''
-        self.cache_slide_neg = ('none', None)
-         
-    def refresh_data(self, filter_revgN_slide_tileidx_dict):
-        '''
-        must be called before training
-        '''
- 
-        self.tiles_idxs_train_pool_neg = []
-        for _, tile_idx_list in filter_revgN_slide_tileidx_dict.items():
-            for idx in tile_idx_list:
-                self.tiles_idxs_train_pool_neg.append(idx) 
-                     
-        self.tiles_list_train_pool_neg = []
-        for idx in self.tiles_idxs_train_pool_neg:
-            self.tiles_list_train_pool_neg.append(self.tiles_list[idx])
-        print('Dataset Info: [refresh reversed gradient training tile list, now with: %d negative tiles...]' % (len(self.tiles_idxs_train_pool_neg)))
-     
-    def __getitem__(self, index):
-        tile_neg = self.tiles_list_train_pool_neg[index]
-         
-        case_id_neg = parse_slide_caseid_from_filepath(tile_neg.original_slide_filepath)
-         
-        ''' using slide cache '''
-        loading_slide_neg_id = parse_slideid_from_filepath(tile_neg.original_slide_filepath)
-         
-        if loading_slide_neg_id == self.cache_slide_neg[0]:
-            preload_slide_neg = self.cache_slide_neg[1]
-        else:
-            _, preload_slide_neg = tile_neg.get_pil_scaled_slide()
-            self.cache_slide_neg = (loading_slide_neg_id, preload_slide_neg)
-             
-        image_neg = tile_neg.get_pil_tile(preload_slide_neg)
-        image_neg = self.transform(image_neg)
-        label_neg = self.label_dict[case_id_neg]
-         
-        return image_neg, label_neg
-         
-    def __len__(self):
-        return len(self.tiles_list_train_pool_neg)
 
 
 

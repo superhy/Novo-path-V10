@@ -58,23 +58,29 @@ def parse_filesystem_slide(slide_dir):
     return slide_path_list
 
         
-def slide_tiles_split_keep_object_seg(slides_folder, stain_type='HE'):
+def slide_tiles_split_keep_object_u(ENV_task):
     """
     conduct the whole pipeline of slide's tiles split, by Sequential process
     store the tiles Object [.pkl] on disk
     
-    without train/test separation, for segmentation task only  
+    without train/test separation, for [segmentation] and [un-supervised] task only  
     
     Args:
         slides_folder: the folder path of slides ready for segmentation
     """
     
+    _env_slide_dir = ENV_task.SLIDE_FOLDER
+    _env_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    stain_type= ENV_task.STAIN_TYPE
+    
     ''' load all slides '''
-    slide_path_list = parse_filesystem_slide(slides_folder)
+    slide_path_list = parse_filesystem_slide(_env_slide_dir)
     for i, slide_path in enumerate(slide_path_list):
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(slide_path)
         if stain_type == 'PSR':
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        elif stain_type == 'CD45':
+            np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
         else:
             np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         
@@ -86,17 +92,11 @@ def slide_tiles_split_keep_object_seg(slides_folder, stain_type='HE'):
         print('generate tiles for slide: %s, keep [%d] tile objects in (.pkl) list.' % (slide_path, len(tiles_list)))
         if len(tiles_list) == 0:
             continue
-        
-        f_suffix = slide_path.split('.')[-1]
-        if slide_path.find('images') != -1:
-            pkl_path = slide_path.replace('images', 'tiles')
-        else:
-            pkl_path = slide_path.replace('slides', 'tiles')
-        pkl_path = pkl_path.replace('.' + f_suffix, '-tiles.pkl')
-        
+        pkl_path = generate_tiles_list_pkl_filepath(slide_path, _env_tile_pkl_train_dir)
+        print('store the [.pkl] in {}'.format(pkl_path))
         with open(pkl_path, 'wb') as f_pkl:
             pickle.dump(tiles_list, f_pkl)
-        return pkl_path
+        
     
 def slide_tiles_split_keep_object_cls(ENV_task):
     '''
@@ -154,6 +154,8 @@ def slide_tiles_split_keep_object_cls(ENV_task):
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(train_slide_path)
         if ENV_task.STAIN_TYPE == 'PSR':
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        elif ENV_task.STAIN_TYPE == 'CD45':
+            np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
         else:
             np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)
@@ -177,6 +179,8 @@ def slide_tiles_split_keep_object_cls(ENV_task):
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(test_slide_path)
         if ENV_task.STAIN_TYPE == 'PSR':
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
+        elif ENV_task.STAIN_TYPE == 'CD45':
+            np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
         else:
             np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)
@@ -196,13 +200,13 @@ def _run_monuseg_slide_tiles_split(ENV_task):
     '''
     '''
     slides_folder = os.path.join(ENV_task.SEG_TRAIN_FOLDER_PATH, 'images')
-    _ = slide_tiles_split_keep_object_seg(slides_folder)
+    _ = slide_tiles_split_keep_object_u(slides_folder)
     
 def _run_gtexseg_slide_tiles_split(ENV_task):
     '''
     '''
     slides_folder = ENV_task.SEG_TRAIN_FOLDER_PATH
-    _ = slide_tiles_split_keep_object_seg(slides_folder)
+    _ = slide_tiles_split_keep_object_u(slides_folder)
     
 
 if __name__ == '__main__': 

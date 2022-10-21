@@ -1,0 +1,161 @@
+![Initial Stage], test mode: False
+Initializing the training slide matrices..., remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+slides: 20, time: 0:16:42.152861
+Initializing the testing slide matrices..., remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+slides: 20, time: 0:15:48.951183
+On-standby: g_LCSB_-0_steatosis_score_c2 algorithm
+Network: GatedAttPool and ResNet18, train on -> cuda
+automatically find CSV file: HE_steatosis_score_c2.csv
+![Training Stage]
+### In Initial training... round
+[training on slide matrices...]
+epoch [1/5], batch_loss-> 0.5534, train acc-> 0.8500, time: 0:00:05.1 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [2/5], batch_loss-> 0.4658, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [3/5], batch_loss-> 0.4247, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [4/5], batch_loss-> 0.3823, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [5/5], batch_loss-> 0.3704, train acc-> 0.8500, time: 0:00:04.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [6/5], batch_loss-> 0.3631, train acc-> 0.8500, time: 0:00:05.3 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [7/5], batch_loss-> 0.3415, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [8/5], batch_loss-> 0.3387, train acc-> 0.8500, time: 0:00:05.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [9/5], batch_loss-> 0.3363, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [10/5], batch_loss-> 0.3291, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [11/5], batch_loss-> 0.3261, train acc-> 0.8500, time: 0:00:05.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [12/5], batch_loss-> 0.3242, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [13/5], batch_loss-> 0.3384, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [14/5], batch_loss-> 0.3212, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [15/5], batch_loss-> 0.3203, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [16/5], batch_loss-> 0.3223, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [17/5], batch_loss-> 0.3275, train acc-> 0.8500, time: 0:00:04.6 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [18/5], batch_loss-> 0.3268, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [19/5], batch_loss-> 0.3084, train acc-> 0.8500, time: 0:00:04.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [20/5], batch_loss-> 0.3093, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [21/5], batch_loss-> 0.3011, train acc-> 0.8500, time: 0:00:04.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [22/5], batch_loss-> 0.3040, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [23/5], batch_loss-> 0.3169, train acc-> 0.8500, time: 0:00:04.6 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [24/5], batch_loss-> 0.2975, train acc-> 0.8500, time: 0:00:04.5 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [25/5], batch_loss-> 0.3128, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [26/5], batch_loss-> 0.3133, train acc-> 0.8500, time: 0:00:05.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [27/5], batch_loss-> 0.2976, train acc-> 0.8500, time: 0:00:04.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [28/5], batch_loss-> 0.3028, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [29/5], batch_loss-> 0.2945, train acc-> 0.8500, time: 0:00:05.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [30/5], batch_loss-> 0.2887, train acc-> 0.8500, time: 0:00:05.2 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [31/5], batch_loss-> 0.2906, train acc-> 0.8500, time: 0:00:04.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+==> pick the topK attention tiles for look closer and training ==>
+<-- load the tiles' attention score for 20 slides -->
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+[training on attK attentional tiles...]
+epoch [1/4], batch_loss-> 0.2815, train acc (on tiles)-> 0.8994, time: 0:10:31.6 sec
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+epoch [2/4], batch_loss-> 0.1977, train acc (on tiles)-> 0.9260, time: 0:10:36.1 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [3/4], batch_loss-> 0.1522, train acc (on tiles)-> 0.9463, time: 0:10:25.9 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [4/4], batch_loss-> 0.1370, train acc (on tiles)-> 0.9503, time: 0:10:18.9 sec
+[store the dual-model MILESTONE<D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_GatedAttPool-g_LCSB_-0_steatosis_score_c2_[0]2022-10-18.pth and D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_ResNet18-g_LCSB_-0_steatosis_score_c2_[0]2022-10-18.pth>]
+*** recorded modelpaths json file is: D:/eclipse-workspace\Novo-path-V10\data/HE_steatosis_score_c2/records\recorded_modelpaths_g_LCSB_-0_steatosis_score_c2.json ***
+<---- update slide matrices with trained resnet ---->, remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+train: 20, test: 20, time: 0:30:48.211935 sec
+### In training... round: [1/4]
+[training on slide matrices...]
+epoch [1/5], batch_loss-> 0.3525, train acc-> 0.8500, time: 0:00:09.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9608
+epoch [2/5], batch_loss-> 0.3159, train acc-> 0.8500, time: 0:00:08.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [3/5], batch_loss-> 0.2975, train acc-> 0.8500, time: 0:00:08.5 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [4/5], batch_loss-> 0.2815, train acc-> 0.8500, time: 0:00:08.5 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 0.9804
+epoch [5/5], batch_loss-> 0.2709, train acc-> 0.8500, time: 0:00:08.5 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+==> pick the topK attention tiles for look closer and training ==>
+<-- load the tiles' attention score for 20 slides -->
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+[training on attK attentional tiles...]
+epoch [1/4], batch_loss-> 0.2730, train acc (on tiles)-> 0.8953, time: 0:10:13.5 sec
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+epoch [2/4], batch_loss-> 0.2094, train acc (on tiles)-> 0.9276, time: 0:10:24.4 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [3/4], batch_loss-> 0.1911, train acc (on tiles)-> 0.9323, time: 0:10:07.4 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [4/4], batch_loss-> 0.1857, train acc (on tiles)-> 0.9327, time: 0:10:17.5 sec
+[store the dual-model MILESTONE<D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_GatedAttPool-g_LCSB_-0_steatosis_score_c2_[1]2022-10-18.pth and D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_ResNet18-g_LCSB_-0_steatosis_score_c2_[1]2022-10-18.pth>]
+*** recorded modelpaths json file is: D:/eclipse-workspace\Novo-path-V10\data/HE_steatosis_score_c2/records\recorded_modelpaths_g_LCSB_-0_steatosis_score_c2.json ***
+<---- update slide matrices with trained resnet ---->, remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+train: 20, test: 20, time: 0:32:14.809125 sec
+### In training... round: [2/4]
+[training on slide matrices...]
+epoch [1/5], batch_loss-> 0.2455, train acc-> 0.8500, time: 0:00:09.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [2/5], batch_loss-> 0.2317, train acc-> 0.8500, time: 0:00:08.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [3/5], batch_loss-> 0.2078, train acc-> 0.8500, time: 0:00:08.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [4/5], batch_loss-> 0.1952, train acc-> 0.8500, time: 0:00:08.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [5/5], batch_loss-> 0.1808, train acc-> 0.8500, time: 0:00:08.9 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+==> pick the topK attention tiles for look closer and training ==>
+<-- load the tiles' attention score for 20 slides -->
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+[training on attK attentional tiles...]
+epoch [1/4], batch_loss-> 0.1410, train acc (on tiles)-> 0.9515, time: 0:10:06.0 sec
+Dataset Info: [refresh training tile list, now with: 2971 tiles...]
+epoch [2/4], batch_loss-> 0.1238, train acc (on tiles)-> 0.9529, time: 0:09:29.8 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [3/4], batch_loss-> 0.1073, train acc (on tiles)-> 0.9653, time: 0:09:28.8 sec
+Dataset Info: [refresh training tile list, now with: 3000 tiles...]
+epoch [4/4], batch_loss-> 0.0994, train acc (on tiles)-> 0.9670, time: 0:09:30.9 sec
+[store the dual-model MILESTONE<D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_GatedAttPool-g_LCSB_-0_steatosis_score_c2_[2]2022-10-18.pth and D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_ResNet18-g_LCSB_-0_steatosis_score_c2_[2]2022-10-18.pth>]
+*** recorded modelpaths json file is: D:/eclipse-workspace\Novo-path-V10\data/HE_steatosis_score_c2/records\recorded_modelpaths_g_LCSB_-0_steatosis_score_c2.json ***
+<---- update slide matrices with trained resnet ---->, remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/HE_steatosis_score_c2/encodes/256-0/train_encode'].
+train: 20, test: 20, time: 0:31:17.696231 sec
+### In training... round: [3/4]
+[training on slide matrices...]
+epoch [1/5], batch_loss-> 0.2074, train acc-> 0.8500, time: 0:00:09.0 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [2/5], batch_loss-> 0.1880, train acc-> 0.8500, time: 0:00:08.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [3/5], batch_loss-> 0.1742, train acc-> 0.8500, time: 0:00:08.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [4/5], batch_loss-> 0.1643, train acc-> 0.8500, time: 0:00:08.8 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.5000, test auc: 1.0000
+epoch [5/5], batch_loss-> 0.1454, train acc-> 0.8500, time: 0:00:08.7 sec
+>>> In testing..., >>> on slidemat -> test acc: 0.6667, test auc: 1.0000
+[store the dual-model MILESTONE<D:/FLINC_dataset/slides/yang_he_stea\models\checkpoint_GatedAttPool-g_LCSB_-0_steatosis_score_c2_[3]2022-10-18.pth and N/A>]
+*** recorded modelpaths json file is: D:/eclipse-workspace\Novo-path-V10\data/HE_steatosis_score_c2/records\recorded_modelpaths_g_LCSB_-0_steatosis_score_c2.json ***
+[1.0, 1.0, 1.0, 1.0, 1.0]
+### final evaluation on attpool -> average test auc: 1.0000

@@ -84,8 +84,8 @@ def nll_loss():
 def cel_loss():
     return CrossEntropyLoss().cuda()
 
-def weighted_cel_loss(weight=0.5):
-    w = torch.Tensor([1 - weight, weight])
+def weighted_cel_loss(weights=[0.5, 0.5]):
+    w = torch.Tensor(weights)
     loss = CrossEntropyLoss(w).cuda()
     return loss
 
@@ -101,7 +101,7 @@ def optimizer_adam_basic(net, lr=1e-4, wd=1e-4):
 
 
 ''' ------ transform ------ '''
-def get_transform(resize=512):
+def get_transform():
     '''
     data transform with only image normalization
     '''
@@ -110,7 +110,7 @@ def get_transform(resize=512):
         std=[0.1, 0.1, 0.1]
     )
     transform_augs = transforms.Compose([
-        transforms.Resize(size=(resize, resize)),
+        transforms.Resize(size=(ENV.TRANSFORMS_RESIZE, ENV.TRANSFORMS_RESIZE)),
         transforms.ToTensor(),
         normalize
         ])
@@ -138,9 +138,9 @@ def get_data_arg_transform():
     return transform_augs
 
 ''' ------ data loader ------ '''
-def get_data_loader(dataset, seg_batch_size, SEG_NUM_WORKERs=4, sf=False, p_mem=True):
-    data_loader = DataLoader(dataset, seg_batch_size=seg_batch_size,
-                             SEG_NUM_WORKERs=SEG_NUM_WORKERs, shuffle=sf, pin_memory=p_mem)
+def get_data_loader(dataset, batch_size, num_workers=4, sf=False, p_mem=True):
+    data_loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers,
+                             shuffle=sf, pin_memory=p_mem)
     return data_loader
 
 
