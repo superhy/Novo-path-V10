@@ -38,6 +38,12 @@ For algorithm 7 (reversed gradient LCSB MIL) <deprecated>
 For algorithm 0 (pre-training of aggregator in MIL) <deprecated>
     01(1): pre-training the Attention Pool
     02(2): pre-training the Gated Attention Pool
+    
+For algorithm 8 (pre-training of encoder, usually ViT)
+    80: self-supervised pre-train with ViT-6-8, by DINO
+    81: self-supervised pre-train with ViT-6-8, by MAE <deprecated>
+    82: self-supervised pre-train with ViT-9-12, by DINO
+    89: self-supervised pre-train with ViT-3-4-t, by DINO <deprecated>
 '''
 
 '''
@@ -45,7 +51,8 @@ Experiments running process:
 
 pre-processing part
 1. task-1 in run_pre.py: copy slides from folder <transfer> to specific <tissues> folders (the folder we have full access to read and write)
-2. task-2 in run_pre.py: split the train/test sets (in 5-folds for this moment) and generate the tiles-list pkl for them
+2. task-2 metadata.py: produce annotations file (if necessary, combine annotations into groups)
+3. task-3 in run_pre.py: split the train/test sets (in 5-folds for this moment) and generate the tiles-list pkl for them
 
 training part:
 3. running any task in above (except the deprecated)

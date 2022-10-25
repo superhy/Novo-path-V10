@@ -96,6 +96,9 @@ class parames_task(parames_basic):
                  his_record_rounds,
                  lr_slide,
                  lr_tile,
+                 sspt_num_epoch,
+                 sspt_record_pulse,
+                 num_slide_samples,
                  seg_train_folder_name,
                  seg_test_folder_name,
                  seg_pred_folder_name,
@@ -139,7 +142,8 @@ class parames_task(parames_basic):
         self.MODEL_FOLDER = os.path.join(self.DATA_DIR, 'models')
         
         ''' --- slide process & general file storage params --- '''
-        self.TEST_PART_PROP = test_part_prop
+        # for unsupervised task, no separation of train/test set, all train set (test set as well)
+        self.TEST_PART_PROP = test_part_prop if self.TASK_NAME != 'unsupervised' else 0.0  
         self.EXPERIMENTS_DIR = 'example'
         self.TASK_REPO_DIR = os.path.join(self.DATA_DIR, self.EXPERIMENTS_DIR + '/{}'.format(self.TASK_NAME))
         self.FOLD_SUFFIX = fold_suffix
@@ -204,6 +208,11 @@ class parames_task(parames_basic):
             self.MINI_BATCH_TILE = int(self.MINI_BATCH_TILE / 8)
             self.SLIDEMAT_DATALOADER_WORKER = int(self.SLIDEMAT_DATALOADER_WORKER / 2)
             self.TILE_DATALOADER_WORKER = int(self.TILE_DATALOADER_WORKER / 4)
+            
+        ''' --- self-supervised encoder pre-train parames --- '''
+        self.NUM_ENC_SSPT_EPOCH = sspt_num_epoch # the number of total training epochs for self-supervised pre-train (sspt)
+        self.SSPT_RECORD_PULSE = sspt_record_pulse # after every ? epochs, record the training log once
+        self.NUM_SLIDE_SAMPLES = num_slide_samples # in each epoch, how many tiles are sampled for sspt from one slide
         
         ''' --- segmentation params --- '''
         self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.DATA_DIR, seg_train_folder_name)

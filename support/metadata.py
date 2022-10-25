@@ -8,10 +8,10 @@ import warnings
 
 import openpyxl
 
-from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB
-from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB_C3
+from support.env_flinc_he import ENV_FLINC_HE_FIB
+from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

@@ -9,8 +9,8 @@ from models.functions_attpool import _run_train_attpool_vit_6_8, \
     _run_train_attpool_vit_3_4_t
 from run_main import Logger
 from support import tools
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
+from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
