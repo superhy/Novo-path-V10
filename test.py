@@ -14,6 +14,9 @@ from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
+    
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def test_filter_slide_img():
@@ -50,7 +53,25 @@ def test_vit_forward():
     preds = v(img) # (1, 1000)
     print(preds)
     
+def test_networkx():
+#     G = nx.random_geometric_graph(200, 0.125)
+    G = nx.Graph()
+    G.add_nodes_from([
+        (0, {'pos': [0.2, 0.2]}),
+        (1, {'pos': [0.4, 0.4]}),
+        (2, {'pos': [0.4, 0.8]}),
+        (3, {'pos': [0.8, 0.8]})
+        ])
+    G.add_edges_from([(0, 1), (1, 2), (1, 3), (0, 3)])
+    print(G.nodes()[0])
+    
+    subax1 = plt.subplot(111)
+    nx.draw(G, with_labels=True, font_weight='bold')
+    plt.show()
     
     
-test_filter_slide_img() # 1
+# test_filter_slide_img() # 1
 # test_vit_forward() # 2
+test_networkx() # 3
+
+
