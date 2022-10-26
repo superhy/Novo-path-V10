@@ -67,7 +67,7 @@ def pretrain_dino(ENV_task, vit_net):
                                          optimizer=optimizer, epoch_info=(epoch, pretrain_epoch))
         print(epoch_log)
         
-        if (epoch + 1) % ENV_task.PRETRAIN_RECORD_PULSE == 0:
+        if (epoch + 1) % ENV_task.SSPT_RECORD_PULSE == 0:
             pretrain_model_path = store_net(ENV_task.MODEL_FOLDER,
                                             vit_net, alg_name + '[{}]'.format(str(epoch + 1)), optimizer)
             print('store the dino pretrained model at: {}'.format(pretrain_model_path))
@@ -107,7 +107,7 @@ def pretrain_mae(ENV_task, vit_net):
                                         optimizer=optimizer, epoch_info=(epoch, pretrain_epoch))
         print(epoch_log)
         
-        if (epoch + 1) % ENV_task.PRETRAIN_RECORD_PULSE == 0:
+        if (epoch + 1) % ENV_task.SSPT_RECORD_PULSE == 0:
             pretrain_model_path = store_net(ENV_task.MODEL_FOLDER,
                                             vit_net, alg_name + '[{}]'.format(str(epoch + 1)), optimizer)
             print('store the mae pretrained model at: {}'.format(pretrain_model_path))

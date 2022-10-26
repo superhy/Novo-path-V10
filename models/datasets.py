@@ -115,11 +115,18 @@ class Simple_Tile_Dataset(Dataset):
         ''' make slide cache in memory '''
         self.cache_slide = ('none', None)
         
+    def refresh_samples(self, new_tile_list):
+        '''
+        re-sample the tile_list from a new one,
+        which could be a new cohort of tiles random picked from a big pool
+        '''
+        self.tiles_list = new_tile_list
+        
     def __getitem__(self, index):
         tile = self.tiles_list[index]
         
         ''' using slide cache '''
-        loading_slide_id = parse_slideid_from_filepath(tile.original_slide_filepath)
+        loading_slide_id = tile.query_slideid()
         if loading_slide_id == self.cache_slide[0]:
             preload_slide = self.cache_slide[1]
         else:
