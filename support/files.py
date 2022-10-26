@@ -5,9 +5,10 @@ import os
 import shutil
 
 from support.metadata import extract_slideid_subid_for_stain
-from support.env_flinc_he_fib import ENV_FLINC_HE_FIB
-from support.env_flinc_he_stea import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_psr_fib import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
+from support.env_flinc_he import ENV_FLINC_HE_FIB
+from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
+from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 
 
 def move_file(src_path, dst_path, mode='move'):
@@ -149,9 +150,14 @@ def _move_slides_multi_stains():
     '''
     running the slides move(copy) from data transfer folder to full-accessed data-read-write folder
     '''
-    TASK_ENVS = [ENV_FLINC_PSR_FIB_C3, ENV_FLINC_HE_STEA_C2]
-    s_dir_names = ['23910-157', '23910-157']
-    xmeta_names = ['FLINC_23910-157_withSubjectID.xlsx', 'FLINC_23910-157_withSubjectID.xlsx']
+    # TASK_ENVS = [ENV_FLINC_PSR_FIB_C3, ENV_FLINC_HE_STEA_C2]
+    # s_dir_names = ['23910-157', '23910-157']
+    # xmeta_names = ['FLINC_23910-157_withSubjectID.xlsx', 'FLINC_23910-157_withSubjectID.xlsx']
+    
+    TASK_ENVS = [ENV_FLINC_CD45_U]
+    s_dir_names = ['23910-158']
+    xmeta_names = ['FLINC_23910-158_withSubjectID.xlsx']
+    
     for i, task_env in enumerate(TASK_ENVS):
         source_dir = os.path.join(task_env.TRANSFER_DIR, s_dir_names[i])
         target_dir = os.path.join(task_env.DATA_DIR, 'tissues')
