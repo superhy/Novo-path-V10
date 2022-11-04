@@ -5,7 +5,7 @@
 import os
 
 import cmapy
-from cv2 import cv2
+import cv2
 from einops.einops import reduce, rearrange
 import torch
 
@@ -25,10 +25,12 @@ def col_pal_cv2_20(i_nd):
 def col_pal_cv2_10(i_nd):
     return 10.0 + (255.0 / 10) * i_nd
 
-def extra_overall_att_maps(tiles_attns_nd, layer_id):
+def extra_cls_att_maps(tiles_attns_nd, layer_id):
     '''
     extract the average attention map from numpy nd tensor
     which is for a tile list
+    
+    with normalization
     
     Return:
         a numpy ndarray
@@ -60,6 +62,8 @@ def extra_heads_att_maps(tiles_attns_nd, layer_id):
     '''
     extract the attention maps for all heads from numpy nd tensor
     which is for a tile list
+    
+    with normalization
     
     Return:
         a numpy ndarray
@@ -140,7 +144,7 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
     # discard a recorder for the backbone of trained vit        
     trained_vit.discard_wrapper()
                 
-    cls_att_maps = extra_overall_att_maps(tiles_attns_nd, layer_id) if 'cls' in map_types else None
+    cls_att_maps = extra_cls_att_maps(tiles_attns_nd, layer_id) if 'cls' in map_types else None
     heads_att_maps, max_att_maps = extra_heads_att_maps(tiles_attns_nd, layer_id) if 'heads' in map_types else (None, None)
     
     c_panel_cls = cmapy.cmap('plasma')
