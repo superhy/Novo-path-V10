@@ -18,6 +18,8 @@ from wsi.slide_tools import original_slide_and_scaled_pil_image, \
 import networkx as nx
 import matplotlib.pyplot as plt
 
+import numpy as np
+
 
 def test_filter_slide_img():
     # slide_filepath = 'D:/FLINC_dataset/slides/yang_psr_fib/tissues/23910-157_Sl040-C24-PSR.ndpi'
@@ -71,9 +73,15 @@ def test_networkx():
     nx.draw(G, with_labels=True, font_weight='bold')
     plt.show()
     
+def test_numpy():
+    test_nd = np.random.random((4, 6, 8, 8))
+    print(len(test_nd.shape), test_nd.shape, np.shape(test_nd))
     
-test_filter_slide_img() # 1
-# test_vit_forward() # 2
-# test_networkx() # 3
+if __name__ == '__main__':
+    # test_filter_slide_img() # 1
+    # test_vit_forward() # 2
+    # test_networkx() # 3
+
+    test_numpy()
 
 

@@ -16,6 +16,7 @@ import numpy as np
 from prep_tools import store_map_nd_dict_pkl
 from support.tools import normalization
 from wsi.process import recovery_tiles_list_from_pkl
+from models.functions_vit_ext import access_att_maps_vit
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
@@ -119,30 +120,9 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
             'cls' -> average map on attention values
             'heads' -> all map for heads attention and it max index color (cv2) map
     '''
-    trained_vit.eval()
-    # deploy a recorder for the backbone of trained vit
-    trained_vit.deploy_recorder()
-    
-    # prepare the tile list dataloader
-    transform = functions.get_transform()
-    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
-    vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
-                                                     batch_size=ENV_task.MINI_BATCH_TILE,
-                                                     num_workers=ENV_task.TILE_DATALOADER_WORKER,
-                                                     sf=False, p_mem=True)
-    
-    tiles_attns_nd = None
-    with torch.no_grad():
-        for X in vis_tiles_dataloader:
-            X = X.cuda()
-            _, attns = trained_vit.backbone(X)
-            attns_nd = attns.detach().cpu().numpy()
-            if tiles_attns_nd is None:
-                tiles_attns_nd = attns_nd
-            else:
-                tiles_attns_nd = np.concatenate((tiles_attns_nd, attns_nd), axis=0)
-    # discard a recorder for the backbone of trained vit        
-    trained_vit.discard_wrapper()
+    tiles_attns_nd = access_att_maps_vit(tiles, trained_vit, 
+                                         ENV_task.MINI_BATCH_TILE, 
+                                         ENV_task.TILE_DATALOADER_WORKER)
                 
     cls_att_maps = extra_cls_att_maps(tiles_attns_nd, layer_id) if 'cls' in map_types else None
     heads_att_maps, max_att_maps = extra_heads_att_maps(tiles_attns_nd, layer_id) if 'heads' in map_types else (None, None)
@@ -179,8 +159,7 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
     return tiles_cls_map_list, tiles_heads_map_list
 
 def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
-                            sample_num=20, only_tumor_tiles=True,
-                            layer_id=-1, zoom=4, map_types=['cls', 'heads']):
+                            sample_num=20, layer_id=-1, zoom=4, map_types=['cls', 'heads']):
     '''
     Args:
         ENV_task: 
@@ -188,19 +167,16 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
         vit_model_filepath: file path of trained vit model
         sample_num: number of sampled tiles from each slide
     '''
-    _env_process_slide_tumor_tile_pkl_test_dir = ENV_task.TASK_PROCESS_TCGA_SLIDE_TUMOR_TILE_PKL_TEST_DIR
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_PROCESS_TCGA_SLIDE_TILE_PKL_TEST_DIR
-    vit_model_filename = vit_model_filepath.split('\\')[-1]
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
+    vit_model_filename = vit_model_filepath.split(os.sep)[-1]
     
-    if ENV_task.APPLY_TUMOR_ROI == True:
-        only_tumor_tiles = True
-    slides_tiles_pkl_dir = _env_process_slide_tumor_tile_pkl_test_dir if only_tumor_tiles else _env_process_slide_tile_pkl_test_dir
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
     sampled_tiles_list = []
     for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
         slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
         slide_sampled_tiles_list = slide_tiles_list[:sample_num] if len(slide_tiles_list) > sample_num else slide_tiles_list
         sampled_tiles_list.extend(slide_sampled_tiles_list)
-    print('> sampled %d tiles from all slides for visualize the attention maps.' % len(sampled_tiles_list))
+    print('> sampled %d tiles from all slides for visualise the attention maps.' % len(sampled_tiles_list))
         
     vit, _ = networks.reload_net(vit, vit_model_filepath)
     vit = vit.cuda()
@@ -240,14 +216,14 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
 
 def _run_vit_d6_h8_cls_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                    patch_size=ENV_task.PATCH_SIZE, output_dim=2)
+                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_STORE_DIR, vit_model_filename),
                             zoom=16, map_types=['cls'])
 
 def _run_vit_d6_h8_heads_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                    patch_size=ENV_task.PATCH_SIZE, output_dim=2)
+                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_STORE_DIR, vit_model_filename),
                             zoom=16, map_types=['heads'])
