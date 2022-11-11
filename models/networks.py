@@ -103,7 +103,10 @@ class ViT_base(nn.Module):
         re-put another fc layer for classification output
         '''
         self.backbone.mlp_head = nn.Identity()
-        self.fc = nn.Linear(in_features=self.dim, out_features=output_dim, bias=True)
+        self.fc = nn.Sequential(
+            nn.LayerNorm(self.dim),
+            nn.Linear(in_features=self.dim, out_features=output_dim, bias=True)
+        )
         
     def get_dino_learner(self):
         ''' 

@@ -3,6 +3,7 @@
 '''
 
 import os
+import pickle
 
 import cmapy
 import cv2
@@ -11,12 +12,12 @@ import torch
 
 from models import functions, networks
 from models.datasets import Simple_Tile_Dataset
+from models.functions_vit_ext import access_att_maps_vit
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T
 import numpy as np
-from prep_tools import store_map_nd_dict_pkl
 from support.tools import normalization
+from visual.prep_tools import store_map_nd_dict_pkl
 from wsi.process import recovery_tiles_list_from_pkl
-from models.functions_vit_ext import access_att_maps_vit
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
@@ -167,7 +168,7 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
         vit_model_filepath: file path of trained vit model
         sample_num: number of sampled tiles from each slide
     '''
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
     vit_model_filename = vit_model_filepath.split(os.sep)[-1]
     
     slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
@@ -218,14 +219,14 @@ def _run_vit_d6_h8_cls_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
-                            vit_model_filepath=os.path.join(ENV_task.MODEL_STORE_DIR, vit_model_filename),
+                            vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             zoom=16, map_types=['cls'])
 
 def _run_vit_d6_h8_heads_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
-                            vit_model_filepath=os.path.join(ENV_task.MODEL_STORE_DIR, vit_model_filename),
+                            vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             zoom=16, map_types=['heads'])
 
 
