@@ -10,7 +10,39 @@ from models import functions
 from models.datasets import Simple_Tile_Dataset
 
 
-def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers):
+def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
+    '''
+    access and extract the encode with trained ViT model
+    for a list of tiles
+    
+    Return:
+        tiles_encodes_nd: (t, k) - (tiles_number * encode_dim)
+    '''
+    trained_vit.eval()
+    
+    # prepare the tile list dataloader
+    transform = functions.get_transform()
+    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
+    vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
+                                                     batch_size=batch_size,
+                                                     num_workers=nb_workers,
+                                                     sf=False, p_mem=True)
+    
+    tiles_en_nd = None
+    with torch.no_grad():
+        for X in vis_tiles_dataloader:
+            X = X.cuda()
+            e = trained_vit.backbone(X)
+            e_nd = e.detach().cpu().numpy()
+            # t, k
+            if tiles_en_nd is None:
+                tiles_en_nd = e_nd
+            else:
+                tiles_en_nd = np.concatenate((tiles_en_nd, e_nd), axis=0)
+    
+    return tiles_en_nd
+    
+def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1):
     '''
     access and extract the original signal of attention maps from trained ViT model
     for a list of tiles
@@ -21,7 +53,8 @@ def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers):
         
     Return:
         tiles_attns_nd:
-            shape: (t, l, h, q, k) - (tiles_number * layers * heads * (patch_number + 1) * (patch_number + 1))
+            Deprecated: >>>>> shape: (t, l, h, q, k) - (tiles_number * layers * heads * (patch_number + 1) * (patch_number + 1))
+            shape: (t, h, q, k) - (tiles_number * heads * (patch_number + 1) * (patch_number + 1))
             with one extra patch due to the CLS token
     '''
     trained_vit.eval()
@@ -42,15 +75,18 @@ def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers):
             X = X.cuda()
             _, attns = trained_vit.backbone(X)
             attns_nd = attns.detach().cpu().numpy()
+            # t, l, h, q, k -> t h q k
+            attns_nd = attns_nd[:, layer_id]
             if tiles_attns_nd is None:
                 tiles_attns_nd = attns_nd
             else:
                 tiles_attns_nd = np.concatenate((tiles_attns_nd, attns_nd), axis=0)
+            # print(np.shape(tiles_attns_nd))
     # discard a recorder for the backbone of trained vit        
     trained_vit.discard_wrapper()
     return tiles_attns_nd
 
-def ext_att_maps_pick_layer(tiles_attns_nd, layer_id=-1, comb_heads='mean'):
+def ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean'):
     '''
     extract the tiles attention map as numpy ndarray, from specific layer
     
@@ -66,7 +102,8 @@ def ext_att_maps_pick_layer(tiles_attns_nd, layer_id=-1, comb_heads='mean'):
         l_attns_nd:
             shape: (t h q k) or (t q k), with/without heads combination
     '''
-    l_attns_nd = tiles_attns_nd[:, layer_id]
+    # l_attns_nd = tiles_attns_nd[:, layer_id]
+    l_attns_nd = tiles_attns_nd
     if comb_heads == 'max':
         l_attns_nd = reduce(l_attns_nd, 't h q k -> t q k', reduction='max')
     elif comb_heads == 'mean':

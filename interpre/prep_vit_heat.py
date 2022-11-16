@@ -16,7 +16,7 @@ from models.functions_vit_ext import access_att_maps_vit
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T
 import numpy as np
 from support.tools import normalization
-from visual.prep_tools import store_map_nd_dict_pkl
+from interpre.prep_tools import store_map_nd_dict_pkl
 from wsi.process import recovery_tiles_list_from_pkl
 
 
@@ -27,7 +27,7 @@ def col_pal_cv2_20(i_nd):
 def col_pal_cv2_10(i_nd):
     return 10.0 + (255.0 / 10) * i_nd
 
-def extra_cls_att_maps(tiles_attns_nd, layer_id):
+def extra_cls_att_maps(tiles_attns_nd):
     '''
     extract the average attention map from numpy nd tensor
     which is for a tile list
@@ -49,18 +49,20 @@ def extra_cls_att_maps(tiles_attns_nd, layer_id):
         layer_id: the layer which used for picking the attention maps
     '''
     maps_nd = tiles_attns_nd
-    (t, l, h, q, k) = maps_nd.shape
+    (t, h, q, k) = maps_nd.shape  # the layer pick has already been done, now is (t h q k)
     map_size = int(np.sqrt(k - 1))
     
     # t, l, h, q, k -> t h q k -> t q k
-    l_attns_nd = reduce(maps_nd[:, layer_id], 't h q k -> t q k', reduction='mean')
+    # l_attns_nd = reduce(maps_nd[:, layer_id], 't h q k -> t q k', reduction='mean') # the layer pick has already been done
+    # t h q k -> t q k
+    l_attns_nd = reduce(maps_nd, 't h q k -> t q k', reduction='mean')
     # t q k -> t (k - 1)
     norm_l_att_nd = np.array([normalization(l_attns_nd[i, 0, 1:]) for i in range(t)])
     # t (k - 1) -> t sqrt(k - 1) sqrt(k - 1) 
     cls_att_maps = rearrange(norm_l_att_nd, 't (a b) -> t a b', a=map_size)
     return cls_att_maps
 
-def extra_heads_att_maps(tiles_attns_nd, layer_id):
+def extra_heads_att_maps(tiles_attns_nd):
     '''
     extract the attention maps for all heads from numpy nd tensor
     which is for a tile list
@@ -84,11 +86,13 @@ def extra_heads_att_maps(tiles_attns_nd, layer_id):
         layer_id: the layer which used for picking the attention maps
     '''
     maps_nd = tiles_attns_nd
-    (t, l, h, q, k) = maps_nd.shape
+    (t, h, q, k) = maps_nd.shape # the layer pick has already been done, now is (t h q k)
     map_size = int(np.sqrt(k - 1))
     
     # t, l, h, q, k -> t h q k
-    l_h_attns_nd = maps_nd[:, layer_id]
+    # l_h_attns_nd = maps_nd[:, layer_id] # the layer pick has already been done
+    # t h q k
+    l_h_attns_nd = maps_nd
     # t h q k -> t h (k - 1)
     norm_l_h_att_nd = []
     for t in range(t):
@@ -123,10 +127,12 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
     '''
     tiles_attns_nd = access_att_maps_vit(tiles, trained_vit, 
                                          ENV_task.MINI_BATCH_TILE, 
-                                         ENV_task.TILE_DATALOADER_WORKER)
+                                         ENV_task.TILE_DATALOADER_WORKER,
+                                         layer_id)
+    # the layer pick has been done here to save memory
                 
-    cls_att_maps = extra_cls_att_maps(tiles_attns_nd, layer_id) if 'cls' in map_types else None
-    heads_att_maps, max_att_maps = extra_heads_att_maps(tiles_attns_nd, layer_id) if 'heads' in map_types else (None, None)
+    cls_att_maps = extra_cls_att_maps(tiles_attns_nd) if 'cls' in map_types else None
+    heads_att_maps, max_att_maps = extra_heads_att_maps(tiles_attns_nd) if 'heads' in map_types else (None, None)
     
     c_panel_cls = cmapy.cmap('plasma')
     c_panel_heads = cmapy.cmap('Oranges')
@@ -220,14 +226,21 @@ def _run_vit_d6_h8_cls_map_slides(ENV_task, vit_model_filename):
                     patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
-                            zoom=16, map_types=['cls'])
+                            layer_id=-1, zoom=16, map_types=['cls'])
 
 def _run_vit_d6_h8_heads_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
-                            zoom=16, map_types=['heads'])
+                            layer_id=-1, zoom=16, map_types=['heads'])
+    
+def _run_vit_d6_h8_cls_heads_map_slides(ENV_task, vit_model_filename):
+    vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+    make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
+                            vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
+                            layer_id=-1, zoom=16, map_types=['cls', 'heads'])
 
 
 if __name__ == '__main__':

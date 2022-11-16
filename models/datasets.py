@@ -157,7 +157,7 @@ class SlideMatrix_Dataset(Dataset):
                                               (...), ...]
                                        default: None
             batch_loader: if 'True': load the slide matrix in each batch by __getitem__();
-                          if 'False': load all slides' matrices once in __init__()
+                          if 'False': load all slides' matrices once in interpre()
         '''
         self.slide_matrix_file_sets = slide_matrix_file_sets
         self.label_dict = label_dict

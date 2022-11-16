@@ -3,8 +3,8 @@
 '''
 import os
 
-from draw_maps import draw_original_image, draw_attention_heatmap
-from prep_tools import load_map_dict_from_pkl
+from interpre.draw_maps import draw_original_image, draw_attention_heatmap
+from interpre.prep_tools import load_map_dict_from_pkl
 
 
 def plot_vit_cls_map(ENV_task, clsmap_pkl_name):

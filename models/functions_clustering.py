@@ -2,6 +2,8 @@
 @author: Yang Hu
 '''
 
+import os
+
 from sklearn.cluster._affinity_propagation import AffinityPropagation
 from sklearn.cluster._dbscan import DBSCAN
 from sklearn.cluster._kmeans import KMeans
@@ -10,20 +12,47 @@ from sklearn.cluster._spectral import SpectralClustering
 import torch
 from torch.nn.functional import softmax
 
+from models.functions_vit_ext import access_encodes_vit
 import numpy as np
 from support.tools import Time
+from wsi.process import recovery_tiles_list_from_pkl
 
 
-
-def load_tiles_encode_rich_tuples():
+def load_tiles_encode_rich_tuples(ENV_task, encoder):
+    '''
+    load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
+    
+    Return:
+        tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
+    '''
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    
+    tile_list = []
+    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+        tile_list.extend(slide_tiles_list)
+        
+    ''' >>>> the encoder here only support ViT <for the moment> '''
+    tiles_en_nd = access_encodes_vit(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+    
     tiles_richencode_tuples = []
+    for i, tile in enumerate(tile_list):
+        encode = tiles_en_nd[i]
+        slide_id = tile.query_slideid()
+        tiles_richencode_tuples.append((encode, tile, slide_id) )
+    
     return tiles_richencode_tuples
 
 def load_tiles_semantic_rich_tuples():
+    '''
+    '''
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
 def load_tiles_graph_embed_rich_tuples():
+    '''
+    '''
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
@@ -57,6 +86,8 @@ class Instance_Clustering():
         print('Initialising the embedding of overall tile features...')
         
         self.tiles_richencode_tuples = []
+        
+        self.clustering_model = None # if the clustering model here is None, means the clustering has not been trained
         
     
     def fit_predict(self):
@@ -92,6 +123,9 @@ class Instance_Clustering():
         clustering_time = Time()
         print('In fitting...', end='')
         cluster_res = clustering.fit_predict(encodes_X)
+        # record the trained clustering model for this
+        self.clustering_model = clustering
+        
         # combine the results package
         clustering_res_pkg = []
         for i, res in enumerate(cluster_res):
@@ -101,6 +135,32 @@ class Instance_Clustering():
                                                                        str(clustering_time.elapsed())))
         
         return clustering_res_pkg, clustering.cluster_centers_
+    
+    def predict(self, tiles_outside_pred_tuples):
+        '''
+        predict cluster for new data with the trained clustering model
+        '''
+        encodes, tiles, slide_ids = [], [], []
+        for info_tuple in tiles_outside_pred_tuples:
+            encodes.append(info_tuple[0])
+            tiles.append(info_tuple[1])
+            slide_ids.append(info_tuple[2])
+        encodes_X = np.array(encodes)
+        print('outside data tuples loaded!')
+        
+        prediction_time = Time()
+        print('In fitting...', end='')
+        cluster_res = self.clustering_model.predict(encodes_X)
+        
+        # combine the results package
+        prediction_res_pkg = []
+        for i, res in enumerate(cluster_res):
+            prediction_res_pkg.append((res, encodes[i], tiles[i], slide_ids[i]))
+        print('predict for %d tiles by %s, with time: %s sec' % (len(self.tiles_richencode_tuples),
+                                                                 self.cluster_name,
+                                                                 str(prediction_time.elapsed())))
+        
+        return prediction_res_pkg
         
         
     def load_K_means(self):
