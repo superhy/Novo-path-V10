@@ -223,21 +223,21 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
 
 def _run_vit_d6_h8_cls_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                    patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             layer_id=-1, zoom=16, map_types=['cls'])
 
 def _run_vit_d6_h8_heads_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                    patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             layer_id=-1, zoom=16, map_types=['heads'])
     
 def _run_vit_d6_h8_cls_heads_map_slides(ENV_task, vit_model_filename):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                    patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                    patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     make_vit_att_map_slides(ENV_task=ENV_task, vit=vit, 
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             layer_id=-1, zoom=16, map_types=['cls', 'heads'])

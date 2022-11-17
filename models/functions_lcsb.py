@@ -590,7 +590,7 @@ def load_modelpaths_dict(ENV_task, modelpaths_dict_filename):
 def _run_train_lcsb_gated_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, pt_agt_name=None):
     ''' only used for test on PC '''
     vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
-                            patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     if vit_pt_name is not None:
         vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         
@@ -599,7 +599,7 @@ def _run_train_lcsb_gated_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, pt_agt_n
     
 def _run_train_lcsb_gated_attpool_vit_6_8(ENV_task, vit_pt_name=None, pt_agt_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                            patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     if vit_pt_name is not None:
         vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         
@@ -608,7 +608,7 @@ def _run_train_lcsb_gated_attpool_vit_6_8(ENV_task, vit_pt_name=None, pt_agt_nam
     
 def _run_train_lcsb_gated_attpool_vit_9_12(ENV_task, vit_pt_name=None, pt_agt_name=None):
     vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
-                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     if vit_pt_name is not None:
         vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
         

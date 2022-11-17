@@ -99,6 +99,7 @@ class parames_task(parames_basic):
                  sspt_num_epoch,
                  sspt_record_pulse,
                  num_slide_samples,
+                 vit_shape,
                  seg_train_folder_name,
                  seg_test_folder_name,
                  seg_pred_folder_name,
@@ -205,14 +206,15 @@ class parames_task(parames_basic):
         # suit for window test env
         if self.OS_NAME == 'Windows' or self.OS_NAME == 'Darwin':
             self.MINI_BATCH_SLIDEMAT = int(self.MINI_BATCH_SLIDEMAT / 2)
-            self.MINI_BATCH_TILE = int(self.MINI_BATCH_TILE / 8)
+            self.MINI_BATCH_TILE = int(self.MINI_BATCH_TILE / 4)
             self.SLIDEMAT_DATALOADER_WORKER = int(self.SLIDEMAT_DATALOADER_WORKER / 2)
-            self.TILE_DATALOADER_WORKER = int(self.TILE_DATALOADER_WORKER / 4)
+            self.TILE_DATALOADER_WORKER = int(self.TILE_DATALOADER_WORKER / 2)
             
         ''' --- self-supervised encoder pre-train parames --- '''
         self.NUM_ENC_SSPT_EPOCH = sspt_num_epoch # the number of total training epochs for self-supervised pre-train (sspt)
         self.SSPT_RECORD_PULSE = sspt_record_pulse # after every ? epochs, record the training log once
         self.NUM_SLIDE_SAMPLES = num_slide_samples # in each epoch, how many tiles are sampled for sspt from one slide
+        self.VIT_SHAPE = vit_shape # the shape of ViT patch map, h / w for (h * w), h == w
         
         ''' --- segmentation params --- '''
         self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.DATA_DIR, seg_train_folder_name)

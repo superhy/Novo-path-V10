@@ -3,6 +3,8 @@
 '''
 
 import os
+import pickle
+import warnings
 
 from sklearn.cluster._affinity_propagation import AffinityPropagation
 from sklearn.cluster._dbscan import DBSCAN
@@ -13,9 +15,30 @@ import torch
 from torch.nn.functional import softmax
 
 from models.functions_vit_ext import access_encodes_vit
+from models.networks import ViT_D6_H8, reload_net
 import numpy as np
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
+
+
+def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
+    '''
+    Args:
+        model_store_dir
+        clustering_model_res: clustering model or results
+        cluster_store_name:
+    '''
+    if not os.path.exists(model_store_dir):
+        os.makedirs(model_store_dir)
+    with open(os.path.join(model_store_dir, cluster_store_name), 'wb') as f_pkl:
+        pickle.dump(clustering_model_res, f_pkl)
+        
+def load_map_dict_from_pkl(model_store_dir, clustering_pkl_name):
+    pkl_filepath = os.path.join(model_store_dir, clustering_pkl_name)
+    with open(pkl_filepath, 'rb') as f_pkl:
+        clustering_pkg = pickle.load(f_pkl)
+        
+    return clustering_pkg       
 
 
 def load_tiles_encode_rich_tuples(ENV_task, encoder):
@@ -27,6 +50,8 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
     '''
     _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
     slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    
+    loading_time = Time()
     
     tile_list = []
     for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
@@ -41,16 +66,17 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
         encode = tiles_en_nd[i]
         slide_id = tile.query_slideid()
         tiles_richencode_tuples.append((encode, tile, slide_id) )
+    print('%d tiles\' encodes have been loaded, take %s sec' % len(tiles_richencode_tuples, str(loading_time.elapsed()) ))
     
     return tiles_richencode_tuples
 
-def load_tiles_semantic_rich_tuples():
+def load_tiles_semantic_rich_tuples(ENV_task, encoder):
     '''
     '''
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
-def load_tiles_graph_embed_rich_tuples():
+def load_tiles_graph_embed_rich_tuples(ENV_task, encoder):
     '''
     '''
     tiles_richencode_tuples = []
@@ -60,7 +86,7 @@ class Instance_Clustering():
     '''
     Clustering for tile instances from all (multiple) slides
     '''
-    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode'):
+    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode', exist_clustering=None):
         '''
         Args:
             ENV_task: task environment (hyper-parameters)
@@ -78,18 +104,26 @@ class Instance_Clustering():
         _env_task_name = self.ENV_task.TASK_NAME
         
         self.model_store_dir = self.ENV_task.MODEL_FOLDER
-        self.alg_name = 'cluster-{}_{}'.format(cluster_name, _env_task_name)
-        self.encoder = encoder
         self.cluster_name = cluster_name
+        self.embed_type = embed_type
+        self.alg_name = '{}-{}_{}'.format(self.cluster_name, self.embed_type, _env_task_name)
+        self.encoder = encoder
+        self.encoder = self.encoder.cuda()
         
         print('![Initial Stage] clustering mode')
         print('Initialising the embedding of overall tile features...')
+        if self.embed_type == 'encode':
+            self.tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+        elif self.embed_type == 'semantic':
+            self.tiles_richencode_tuples = load_tiles_semantic_rich_tuples(self.ENV_task, self.encoder)
+        elif self.embed_type == 'graph':
+            self.tiles_richencode_tuples = load_tiles_graph_embed_rich_tuples(self.ENV_task, self.encoder)
+        else:
+            # default use the 'encode' mode
+            self.tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+            
+        self.clustering_model = exist_clustering # if the clustering model here is None, means the clustering has not been trained
         
-        self.tiles_richencode_tuples = []
-        
-        self.clustering_model = None # if the clustering model here is None, means the clustering has not been trained
-        
-    
     def fit_predict(self):
         '''
         fit the clustering algorithm and get the predict results
@@ -132,14 +166,27 @@ class Instance_Clustering():
             clustering_res_pkg.append((res, encodes[i], tiles[i], slide_ids[i]))
         print('execute %s clustering on %d tiles with time: %s sec' % (self.cluster_name,
                                                                        len(self.tiles_richencode_tuples),
-                                                                       str(clustering_time.elapsed())))
+                                                                       str(clustering_time.elapsed()) ))
+        
+        clustering_res_name = 'clst-res_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, clustering_res_pkg, clustering_res_name)
+        print('store the clustering results at: {} / {}'.format(self.model_store_dir, clustering_res_name) )
+        clustering_model_name = 'clst-model_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, self.clustering_model, clustering_model_name)
+        print('store the clustering model at: {} / {}'.format(self.model_store_dir, clustering_model_name) )
         
         return clustering_res_pkg, clustering.cluster_centers_
     
     def predict(self, tiles_outside_pred_tuples):
         '''
         predict cluster for new data with the trained clustering model
+        Return:
+            prediction_res_pkg: similar with clustering_res_pkg, list of results tuple: [(cluster_res, encode, tile, slide_id), ()...]
         '''
+        if self.clustering_model is None:
+            warnings.warn('no exist clustering model for prediction, please check!')
+            return
+        
         encodes, tiles, slide_ids = [], [], []
         for info_tuple in tiles_outside_pred_tuples:
             encodes.append(info_tuple[0])
@@ -159,6 +206,10 @@ class Instance_Clustering():
         print('predict for %d tiles by %s, with time: %s sec' % (len(self.tiles_richencode_tuples),
                                                                  self.cluster_name,
                                                                  str(prediction_time.elapsed())))
+        
+        prediction_res_name = 'pred-res_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, prediction_res_pkg, prediction_res_name)
+        print('store the prediction results at: {} / {}'.format(self.model_store_dir, prediction_res_name) )
         
         return prediction_res_pkg
         
@@ -242,6 +293,39 @@ class Instance_Clustering():
         
         clustering = DBSCAN(eps=eps, min_samples=min_samples)
         return clustering
+    
+    
+''' ---------------------------------------------------------------------------------------------------------- '''
+
+def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
+                                     cluster_name='Kmeans', embed_type='encode')
+    
+    _, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers), cluster_centers )
+    
+def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
+                                     cluster_name='MeanShift', embed_type='encode')
+    
+    _, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers), cluster_centers )
+    
+def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
+                                     cluster_name='MeanShift', embed_type='encode')
+    
+    _, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers), cluster_centers )
     
 
 if __name__ == '__main__':

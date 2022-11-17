@@ -120,20 +120,20 @@ def pretrain_mae(ENV_task, vit_net):
         
 def _run_pretrain_6_8_dino(ENV_task):
     vit_net = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                        patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                        patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     pretrain_dino(ENV_task, vit_net)
 
     
 def _run_pretrain_6_8_mae(ENV_task):
     vit_net = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                        patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                        patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     pretrain_mae(ENV_task, vit_net)    
 
 
 def _run_pretrain_3_4_t_dino(ENV_task):
     ''' only used for test on PC '''
     vit_net = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
-                          patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                          patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     pretrain_dino(ENV_task, vit_net)
 
 

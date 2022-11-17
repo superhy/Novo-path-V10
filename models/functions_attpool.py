@@ -468,19 +468,19 @@ def _run_train_gated_attpool_resnet18(ENV_task, exist_model_name=None):
     
 def _run_train_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
-                              patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                              patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
     
 def _run_train_attpool_vit_6_8(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                            patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
     
 def _run_train_attpool_vit_9_12(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
-                             patch_size=int(ENV_task.TILE_H_SIZE / 32), output_dim=2)
+                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
 
