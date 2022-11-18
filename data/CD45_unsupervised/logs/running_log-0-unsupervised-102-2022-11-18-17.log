@@ -1,0 +1,90 @@
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.537370 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 18
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.753510 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 2
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.858130 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 18
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.816143 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 47
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.685935 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 8
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.758069 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres: 8 [-1, 0, 1, 3, 4, 5, 2, 6]
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.669052 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres (-1 is noise): 1 [-1, 0]
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:14.280013 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres (-1 is noise): 93 [-1, 0, 1, 2, 55, 73, 3, 4, 78, 5, 6, 75, 28, 25, 60, 13, 7, 9, 65, 8, 10, 29, 40, 34, 71, 11, 37, 12, 76, 72, 14, 23, 36, 70, 15, 68, 26, 18, 24, 16, 32, 58, 27, 66, 21, 46, 17, 50, 19, 33, 20, 90, 31, 87, 86, 74, 52, 85, 22, 48, 49, 47, 56, 88, 41, 59, 30, 83, 42, 84, 82, 35, 38, 45, 81, 39, 62, 43, 44, 54, 53, 79, 89, 63, 51, 67, 57, 61, 64, 69, 92, 91, 77, 80]
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-18.pkl
+data tuples loaded!
+Using clustering: DBSCAN
+In fitting...execute DBSCAN clustering on 33311 tiles with time: 0:00:13.825989 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_DBSCAN-encode_unsupervised2022-11-18.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_DBSCAN-encode_unsupervised2022-11-18.pkl
+clustering number of centres (-1 is noise): 7 [-1, 0, 1, 3, 4, 5, 2, 6]

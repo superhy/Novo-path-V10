@@ -1,0 +1,3 @@
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...

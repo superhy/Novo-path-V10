@@ -19,6 +19,7 @@ from models.networks import ViT_D6_H8, reload_net
 import numpy as np
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
+from asyncio.tasks import sleep
 
 
 def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
@@ -66,7 +67,7 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
         encode = tiles_en_nd[i]
         slide_id = tile.query_slideid()
         tiles_richencode_tuples.append((encode, tile, slide_id) )
-    print('%d tiles\' encodes have been loaded, take %s sec' % len(tiles_richencode_tuples, str(loading_time.elapsed()) ))
+    print('%d tiles\' encodes have been loaded, take %s sec' % (len(tiles_richencode_tuples), str(loading_time.elapsed()) ))
     
     return tiles_richencode_tuples
 
@@ -99,7 +100,7 @@ def save_load_tiles_rich_tuples(ENV_task, tiles_richencode_tuples, tiles_tuples_
         
     with open(pkl_filepath, 'wb') as f_pkl:
         pickle.dump(tiles_richencode_tuples, f_pkl)
-    print('store %d tiles rich tuples at: %s' % () )
+    print('store %d tiles rich tuples at: %s' % (len(tiles_richencode_tuples), pkl_filepath) )
 
 
 def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
@@ -223,7 +224,15 @@ class Instance_Clustering():
         store_clustering_pkl(self.model_store_dir, self.clustering_model, clustering_model_name)
         print('store the clustering model at: {} / {}'.format(self.model_store_dir, clustering_model_name) )
         
-        return clustering_res_pkg, clustering.cluster_centers_
+        centers = []
+        if self.cluster_name == 'DBSCAN':
+            for res_tuple in clustering_res_pkg:
+                if res_tuple[0] not in centers:
+                    centers.append(res_tuple[0])
+        else:
+            centers = clustering.cluster_centers_
+        
+        return clustering_res_pkg, centers
     
     def predict(self, tiles_outside_pred_tuples):
         '''
@@ -303,7 +312,9 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        bandwidth = estimate_bandwidth(X, quantile=0.2, n_samples=500)
+        bandwidth = estimate_bandwidth(X, quantile=0.2, n_samples=5000, random_state=2000)
+        # bandwidth = 1.0
+        print('with bandwidth: ', bandwidth)
         bin_seeding = True
         
         clustering = MeanShift(bandwidth=bandwidth, bin_seeding=bin_seeding)
@@ -336,7 +347,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        eps = 0.3
+        eps = 0.2
         min_samples = 10
         
         clustering = DBSCAN(eps=eps, min_samples=min_samples)
@@ -351,10 +362,10 @@ def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
-                                     tiles_r_tuples_pkl_name)
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     
     _, cluster_centers = clustering.fit_predict()
-    print('clustering number of centres:', len(cluster_centers), cluster_centers )
+    print('clustering number of centres:', len(cluster_centers) )
     
 def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
@@ -362,21 +373,22 @@ def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
                                      cluster_name='MeanShift', embed_type='encode',
-                                     tiles_r_tuples_pkl_name)
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     
     _, cluster_centers = clustering.fit_predict()
-    print('clustering number of centres:', len(cluster_centers), cluster_centers )
+    print('clustering number of centres:', len(cluster_centers) )
     
 def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
-                                     cluster_name='MeanShift', embed_type='encode',
-                                     tiles_r_tuples_pkl_name)
+                                     cluster_name='DBSCAN', embed_type='encode',
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     
-    _, cluster_centers = clustering.fit_predict()
-    print('clustering number of centres:', len(cluster_centers), cluster_centers )
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres (-1 is noise):', len(cluster_centers) - 1, cluster_centers )
+    
     
 
 if __name__ == '__main__':

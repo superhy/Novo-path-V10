@@ -1,5 +1,0 @@
-On-standby: PT-Dino_unsupervised training
-Network: ViT-6-8, train on -> cuda
-On-standby: PT-Dino_unsupervised training
-Network: ViT-6-8, train on -> cuda
-epoch [1/500], batch_loss-> 1.1698, time: 1:17:06.0 sec
