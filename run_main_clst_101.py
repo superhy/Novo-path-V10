@@ -26,4 +26,5 @@ if __name__ == '__main__':
     
     if 101 in task_ids:
         vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
-        _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name)
+        tiles_r_tuples_pkl_name = None
+        _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name)
