@@ -82,11 +82,45 @@ def load_tiles_graph_embed_rich_tuples(ENV_task, encoder):
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
+
+def save_load_tiles_rich_tuples(ENV_task, tiles_richencode_tuples, tiles_tuples_pkl_name):
+    '''
+    save the load tiles rich encode tuples
+    '''
+    _encode_store_dir = ENV_task.TASK_SLIDE_MATRIX_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_SLIDE_MATRIX_TEST_DIR
+    if not os.path.exists(_encode_store_dir):
+        os.makedirs(_encode_store_dir)
+    
+    pkl_filepath = os.path.join(_encode_store_dir, tiles_tuples_pkl_name)
+    # force store, remove the old one
+    if os.path.exists(pkl_filepath):
+        os.remove(pkl_filepath)
+        print('remove the old .pkl file, ', end='')
+        
+    with open(pkl_filepath, 'wb') as f_pkl:
+        pickle.dump(tiles_richencode_tuples, f_pkl)
+    print('store %d tiles rich tuples at: %s' % () )
+
+
+def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
+    '''
+    load the pre_load tiles rich encode tuples
+    '''
+    _encode_store_dir = ENV_task.TASK_SLIDE_MATRIX_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_SLIDE_MATRIX_TEST_DIR
+    pkl_filepath = os.path.join(_encode_store_dir, tiles_tuples_pkl_name)
+    with open(pkl_filepath, 'rb') as f_pkl:
+        tiles_richencode_tuples = pickle.load(f_pkl)
+    print('load the exist tiles tuples from: %s' % pkl_filepath)
+        
+    return tiles_richencode_tuples
+    
+
 class Instance_Clustering():
     '''
     Clustering for tile instances from all (multiple) slides
     '''
-    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode', exist_clustering=None):
+    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode', 
+                 tiles_r_tuples_pkl_name=None, exist_clustering=None):
         '''
         Args:
             ENV_task: task environment (hyper-parameters)
@@ -97,6 +131,9 @@ class Instance_Clustering():
                 'encode' -> the typical encoding from encoder (available for both ResNet and ViT)
                 'semantic' ->  the semantic map extracted from ViT encoder
                 'graph' -> the topological graph embeded from ViT encoder
+            tiles_r_tuples_pkl_name: if have preload tiles rich encode tuples
+            
+            [exist_clustering: for the moment, it's None]
         '''
         
         self.ENV_task = ENV_task
@@ -112,18 +149,29 @@ class Instance_Clustering():
         
         print('![Initial Stage] clustering mode')
         print('Initialising the embedding of overall tile features...')
-        if self.embed_type == 'encode':
-            self.tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
-        elif self.embed_type == 'semantic':
-            self.tiles_richencode_tuples = load_tiles_semantic_rich_tuples(self.ENV_task, self.encoder)
-        elif self.embed_type == 'graph':
-            self.tiles_richencode_tuples = load_tiles_graph_embed_rich_tuples(self.ENV_task, self.encoder)
+        if tiles_r_tuples_pkl_name is not None:
+            self.tiles_richencode_tuples = get_preload_tiles_rich_tuples(self.ENV_task, tiles_r_tuples_pkl_name)
         else:
-            # default use the 'encode' mode
-            self.tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+            # generate encode rich tuples
+            self.tiles_richencode_tuples = self.gen_tiles_richencode_tuples()
+            # store the encode rich tuples pkl
+            tiles_tuples_pkl_name = '{}-{}_{}.pkl'.format(self.encoder.name, self.embed_type, Time().date )
+            save_load_tiles_rich_tuples(self.ENV_task, self.tiles_richencode_tuples, tiles_tuples_pkl_name)
             
         self.clustering_model = exist_clustering # if the clustering model here is None, means the clustering has not been trained
         
+    def gen_tiles_richencode_tuples(self):
+        if self.embed_type == 'encode':
+            tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+        elif self.embed_type == 'semantic':
+            tiles_richencode_tuples = load_tiles_semantic_rich_tuples(self.ENV_task, self.encoder)
+        elif self.embed_type == 'graph':
+            tiles_richencode_tuples = load_tiles_graph_embed_rich_tuples(self.ENV_task, self.encoder)
+        else:
+            # default use the 'encode' mode
+            tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+        return tiles_richencode_tuples
+    
     def fit_predict(self):
         '''
         fit the clustering algorithm and get the predict results
@@ -245,7 +293,7 @@ class Instance_Clustering():
     def load_MeanShift(self, X):
         '''
         load the model of meanshift clustering algorithm
-            Dorin Comaniciu and Peter Meer, “Mean Shift: A robust approach toward feature space analysis”.
+            Dorin Comaniciu and Peter Meer, â€œMean Shift: A robust approach toward feature space analysisâ€�.
                 IEEE Transactions on Pattern Analysis and Machine Intelligence. 2002. pp. 603-619.
             without number of clusters
         
@@ -281,7 +329,7 @@ class Instance_Clustering():
     def load_DBSCAN(self):
         '''
         load the model of DBSCAN clustering algorithm
-            Ester, M., H. P. Kriegel, J. Sander, and X. Xu, “A Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noise”.
+            Ester, M., H. P. Kriegel, J. Sander, and X. Xu, â€œA Density-Based Algorithm for Discovering Clusters in Large Spatial Databases with Noiseâ€�.
                 In: Proceedings of the 2nd International Conference on Knowledge Discovery and Data Mining, Portland, OR, AAAI Press, pp. 226-231. 1996
             without number of clusters
             
@@ -297,32 +345,35 @@ class Instance_Clustering():
     
 ''' ---------------------------------------------------------------------------------------------------------- '''
 
-def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name):
+def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
-                                     cluster_name='Kmeans', embed_type='encode')
+                                     cluster_name='Kmeans', embed_type='encode',
+                                     tiles_r_tuples_pkl_name)
     
     _, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers), cluster_centers )
     
-def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name):
+def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
-                                     cluster_name='MeanShift', embed_type='encode')
+                                     cluster_name='MeanShift', embed_type='encode',
+                                     tiles_r_tuples_pkl_name)
     
     _, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers), cluster_centers )
     
-def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name):
+def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
-                                     cluster_name='MeanShift', embed_type='encode')
+                                     cluster_name='MeanShift', embed_type='encode',
+                                     tiles_r_tuples_pkl_name)
     
     _, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers), cluster_centers )
