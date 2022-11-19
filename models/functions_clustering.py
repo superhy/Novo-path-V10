@@ -11,15 +11,12 @@ from sklearn.cluster._dbscan import DBSCAN
 from sklearn.cluster._kmeans import KMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
-import torch
-from torch.nn.functional import softmax
 
 from models.functions_vit_ext import access_encodes_vit
 from models.networks import ViT_D6_H8, reload_net
 import numpy as np
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
-from asyncio.tasks import sleep
 
 
 def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
@@ -388,7 +385,13 @@ def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres (-1 is noise):', len(cluster_centers) - 1, cluster_centers )
-    
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
     
 
 if __name__ == '__main__':

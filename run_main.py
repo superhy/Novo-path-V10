@@ -43,7 +43,7 @@ For algorithm 8 (pre-training of encoder, usually ViT)
     80: self-supervised pre-train with ViT-6-8, by DINO
     81: self-supervised pre-train with ViT-6-8, by MAE <deprecated>
     82: self-supervised pre-train with ViT-9-12, by DINO
-    89: self-supervised pre-train with ViT-3-4-t, by DINO <deprecated>
+    89: self-supervised pre-train with ViT-3-4-t, by DINO
 '''
 
 '''

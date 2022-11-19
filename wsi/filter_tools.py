@@ -197,6 +197,30 @@ def filter_grays(rgb, tolerance=15, output_type="bool", show_np_info=False):
         
     return result
 
+def filter_l_r_half(rgb, direction='right', output_type="bool"):
+    """
+    filtering left or right half
+    
+    Args:
+        rgb:
+        direction: keep 'left' or 'right' part of the slide, discard the other part
+    """
+    (h, w, c) = rgb.shape
+    result = np.ones((h, w))
+    if direction == 'right':
+        result[:, :int(w * 0.5)] = 0
+    else:
+        result[:, int(w * 0.5) + 1:] = 0
+    
+    if output_type == "bool":
+        result = result.astype(bool)
+    elif output_type == "float":
+        result = result.astype(float)
+    else:
+        result = result.astype("uint8") * 255
+        
+    return result
+
 def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8"):
     """
     Dilate a binary object (bool, float, or uint8).
@@ -518,7 +542,8 @@ def apply_image_filters_cd45(np_img, tumor_region_jsonpath=None, tumor_or_backgr
         print('Filter noise of various colors and objects that are too small')
         
     mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
-    mask_not_gray = filter_grays(np_rgb, tolerance=10.5)
+    mask_not_gray = filter_grays(np_rgb, tolerance=13)
+    mask_right = filter_l_r_half(np_rgb, direction='right')
     
     mask_no_red_pen = filter_red_pen(np_rgb)
     
@@ -526,7 +551,7 @@ def apply_image_filters_cd45(np_img, tumor_region_jsonpath=None, tumor_or_backgr
     
     mask_no_blue_pen = filter_blue_pen(np_rgb)
     
-    mask_gray_green_pens = mask_not_green & mask_not_gray & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
+    mask_gray_green_pens = mask_not_green & mask_not_gray & mask_right & mask_no_red_pen & mask_no_green_pen & mask_no_blue_pen
 
     if not tumor_region_jsonpath == None and Path(tumor_region_jsonpath).is_file():
         # check the tumor area annotation file
