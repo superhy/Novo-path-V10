@@ -31,7 +31,7 @@ def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_na
     with open(os.path.join(model_store_dir, cluster_store_name), 'wb') as f_pkl:
         pickle.dump(clustering_model_res, f_pkl)
         
-def load_map_dict_from_pkl(model_store_dir, clustering_pkl_name):
+def load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name):
     pkl_filepath = os.path.join(model_store_dir, clustering_pkl_name)
     with open(pkl_filepath, 'rb') as f_pkl:
         clustering_pkg = pickle.load(f_pkl)
@@ -276,7 +276,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 10
+        n_clusters = 10 
         
         clustering = KMeans(n_clusters=n_clusters)
         return clustering
@@ -299,7 +299,7 @@ class Instance_Clustering():
     def load_MeanShift(self, X):
         '''
         load the model of meanshift clustering algorithm
-            Dorin Comaniciu and Peter Meer, â€œMean Shift: A robust approach toward feature space analysisâ€�.
+            Dorin Comaniciu and Peter Meer, â€œMean Shift: A robust approach toward feature space analysis.
                 IEEE Transactions on Pattern Analysis and Machine Intelligence. 2002. pp. 603-619.
             without number of clusters
         
@@ -361,8 +361,15 @@ def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     
-    _, cluster_centers = clustering.fit_predict()
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers) )
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
     
 def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,

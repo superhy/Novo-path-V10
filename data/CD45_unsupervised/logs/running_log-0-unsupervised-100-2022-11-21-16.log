@@ -1,0 +1,22 @@
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-21.pkl
+data tuples loaded!
+Using clustering: Kmeans
+In fitting...execute Kmeans clustering on 33311 tiles with time: 0:00:06.246359 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_Kmeans-encode_unsupervised2022-11-21.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_Kmeans-encode_unsupervised2022-11-21.pkl
+clustering number of centres: 10
+{1: 2999, 7: 4440, 6: 3960, 2: 2160, 9: 1439, 8: 2832, 5: 2478, 3: 1494, 0: 4572, 4: 6927}
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+load the exist tiles tuples from: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-21.pkl
+data tuples loaded!
+Using clustering: Kmeans
+In fitting...execute Kmeans clustering on 33311 tiles with time: 0:00:06.894679 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_Kmeans-encode_unsupervised2022-11-21.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_Kmeans-encode_unsupervised2022-11-21.pkl
+clustering number of centres: 10
+{9: 3041, 4: 4455, 6: 3875, 8: 2117, 1: 1484, 0: 2831, 2: 2479, 7: 1534, 5: 4576, 3: 6909}
