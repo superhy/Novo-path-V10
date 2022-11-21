@@ -4,7 +4,7 @@
 import os
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
-from interpre.prep_tools import load_clustering_pkg_from_pkl
+from interpre.prep_tools import load_map_pkg_from_pkl
 
 
 def plot_vit_cls_map(ENV_task, clsmap_pkl_name):
@@ -20,7 +20,7 @@ def plot_vit_cls_map(ENV_task, clsmap_pkl_name):
             ...
         }
     '''
-    slides_tiles_cls_map_dict = load_clustering_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, clsmap_pkl_name)
+    slides_tiles_cls_map_dict = load_map_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, clsmap_pkl_name)
     map_dir = os.path.join(ENV_task.HEATMAP_STORE_DIR, clsmap_pkl_name.split('_')[0])
     alg_name = clsmap_pkl_name.split('_')[1]
     
@@ -53,7 +53,7 @@ def plot_vit_heads_map(ENV_task, headsmap_pkl_name):
             ...
         }
     '''
-    slides_tiles_heads_map_dict = load_clustering_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, headsmap_pkl_name)
+    slides_tiles_heads_map_dict = load_map_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, headsmap_pkl_name)
     map_dir = os.path.join(ENV_task.HEATMAP_STORE_DIR, headsmap_pkl_name.split('_')[0])
     alg_name = headsmap_pkl_name.split('_')[1]
     

@@ -12,7 +12,7 @@ def store_map_nd_dict_pkl(_env_heatmap_store_dir,
     with open(os.path.join(_env_heatmap_store_dir, heatmap_pkl_name), 'wb') as f_pkl:
         pickle.dump(slide_heatmap_dict, f_pkl)
 
-def load_clustering_pkg_from_pkl(_env_heatmap_store_dir,
+def load_map_pkg_from_pkl(_env_heatmap_store_dir,
                            package_pkl_name):
     pkl_filepath = os.path.join(_env_heatmap_store_dir, package_pkl_name)
     with open(pkl_filepath, 'rb') as f_pkl:

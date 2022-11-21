@@ -3,7 +3,7 @@ Created on 17 Nov 2022
 
 @author: Yang Hu
 '''
-from interpre.prep_tools import load_clustering_pkg_from_pkl
+from models.functions_clustering import load_clustering_pkg_from_pkl
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
