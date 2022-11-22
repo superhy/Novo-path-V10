@@ -3,6 +3,7 @@
 '''
 import os
 import pickle
+import random
 
 
 def store_map_nd_dict_pkl(_env_heatmap_store_dir,
@@ -19,6 +20,14 @@ def load_map_pkg_from_pkl(_env_heatmap_store_dir,
         slide_heatmap_dict = pickle.load(f_pkl)
         
     return slide_heatmap_dict
+
+def safe_random_sample(pickpool, K):
+    
+    if len(pickpool) > K:
+        return random.sample(pickpool, K)
+    else:
+        return pickpool
+
 
 if __name__ == '__main__':
     pass

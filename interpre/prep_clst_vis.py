@@ -3,6 +3,7 @@ Created on 17 Nov 2022
 
 @author: Yang Hu
 '''
+from interpre.prep_tools import safe_random_sample
 from models.functions_clustering import load_clustering_pkg_from_pkl
 
 
@@ -27,11 +28,42 @@ def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_points_c
     '''
     clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
     
+    clst_encode_dict, clst_encode_list = {}, []
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        label, encode, _, _ = clst_res_tuple
+        if label not in clst_encode_dict.keys():
+            clst_encode_dict[label] = []
+            clst_encode_dict[label].append(encode)
+        else:
+            clst_encode_dict[label].append(encode)
+        
+    pick_clst_encode_dict = {}    
+    if nb_points_clst is not None:
+        for label in clst_encode_dict.keys():
+            label_encodes_list = clst_encode_dict[label]
+            pick_clst_encode_dict[label] = safe_random_sample(label_encodes_list, nb_points_clst)
+    else:
+        pick_clst_encode_dict = clst_encode_dict
+            
+    for label, encode_list in pick_clst_encode_dict.items():
+        for encode in encode_list:
+            clst_encode_list.append((label, encode))
+            
+    return pick_clst_encode_dict, clst_encode_list
+    
+    
 def load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name):
     '''
     Return:
         {slide_id: [(tile, clst_label)]}
     '''
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    slide_tile_clst_dict = {}
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        label, encode, tile, slide_id = clst_res_tuple
+        if slide_id not in slide_tile_clst_dict.keys():
+            pass
 
 def make_clsuters_space_maps():
     '''
