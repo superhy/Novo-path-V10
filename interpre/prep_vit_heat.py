@@ -16,7 +16,7 @@ from models.functions_vit_ext import access_att_maps_vit
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T
 import numpy as np
 from support.tools import normalization
-from interpre.prep_tools import store_map_nd_dict_pkl
+from interpre.prep_tools import store_nd_dict_pkl
 from wsi.process import recovery_tiles_list_from_pkl
 
 
@@ -203,7 +203,7 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
             slides_tiles_cls_map_dict[slide_id].append(tile_cls_map_tuple)
     if len(slides_tiles_cls_map_dict) > 0:
         clsmap_pkl_name = vit_model_filename.replace('checkpoint', 'clsmap').replace('.pth', '.pkl')
-        store_map_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slides_tiles_cls_map_dict, clsmap_pkl_name)
+        store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slides_tiles_cls_map_dict, clsmap_pkl_name)
         print('Done -> made and prepared clsmap for: %d slides, as: %s' % (len(slides_tiles_cls_map_dict), clsmap_pkl_name))
             
     for tile_heads_map_tuple in tiles_heads_map_list:
@@ -215,7 +215,7 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
             slides_tiles_heads_map_dict[slide_id].append(tile_heads_map_tuple)
     if len(slides_tiles_heads_map_dict) > 0:
         headsmap_pkl_name = vit_model_filename.replace('checkpoint', 'headsmap').replace('.pth', '.pkl')
-        store_map_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slides_tiles_heads_map_dict, headsmap_pkl_name)
+        store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slides_tiles_heads_map_dict, headsmap_pkl_name)
         print('Done -> made and prepared headsmap for: %d slides, as: %s' % (len(slides_tiles_heads_map_dict), headsmap_pkl_name))
 
 
