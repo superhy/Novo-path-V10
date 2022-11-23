@@ -276,7 +276,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 10 
+        n_clusters = 8
         
         clustering = KMeans(n_clusters=n_clusters)
         return clustering
@@ -344,7 +344,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        eps = 0.2
+        eps = 1.0
         min_samples = 10
         
         clustering = DBSCAN(eps=eps, min_samples=min_samples)

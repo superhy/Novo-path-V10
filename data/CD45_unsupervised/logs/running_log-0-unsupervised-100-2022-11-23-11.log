@@ -1,0 +1,12 @@
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+15793 tiles' encodes have been loaded, take 0:03:59.324316 sec
+store 15793 tiles rich tuples at: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-encode_2022-11-23.pkl
+data tuples loaded!
+Using clustering: Kmeans
+In fitting...execute Kmeans clustering on 15793 tiles with time: 0:00:03.012461 sec
+store the clustering results at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-res_Kmeans-encode_unsupervised2022-11-23.pkl
+store the clustering model at: D:/FLINC_dataset/slides/yang_cd45_u\models / clst-model_Kmeans-encode_unsupervised2022-11-23.pkl
+clustering number of centres: 10
+{0: 2475, 5: 430, 2: 1554, 6: 2245, 3: 1116, 9: 2136, 4: 1918, 1: 1804, 8: 1067, 7: 1038}

@@ -31,7 +31,7 @@ def plot_clst_scatter(clst_redu_en_dict):
         nb_demo: cut the first N embeds used as the demos
     '''
     
-    colors = colors_10
+    colors = colors_10[:len(clst_redu_en_dict.keys())]
     
     labels, embed_nds, legend_names = [], [], []
     for i in range(len(clst_redu_en_dict.keys())):
@@ -46,7 +46,7 @@ def plot_clst_scatter(clst_redu_en_dict):
             name=node_name,
             marker=dict(
                 color=color,
-#                 size=scores * 3.0 + 8.0,
+                size=2.0,
                 )
             ))
         

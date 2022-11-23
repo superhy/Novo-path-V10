@@ -191,8 +191,8 @@ def pred_segmentation_nuclei_filter(ENV_task, net):
                                    mask=mask, green=green, sp_nuclei=sp_nuclei, nuclei_color_dict=nuclei_color_dict)
     
     
-def apply_mask(heat_med, white_mask):
-    new_heat = np.uint32(np.float64(heat_med) + np.float64(white_mask))
+def apply_mask(heat, white_mask):
+    new_heat = np.uint32(np.float64(heat) + np.float64(white_mask))
     new_heat = np.uint8(np.minimum(new_heat, 255))
     return new_heat
     

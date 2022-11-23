@@ -3,11 +3,20 @@ Created on 17 Nov 2022
 
 @author: Yang Hu
 '''
+import warnings
+
+from PIL import Image
+import PIL
+import cmapy
+import cv2
+
 from interpre.prep_tools import safe_random_sample, tSNE_transform, \
     store_nd_dict_pkl
+from models import datasets
 from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
 from support.tools import Time
+from wsi import image_tools, slide_tools
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
@@ -82,9 +91,9 @@ def clst_encode_redu_tsne(clst_encode_tuples):
         {label: nd_array [embeds] dim-redu encodes}
     '''
     encodes, labels = [], []
-    for labels, encode in clst_encode_tuples:
+    for label, encode in clst_encode_tuples:
         encodes.append(encode)
-        labels.append(labels)
+        labels.append(label)
         
     print('running t-SNE algorithm...')
     time = Time()
@@ -119,19 +128,86 @@ def make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=None):
     print('done the clusters dim-reduction and store as: ', clst_tsne_pkl_name)
     
 
-def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, slide_id):
+def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
+    '''
+    generate the clusters spatial map on single slide
+    
+    Return:
+        org_np_img: nd_array of scaled original image of slide
+        heat_clst_col: clusters spatial map for the slide
+    '''
+    
+    def apply_mask(heat, white_mask):
+        new_heat = np.uint32(np.float64(heat) + np.float64(white_mask))
+        new_heat = np.uint8(np.minimum(new_heat, 255))
+        return new_heat
+    
+    slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
+    H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
+    W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
+    heat_clst = np.ones((H, W, 3), dtype=np.float64)
+    white_mask = np.ones((H, W, 3), dtype=np.float64)
+    
+    for tile, label in slide_tile_clst_tuples:
+        h = tile.h_id - 1 
+        w = tile.w_id - 1
+        if h >= H or w >= W or h < 0 or w < 0:
+            warnings.warn('Out of range coordinates.')
+            continue
+        heat_clst[h, w] = label * 1.0
+        white_mask[h, w] = 0.0
+    
+    c_panel = cmapy.cmap('tab10')
+    heat_clst_cv2_col = col_pal_cv2_10(heat_clst).astype("uint8")
+    heat_clst = Image.fromarray(heat_clst_cv2_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    heat_clst_col = cv2.applyColorMap(np.uint8(heat_clst), c_panel)
+    heat_clst_col = apply_mask(heat_clst_col, white_mask)
+    
+    org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_clst_tuples[0][0].original_slide_filepath,
+                                                                   ENV_task.SCALE_FACTOR, print_opening=False)
+    org_np_img = image_tools.pil_to_np_rgb(org_image)
+    print('generate cluster spatial map and keep the original image for slide: {}'.format(slide_id))
+    
+    return org_np_img, heat_clst_col
+
+def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     
     slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
-    # TODO:
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
+    
+    slide_clst_spatmap_dict = {}
+    for slide_id in slide_id_list:
+        tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        org_np_img, heat_clst_col = gen_single_slide_clst_spatial(ENV_task, tile_clst_tuples, slide_id)
+        slide_clst_spatmap_dict[slide_id] = {'original': org_np_img if keep_org_slide else None,
+                                             'heat_clst': heat_clst_col}
+    
+    clst_spatmaps_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-spat')
+    store_nd_dict_pkl(heat_store_dir, slide_clst_spatmap_dict, clst_spatmaps_pkl_name)
+    print('Store slides clusters spatial maps numpy package as: {}'.format(clst_spatmaps_pkl_name))
+    
+    
+def make_tiles_example_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
     
 ''' ---------------------------------------------------------------------------------- '''
 
 def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=1000):
     make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked)
+    
+def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
+    make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide)
 
 
 if __name__ == '__main__':

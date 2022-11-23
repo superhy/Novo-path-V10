@@ -22,7 +22,8 @@ from wsi import process
 
 
 
-task_ids = [1, 2]
+# task_ids = [1, 2]
+task_ids = [2]
 
 # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 # ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB
