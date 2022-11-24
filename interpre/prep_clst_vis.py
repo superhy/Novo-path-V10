@@ -17,6 +17,7 @@ from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
 from support.tools import Time
 from wsi import image_tools, slide_tools
+from scipy.stats._continuous_distns import dweibull
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
@@ -25,10 +26,6 @@ def col_pal_cv2_20(i_nd):
 # same with above with 10 colors
 def col_pal_cv2_10(i_nd):
     return 10.0 + (255.0 / 10) * i_nd
-# 5 colors
-def col_pal_cv2_5(i_nd):
-    return 20.0 + (255.0 / 5) * i_nd
-
 
 
 def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_points_clst=None):
@@ -80,7 +77,25 @@ def load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name):
         else:
             slide_tile_clst_dict[slide_id].append((tile, label))
     
-    return slide_tile_clst_dict        
+    return slide_tile_clst_dict
+
+def load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name):
+    '''
+    Return:
+        {clst_label: [(tile, slide_id)]}
+    '''
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    clst_tile_slideid_dict = {}
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        label, _, tile, slide_id = clst_res_tuple
+        if label not in clst_tile_slideid_dict.keys():
+            clst_tile_slideid_dict[label] = []
+            clst_tile_slideid_dict[label].append((tile, slide_id))
+        else:
+            clst_tile_slideid_dict[label].append((tile, slide_id))
+    
+    return clst_tile_slideid_dict
     
 
 def clst_encode_redu_tsne(clst_encode_tuples):
@@ -193,13 +208,26 @@ def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slid
     print('Store slides clusters spatial maps numpy package as: {}'.format(clst_spatmaps_pkl_name))
     
     
-def make_tiles_example_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
+def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     
-    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    clst_tile_slideid_dict = load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name)
+    
+    clst_tile_img_dict = {}
+    for label in clst_tile_slideid_dict.keys():
+        tile_slideid_tuples = clst_tile_slideid_dict[label]
+        picked_tile_slideid = safe_random_sample(tile_slideid_tuples, nb_sample)
+        clst_tile_img_dict[label] = []
+        for tile, slide_id in picked_tile_slideid:
+            tile_img = tile.get_np_tile()
+            clst_tile_slideid_dict[label].append((tile_img, slide_id))
+            
+    clst_tiledemo_img_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tiledemo')
+    store_nd_dict_pkl(heat_store_dir, clst_tile_slideid_dict, clst_tiledemo_img_pkl_name)
+    print('Store clusters tile demo image numpy package as: {}'.format(clst_tiledemo_img_pkl_name))
     
 ''' ---------------------------------------------------------------------------------- '''
 
@@ -208,6 +236,9 @@ def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=1000)
     
 def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
     make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide)
+    
+def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
+    make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
 
 
 if __name__ == '__main__':

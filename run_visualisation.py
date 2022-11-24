@@ -5,7 +5,7 @@
 import os
 
 from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
-    _run_make_spatial_clusters_on_slides
+    _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
@@ -40,3 +40,7 @@ if __name__ == '__main__':
     if 21 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-23.pkl'
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True)
+    if 22 in task_ids:
+        clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-23.pkl'
+        nb_sample=50
+        _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)

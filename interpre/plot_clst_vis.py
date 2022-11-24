@@ -2,23 +2,22 @@
 @author: Yang Hu
 '''
 
+import os
+
 from plotly.graph_objs.layout import xaxis, yaxis
 from scipy.interpolate._bsplines import make_interp_spline
 
+from interpre.draw_maps import draw_attention_heatmap, draw_original_image
 from interpre.prep_tools import load_vis_pkg_from_pkl
+from models import datasets
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
 
-colors_5 = ['rgb(255, 65, 54)', 'rgb(93, 164, 214)',
-            'rgb(255, 144, 14)', 'rgb(44, 160, 101)',
-            'rgb(198, 113, 113)']
-colors_10 = ['rgb(220, 20, 60)', 'rgb(255, 174, 185)',
-             'rgb(148, 0, 211)', 'rgb(131, 111, 255)',
-             'rgb(135, 206, 250)', 'rgb(0, 205, 102)', 
-             'rgb(255, 255, 0)', 'rgb(139, 131, 120)', 
-             'rgb(255, 127, 0)', 'rgb(198, 113, 113)']
+# the colors_10 is mapping with color_pannel cv2 in prep_clst_vis
+colors_10 = ['blue', 'orange', 'green', 'red', 'purple', 
+             'brown', 'pink', 'gray', 'olive', 'cyan']
 
 def plot_clst_scatter(clst_redu_en_dict):
     '''
@@ -74,11 +73,42 @@ def plot_clst_scatter(clst_redu_en_dict):
     fig.write_html('fig5_demo_encodes.html', auto_open=True)
     
 
+def plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
+    '''
+    '''
+    
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    slide_clst_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_spatmaps_pkl_name)
+    
+    clst_alg_name = clst_spatmaps_pkl_name[:clst_spatmaps_pkl_name.find('-encode')]
+    clst_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name)
+    if not os.path.exists(clst_spatmap_dir):
+        os.makedirs(clst_spatmap_dir)
+        print('create file dir {}'.format(clst_spatmap_dir) )
+        
+    slide_tile_list_dict = {}
+#     slide_tile_list_dict = datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE)
+    for slide_id in slide_clst_spatmap_dict.keys():
+        spatmap_into_dict = slide_clst_spatmap_dict[slide_id]
+        if spatmap_into_dict['original'] is None:
+            org_np_img = slide_tile_list_dict[slide_id][0].get_np_scaled_slide()
+        else:
+            org_np_img = spatmap_into_dict['original']
+        heat_clst_col = spatmap_into_dict['heat_clst']
+        
+        draw_original_image(clst_spatmap_dir, org_np_img, (slide_id, 'org') )
+        print('draw original image in: {}'.format(os.path.join(clst_spatmap_dir, '{}-{}.png'.format(slide_id, 'org')) ))
+        draw_attention_heatmap(clst_spatmap_dir, heat_clst_col, org_np_img, None, (slide_id, 'clst_spat'))
+        print('draw cluster spatial map in: {}'.format(os.path.join(clst_spatmap_dir, '{}-{}.png'.format(slide_id, 'clst_spat')) ))
+
 ''' ---------------------------------------------------------------------------------- '''
     
-def _run_plot_clst_scatter(ENV_task, clustering_pkl_name):
-    clst_redu_en_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, clustering_pkl_name)
+def _run_plot_clst_scatter(ENV_task, clst_space_pkl_name):
+    clst_redu_en_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, clst_space_pkl_name)
     plot_clst_scatter(clst_redu_en_dict)
+    
+def _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
+    plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name)
     
 
 if __name__ == '__main__':

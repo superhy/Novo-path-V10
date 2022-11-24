@@ -157,9 +157,9 @@ class parames_task(parames_basic):
                                                                                               self.TILESIZE_DIR))
         self.LOG_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/logs'.format(self.STAIN_TYPE, self.TASK_NAME))
         self.RECORDS_REPO_DIR = os.path.join(self.PROJECT_DIR, 'data/{}_{}/records'.format(self.STAIN_TYPE, self.TASK_NAME))
-        self.HEATMAP_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/heatmap')
-        self.PLOT_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/plot')
-        self.STATISTIC_STORE_DIR = os.path.join(self.DATA_DIR, 'visualisation/statistic')
+        self.HEATMAP_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/heatmap')
+        self.PLOT_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/plot')
+        self.STATISTIC_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/statistic')
         
         ''' --- classification params --- '''
         self.LOSS_PACKAGE = loss_package
