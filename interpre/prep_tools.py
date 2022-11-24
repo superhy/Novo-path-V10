@@ -31,6 +31,21 @@ def safe_random_sample(pickpool, K):
     else:
         return pickpool
     
+def fold_id_list(id_list, batchsize):
+    '''
+    fold a list to several batches
+    '''
+    batch_list = []
+    nb_batches = len(id_list) / batchsize + 1
+    for batch in range(nb_batches):
+        if (batch + 1) * batchsize < len(id_list):
+            this_batch = id_list[batch * batchsize: (batch + 1) * batchsize]
+        else:
+            this_batch = id_list[batch * batchsize:]
+        batch_list.append(this_batch)
+    
+    return batch_list
+    
 def tSNE_transform(vectors, output_dim=2):
     '''
     Args:
