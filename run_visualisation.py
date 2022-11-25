@@ -23,7 +23,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [23]
+    task_ids = [11]
     
     
     if 10 in task_ids:
