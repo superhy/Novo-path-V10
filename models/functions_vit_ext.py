@@ -27,7 +27,16 @@ def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
                                                      batch_size=batch_size,
                                                      num_workers=nb_workers,
                                                      sf=False, p_mem=True)
-    
+    ''' 
+    prepare a slide-tile location index dict
+    {'slide_id-h_id-w_id': (encode_idx, tile, slide_id)}
+    '''
+    tile_loc_dict = {}
+    for i, tile in enumerate(tiles):
+        slide_tile_key = '{}-h{}-w{}'.format(tile.query_slideid(),
+                                             tile.h_id, tile.w_id)
+        tile_loc_dict[slide_tile_key] = (i, tile, tile.query_slideid())
+        
     tiles_en_nd = None
     with torch.no_grad():
         for X in vis_tiles_dataloader:
@@ -40,7 +49,42 @@ def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
             else:
                 tiles_en_nd = np.concatenate((tiles_en_nd, e_nd), axis=0)
     
-    return tiles_en_nd
+    return tiles_en_nd, tile_loc_dict
+
+def avg_neigb_encodes(tiles_en_nd, tile_loc_dict, key_encode_tuple):
+    '''
+    calculate the average tile encodes combination with neighbor location (up, down, left, right)
+    
+    Args:
+        tiles_en_nd:
+        tile_loc_dict:
+        key_encode_tuple: (encode, tile, slide_id) for the key tile's encode, in middle
+    '''
+    encode, tile, slide_id = key_encode_tuple
+    
+    # [t-l, t, t-r, l, r, d-l, d, d-r]
+    neigb_keys = ['{}-h{}-w{}'.format(slide_id, tile.h_id - 1, tile.w_id - 1),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id - 1, tile.w_id),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id - 1, tile.w_id + 1),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id + 1),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id + 1, tile.w_id),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id + 1, tile.w_id - 1),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id + 1, tile.w_id),
+                  '{}-h{}-w{}'.format(slide_id, tile.h_id + 1, tile.w_id + 1)]
+    
+    combine_encodes = [encode]
+    for n_k in neigb_keys:
+        encode_idx = tile_loc_dict[n_k][0]
+        combine_encodes.append(tiles_en_nd[encode_idx])
+    combine_encodes_nd = np.array(combine_encodes)
+    combine_encodes_nd = np.average(combine_encodes_nd, axis=1)
+    
+    return combine_encodes_nd
+    
+    
+def avg_dilated_neigb_encodes():
+    '''
+    '''
     
 def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1):
     '''

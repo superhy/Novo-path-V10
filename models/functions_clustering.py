@@ -12,7 +12,7 @@ from sklearn.cluster._kmeans import KMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 
-from models.functions_vit_ext import access_encodes_vit
+from models.functions_vit_ext import access_encodes_vit, avg_neigb_encodes
 from models.networks import ViT_D6_H8, reload_net
 import numpy as np
 from support.tools import Time
@@ -57,7 +57,7 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
         tile_list.extend(slide_tiles_list)
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
-    tiles_en_nd = access_encodes_vit(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+    tiles_en_nd, _ = access_encodes_vit(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
     
     tiles_richencode_tuples = []
     for i, tile in enumerate(tile_list):
@@ -67,6 +67,48 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
     print('%d tiles\' encodes have been loaded, take %s sec' % (len(tiles_richencode_tuples), str(loading_time.elapsed()) ))
     
     return tiles_richencode_tuples
+
+def load_tiles_neb_encode_rich_tuples(ENV_task, encoder):
+    '''
+    load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
+    for each tile -> combine neighbor tiles for the key tile to generate the combination encode
+    
+    Return:
+        tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
+    '''
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    
+    loading_time = Time()
+    
+    tile_list = []
+    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+        tile_list.extend(slide_tiles_list)
+        
+    ''' >>>> the encoder here only support ViT <for the moment> '''
+    tiles_en_nd, tile_loc_dict = access_encodes_vit(tile_list, encoder, 
+                                                    ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+    
+    tiles_richencode_tuples = []
+    for i, tile in enumerate(tile_list):
+        encode = tiles_en_nd[i]
+        slide_id = tile.query_slideid()
+        key_encode_tuple = (encode, tile, slide_id)
+        tiles_richencode_tuples.append((avg_neigb_encodes(tiles_en_nd, tile_loc_dict, key_encode_tuple), tile, slide_id) )
+    print('%d tiles\' neighbor combined encodes have been loaded, take %s sec' % (len(tiles_richencode_tuples), 
+                                                                                  str(loading_time.elapsed()) ))
+    
+    return tiles_richencode_tuples
+
+def load_tiles_dilneb_encode_rich_tuples(ENV_task, encoder):
+    '''
+    load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
+    for each tile -> combine dilated + neighbor tiles for the key tile to generate the combination encode
+    
+    Return:
+        tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
+    '''
 
 def load_tiles_semantic_rich_tuples(ENV_task, encoder):
     '''
@@ -161,6 +203,8 @@ class Instance_Clustering():
     def gen_tiles_richencode_tuples(self):
         if self.embed_type == 'encode':
             tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+        elif self.embed_type == 'neb_encode':
+            tiles_richencode_tuples = load_tiles_neb_encode_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'semantic':
             tiles_richencode_tuples = load_tiles_semantic_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'graph':
@@ -392,6 +436,24 @@ def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres (-1 is noise):', len(cluster_centers) - 1, cluster_centers )
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
+                                     cluster_name='Kmeans', embed_type='neb_encode',
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
+    
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers) )
     res_dict = {}
     for res_tuple in clustering_res_pkg:
         if res_tuple[0] not in res_dict.keys():
