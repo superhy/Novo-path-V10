@@ -1,0 +1,8 @@
+load model from: D:/FLINC_dataset/slides/yang_cd45_u\models\checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth
+![Initial Stage] clustering mode
+Initialising the embedding of overall tile features...
+52534 tiles' neighbor combined encodes have been loaded, take 0:18:52.544170 sec
+store 52534 tiles rich tuples at: D:/eclipse-workspace\Novo-path-V10\data/CD45_unsupervised/encodes/256-0/train_encode\ViT-6-8-neb_encode_2022-11-26.pkl
+data tuples loaded!
+Using clustering: Kmeans
+In fitting...
