@@ -74,8 +74,9 @@ def avg_neigb_encodes(tiles_en_nd, tile_loc_dict, key_encode_tuple):
     
     combine_encodes = [encode]
     for n_k in neigb_keys:
-        encode_idx = tile_loc_dict[n_k][0]
-        combine_encodes.append(tiles_en_nd[encode_idx])
+        if n_k in tile_loc_dict.keys():
+            encode_idx = tile_loc_dict[n_k][0]
+            combine_encodes.append(tiles_en_nd[encode_idx])
     combine_encodes_nd = np.array(combine_encodes)
     combine_encodes_nd = np.average(combine_encodes_nd, axis=1)
     
