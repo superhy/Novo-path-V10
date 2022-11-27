@@ -262,9 +262,8 @@ def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
         picked_tile_slideids = safe_random_sample(tile_slideid_tuples, nb_sample)
         clst_tile_img_dict[label] = []
         
-        _, preload_slide = original_slide_and_scaled_pil_image(picked_tile_slideids[0][0].original_slide_filepath)
         for tile, slide_id in picked_tile_slideids:
-            tile_img = tile.get_np_tile(preload_slide)
+            tile_img = tile.get_np_tile()
             clst_tile_img_dict[label].append((slide_id, tile, tile_img))
         print('sampled %d tile demos for cluster-%d' % (nb_sample, label) )
             
