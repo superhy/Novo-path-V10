@@ -320,7 +320,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 8
+        n_clusters = 6
         
         clustering = KMeans(n_clusters=n_clusters)
         return clustering
