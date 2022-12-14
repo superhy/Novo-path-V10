@@ -8,7 +8,7 @@ import sys
 
 
 '''
-for different task id, with different meanning!
+for different task id, with different meaning!
 
 1: algorithm Try MIL
 2: algorithm attention MIL
