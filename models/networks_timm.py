@@ -30,7 +30,7 @@ class BasicResNet18(nn.Module):
         
         self.name = 'ResNet18'
         
-        self.backbone = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+        self.backbone = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1 if imagenet_pretrained else None)
         self.fc_id = nn.Identity()
         self.backbone.fc = self.fc_id
         
