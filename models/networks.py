@@ -131,6 +131,11 @@ class ViT_base(nn.Module):
         # in Dino's code, has already copy the learner to same device with backbone
         return learner
     
+    def get_esvit_learner(self):
+        '''
+        TODO: introduce esvit pre-training method: https://arxiv.org/pdf/2106.09785.pdf
+        '''
+    
     def get_mae_learner(self):
         ''' 
         setup the MAE self-supervision learner for ViT

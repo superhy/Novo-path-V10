@@ -8,6 +8,8 @@ from einops.einops import reduce, rearrange
 
 from models import functions
 from models.datasets import Simple_Tile_Dataset
+import math
+import warnings
 
 
 def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
@@ -134,6 +136,7 @@ def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1)
 def ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean'):
     '''
     extract the tiles attention map as numpy ndarray, from specific layer
+    fuse the attention values on various heads
     
     original features without normalization
     
@@ -149,6 +152,7 @@ def ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean'):
     '''
     # l_attns_nd = tiles_attns_nd[:, layer_id]
     l_attns_nd = tiles_attns_nd
+    # fuse the attention values on various heads
     if comb_heads == 'max':
         l_attns_nd = reduce(l_attns_nd, 't h q k -> t q k', reduction='max')
     elif comb_heads == 'mean':
@@ -166,34 +170,67 @@ def ext_cls_patch_att_maps(l_attns_nd):
     original features without normalization
     
     Args:
-        l_attns_nd: the layer att map just was extracted from function <ext_att_map_pick_layer>
+        l_attns_nd: the layer att map just was extracted from function <ext_att_maps_pick_layer>
         
     Return:
         cls_atts_nd:
             shape: (t, h, k - 1) - tiles_number * heads * patch_number, if the heads haven't been combined
                 (t, k - 1) - tiles_number * patch_number, if the heads were combined, 
     '''
+    nb_row = int(math.sqrt(l_attns_nd.shape[-1] - 1) ) # row = column = sqrt(k - 1)
     # detect the order of layer attention map, (t h q k) or (t q k)
-    if l_attns_nd.shape == 4:
+    if len(l_attns_nd.shape) == 4:
         cls_atts_nd = l_attns_nd[:, :, 0, 1:]
+        cls_atts_nd = rearrange(cls_atts_nd, 't h (r c) -> t h r c', r=nb_row)
     else:
         cls_atts_nd = l_attns_nd[:, 0, 1:]
+        cls_atts_nd = rearrange(cls_atts_nd, 't (r c) -> t r c', r=nb_row)
         
     return cls_atts_nd
 
-def ext_patches_adjmat(l_attns_nd):
+def ext_patches_adjmats(l_attns_nd):
     '''
-    extract the adjacency matrix to describe the relevant between patches, from layer attention maps
+    extract the adjacency matrix to describe the associations between patches, from layer attention maps
     for specific layer
     
     original features without normalization
     
     Args:
-    
-    Return:
+        l_attns_nd: the layer att map just was extracted from function <ext_att_maps_pick_layer>
         
+    Return:
+        adj_atts_nd:
+            shape: (t, h, [k - 1 x k - 1]) - tiles_number * heads * patch_number * patch_number, without fusion of heads
+                (t, [k - 1 x k - 1]) - tiles_number * patch_number * patch_number, with fusion of heads
     '''
+    # detect the order of layer attention map, (t h q k) or (t q k)
+    if len(l_attns_nd.shape) == 4:
+        # the original attention outcomes are just the adjacency map with (q x k), q = k = number of all patches
+        adj_atts_nd = l_attns_nd[:, :, 1:, 1:]
+    else:
+        adj_atts_nd = l_attns_nd[:, 1:, 1:]
+        
+    return adj_atts_nd
     
+
+def norm_exted_maps(maps_nd, in_pattern):
+    '''
+    Args:
+        maps_nd: the input tensor, usually we expect that its last dimension is flatten for all attention values we care about
+            if not, we need to flatten it first
+        in_pattern: can only be: 1. 't h v' (tiles, heads, values), 2. 't h q k' (tiles, heads, patches, patches),
+                                 3. 't, v' (tiles, values), 4. 't q k' (tiles, patches, patches).
+    '''
+    if in_pattern not in ['t h v', 't h q k']:
+        warnings.warn('!!! Sorry, the input pattern statement is wrong, so cannot conduct normalization and return the ORG tensor.')
+        return maps_nd
+    
+    # TODO:
+    
+def symm_adjmats(adjmats_nd):
+    '''
+    '''
+
 
 def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
     '''

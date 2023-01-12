@@ -41,7 +41,7 @@ def pretrain_dino(ENV_task, vit_net):
     '''
     pretrain_epoch = ENV_task.NUM_ENC_SSPT_EPOCH
     
-    alg_name = 'PT-Dino_{}'.format(ENV_task.TASK_NAME)
+    alg_name = 'PT-Dino_{}-{}x{}'.format(ENV_task.TASK_NAME, ENV_task.VIT_SHAPE, ENV_task.VIT_SHAPE)
     
     vit_net = vit_net.cuda()
     learner = vit_net.get_dino_learner()
@@ -81,7 +81,7 @@ def pretrain_mae(ENV_task, vit_net):
     '''
     pretrain_epoch = ENV_task.NUM_ENC_SSPT_EPOCH
     
-    alg_name = 'PT-MAE_{}'.format(ENV_task.TASK_NAME)
+    alg_name = 'PT-MAE_{}-{}x{}'.format(ENV_task.TASK_NAME, ENV_task.VIT_SHAPE, ENV_task.VIT_SHAPE)
     
     vit_net = vit_net.cuda()
     learner = vit_net.get_mae_learner()
