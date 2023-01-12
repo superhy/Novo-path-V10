@@ -121,9 +121,9 @@ def pred_slide_nuclei_mask(ENV_task, slide_tiles_dataset, net, org_slide, pred_m
 
 #                 tissue_area += ((h_e - h_s) * (w_e - w_s))
                 for nuclei_name in nuclei_mask_dict.keys():
-                    filter_tile_mask, sp_nuclei_num = filter_countours_in_tilemask(tile_mask=tile_mask, 
-                                                                                    threshold=nuclei_color_dict[nuclei_name][0], 
-                                                                                    solidity=nuclei_color_dict[nuclei_name][1])
+                    filter_tile_mask, sp_nuclei_num = filter_countours_in_tilemask(tile_mask=tile_mask,
+                                                                                   threshold=nuclei_color_dict[nuclei_name][0],
+                                                                                   solidity=nuclei_color_dict[nuclei_name][1])
                     nuclei_mask_dict[nuclei_name][h_s:h_e, w_s:w_e] = filter_tile_mask
                     nuclei_tile_stat_dict[nuclei_name].append((tile, sp_nuclei_num) )
                 
