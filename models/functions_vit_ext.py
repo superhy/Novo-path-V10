@@ -216,6 +216,8 @@ def ext_patches_adjmats(l_attns_nd):
 
 def norm_exted_maps(maps_nd, in_pattern):
     '''
+    normalize the extracted maps, in 4 input patterns
+    
     Args:
         maps_nd: the input tensor, usually we expect that its last dimension is flatten for all attention values we care about
             if not, we need to flatten it first
@@ -251,13 +253,50 @@ def norm_exted_maps(maps_nd, in_pattern):
         
     return norm_nd
     
-def symm_adjmats(adjmats_nd):
+    
+def symm_adjmats(adjmats_nd, rm_selfloop=True):
     '''
+    symmetrize adjacency matrix, make mat[i, j] == mat[j, i]
+    
+    Args:
+        adjmats_nd:
+        rm_selfloop: indicate to if eliminate the self-loops, make mat[i, i] == 0
     '''
+    if len(adjmats_nd.shape) == 4:
+        (t, h, q, k) = adjmats_nd.shape
+        symmats_nd = np.zeros((t, h, q, k), dtype='float16')
+        for i in range(q):
+            for j in range(k):
+                symmats_nd[:, :, i, j] = (adjmats_nd[:, :, i, j] + adjmats_nd[:, :, j, i]) / 2.0
+                if rm_selfloop and i == j:
+                    symmats_nd[:, :, i, j] = .0
+    else:
+        (t, q, k) = adjmats_nd.shape
+        symmats_nd = np.zeros((t, q, k), dtype='float16')
+        # print(symmats_nd)
+        for i in range(q):
+            for j in range(k):
+                symmats_nd[:, i, j] = (adjmats_nd[:, i, j] + adjmats_nd[:, j, i]) / 2.0
+                if rm_selfloop and i == j:
+                    symmats_nd[:, i, j] = .0
+           
+    return symmats_nd     
 
 def gen_edge_adjmats(adjmats_nd, one_hot=True, b_edge_threshold=0.5):
     '''
+    generate edges from adjacency matrix, by edge threshold
+    
+    Args:
+        adjmats_nd:
+        one_hot: if outcome the one-hot (0-1) matrices
+        b_edge_threshold: the threshold to keep the edge
     '''
+    adjmats_nd[adjmats_nd < b_edge_threshold] = .0
+    if one_hot is True:
+        adjmats_nd[adjmats_nd >= b_edge_threshold] = 1
+        adjmats_nd.astype('int32')
+        
+    return adjmats_nd
 
 
 def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):

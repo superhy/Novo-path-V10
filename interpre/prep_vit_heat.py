@@ -10,13 +10,14 @@ import cv2
 from einops.einops import reduce, rearrange
 import torch
 
+from interpre.prep_tools import store_nd_dict_pkl
 from models import functions, networks
 from models.datasets import Simple_Tile_Dataset
-from models.functions_vit_ext import access_att_maps_vit
+from models.functions_vit_ext import access_att_maps_vit, \
+    ext_att_maps_pick_layer, ext_cls_patch_att_maps, norm_exted_maps
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T
 import numpy as np
 from support.tools import normalization
-from interpre.prep_tools import store_nd_dict_pkl
 from wsi.process import recovery_tiles_list_from_pkl
 
 
@@ -33,7 +34,8 @@ def extra_cls_att_maps(tiles_attns_nd):
     which is for a tile list
     
     with normalization
-    
+    new update in Jan, 2023: by calling the functions in <functions_vit_ext.py>
+        
     Return:
         a numpy ndarray
     
@@ -47,20 +49,12 @@ def extra_cls_att_maps(tiles_attns_nd):
         tiles_attns_nd: tiles' attention outcomes from torch tensor,
             transformed to numpy ndarray already
         layer_id: the layer which used for picking the attention maps
-    '''
-    maps_nd = tiles_attns_nd
-    (t, h, q, k) = maps_nd.shape  # the layer pick has already been done, now is (t h q k)
-    map_size = int(np.sqrt(k - 1))
+    '''    
+    l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean')
+    cls_atts_maps = ext_cls_patch_att_maps(l_attns_nd)
+    cls_atts_maps = norm_exted_maps(cls_atts_maps, 't q k')
     
-    # t, l, h, q, k -> t h q k -> t q k
-    # l_attns_nd = reduce(maps_nd[:, layer_id], 't h q k -> t q k', reduction='mean') # the layer pick has already been done
-    # t h q k -> t q k
-    l_attns_nd = reduce(maps_nd, 't h q k -> t q k', reduction='mean')
-    # t q k -> t (k - 1)
-    norm_l_att_nd = np.array([normalization(l_attns_nd[i, 0, 1:]) for i in range(t)])
-    # t (k - 1) -> t sqrt(k - 1) sqrt(k - 1) 
-    cls_att_maps = rearrange(norm_l_att_nd, 't (a b) -> t a b', a=map_size)
-    return cls_att_maps
+    return cls_atts_maps
 
 def extra_heads_att_maps(tiles_attns_nd):
     '''
@@ -68,6 +62,7 @@ def extra_heads_att_maps(tiles_attns_nd):
     which is for a tile list
     
     with normalization
+    new update in Jan, 2023: by calling the functions in <functions_vit_ext.py>
     
     Return:
         a numpy ndarray
@@ -85,33 +80,23 @@ def extra_heads_att_maps(tiles_attns_nd):
             transformed to numpy ndarray already
         layer_id: the layer which used for picking the attention maps
     '''
-    maps_nd = tiles_attns_nd
-    (t, h, q, k) = maps_nd.shape # the layer pick has already been done, now is (t h q k)
-    map_size = int(np.sqrt(k - 1))
+    (t, h, q, k) = tiles_attns_nd.shape # the layer pick has already been done, now is (t h q k)
+
+    heads_att_maps = ext_cls_patch_att_maps(tiles_attns_nd)
+    heads_att_maps = norm_exted_maps(heads_att_maps, 't h q k')
     
-    # t, l, h, q, k -> t h q k
-    # l_h_attns_nd = maps_nd[:, layer_id] # the layer pick has already been done
-    # t h q k
-    l_h_attns_nd = maps_nd
-    # t h q k -> t h (k - 1)
-    norm_l_h_att_nd = []
-    for t in range(t):
-        norm_l_h_att_nd.append([normalization(l_h_attns_nd[t, h, 0, 1:]) for h in range(h)])
-    norm_l_h_att_nd = np.array(norm_l_h_att_nd)
-    # t h (k - 1) -> t h sqrt(k - 1) sqrt(k - 1), c means heads
-    heads_att_maps = rearrange(norm_l_h_att_nd, 't h (a b) -> t h a b', a=map_size)
-    # t h (k - 1) -> t (k - 1)
-    maxi_l_att_nd = norm_l_h_att_nd.argmax(axis=1)
-    # t (k - 1) -> t (k - 1) -> t sqrt(k - 1) sqrt(k - 1)
+    flat_heads_att_maps = rearrange(heads_att_maps, 't h a b -> t h (a b)')
+    maxi_l_att_nd = flat_heads_att_maps.argmax(axis=1)
     col_cv2_l_att_nd = col_pal_cv2_10(maxi_l_att_nd)
-#     col_cv2_l_att_nd = col_pal_cv2_20(maxi_l_att_nd)
-    max_att_maps = rearrange(col_cv2_l_att_nd, 't (a b) -> t a b', a=map_size)
+    max_att_maps = rearrange(col_cv2_l_att_nd, 't (a b) -> t a b', a=int(np.sqrt(k - 1)))
     
     return heads_att_maps, max_att_maps
     
 def zoom_cv_maps(map_cv, z_times):
     return cv2.resize(map_cv, (map_cv.shape[0] * z_times, map_cv.shape[1] * z_times), interpolation=cv2.INTER_NEAREST)
 
+
+''' ----------------- functions for tiles ----------------- '''
 def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=['cls', 'heads']):
     '''
     make the clsmap and headsmap packages for a list of tiles
@@ -165,6 +150,8 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
         
     return tiles_cls_map_list, tiles_heads_map_list
 
+
+''' ----------------- functions for slides ----------------- '''
 def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
                             sample_num=20, layer_id=-1, zoom=4, map_types=['cls', 'heads']):
     '''

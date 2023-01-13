@@ -5,6 +5,7 @@ Created on 7 Oct 2022
 '''
 
 import os
+from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import torch
 from vit_pytorch.vit import ViT
@@ -77,13 +78,24 @@ def test_numpy():
     test_nd = np.random.random((4, 6, 8, 8))
     print(len(test_nd.shape), test_nd.shape, np.shape(test_nd))
     
-    test_nd_2 = np.array([[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]])
-    print(type(test_nd_2))
-    print(test_nd_2)
-    test_nd_2[test_nd_2 >= 0.5] = 1
-    test_nd_2[test_nd_2 < 0.5] = 0
-    test_nd_2.astype('int32')
-    print(test_nd_2)
+    test_nd_2 = np.array([[[0.1, 0.8, 0.2], 
+                           [0.2, 0.4, 0.9], 
+                           [0.9, 0.7, 0.3]],
+                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]],
+                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]],
+                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]]])
+    # print(type(test_nd_2))
+    # print(test_nd_2)
+    # test_nd_2[test_nd_2 >= 0.5] = 1
+    # test_nd_2[test_nd_2 < 0.5] = 0
+    # test_nd_2.astype('int32')
+    # print(test_nd_2)
+    
+    sym_test_nd_2 = symm_adjmats(test_nd_2, True)
+    print(sym_test_nd_2)
+    
+    edge_test_nd_2 = gen_edge_adjmats(sym_test_nd_2, False)
+    print(edge_test_nd_2)
     
 if __name__ == '__main__':
 #     test_filter_slide_img() # 1
