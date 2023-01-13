@@ -10,6 +10,7 @@ from models import functions
 from models.datasets import Simple_Tile_Dataset
 import math
 import warnings
+from support.tools import normalization
 
 
 def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
@@ -219,15 +220,42 @@ def norm_exted_maps(maps_nd, in_pattern):
         maps_nd: the input tensor, usually we expect that its last dimension is flatten for all attention values we care about
             if not, we need to flatten it first
         in_pattern: can only be: 1. 't h v' (tiles, heads, values), 2. 't h q k' (tiles, heads, patches, patches),
-                                 3. 't, v' (tiles, values), 4. 't q k' (tiles, patches, patches).
+                                 3. 't v' (tiles, values), 4. 't q k' (tiles, patches, patches).
     '''
-    if in_pattern not in ['t h v', 't h q k']:
+    if in_pattern not in ['t h v', 't h q k', 't v', 't q k']:
         warnings.warn('!!! Sorry, the input pattern statement is wrong, so cannot conduct normalization and return the ORG tensor.')
         return maps_nd
     
-    # TODO:
+    if in_pattern == 't h v':
+        (t, h, v) = maps_nd.shape
+        norm_nd = []
+        for i in range(t):
+            norm_nd.append([normalization(maps_nd[i, j, :]) for j in range(h)])
+        norm_nd = np.array(norm_nd)
+    elif in_pattern == 't h q k':
+        (t, h, q, k) = maps_nd.shape
+        maps_nd = rearrange(maps_nd, 't h q k -> t h (q k)')
+        norm_nd = []
+        for i in range(t):
+            norm_nd.append([normalization(maps_nd[i, j, :]) for j in range(h)])
+        norm_nd = np.array(norm_nd)
+        norm_nd = rearrange(norm_nd, 't h (a b) -> t h a b', a=q)
+    elif in_pattern == 't v':
+        (t, v) = maps_nd.shape
+        norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
+    else:
+        (t, q, k) = maps_nd.shape
+        maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
+        norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
+        norm_nd = rearrange(norm_nd, 't (a b) -> t a b')
+        
+    return norm_nd
     
 def symm_adjmats(adjmats_nd):
+    '''
+    '''
+
+def gen_edge_adjmats(adjmats_nd, one_hot=True, b_edge_threshold=0.5):
     '''
     '''
 

@@ -77,11 +77,19 @@ def test_numpy():
     test_nd = np.random.random((4, 6, 8, 8))
     print(len(test_nd.shape), test_nd.shape, np.shape(test_nd))
     
+    test_nd_2 = np.array([[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]])
+    print(type(test_nd_2))
+    print(test_nd_2)
+    test_nd_2[test_nd_2 >= 0.5] = 1
+    test_nd_2[test_nd_2 < 0.5] = 0
+    test_nd_2.astype('int32')
+    print(test_nd_2)
+    
 if __name__ == '__main__':
-    test_filter_slide_img() # 1
+#     test_filter_slide_img() # 1
     # test_vit_forward() # 2
     # test_networkx() # 3
 
-#     test_numpy()
+    test_numpy()
 
 
