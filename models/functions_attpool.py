@@ -124,7 +124,7 @@ def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num
     
     ''' step-1: prepare the tiles for slides, encode them and get the numpy matrices '''
     slide_tiles_dict = load_slides_tileslist(ENV_task, for_train=for_train)
-    transform_augs = functions.get_transform() # use basic transforms
+    transform_augs = functions.get_zoom_transform() # use basic transforms
     
     max_bag_dim = max(len(slide_tiles_dict[slide_id]) for slide_id in slide_tiles_dict.keys())
     

@@ -2,6 +2,11 @@
 @author: Yang Hu
 '''
 
+'''
+this module contains the general used function for DL
+'''
+''' ------ loss function ------ '''
+
 import csv
 
 import cv2
@@ -11,17 +16,13 @@ import torch
 from torch.nn.modules.loss import BCEWithLogitsLoss, BCELoss, MSELoss, L1Loss, \
     NLLLoss, CrossEntropyLoss
 from torch.utils.data.dataloader import DataLoader
-from torchvision import transforms
+from torchvision.transforms import transforms
 
 import numpy as np
 from support.env import ENV
 from support.tools import Time
 
 
-'''
-this module contains the general used function for DL
-'''
-''' ------ loss function ------ '''
 def bce_logits_loss():
     return BCEWithLogitsLoss(reduction='mean').cuda()
 
@@ -111,6 +112,23 @@ def get_transform():
     )
     transform_augs = transforms.Compose([
         transforms.Resize(size=(ENV.TRANSFORMS_RESIZE, ENV.TRANSFORMS_RESIZE)),
+        transforms.ToTensor(),
+        normalize
+        ])
+    return transform_augs
+
+def get_zoom_transform(z_rate=0.5):
+    '''
+    data transform with only image normalization
+    '''
+    normalize = transforms.Normalize(
+        mean=[0.5, 0.5, 0.5],
+        std=[0.1, 0.1, 0.1]
+    )
+    
+    resize = int(ENV.TRANSFORMS_RESIZE*z_rate) if ENV.TRANSFORMS_RESIZE >= 512 else ENV.TRANSFORMS_RESIZE
+    transform_augs = transforms.Compose([
+        transforms.Resize(size=(resize, resize) ),
         transforms.ToTensor(),
         normalize
         ])

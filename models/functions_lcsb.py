@@ -328,7 +328,7 @@ class LCSB_MIL():
         if tile_data_augmentation is True:
             self.train_transform_augs = functions.get_data_arg_transform()
         else:
-            self.train_transform_augs = functions.get_transform()
+            self.train_transform_augs = functions.get_zoom_transform()
             
         if len(self.train_tiles_list) > 0:
             self.train_attK_tiles_set = AttK_MIL_Dataset(tiles_list=self.train_tiles_list, label_dict=self.label_dict,
@@ -337,7 +337,7 @@ class LCSB_MIL():
             ''' for test mode'''
             self.train_attK_tiles_set = []
         
-        self.test_transform_augs = functions.get_transform()
+        self.test_transform_augs = functions.get_zoom_transform()
             
         self.stored_modelpath_dict = {'checkpoint': {'attpool': None,
                                                      'resnet': None},

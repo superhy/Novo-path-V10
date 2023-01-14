@@ -13,8 +13,6 @@ from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 
 
 
-
-
 task_ids = [80]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 

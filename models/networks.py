@@ -18,6 +18,7 @@ from torch.autograd.function import Function
 from torchvision import models
 from torchvision.models.resnet import ResNet18_Weights
 from vit_pytorch.dino import Dino, get_module_device
+from vit_pytorch.es_vit import EsViTTrainer
 from vit_pytorch.extractor import Extractor
 from vit_pytorch.mae import MAE
 from vit_pytorch.recorder import Recorder
@@ -118,7 +119,7 @@ class ViT_base(nn.Module):
             image_size = self.image_size,
             hidden_layer = 'to_latent',        # hidden layer name or index, from which to extract the embedding
             projection_hidden_size = 256,      # projector network hidden dimension
-            projection_layers = 6,             # number of layers in projection network
+            projection_layers = 4,             # number of layers in projection network
             num_classes_K = 50,                # output logits dimensions (referenced as K in paper)
             student_temp = 0.9,                # student temperature
             teacher_temp = 0.04,               # teacher temperature, needs to be annealed from 0.04 to 0.07 over 30 epochs
@@ -130,11 +131,6 @@ class ViT_base(nn.Module):
         
         # in Dino's code, has already copy the learner to same device with backbone
         return learner
-    
-    def get_esvit_learner(self):
-        '''
-        TODO: introduce esvit pre-training method: https://arxiv.org/pdf/2106.09785.pdf
-        '''
     
     def get_mae_learner(self):
         ''' 
@@ -170,6 +166,19 @@ class ViT_base(nn.Module):
         x = e[0] if self.with_wrapper else e
         output = self.fc(x)  
         return output
+    
+class ViT_D4_H6(ViT_base):
+    
+    def __init__(self, image_size, patch_size, output_dim):
+        ''' 
+        D4(4 in name): depth
+        H6(6 in name): heads
+        Dino: Dino self-supervised learner
+        '''
+        depth, heads = 4, 6
+        super(ViT_D4_H6, self).__init__(image_size, patch_size, output_dim,
+                                        depth, heads)
+        self.name = 'ViT-4-6'
     
 class ViT_D6_H8(ViT_base):
     

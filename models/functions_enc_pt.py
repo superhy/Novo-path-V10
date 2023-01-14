@@ -6,7 +6,7 @@ import random
 
 from models import functions
 from models.datasets import load_slides_tileslist, Simple_Tile_Dataset
-from models.networks import ViT_D6_H8, store_net, ViT_D3_H4_T
+from models.networks import ViT_D6_H8, store_net, ViT_D3_H4_T, ViT_D4_H6
 from support.env import devices
 
 
@@ -46,7 +46,7 @@ def pretrain_dino(ENV_task, vit_net):
     vit_net = vit_net.cuda()
     learner = vit_net.get_dino_learner()
     optimizer = functions.optimizer_adam_basic(learner, lr=ENV_task.LR_TILE)
-    transform = functions.get_transform()
+    transform = functions.get_zoom_transform()
     
     print('On-standby: {} training'.format(alg_name))
     print('Network: {}, train on -> {}'.format(vit_net.name, devices))
@@ -86,7 +86,7 @@ def pretrain_mae(ENV_task, vit_net):
     vit_net = vit_net.cuda()
     learner = vit_net.get_mae_learner()
     optimizer = functions.optimizer_adam_basic(learner, lr=ENV_task.LR_TILE)
-    transform = functions.get_transform()
+    transform = functions.get_zoom_transform()
     
     print('On-standby: {} training'.format(alg_name))
     print('Network: {}, train on -> {}'.format(vit_net.name, devices))
@@ -117,6 +117,11 @@ def pretrain_mae(ENV_task, vit_net):
     
 
 ''' --------------------- functions for calling --------------------- '''
+        
+def _run_pretrain_4_6_dino(ENV_task):
+    vit_net = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
+                        patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    pretrain_dino(ENV_task, vit_net)
         
 def _run_pretrain_6_8_dino(ENV_task):
     vit_net = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,

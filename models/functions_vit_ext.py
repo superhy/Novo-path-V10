@@ -24,7 +24,7 @@ def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
     trained_vit.eval()
     
     # prepare the tile list dataloader
-    transform = functions.get_transform()
+    transform = functions.get_zoom_transform()
     vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
     vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
                                                      batch_size=batch_size,
@@ -110,7 +110,7 @@ def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1)
     trained_vit.deploy_recorder()
     
     # prepare the tile list dataloader
-    transform = functions.get_transform()
+    transform = functions.get_zoom_transform()
     vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
     vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
                                                      batch_size=batch_size,
@@ -320,7 +320,7 @@ def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
     trained_vit.deploy_extractor()
     
     # prepare the tile list dataloader
-    transform = functions.get_transform()
+    transform = functions.get_zoom_transform()
     vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
     vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
                                                      batch_size=batch_size,
