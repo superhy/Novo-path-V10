@@ -160,6 +160,7 @@ class parames_task(parames_basic):
         self.HEATMAP_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/heatmap')
         self.PLOT_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/plot')
         self.STATISTIC_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/statistic')
+        self.GRAPH_STORE_DIR = os.path.join(self.DATA_DIR, 'visualization/graph')
         
         ''' --- classification params --- '''
         self.LOSS_PACKAGE = loss_package

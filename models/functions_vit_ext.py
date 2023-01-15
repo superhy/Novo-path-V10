@@ -200,18 +200,18 @@ def ext_patches_adjmats(l_attns_nd):
         l_attns_nd: the layer att map just was extracted from function <ext_att_maps_pick_layer>
         
     Return:
-        adj_atts_nd:
+        adj_mats_nd:
             shape: (t, h, [k - 1 x k - 1]) - tiles_number * heads * patch_number * patch_number, without fusion of heads
                 (t, [k - 1 x k - 1]) - tiles_number * patch_number * patch_number, with fusion of heads
     '''
     # detect the order of layer attention map, (t h q k) or (t q k)
     if len(l_attns_nd.shape) == 4:
         # the original attention outcomes are just the adjacency map with (q x k), q = k = number of all patches
-        adj_atts_nd = l_attns_nd[:, :, 1:, 1:]
+        adj_mats_nd = l_attns_nd[:, :, 1:, 1:]
     else:
-        adj_atts_nd = l_attns_nd[:, 1:, 1:]
+        adj_mats_nd = l_attns_nd[:, 1:, 1:]
         
-    return adj_atts_nd
+    return adj_mats_nd
     
 
 def norm_exted_maps(maps_nd, in_pattern):

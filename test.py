@@ -97,6 +97,9 @@ def test_numpy():
     edge_test_nd_2 = gen_edge_adjmats(sym_test_nd_2, False)
     print(edge_test_nd_2)
     
+    list_edge_nd_2 = edge_test_nd_2.tolist()
+    print(type(list_edge_nd_2), type(list_edge_nd_2[0]))
+    
 if __name__ == '__main__':
 #     test_filter_slide_img() # 1
     # test_vit_forward() # 2
