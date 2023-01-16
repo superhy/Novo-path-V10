@@ -79,19 +79,20 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
         tiles.append(tile)
         rec_slideids.append(slide_id)
         
-    org_adj_nd, symm_adj_nd, onehot_adj_nd = vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
-                                                                    with_org=with_org, with_one_hot=with_one_hot,
-                                                                    edge_th=edge_th)
-    adj_mats_dict = {'org': org_adj_nd, 'symm': symm_adj_nd, 'onehot': onehot_adj_nd}
-    print('adj mats for org: {}, symm: {}, onehot: {}'.format('no' if org_adj_nd is None else 'yes',
-                                                              'no' if symm_adj_nd is None else 'yes',
-                                                              'no' if onehot_adj_nd is None else 'yes') )
+    org_adj_nds, symm_adj_nds, onehot_adj_nds = vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
+                                                                       with_org=with_org, with_one_hot=with_one_hot,
+                                                                       edge_th=edge_th)
+    adj_mats_dict = {'org': org_adj_nds, 'symm': symm_adj_nds, 'onehot': onehot_adj_nds, 
+                     'tiles': tiles, 'slideids': rec_slideids}
+    print('adj mats for org: {}, symm: {}, onehot: {}'.format('no' if org_adj_nds is None else 'yes',
+                                                              'no' if symm_adj_nds is None else 'yes',
+                                                              'no' if onehot_adj_nds is None else 'yes') )
     if store_adj:
         clst_adjmats_pkl_name = clustering_pkl_name.replace('clst-res', 'c-%d-adjmats'%(cluster_id) )
         store_nd_dict_pkl(graph_store_dir, adj_mats_dict, clst_adjmats_pkl_name)
         print('Store example tiles adjmats of cluster-{} package as: {}'.format(cluster_id, clst_adjmats_pkl_name))
         
-    return adj_mats_dict, rec_slideids
+    return adj_mats_dict
     
 
 if __name__ == '__main__':
