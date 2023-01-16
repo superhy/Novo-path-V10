@@ -212,7 +212,6 @@ def ext_patches_adjmats(l_attns_nd):
         adj_mats_nd = l_attns_nd[:, 1:, 1:]
         
     return adj_mats_nd
-    
 
 def norm_exted_maps(maps_nd, in_pattern):
     '''
@@ -249,10 +248,9 @@ def norm_exted_maps(maps_nd, in_pattern):
         (t, q, k) = maps_nd.shape
         maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
-        norm_nd = rearrange(norm_nd, 't (a b) -> t a b')
+        norm_nd = rearrange(norm_nd, 't (a b) -> t a b', a=q)
         
     return norm_nd
-    
     
 def symm_adjmats(adjmats_nd, rm_selfloop=True):
     '''

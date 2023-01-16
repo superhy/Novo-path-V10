@@ -5,21 +5,27 @@ Created on 7 Oct 2022
 '''
 
 import os
-from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+import warnings
+
+from einops.einops import rearrange
 import torch
 from vit_pytorch.vit import ViT
 
+import matplotlib.pyplot as plt
+from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats
+import networkx as nx
+import numpy as np
+from support.tools import normalization
 from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
     apply_image_filters_cd45
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
-    
-import networkx as nx
-import matplotlib.pyplot as plt
 
-import numpy as np
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+
+    
+
 
 
 def test_filter_slide_img():
@@ -81,9 +87,16 @@ def test_numpy():
     test_nd_2 = np.array([[[0.1, 0.8, 0.2], 
                            [0.2, 0.4, 0.9], 
                            [0.9, 0.7, 0.3]],
-                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]],
-                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]],
-                          [[0.1, 0.8, 0.2], [0.2, 0.4, 0.9], [0.9, 0.7, 0.3]]])
+                          [[0.3, 0.5, 0.6], 
+                           [0.4, 0.2, 0.7], 
+                           [0.6, 0.3, 0.1]],
+                          [[0.8, 0.2, 0.4], 
+                           [0.7, 0.1, 0.9], 
+                           [0.9, 0.2, 0.5]],
+                          [[0.1, 0.2, 0.6], 
+                           [0.5, 0.4, 0.9], 
+                           [0.6, 0.2, 0.6]]])
+    print(test_nd_2[0, :, :])
     # print(type(test_nd_2))
     # print(test_nd_2)
     # test_nd_2[test_nd_2 >= 0.5] = 1

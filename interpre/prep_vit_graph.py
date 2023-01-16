@@ -3,11 +3,15 @@ Created on 13 Jan 2023
 
 @author: Yang Hu
 '''
+import os
+
 from interpre.prep_clst_vis import load_clst_res_label_tile_slide
 from interpre.prep_tools import safe_random_sample, store_nd_dict_pkl
+from models import networks
 from models.functions_vit_ext import access_att_maps_vit, \
-    ext_att_maps_pick_layer, ext_patches_adjmats, norm_exted_maps, symm_adjmats, \
+    ext_att_maps_pick_layer, ext_patches_adjmats, symm_adjmats, \
     gen_edge_adjmats
+from models.networks import ViT_D6_H8
 
 
 def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
@@ -16,7 +20,7 @@ def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
     '''
     l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd) # t q+1 k+1
     adj_mats_nd = ext_patches_adjmats(l_attns_nd) # t q k
-    adj_mats_nd = norm_exted_maps(adj_mats_nd, 't q k')
+    # adj_mats_nd = norm_exted_maps(adj_mats_nd, 't q k')
     if symm is True:
         adj_mats_nd = symm_adjmats(adj_mats_nd, rm_selfloop=True)
     if one_hot or edge_th > .0:
@@ -26,7 +30,7 @@ def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
     return adj_mats_nd 
 
 def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
-                           with_org=True, with_one_hot=False, edge_th=0.5):
+                           with_org=True, with_one_hot=False, edge_th=0.9):
     '''
     for a list of tiles,
     
@@ -58,8 +62,8 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
     
     
 def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, 
-                                   trained_vit, cluster_id=0, nb_sample=20,
-                                   with_org=False, with_one_hot=True, edge_th=0.5, store_adj=False):
+                                   vit, vit_model_filepath, cluster_id=0, nb_sample=20,
+                                   with_org=True, with_one_hot=True, edge_th=0.9, store_adj=True):
     '''
     generate adjacency matrix for example tiles in specific cluster
     
@@ -78,8 +82,12 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
     for tile, slide_id in picked_tile_slideids:
         tiles.append(tile)
         rec_slideids.append(slide_id)
+    print('------ picked %d tile examples ------' % len(tiles))
         
-    org_adj_nds, symm_adj_nds, onehot_adj_nds = vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
+    vit, _ = networks.reload_net(vit, vit_model_filepath)
+    vit = vit.cuda()
+        
+    org_adj_nds, symm_adj_nds, onehot_adj_nds = vit_graph_adjmat_tiles(ENV_task, tiles, vit, layer_id=-1,
                                                                        with_org=with_org, with_one_hot=with_one_hot,
                                                                        edge_th=edge_th)
     adj_mats_dict = {'org': org_adj_nds, 'symm': symm_adj_nds, 'onehot': onehot_adj_nds, 
@@ -93,6 +101,15 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
         print('Store example tiles adjmats of cluster-{} package as: {}'.format(cluster_id, clst_adjmats_pkl_name))
         
     return adj_mats_dict
+
+
+''' ----------------------------------------------------------------------------------------------- '''
+
+def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, clst_id=0):
+    vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                    patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit, 
+                                   os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename), clst_id)
     
 
 if __name__ == '__main__':

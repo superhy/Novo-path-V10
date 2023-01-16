@@ -7,6 +7,7 @@ import os
 from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
     _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters, \
     _run_make_spatial_each_clusters_on_slides
+from interpre.prep_vit_graph import _run_make_vit_graph_adjmat_clusters
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
@@ -23,7 +24,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [20, 21, 22]
+    # task_ids = [20, 21, 22]
+    task_ids = [61]
     
     
     if 10 in task_ids:
@@ -52,3 +54,11 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'
         clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name)
+    
+    if 61 in task_ids:
+        clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
+        _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, clst_id=2)
+        
+        
+        
