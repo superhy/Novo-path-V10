@@ -153,6 +153,19 @@ def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
             print('draw cluster {}\'s spatial map in: {}'.format(str(label), 
                                                                  os.path.join(clst_s_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % label) ) ))
             
+def print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id):
+    '''
+    '''
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(heat_store_dir, tis_pct_pkl_name)
+    print('--- for average ---')
+    print(slide_tis_pct_dict['avg'])
+    # for single queried slide
+    if query_slide_id is not None and query_slide_id in slide_tis_pct_dict.keys():
+        query_tis_pct_dict = slide_tis_pct_dict[query_slide_id]
+        print('--- for slide: {} ---'.format(query_slide_id))
+        print(query_tis_pct_dict)
+            
 
 ''' ---------------------------------------------------------------------------------- '''
     

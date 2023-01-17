@@ -307,6 +307,7 @@ def filter_node_pos_t_adjmat(t_adjmat):
         t_adjmat: adjacency matrix of one tile, shape: (q, k), q == k
             the input adj matrix is after symmetrize or one-hot process
     '''
+    dtype = t_adjmat.dtype.name
     # record the position according to original grid map
     (q, k) = t_adjmat.shape
     s = int(math.sqrt(q)) # size of the grid map
@@ -321,7 +322,7 @@ def filter_node_pos_t_adjmat(t_adjmat):
         if np.sum(t_adjmat[i]) > 0:
             new_org_nid_dict[new_n_id] = i
             new_n_id += 1
-    f_t_adjmat, f_id_pos_dict = np.zeros((new_n_id, new_n_id), dtype='int8'), {}
+    f_t_adjmat, f_id_pos_dict = np.zeros((new_n_id, new_n_id), dtype=dtype), {}
     for i in range(new_n_id):
         f_id_pos_dict[i] = id_pos_dict[new_org_nid_dict[i]]
         for j in range(new_n_id):
@@ -329,8 +330,6 @@ def filter_node_pos_t_adjmat(t_adjmat):
             
     return f_t_adjmat, f_id_pos_dict
     
-
-
 def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
     '''
     access and extract the original signal of embeddings (for all heads) from trained ViT model

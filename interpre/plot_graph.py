@@ -25,11 +25,14 @@ def plot_tile_nx_graph(ENV_task, tile_nx_G, positions, tile_graph_name='test.png
             node_color = 'b', 
             edge_color = 'r',
             with_labels=False,
-            node_size=50)
-    print(tile_nx_G.edges())
+            node_size=30)
+    print(positions, 'nodes: %d' % len(tile_nx_G.nodes()), 'edges: %d' % len(tile_nx_G.edges()) )
+    # print(tile_nx_G.edges())
 #     plt.show()
     plt.tight_layout()
     plt.savefig(os.path.join(graph_store_dir, tile_graph_name) )
+    # clear the plt, otherwise, the figures will be repeated coverage
+    plt.clf(), plt.cla(), plt.close()
     
 def plot_tiles_onehot_nx_graphs(ENV_task, adj_mats_dict, clst_id):
     '''

@@ -6,7 +6,7 @@ import os
 
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
-    _run_plot_slides_clst_each_spatmap
+    _run_plot_slides_clst_each_spatmap, print_slide_tis_pct
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     # task_ids = [20, 21, 22]
     task_ids = [61]
+    # task_ids = [29]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -51,7 +52,12 @@ if __name__ == '__main__':
         # clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-encode_unsupervised2022-11-24.pkl'
         clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name)
+    if 29 in task_ids:
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        # query_slide_id = '23910-158_Sl251-C2-CD45'
+        query_slide_id = '23910-158_Sl278-C18-CD45'
+        print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id)
         
     if 61 in task_ids:
-        adjdict_pkl_name = 'c-2-adjmats_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        adjdict_pkl_name = 'c-0-adjmats_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_onehot_nx_graphs(ENV_task, adjdict_pkl_name)

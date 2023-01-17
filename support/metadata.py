@@ -99,6 +99,7 @@ def count_flinc_stain_labels(slide_label_dict_list, stain_type, aim_label_name):
     ax.set_title('{}-{}'.format(stain_type, aim_label_name))
     plt.tight_layout()
     plt.savefig('{}-{}.png'.format(stain_type, aim_label_name), bbox_inches='tight')
+    plt.close(fig)
     
 
 def extract_slideid_subid_for_stain(xlsx_filepath, stain_type='HE'):

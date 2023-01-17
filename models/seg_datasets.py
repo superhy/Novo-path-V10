@@ -85,6 +85,7 @@ def plt_img_mask(img, mask=None):
     ax1.imshow(img)
     ax2.imshow(mask)
     plt.show()
+    plt.close(fig)
    
 def load_MoNuSeg_images_masks(images_folder):
     '''

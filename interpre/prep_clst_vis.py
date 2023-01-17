@@ -283,7 +283,7 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_
     nb_clst = len(load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name).keys())
     clst_labels = list(range(nb_clst))
     
-    slide_clst_s_spatmap_dict, slide_tis_pct_dict, tissue_pct_dict_list = {}, {}, []
+    slide_clst_s_spatmap_dict = {}
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         
@@ -292,20 +292,33 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_
             heat_s_clst_col = gen_single_slide_clst_each_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
             label_spatmap_dict[label_picked] = heat_s_clst_col
         slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
-        # count tissue percentage
-        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples)
-        slide_tis_pct_dict[slide_id] = tissue_pct_dict
-        tissue_pct_dict_list.append(tissue_pct_dict)
             
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-s-spat')
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
+    
+def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    slide_tis_pct_dict, tissue_pct_dict_list = {}, []
+    for slide_id in slide_id_list:
+        tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        # count tissue percentage
+        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples)
+        slide_tis_pct_dict[slide_id] = tissue_pct_dict
+        tissue_pct_dict_list.append(tissue_pct_dict)
+    
     slide_tis_pct_dict['avg'] = avg_tis_pct_clst_on_slides(tissue_pct_dict_list)
     tis_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tis-pct')
     store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
     print('Store clusters tissue percentage record as: {}'.format(tis_pct_pkl_name))
-    
+        
     
 ''' --------- tissue percentage --------- '''
 def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst=6):
@@ -348,6 +361,9 @@ def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     
 def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name):
     make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name)
+
+def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
+    count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
 
 
 if __name__ == '__main__':
