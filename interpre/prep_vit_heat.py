@@ -52,7 +52,7 @@ def extra_cls_att_maps(tiles_attns_nd):
     '''    
     l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean')
     cls_atts_maps = ext_cls_patch_att_maps(l_attns_nd)
-    cls_atts_maps = norm_exted_maps(cls_atts_maps, 't q k')
+#     cls_atts_maps = norm_exted_maps(cls_atts_maps, 't q k')
     
     return cls_atts_maps
 
@@ -83,7 +83,7 @@ def extra_heads_att_maps(tiles_attns_nd):
     (t, h, q, k) = tiles_attns_nd.shape # the layer pick has already been done, now is (t h q k)
 
     heads_att_maps = ext_cls_patch_att_maps(tiles_attns_nd)
-    heads_att_maps = norm_exted_maps(heads_att_maps, 't h q k')
+#     heads_att_maps = norm_exted_maps(heads_att_maps, 't h q k')
     
     flat_heads_att_maps = rearrange(heads_att_maps, 't h a b -> t h (a b)')
     maxi_l_att_nd = flat_heads_att_maps.argmax(axis=1)

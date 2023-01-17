@@ -12,7 +12,10 @@ import torch
 from vit_pytorch.vit import ViT
 
 import matplotlib.pyplot as plt
-from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats
+from models.functions_graph import nx_graph_from_npadj
+from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats, \
+    filter_node_pos_t_adjmat
+import networkx as nx
 import networkx as nx
 import numpy as np
 from support.tools import normalization
@@ -21,6 +24,7 @@ from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
+
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
@@ -113,11 +117,59 @@ def test_numpy():
     list_edge_nd_2 = edge_test_nd_2.tolist()
     print(type(list_edge_nd_2), type(list_edge_nd_2[0]))
     
+def test_nx_graph():
+    
+    test_nd_2 = np.array([[[0.1, 0.8, 0.2, 0.6], 
+                           [0.2, 0.4, 0.9, 0.8], 
+                           [0.9, 0.7, 0.3, 0.1],
+                           [0.5, 0.7, 0.6, 0.4]],
+                          [[0.3, 0.5, 0.6, 0.4], 
+                           [0.4, 0.2, 0.7, 0.5], 
+                           [0.6, 0.3, 0.1, 0.2],
+                           [0.5, 0.7, 0.6, 0.7]],
+                          [[0.8, 0.2, 0.4, 0.2], 
+                           [0.7, 0.1, 0.9, 0.9], 
+                           [0.9, 0.2, 0.5, 0.6],
+                           [0.3, 0.7, 0.2, 0.4]],
+                          [[0.1, 0.2, 0.6, 0.8], 
+                           [0.5, 0.4, 0.9, 0.4], 
+                           [0.6, 0.2, 0.6, 0.2],
+                           [0.5, 0.7, 0.2, 0.4]]])
+    (t, q, k) = test_nd_2.shape
+    
+    symm_test_nd = symm_adjmats(test_nd_2)
+    onehot_test_nd = gen_edge_adjmats(symm_test_nd)
+#     print(onehot_test_nd[0])
+    
+#     flat_test_nd = rearrange(test_nd_2[0], 'a b -> (a b)')
+#     print(flat_test_nd)
+#     reshape_test_nd = rearrange(flat_test_nd, '(a b) -> a b', a=4)
+#     print(reshape_test_nd)
+
+    f_onehot_test_nd, f_pos = filter_node_pos_t_adjmat(onehot_test_nd[1])
+    print(f_onehot_test_nd)
+    
+#     nx_G, positions, s_nodes = nx_graph_from_npadj(onehot_test_nd[0])
+    nx_G, _, _ = nx_graph_from_npadj(f_onehot_test_nd)
+    print(nx_G.edges())
+    spring_pos = nx.spring_layout(nx_G)
+    print(f_pos)
+    print(spring_pos)
+    nx.draw(nx_G, f_pos, with_labels=True)
+#     nx.draw(nx_G, spring_pos, with_labels=True)
+    plt.show()
+    
+    
 if __name__ == '__main__':
 #     test_filter_slide_img() # 1
     # test_vit_forward() # 2
     # test_networkx() # 3
 
-    test_numpy()
+#     test_numpy()
+    test_nx_graph()
+
+
+
+
 
 

@@ -297,6 +297,40 @@ def gen_edge_adjmats(adjmats_nd, one_hot=True, b_edge_threshold=0.5):
     return adjmats_nd
 
 
+def filter_node_pos_t_adjmat(t_adjmat):
+    '''
+    for single tile
+    from adjacency matrix, remove the nodes without connection with other nodes
+    also record the positions of left nodes
+    
+    Args:
+        t_adjmat: adjacency matrix of one tile, shape: (q, k), q == k
+            the input adj matrix is after symmetrize or one-hot process
+    '''
+    # record the position according to original grid map
+    (q, k) = t_adjmat.shape
+    s = int(math.sqrt(q)) # size of the grid map
+    n_id, id_pos_dict = 0, {}
+    for i in range(s):
+        for j in range(s):
+            id_pos_dict[n_id] = (j, s-1-i)
+            n_id += 1
+    
+    new_n_id, new_org_nid_dict = 0, {}
+    for i in range(q):
+        if np.sum(t_adjmat[i]) > 0:
+            new_org_nid_dict[new_n_id] = i
+            new_n_id += 1
+    f_t_adjmat, f_id_pos_dict = np.zeros((new_n_id, new_n_id), dtype='int8'), {}
+    for i in range(new_n_id):
+        f_id_pos_dict[i] = id_pos_dict[new_org_nid_dict[i]]
+        for j in range(new_n_id):
+            f_t_adjmat[i, j] = t_adjmat[new_org_nid_dict[i], new_org_nid_dict[j]]
+            
+    return f_t_adjmat, f_id_pos_dict
+    
+
+
 def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
     '''
     access and extract the original signal of embeddings (for all heads) from trained ViT model

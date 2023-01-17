@@ -10,7 +10,7 @@ from interpre.prep_tools import safe_random_sample, store_nd_dict_pkl
 from models import networks
 from models.functions_vit_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_patches_adjmats, symm_adjmats, \
-    gen_edge_adjmats
+    gen_edge_adjmats, filter_node_pos_t_adjmat
 from models.networks import ViT_D6_H8
 
 
@@ -43,22 +43,29 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
                                          ENV_task.MINI_BATCH_TILE, 
                                          ENV_task.TILE_DATALOADER_WORKER,
                                          layer_id)
+    
+    org_adjmat_list, symm_heat_adjmat_list, symm_onehot_adjmat_list, pos_dict_list = [], [], [], []
     if with_org:
         org_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=False, one_hot=False, edge_th=.0)
+        for i in range(len(tiles)):
+            org_adjmat_list.append(org_adjmats_nd[i])
         print('>>> generate original adjacency matrix, mat[x, y] may != mat[y, x]')
-    else:
-        org_adjmats_nd = None
         
     symm_heat_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=True, one_hot=False, edge_th=edge_th)
+    for i in range(len(tiles)):
+        f_t_adjmat, f_id_pos_dict = filter_node_pos_t_adjmat(symm_heat_adjmats_nd[i])
+        symm_heat_adjmat_list.append(f_t_adjmat)
+        pos_dict_list.append(f_id_pos_dict)
     print('>>> generate symmetrized adjacency matrix, mat[x, y] == mat[x, y]')
     
     if with_one_hot:
         symm_onehot_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=True, one_hot=True, edge_th=edge_th)
+        for i in range(len(tiles)):
+            f_t_adjmat, _ = filter_node_pos_t_adjmat(symm_onehot_adjmats_nd[i])
+            symm_onehot_adjmat_list.append(f_t_adjmat)
         print('>>> generate symmetrized and one_hot adjacency matrix, mat[x, y] == mat[x, y] and mat[i, j] == 1')
-    else:
-        symm_onehot_adjmats_nd = None
         
-    return org_adjmats_nd, symm_heat_adjmats_nd, symm_onehot_adjmats_nd
+    return org_adjmat_list, symm_heat_adjmat_list, symm_onehot_adjmat_list, pos_dict_list
     
     
 def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, 
@@ -87,14 +94,16 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
     vit, _ = networks.reload_net(vit, vit_model_filepath)
     vit = vit.cuda()
         
-    org_adj_nds, symm_adj_nds, onehot_adj_nds = vit_graph_adjmat_tiles(ENV_task, tiles, vit, layer_id=-1,
-                                                                       with_org=with_org, with_one_hot=with_one_hot,
-                                                                       edge_th=edge_th)
-    adj_mats_dict = {'org': org_adj_nds, 'symm': symm_adj_nds, 'onehot': onehot_adj_nds, 
-                     'tiles': tiles, 'slideids': rec_slideids}
-    print('adj mats for org: {}, symm: {}, onehot: {}'.format('no' if org_adj_nds is None else 'yes',
-                                                              'no' if symm_adj_nds is None else 'yes',
-                                                              'no' if onehot_adj_nds is None else 'yes') )
+    org_adj_list, symm_adj_list, onehot_adj_list, pos_list = vit_graph_adjmat_tiles(ENV_task, tiles,
+                                                                                    vit, layer_id=-1,
+                                                                                    with_org=with_org, 
+                                                                                    with_one_hot=with_one_hot,
+                                                                                    edge_th=edge_th)
+    adj_mats_dict = {'org': org_adj_list, 'symm': symm_adj_list, 'onehot': onehot_adj_list, 
+                     'pos': pos_list, 'tiles': tiles, 'slideids': rec_slideids}
+    print('adj mats for org: {}, symm: {}, onehot: {}'.format('no' if len(org_adj_list) == 0 else 'yes',
+                                                              'no' if len(symm_adj_list) == 0 else 'yes',
+                                                              'no' if len(onehot_adj_list) == 0 else 'yes') )
     if store_adj:
         clst_adjmats_pkl_name = clustering_pkl_name.replace('clst-res', 'c-%d-adjmats'%(cluster_id) )
         store_nd_dict_pkl(graph_store_dir, adj_mats_dict, clst_adjmats_pkl_name)
@@ -108,8 +117,8 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
 def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, clst_id=0):
     vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit, 
-                                   os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename), clst_id)
+    _ = make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit, 
+                                       os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename), clst_id)
     
 
 if __name__ == '__main__':
