@@ -18,7 +18,6 @@ from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
 from support.tools import Time
 from wsi import image_tools, slide_tools
-from wsi.slide_tools import original_slide_and_scaled_pil_image
 
 
 # fixed discrete color value mapping (with 20 colors) for cv2 color palette
@@ -284,7 +283,7 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_
     nb_clst = len(load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name).keys())
     clst_labels = list(range(nb_clst))
     
-    slide_clst_s_spatmap_dict = {}
+    slide_clst_s_spatmap_dict, slide_tis_pct_dict, tissue_pct_dict_list = {}, {}, []
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         
@@ -293,10 +292,47 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_
             heat_s_clst_col = gen_single_slide_clst_each_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
             label_spatmap_dict[label_picked] = heat_s_clst_col
         slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
-    
+        # count tissue percentage
+        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples)
+        slide_tis_pct_dict[slide_id] = tissue_pct_dict
+        tissue_pct_dict_list.append(tissue_pct_dict)
+            
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-s-spat')
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
+    
+    slide_tis_pct_dict['avg'] = avg_tis_pct_clst_on_slides(tissue_pct_dict_list)
+    tis_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tis-pct')
+    store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
+    print('Store clusters tissue percentage record as: {}'.format(tis_pct_pkl_name))
+    
+    
+''' --------- tissue percentage --------- '''
+def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst=6):
+    '''
+    '''
+    # initial
+    tissue_pct_dict, nb_tissue = {}, len(slide_tile_clst_tuples)
+    for id in range(nb_clst):
+        tissue_pct_dict[id] = .0
+        
+    for i, t_l_tuple in enumerate(slide_tile_clst_tuples):
+        _, label = t_l_tuple
+        tissue_pct_dict[label] += (1.0/nb_tissue)
+        
+    return tissue_pct_dict
+
+def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
+    '''
+    '''
+    avg_tis_pct_dict, nb_slides = {}, len(tissue_pct_dict_list)
+    for s_tis_pct_dict in tissue_pct_dict_list:
+        for label in s_tis_pct_dict.keys():
+            if label not in avg_tis_pct_dict.keys():
+                avg_tis_pct_dict[label] = .0
+            avg_tis_pct_dict[label] += (s_tis_pct_dict[label]/nb_slides)
+    
+    return avg_tis_pct_dict
     
     
 ''' ---------------------------------------------------------------------------------- '''
