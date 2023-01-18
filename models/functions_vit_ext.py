@@ -2,15 +2,16 @@
 @author: superhy
 '''
 
-import torch
-import numpy as np
+import math
+import warnings
+
 from einops.einops import reduce, rearrange
+import torch
 
 from models import functions
 from models.datasets import Simple_Tile_Dataset
-import math
-import warnings
-from support.tools import normalization
+import numpy as np
+from support.tools import normalization, normalization_sk
 
 
 def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
@@ -248,6 +249,32 @@ def norm_exted_maps(maps_nd, in_pattern):
         (t, q, k) = maps_nd.shape
         maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
+        norm_nd = rearrange(norm_nd, 't (a b) -> t a b', a=q)
+        
+    return norm_nd
+
+def norm_sk_exted_maps(maps_nd, in_pattern, amplify=1, mode='max'):
+    '''
+    >>> deprecated for the moment <<<
+    normalize the extracted maps, only in 2 input patterns
+    with sklearn method, has more mode: 'l1' and 'l2' normalization
+    
+    Args:
+        maps_nd: the input tensor, usually we expect that its last dimension is flatten for all attention values we care about
+            if not, we need to flatten it first
+        in_pattern: can only be: 1. 't v' (tiles, values), 2. 't q k' (tiles, patches, patches).
+    '''
+    if in_pattern not in ['t v', 't q k']:
+        warnings.warn('!!! Sorry, the input pattern statement is wrong, so cannot conduct normalization and return the ORG tensor.')
+        return maps_nd
+    
+    if in_pattern == 't v':
+        (t, v) = maps_nd.shape
+        norm_nd = normalization_sk(maps_nd*amplify, mode)
+    else:
+        (t, q, k) = maps_nd.shape
+        maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
+        norm_nd = normalization_sk(maps_nd*amplify, mode)
         norm_nd = rearrange(norm_nd, 't (a b) -> t a b', a=q)
         
     return norm_nd

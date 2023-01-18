@@ -10,8 +10,10 @@ from interpre.prep_tools import safe_random_sample, store_nd_dict_pkl
 from models import networks
 from models.functions_vit_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_patches_adjmats, symm_adjmats, \
-    gen_edge_adjmats, filter_node_pos_t_adjmat, norm_exted_maps
-from models.networks import ViT_D6_H8
+    gen_edge_adjmats, filter_node_pos_t_adjmat, norm_exted_maps, \
+    norm_sk_exted_maps
+from models.networks import ViT_D6_H8, ViT_D4_H6
+import numpy as np
 
 
 def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
@@ -20,6 +22,7 @@ def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
     '''
     l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd) # t q+1 k+1
     adj_mats_nd = ext_patches_adjmats(l_attns_nd) # t q k
+    # adj_mats_nd = norm_sk_exted_maps(adj_mats_nd, 't q k', amplify=1000)
     adj_mats_nd = norm_exted_maps(adj_mats_nd, 't q k')
     if symm is True:
         adj_mats_nd = symm_adjmats(adj_mats_nd, rm_selfloop=True)
@@ -49,7 +52,8 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
         org_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=False, one_hot=False, edge_th=.0)
         for i in range(len(tiles)):
             org_adjmat_list.append(org_adjmats_nd[i])
-        print(org_adjmat_list[0].shape)
+            print(org_adjmats_nd[i], org_adjmats_nd[i].shape)
+            print(np.max(org_adjmats_nd[i]), np.min(org_adjmats_nd[i]) )
         print('>>> generate original adjacency matrix, mat[x, y] may != mat[y, x]')
         
     symm_heat_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=True, one_hot=False, edge_th=edge_th)
@@ -73,7 +77,7 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
     
     
 def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, 
-                                   vit, vit_model_filepath, cluster_id=0, nb_sample=100,
+                                   vit, vit_model_filepath, cluster_id=0, nb_sample=2,
                                    with_org=True, with_one_hot=True, edge_th=0.5, store_adj=True):
     '''
     generate adjacency matrix for example tiles in specific cluster
@@ -120,7 +124,9 @@ def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name,
 
 def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, 
                                         clst_id=0, edge_th=0.9):
-    vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+    # vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+    #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     _ = make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit, 
                                        os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),

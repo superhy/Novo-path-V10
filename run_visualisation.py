@@ -58,9 +58,10 @@ if __name__ == '__main__':
     
     if 61 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
-        vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
+        # vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
+        vit_model_filename = 'checkpoint_ViT-4-6-PT-Dino_unsupervised-16x16[50]2023-01-17.pth'
         _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, 
-                                            clst_id=0, edge_th=0.75)
+                                            clst_id=2, edge_th=0.5)
         
         
         

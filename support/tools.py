@@ -3,6 +3,7 @@
 '''
 import datetime
 import numpy as np
+from sklearn import preprocessing
 
 class Time:
     """
@@ -24,7 +25,11 @@ class Time:
     
 def normalization(data):
     _range = np.max(data) - np.min(data)
-    return (data - np.min(data) + 1e-8) / (_range + 1e-8)
+    return (data - np.min(data) + 1e-3) / (_range + 1e-3)
+
+def normalization_sk(data, mode='l2'):
+    ''' >>> deprecated for the moment <<< '''
+    return preprocessing.normalize(data, norm='l2')
     
 def np_info(np_arr, name=None, elapsed=None, full_np_info=False):
     """
