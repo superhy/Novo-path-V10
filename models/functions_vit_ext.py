@@ -190,6 +190,9 @@ def ext_cls_patch_att_maps(l_attns_nd):
         
     return cls_atts_nd
 
+
+''' --------------------- graph extraction functions ---------------------- '''
+
 def ext_patches_adjmats(l_attns_nd):
     '''
     extract the adjacency matrix to describe the associations between patches, from layer attention maps
@@ -323,6 +326,22 @@ def gen_edge_adjmats(adjmats_nd, one_hot=True, b_edge_threshold=0.5):
         
     return adjmats_nd
 
+def node_pos_t_adjmat(t_adjmat):
+    '''
+    for single tile
+    calculate the nodes' positions in x-y axis
+    '''
+    dtype = t_adjmat.dtype.name
+    # record the position according to original grid map
+    (q, k) = t_adjmat.shape
+    s = int(math.sqrt(q)) # size of the grid map
+    n_id, id_pos_dict = 0, {}
+    for i in range(s):
+        for j in range(s):
+            id_pos_dict[n_id] = (j, s-1-i)
+            n_id += 1
+            
+    return id_pos_dict
 
 def filter_node_pos_t_adjmat(t_adjmat):
     '''

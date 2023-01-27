@@ -76,7 +76,7 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
     return org_adjmat_list, symm_heat_adjmat_list, symm_onehot_adjmat_list, pos_dict_list
     
     
-def make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, 
+def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, 
                                    vit, vit_model_filepath, cluster_id=0, nb_sample=2,
                                    with_org=True, with_one_hot=True, edge_th=0.5, store_adj=True):
     '''
@@ -128,7 +128,7 @@ def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model
     #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    _ = make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit, 
+    _ = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit, 
                                        os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                                        cluster_id=clst_id, edge_th=edge_th)
     

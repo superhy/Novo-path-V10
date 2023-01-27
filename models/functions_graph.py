@@ -24,10 +24,23 @@ def nx_graph_from_npadj(t_adj_nd):
         t_adj_nd: adjacency matrix numpy array for one tile, (q, k), q == k
     
     Return:
-        nx_G:
+        nxG:
     '''
-    nx_G = nx.from_numpy_array(t_adj_nd)
-    return nx_G
+    nxG = nx.from_numpy_array(t_adj_nd)
+    return nxG
+
+def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict):
+    '''
+    Args:
+        t_sym_adj_nd: the symm adjacency matrix with original weights of edges
+        id_pos_dict: the node_id <-> position on x-y axis
+    
+    Return:
+        
+    '''
+    canvas_nxG = nx.from_numpy_array(t_sym_adj_nd)
+    return canvas_nxG
+    
     
 
 if __name__ == '__main__':

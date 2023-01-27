@@ -12,9 +12,9 @@ import torch
 from vit_pytorch.vit import ViT
 
 import matplotlib.pyplot as plt
-from models.functions_graph import nx_graph_from_npadj
+from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
 from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats, \
-    filter_node_pos_t_adjmat
+    filter_node_pos_t_adjmat, node_pos_t_adjmat
 import networkx as nx
 import networkx as nx
 import numpy as np
@@ -159,6 +159,34 @@ def test_nx_graph():
 #     nx.draw(nx_G, spring_pos, with_labels=True)
     plt.show()
     
+def test_neb_nx_graph():
+    test_nd_2 = np.array([[[0.1, 0.8, 0.2, 0.6], 
+                           [0.2, 0.4, 0.9, 0.8], 
+                           [0.9, 0.7, 0.3, 0.1],
+                           [0.5, 0.7, 0.6, 0.4]],
+                          [[0.3, 0.5, 0.6, 0.4], 
+                           [0.4, 0.2, 0.7, 0.5], 
+                           [0.6, 0.3, 0.1, 0.2],
+                           [0.5, 0.7, 0.6, 0.7]],
+                          [[0.8, 0.2, 0.4, 0.2], 
+                           [0.7, 0.1, 0.9, 0.9], 
+                           [0.9, 0.2, 0.5, 0.6],
+                           [0.3, 0.7, 0.2, 0.4]],
+                          [[0.1, 0.2, 0.6, 0.8], 
+                           [0.5, 0.4, 0.9, 0.4], 
+                           [0.6, 0.2, 0.6, 0.2],
+                           [0.5, 0.7, 0.2, 0.4]]])
+    (t, q, k) = test_nd_2.shape
+    symm_test_nd = symm_adjmats(test_nd_2)
+    
+    t_symm_test_nd = symm_test_nd[0]
+    print(t_symm_test_nd)
+    id_pos_dict = node_pos_t_adjmat(t_symm_test_nd)
+    
+    canvas_nxG = nx_neb_graph_from_symadj(t_symm_test_nd, id_pos_dict)
+    print(canvas_nxG.edges())
+    print(canvas_nxG.get_edge_data(1, 2))
+    
     
 if __name__ == '__main__':
 #     test_filter_slide_img() # 1
@@ -166,7 +194,8 @@ if __name__ == '__main__':
     # test_networkx() # 3
 
 #     test_numpy()
-    test_nx_graph()
+    # test_nx_graph()
+    test_neb_nx_graph()
 
 
 
