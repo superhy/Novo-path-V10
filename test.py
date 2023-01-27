@@ -150,7 +150,7 @@ def test_nx_graph():
     print(f_onehot_test_nd)
     
 #     nx_G, positions, s_nodes = nx_graph_from_npadj(onehot_test_nd[0])
-    nx_G, _, _ = nx_graph_from_npadj(f_onehot_test_nd)
+    nx_G = nx_graph_from_npadj(f_onehot_test_nd)
     print(nx_G.edges())
     spring_pos = nx.spring_layout(nx_G)
     print(f_pos)
