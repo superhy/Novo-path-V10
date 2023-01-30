@@ -186,6 +186,8 @@ def test_neb_nx_graph():
     canvas_nxG = nx_neb_graph_from_symadj(t_symm_test_nd, id_pos_dict)
     print(canvas_nxG.edges())
     print(canvas_nxG.get_edge_data(1, 2))
+    print(canvas_nxG.nodes(), type(canvas_nxG.nodes()))
+    print(canvas_nxG.degree(0, weight='weight'))
     
     
 if __name__ == '__main__':

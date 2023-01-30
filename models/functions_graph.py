@@ -29,7 +29,8 @@ def nx_graph_from_npadj(t_adj_nd):
     nxG = nx.from_numpy_array(t_adj_nd)
     return nxG
 
-def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict):
+def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
+                             T_n=1.0, T_e_1=0.5, T_e_2=0.3):
     '''
     Args:
         t_sym_adj_nd: the symm adjacency matrix with original weights of edges
@@ -39,6 +40,10 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict):
         
     '''
     canvas_nxG = nx.from_numpy_array(t_sym_adj_nd)
+    new_old_nodeid_dict = {}
+    
+    
+    
     return canvas_nxG
     
     
