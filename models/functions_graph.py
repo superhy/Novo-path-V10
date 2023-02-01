@@ -72,7 +72,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
     '''
     canvas_nxG = nx.from_numpy_array(t_sym_adj_nd)
     neig_nxG = nx.Graph()
-    new_old_nodeid_dict, old_new_nodeid_dict, old_roots = {}, {}, []
+    new_old_nodeid_dict, old_new_nodeid_dict, new_roots = {}, {}, []
     new_node_id, new_id_pos_dict = 0, {}
     
     ''' build the root nodes in neighbors-based new graph '''
@@ -87,15 +87,16 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
             new_old_nodeid_dict[new_node_id] = old_node
             old_new_nodeid_dict[old_node] = new_node_id
             new_id_pos_dict[new_node_id] = id_pos_dict[old_node]
-            old_roots.append(old_node)
+            new_roots.append(new_node_id)
             neig_nxG.add_node(new_node_id)
             new_node_id += 1
+    # print(neig_nxG.nodes(), neig_nxG.edges(), new_old_nodeid_dict)
     
     ''' build the 1st round neighb nodes based on the root nodes '''
-    for root in neig_nxG.nodes():
+    for root in new_roots:
         old_root = new_old_nodeid_dict[root]
         for old_neig in canvas_nxG.neighbors(old_root):
-            if check_near_pair(old_neig, old_root, id_pos_dict) is True and canvas_nxG.get_edge_data(old_neig, old_root)['weight'] >= T_e_1:
+            if check_near_pair(old_neig, old_root, id_pos_dict) and canvas_nxG.get_edge_data(old_neig, old_root)['weight'] >= T_e_1:
                 # check if need to add a new node
                 if old_neig not in new_old_nodeid_dict.values():
                     new_old_nodeid_dict[new_node_id] = old_neig
@@ -107,13 +108,35 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
                 new_neig, new_root = old_new_nodeid_dict[old_neig], old_new_nodeid_dict[old_root]
                 if (new_neig, new_root) not in neig_nxG.edges():
                     neig_nxG.add_edge(new_neig, new_root, weight=canvas_nxG.get_edge_data(old_neig, old_root)['weight'])
+    # print(neig_nxG.nodes(), neig_nxG.edges(), new_old_nodeid_dict)
                     
     ''' build the 2nd round BFS extension nodes based on  '''
+    extend_nodes = list(neig_nxG.nodes())
+    # out all root nodes from the search list
+    for r_id in new_roots:
+        extend_nodes.remove(r_id)
+    while len(extend_nodes) > 0:
+        for ext_node in extend_nodes:
+            old_ext = new_old_nodeid_dict[ext_node]
+            for old_ard in canvas_nxG.neighbors(old_ext):
+                if check_near_pair(old_ard, old_ext, id_pos_dict) and canvas_nxG.get_edge_data(old_ard, old_ext)['weight'] >= T_e_2:
+                    # check if need to add a new node
+                    if old_ard not in new_old_nodeid_dict.values():
+                        new_old_nodeid_dict[new_node_id] = old_ard
+                        old_new_nodeid_dict[old_ard] = new_node_id
+                        new_id_pos_dict[new_node_id] = id_pos_dict[old_ard]
+                        neig_nxG.add_node(new_node_id)
+                        extend_nodes.append(new_node_id)
+                        new_node_id += 1
+                    # check if need to add a new edge
+                    new_ard, new_ext = old_new_nodeid_dict[old_ard], old_new_nodeid_dict[old_ext]
+                    if (new_ard, new_ext) not in neig_nxG.edges():
+                        neig_nxG.add_edge(new_ard, new_ext, weight=canvas_nxG.get_edge_data(old_ard, old_ext)['weight'])
+            extend_nodes.remove(ext_node)
+    # print(neig_nxG.nodes(), neig_nxG.edges(), new_old_nodeid_dict)
+    
+    return canvas_nxG, neig_nxG
     
     
-    return canvas_nxG
-    
-    
-
 if __name__ == '__main__':
     pass
