@@ -135,7 +135,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
             extend_nodes.remove(ext_node)
     # print(neig_nxG.nodes(), neig_nxG.edges(), new_old_nodeid_dict)
     
-    return canvas_nxG, neig_nxG
+    return neig_nxG, new_id_pos_dict
     
     
 if __name__ == '__main__':

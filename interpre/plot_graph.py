@@ -7,7 +7,7 @@ import os
 from interpre.draw_maps import draw_original_image
 import matplotlib.pyplot as plt
 from models.functions_graph import load_adj_pkg_from_pkl, \
-    nx_graph_from_npadj
+    nx_graph_from_npadj, nx_neb_graph_from_symadj
 import networkx as nx
 
 
@@ -60,12 +60,45 @@ def plot_tiles_onehot_nx_graphs(ENV_task, adj_mats_dict, clst_id):
         plot_tile_nx_graph(ENV_task, t_nx_G, positions,
                            tile_graph_name=g_tile_subpath)
         
+def plot_tiles_vit_neb_nx_graphs(ENV_task, adj_mats_dict, clst_id):
+    '''
+    generate the graphs for tiles based on both self-attention in VIT and neighbors
+    then plot the graphs
+    '''
+    symm_adj_list, pos_list = adj_mats_dict['symm'], adj_mats_dict['pos']
+    tiles, rec_slideids = adj_mats_dict['tiles'], adj_mats_dict['slideids']
+    
+    clst_tilegraph_folder = 'c-{}-neb-graph'.format(clst_id)
+    clst_tilegraph_dir = os.path.join(ENV_task.GRAPH_STORE_DIR, clst_tilegraph_folder)
+    if not os.path.exists(clst_tilegraph_dir):
+        os.makedirs(clst_tilegraph_dir)
+        print('create file dir {}'.format(clst_tilegraph_dir) )
+        
+    for i, tile in enumerate(tiles):
+        tile_symm_adj_nd = symm_adj_list[i]
+        id_pos_dict = pos_list[i]
+        neig_nxG, neig_id_pos_dict = nx_neb_graph_from_symadj(tile_symm_adj_nd, id_pos_dict)
+        
+        tile_slide_id = rec_slideids[i]
+        tiledemo_str = '{}-tile_{}'.format(tile_slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
+        tile_img = tile.get_np_tile()
+        draw_original_image(clst_tilegraph_dir, tile_img, (tiledemo_str, '') )
+        g_tile_subpath = os.path.join(clst_tilegraph_folder, '{}-neig_{}-g{}.png'.format(tile_slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id),
+                                                                                         clst_id ))
+        plot_tile_nx_graph(ENV_task, neig_nxG, neig_id_pos_dict,
+                           tile_graph_name=g_tile_subpath)
+        
 ''' --------------------------------------------------------------------------------------- '''
         
 def _run_plot_tiles_onehot_nx_graphs(ENV_task, adjdict_pkl_name):
     adj_mats_dict = load_adj_pkg_from_pkl(ENV_task.GRAPH_STORE_DIR, adjdict_pkl_name)
     clst_id = adjdict_pkl_name.split('-')[1]
     plot_tiles_onehot_nx_graphs(ENV_task, adj_mats_dict, clst_id)
+    
+def _run_plot_tiles_neb_nx_graphs(ENV_task, adjdict_pkl_name):
+    adj_mats_dict = load_adj_pkg_from_pkl(ENV_task.GRAPH_STORE_DIR, adjdict_pkl_name)
+    clst_id = adjdict_pkl_name.split('-')[1]
+    plot_tiles_vit_neb_nx_graphs(ENV_task, adj_mats_dict, clst_id)
 
 if __name__ == '__main__':
     pass

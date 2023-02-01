@@ -11,7 +11,7 @@ from models import networks
 from models.functions_vit_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_patches_adjmats, symm_adjmats, \
     gen_edge_adjmats, filter_node_pos_t_adjmat, norm_exted_maps, \
-    norm_sk_exted_maps
+    norm_sk_exted_maps, node_pos_t_adjmat
 from models.networks import ViT_D6_H8, ViT_D4_H6
 import numpy as np
 
@@ -58,7 +58,11 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
         
     symm_heat_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=True, one_hot=False, edge_th=edge_th)
     for i in range(len(tiles)):
-        f_t_adjmat, f_id_pos_dict = filter_node_pos_t_adjmat(symm_heat_adjmats_nd[i])
+        if edge_th == 0.0:
+            f_t_adjmat = symm_heat_adjmats_nd[i]
+            f_id_pos_dict = node_pos_t_adjmat(symm_heat_adjmats_nd[i])
+        else:
+            f_t_adjmat, f_id_pos_dict = filter_node_pos_t_adjmat(symm_heat_adjmats_nd[i])
         symm_heat_adjmat_list.append(f_t_adjmat)
         pos_dict_list.append(f_id_pos_dict)
         print(f_t_adjmat, f_t_adjmat.shape)
@@ -113,7 +117,8 @@ def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name,
                                                               'no' if len(symm_adj_list) == 0 else 'yes',
                                                               'no' if len(onehot_adj_list) == 0 else 'yes') )
     if store_adj:
-        clst_adjmats_pkl_name = clustering_pkl_name.replace('clst-res', 'c-%d-adjmats'%(cluster_id) )
+        clst_adjmats_pkl_name = clustering_pkl_name.replace('clst-res',
+                                                            'c-%d-adjs_%s_%.1f'%(cluster_id, 'o' if with_one_hot else 'x', edge_th) )
         store_nd_dict_pkl(graph_store_dir, adj_mats_dict, clst_adjmats_pkl_name)
         print('Store example tiles adjmats of cluster-{} package as: {}'.format(cluster_id, clst_adjmats_pkl_name))
         
@@ -122,8 +127,8 @@ def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name,
 
 ''' ----------------------------------------------------------------------------------------------- '''
 
-def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model_filename, 
-                                        clst_id=0, edge_th=0.9):
+def _run_make_vit_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_filename,
+                                     clst_id=0, edge_th=0.5):
     # vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
     #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
@@ -131,6 +136,20 @@ def _run_make_vit_graph_adjmat_clusters(ENV_task, clustering_pkl_name, vit_model
     _ = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit, 
                                        os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                                        cluster_id=clst_id, edge_th=edge_th)
+    
+def _run_make_vit_neb_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_filename,
+                                         clst_id=0, edge_th=0.0):
+    '''
+    generation and storage the graph adj-mat for vit & neb graph
+    with edge_th = 0.0 (full graph) and don't save the one-hot graph
+    '''
+    # vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+    #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
+                    patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    _ = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit,
+                                      os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
+                                      cluster_id=clst_id, with_one_hot=False, edge_th=edge_th)
     
 
 if __name__ == '__main__':

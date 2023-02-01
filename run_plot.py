@@ -7,7 +7,8 @@ import os
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct
-from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs
+from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
+    _run_plot_tiles_neb_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map
@@ -61,3 +62,10 @@ if __name__ == '__main__':
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjmats_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_onehot_nx_graphs(ENV_task, adjdict_pkl_name)
+    if 62 in task_ids:
+        adjdict_pkl_name = 'c-2-adjs_x_.0_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        _run_plot_tiles_neb_nx_graphs(ENV_task, adjdict_pkl_name)
+        
+        
+        
+        
