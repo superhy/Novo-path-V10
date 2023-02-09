@@ -61,7 +61,7 @@ def check_far_node(check_node, exist_nodes, id_pos_dict, far_thd=2.0):
     return far_flag
 
 def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
-                             T_n=1.0, T_e_1=0.5, T_e_2=0.3):
+                             T_n=20.0, T_e_1=0.2, T_e_2=0.1):
     '''
     Args:
         t_sym_adj_nd: the symm adjacency matrix with original weights of edges
@@ -79,6 +79,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
     for old_node in canvas_nxG.nodes():
         # old_node is the node_id on old graph
         if canvas_nxG.degree(old_node, weight='weight') >= T_n:
+            # print(old_node, canvas_nxG.degree(old_node, weight='weight'))
             # check if enough far from the exist nodes first
             exist_nodes = new_old_nodeid_dict.values()
             if check_far_node(old_node, exist_nodes, id_pos_dict) is False:
@@ -96,6 +97,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
     for root in new_roots:
         old_root = new_old_nodeid_dict[root]
         for old_neig in canvas_nxG.neighbors(old_root):
+            # print(canvas_nxG.get_edge_data(old_neig, old_root)['weight'])
             if check_near_pair(old_neig, old_root, id_pos_dict) and canvas_nxG.get_edge_data(old_neig, old_root)['weight'] >= T_e_1:
                 # check if need to add a new node
                 if old_neig not in new_old_nodeid_dict.values():
@@ -119,6 +121,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
         for ext_node in extend_nodes:
             old_ext = new_old_nodeid_dict[ext_node]
             for old_ard in canvas_nxG.neighbors(old_ext):
+                # print(canvas_nxG.get_edge_data(old_ard, old_ext)['weight'])
                 if check_near_pair(old_ard, old_ext, id_pos_dict) and canvas_nxG.get_edge_data(old_ard, old_ext)['weight'] >= T_e_2:
                     # check if need to add a new node
                     if old_ard not in new_old_nodeid_dict.values():

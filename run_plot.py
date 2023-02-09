@@ -26,7 +26,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [20, 21, 22]
-    task_ids = [61]
+    task_ids = [61, 62]
     # task_ids = [29]
 
     if 0 in task_ids:
@@ -60,10 +60,10 @@ if __name__ == '__main__':
         print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id)
         
     if 61 in task_ids:
-        adjdict_pkl_name = 'c-2-adjmats_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_onehot_nx_graphs(ENV_task, adjdict_pkl_name)
     if 62 in task_ids:
-        adjdict_pkl_name = 'c-2-adjs_x_.0_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
+        adjdict_pkl_name = 'c-2-adjs_x_0.0_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_neb_nx_graphs(ENV_task, adjdict_pkl_name)
         
         

@@ -80,9 +80,9 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
     return org_adjmat_list, symm_heat_adjmat_list, symm_onehot_adjmat_list, pos_dict_list
     
     
-def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, 
-                                   vit, vit_model_filepath, cluster_id=0, nb_sample=2,
-                                   with_org=True, with_one_hot=True, edge_th=0.5, store_adj=True):
+def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit, vit_model_filepath, 
+                                  load_tile_slideids=None, cluster_id=0, nb_sample=50,
+                                  with_org=True, with_one_hot=True, edge_th=0.5, store_adj=True):
     '''
     generate adjacency matrix for example tiles in specific cluster
     
@@ -95,7 +95,10 @@ def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name,
     clst_tile_slideid_dict = load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name)
     # get (tile, slideid) tuples from specific cluster (sp_c)
     sp_c_tile_slideid_tuples = clst_tile_slideid_dict[cluster_id]
-    picked_tile_slideids = safe_random_sample(sp_c_tile_slideid_tuples, nb_sample)
+    if load_tile_slideids is None:
+        picked_tile_slideids = safe_random_sample(sp_c_tile_slideid_tuples, nb_sample)
+    else:
+        picked_tile_slideids = load_tile_slideids
     
     tiles, rec_slideids = [], []
     for tile, slide_id in picked_tile_slideids:
@@ -122,23 +125,25 @@ def make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name,
         store_nd_dict_pkl(graph_store_dir, adj_mats_dict, clst_adjmats_pkl_name)
         print('Store example tiles adjmats of cluster-{} package as: {}'.format(cluster_id, clst_adjmats_pkl_name))
         
-    return adj_mats_dict
+    return adj_mats_dict, picked_tile_slideids
 
 
 ''' ----------------------------------------------------------------------------------------------- '''
 
 def _run_make_vit_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_filename,
-                                     clst_id=0, edge_th=0.5):
+                                     load_tile_slideids=None, clst_id=0, nb_sample=20, edge_th=0.5):
     # vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
     #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    _ = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit, 
-                                       os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
-                                       cluster_id=clst_id, edge_th=edge_th)
+    _, load_tile_slideids = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit, 
+                                                          os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
+                                                          load_tile_slideids=load_tile_slideids,
+                                                          cluster_id=clst_id, nb_sample=nb_sample, edge_th=edge_th)
+    return load_tile_slideids
     
 def _run_make_vit_neb_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_filename,
-                                         clst_id=0, edge_th=0.0):
+                                         load_tile_slideids=None, clst_id=0, nb_sample=20, edge_th=0.0):
     '''
     generation and storage the graph adj-mat for vit & neb graph
     with edge_th = 0.0 (full graph) and don't save the one-hot graph
@@ -147,9 +152,12 @@ def _run_make_vit_neb_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_mode
     #                 patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     vit = ViT_D4_H6(image_size=ENV_task.TRANSFORMS_RESIZE,
                     patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    _ = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit,
-                                      os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
-                                      cluster_id=clst_id, with_one_hot=False, edge_th=edge_th)
+    _, load_tile_slideids = make_vit_graph_adjmat_cluster(ENV_task, clustering_pkl_name, vit,
+                                                          os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
+                                                          load_tile_slideids=load_tile_slideids,
+                                                          cluster_id=clst_id, nb_sample=nb_sample,
+                                                          with_one_hot=False, edge_th=edge_th)
+    return load_tile_slideids
     
 
 if __name__ == '__main__':

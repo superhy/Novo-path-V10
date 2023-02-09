@@ -83,7 +83,7 @@ def plot_tiles_vit_neb_nx_graphs(ENV_task, adj_mats_dict, clst_id):
         tiledemo_str = '{}-tile_{}'.format(tile_slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
         tile_img = tile.get_np_tile()
         draw_original_image(clst_tilegraph_dir, tile_img, (tiledemo_str, '') )
-        g_tile_subpath = os.path.join(clst_tilegraph_folder, '{}-neig_{}-g{}.png'.format(tile_slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id),
+        g_tile_subpath = os.path.join(clst_tilegraph_folder, '{}-tile_{}-ng{}.png'.format(tile_slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id),
                                                                                          clst_id ))
         plot_tile_nx_graph(ENV_task, neig_nxG, neig_id_pos_dict,
                            tile_graph_name=g_tile_subpath)
