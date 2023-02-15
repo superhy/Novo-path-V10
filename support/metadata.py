@@ -15,6 +15,7 @@ from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -139,12 +140,12 @@ def extract_slideid_subid_for_stain(xlsx_filepath, stain_type='HE'):
     return slideid_subid_dict
             
 
-def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath):
+def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath, spec_aim_label=None):
     '''
     filter the specific stain type, map the slide_id to specific label_name
     '''
     
-    aim_label_name = ENV_task.TASK_NAME # aim_label_name is the task_name here
+    aim_label_name = ENV_task.TASK_NAME if spec_aim_label is None else spec_aim_label # aim_label_name is the task_name here
     stain_type = ENV_task.STAIN_TYPE 
     annotation_dict = label_dicts[aim_label_name]
     
@@ -269,6 +270,20 @@ def _load_clinical_labels():
                                                        xlsx_filepath=xlsx_path_slide_list[i])
         count_flinc_stain_labels(slide_label_dict_list, task_env.STAIN_TYPE, task_env.TASK_NAME)
         
+def _load_lobular_clinical_labels():
+    
+    ENV_task = ENV_FLINC_CD45_U
+    xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(ENV_task.META_FOLDER)
+    clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
+    
+    xlsx_path_slide = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(ENV_task.META_FOLDER)
+    aim_label = 'lobular_inflammation_score'
+    
+    slide_label_dict_list = make_flinc_slide_label(ENV_task, clinical_label_dicts,
+                                                   xlsx_filepath=xlsx_path_slide,
+                                                   spec_aim_label=aim_label)
+    count_flinc_stain_labels(slide_label_dict_list, ENV_task.STAIN_TYPE, aim_label)
+        
 def _prod_combine_labels():
     '''
     produce the combined label csv file from ENV_task, for C_ENV_task
@@ -288,6 +303,12 @@ def _prod_combine_labels():
     csv_to_df.to_csv(csv_test_path, index=False)
     print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
     return new_slide_label_dict_list
+
+def _prod_bi_lobular_combine_labels():
+    
+    ENV_task = ENV_FLINC_CD45_U
+    groups = {0: [0], 1: [1, 2, 3]}
+    # TODO:
         
 def _count_stain_amount():
     
