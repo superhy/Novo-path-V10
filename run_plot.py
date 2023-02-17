@@ -4,6 +4,7 @@
 
 import os
 
+from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct
@@ -26,8 +27,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [20, 21, 22]
-    task_ids = [61, 62]
-    # task_ids = [29]
+    # task_ids = [61, 62]
+    task_ids = [29.1]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -53,11 +54,11 @@ if __name__ == '__main__':
         # clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-encode_unsupervised2022-11-24.pkl'
         clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name)
-    if 29 in task_ids:
+    if 29.1 in task_ids:
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
-        # query_slide_id = '23910-158_Sl251-C2-CD45'
-        query_slide_id = '23910-158_Sl278-C18-CD45'
-        print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id)
+        lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
+        # query_slide_id = '23910-158_Sl278-C18-CD45'
+        plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6)
         
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'

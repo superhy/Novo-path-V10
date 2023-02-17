@@ -189,7 +189,7 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath, spec_aim_label=
     print('<Get slide:{}_label:{}_dict>, length:{}\n like: \n'.format(stain_type, aim_label_name, len(slide_label_dict_list)), slide_label_dict_list)
     
 #     csv_test_path = 'D:/workspace/Liver-path-V10/data/FLINC/meta/HE_steatosis_score.csv'
-    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, ENV_task.TASK_NAME)
+    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label_name)
     csv_to_df = pd.DataFrame(slide_label_dict_list)
     csv_to_df.to_csv(csv_test_path, index=False)
     print('<Make csv annotations file at: {}>'.format(csv_test_path))

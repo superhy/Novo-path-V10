@@ -4,13 +4,12 @@ Created on 15 Feb 2023
 @author: laengs2304
 '''
 
+from interpre.prep_tools import load_vis_pkg_from_pkl
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-
-import matplotlib.pyplot as plt
-
-from interpre.prep_tools import load_vis_pkg_from_pkl
+from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 
 
@@ -25,13 +24,16 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     lobular_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
     non_lobular_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
+        if slide_id == 'avg':
+            continue
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
-        if lobular_label_dict[slide_id] == 0:
+        case_id = parse_caseid_from_slideid(slide_id)
+        if lobular_label_dict[case_id] == 0:
             # non-lobular cases
             nb_nlob_cases += 1
             for c in range(nb_clst):
                 non_lobular_tis_pcts[c] += tissue_pct_dict[c]
-        if lobular_label_dict[slide_id] == 1:
+        if lobular_label_dict[case_id] == 1:
             nb_lob_cases += 1
             for c in range(nb_clst):
                 lobular_tis_pcts[c] += tissue_pct_dict[c]
@@ -42,27 +44,50 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     nd_nonlob_tis_pct = nd_nonlob_tis_pct / nb_nlob_cases
     
     ''' plot '''
-    lob_t_pct_tuples = [[c+1, nd_lob_tis_pct[c]] for c in range(nb_clst) ]
-    nonlob_t_pct_tuples = [[c+1, nd_nonlob_tis_pct[c]] for c in range(nb_clst) ]
-    df_lob_t_pct = pd.DataFrame(lob_t_pct_tuples, columns=['cluster', 'tissue_percentage'])
-    df_nonlob_t_pct = pd.DataFrame(nonlob_t_pct_tuples, columns=['cluster', 'tissue_percentage'])
+    lob_t_pct_tuples = [['c-{}'.format(c+1), nd_lob_tis_pct[c], 'lobular cases'] for c in range(nb_clst) ]
+    nonlob_t_pct_tuples = [['c-{}'.format(c+1), nd_nonlob_tis_pct[c], 'non-lobular cases'] for c in range(nb_clst) ]
+    df_alllob_t_pct = pd.DataFrame(lob_t_pct_tuples + nonlob_t_pct_tuples, columns=['clusters', 'tissue_percentage', 'lobular_label'])
     
-    fig = plt.figure(figsize=(5, 10))
-    ax_1 = fig.add_subplot(2, 1, 1)
-    ax_2 = fig.add_subplot(2, 1, 2)
-    ax_1 = sns.barplot(x='cluster', y='tissue_percentage', color='blue', data=df_lob_t_pct)
-    ax_2 = sns.barplot(x='cluster', y='tissue_percentage', color='green', data=df_nonlob_t_pct)
-    ax_1.set_title('tissue percentage of clusters, for lobular cases')
-    ax_2.set_title('tissue percentage of clusters, for non-lobular cases')
+    fig = plt.figure(figsize=(5, 5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1.set_ylim(0, 0.5)
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen'], data=df_alllob_t_pct, hue='lobular_label')
+    ax_1.set_title('tissue percentage of each clusters')
+    
+    # ax_2 = fig.add_subplot(1, 2, 2)
+    # ax_2.set_ylim(0, 0.5)
+    # ax_2 = sns.barplot(x='cluster', y='tissue_percentage', color='green', data=df_nonlob_t_pct)
+    # ax_2.set_title('tissue percentage of clusters, for non-lobular cases')
     
     plt.tight_layout()
     plt.show()
+
     
-    
-def plot_lobular_sp_clst_pct_dist(ENV_task, slide_tis_pct_dict, lobular_label_path):
+def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):
     '''
     counting specific cluster's percentage distribution on all slides (numbers), for lobular/non-lobular
     '''
-
+    
+    ''' loading/processing data '''
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    
+    lob_tis_pct_dist = [0] * 10
+    nonlob_tis_pct_dist = [0] * 10
+    tis_pct_range_labels = ['< 10', '10 ~ 20', '20 ~ 30', '30 ~ 40', '40 ~ 50',
+                            '50 ~ 60', '60 ~ 70', '70 ~ 80', '80 ~ 90', '>= 90']
+    tgt_clsts = [0, 1, 2, 3, 4, 5]
+    
+    for slide_id in slide_tis_pct_dict.keys():
+        if slide_id == 'avg':
+            continue
+        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+        case_id = parse_caseid_from_slideid(slide_id)
+        if lobular_label_dict[case_id] == 0:
+            for 
+        
+    ''' plot '''
+    
+    
 if __name__ == '__main__':
     pass
