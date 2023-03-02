@@ -275,6 +275,17 @@ class Instance_Clustering():
         
         return clustering_res_pkg, centers
     
+    def minibatch_fit(self):
+        '''
+        '''
+        encodes, tiles, slide_ids = [], [], []
+        for info_tuple in self.tiles_richencode_tuples:
+            encodes.append(info_tuple[0])
+            tiles.append(info_tuple[1])
+            slide_ids.append(info_tuple[2])
+        encodes_X = np.array(encodes)
+        print('data tuples loaded!')
+    
     def predict(self, tiles_outside_pred_tuples):
         '''
         predict cluster for new data with the trained clustering model
@@ -334,7 +345,7 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 10
+        n_clusters = 6
         assign_labels = 'discretize'
         
         clustering = SpectralClustering(n_clusters=n_clusters, assign_labels=assign_labels)
