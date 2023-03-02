@@ -8,7 +8,7 @@ import warnings
 
 from sklearn.cluster._affinity_propagation import AffinityPropagation
 from sklearn.cluster._dbscan import DBSCAN
-from sklearn.cluster._kmeans import KMeans
+from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 
@@ -275,16 +275,33 @@ class Instance_Clustering():
         
         return clustering_res_pkg, centers
     
-    def minibatch_fit(self):
+    def minibatch_fit(self, batch_size):
         '''
         '''
-        encodes, tiles, slide_ids = [], [], []
-        for info_tuple in self.tiles_richencode_tuples:
-            encodes.append(info_tuple[0])
-            tiles.append(info_tuple[1])
-            slide_ids.append(info_tuple[2])
-        encodes_X = np.array(encodes)
-        print('data tuples loaded!')
+        batch_inds = []
+        for i in range(int(len(self.tiles_richencode_tuples) / batch_size) ):
+            if (i+1) * batch_size >= len(self.tiles_richencode_tuples):
+                batch_inds.append((i * batch_size), len(self.tiles_richencode_tuples) )
+            else:
+                batch_inds.append((i * batch_size, (i+1) * batch_size) )
+                
+        clustering = self.load_minibatch_K_means()
+        self.cluster_name = 'MinibatchKmeans'
+        
+        clustering_time = Time()
+        print('In fitting...', end='')
+        
+        for ind in batch_inds:
+            encodes = []
+            for info_tuple in self.tiles_richencode_tuples[ind[0]: ind[1]]:
+                encodes.append(info_tuple[0])
+            encodes_X = np.array(encodes)
+            print('partial data tuples loaded, and fit!')
+            clustering = clustering.partial_fit(encodes_X)
+        self.clustering_model = clustering
+        print('execute %s clustering on %d tiles with time: %s sec' % (self.cluster_name,
+                                                                       len(self.tiles_richencode_tuples),
+                                                                       str(clustering_time.elapsed()) ))
     
     def predict(self, tiles_outside_pred_tuples):
         '''
@@ -334,6 +351,14 @@ class Instance_Clustering():
         n_clusters = 6
         
         clustering = KMeans(n_clusters=n_clusters)
+        return clustering
+    
+    def load_minibatch_K_means(self, batch_size):
+        '''
+        '''
+        n_clusters = 6
+        
+        clustering = MiniBatchKMeans(n_clusters,batch_size=batch_size)
         return clustering
     
     def load_SpectralClustering(self):
