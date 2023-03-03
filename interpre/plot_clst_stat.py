@@ -5,6 +5,7 @@ Created on 15 Feb 2023
 '''
 
 import math
+import os
 
 from interpre.prep_tools import load_vis_pkg_from_pkl
 import matplotlib.pyplot as plt
@@ -26,10 +27,10 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     lobular_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
     non_lobular_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
-        if slide_id == 'avg':
-            continue
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
         case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
+            continue
         if lobular_label_dict[case_id] == 0:
             # non-lobular cases
             nb_nlob_cases += 1
@@ -39,6 +40,11 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
             nb_lob_cases += 1
             for c in range(nb_clst):
                 lobular_tis_pcts[c] += tissue_pct_dict[c]
+                
+    print(lobular_tis_pcts)
+    print(non_lobular_tis_pcts)
+    print(nb_lob_cases)
+    print(nb_nlob_cases)
                 
     nd_lob_tis_pct = np.array(lobular_tis_pcts)
     nd_nonlob_tis_pct = np.array(non_lobular_tis_pcts)
@@ -62,7 +68,13 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     # ax_2.set_title('tissue percentage of clusters, for non-lobular cases')
     
     plt.tight_layout()
-    plt.show()
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular.png')) )
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    
+def plot_lobular_clsts_dist_HV():
+    '''
+    health volunteers
+    '''
 
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6):

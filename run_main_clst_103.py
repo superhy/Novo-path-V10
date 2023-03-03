@@ -27,7 +27,7 @@ if __name__ == '__main__':
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
     
     if 103 in task_ids:
-        vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
+        vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
         tiles_r_tuples_pkl_name = None

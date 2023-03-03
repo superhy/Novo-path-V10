@@ -81,7 +81,7 @@ def plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     slide_clst_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_spatmaps_pkl_name)
     
-    clst_alg_name = clst_spatmaps_pkl_name[:clst_spatmaps_pkl_name.find('-encode')]
+    clst_alg_name = clst_spatmaps_pkl_name[:clst_spatmaps_pkl_name.find('_encode')]
     clst_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name)
     if not os.path.exists(clst_spatmap_dir):
         os.makedirs(clst_spatmap_dir)
@@ -109,7 +109,7 @@ def plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     clst_tile_slideid_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_tiledemo_pkl_name)
     
-    clst_alg_name = clst_tiledemo_pkl_name[:clst_tiledemo_pkl_name.find('-encode')]
+    clst_alg_name = clst_tiledemo_pkl_name[:clst_tiledemo_pkl_name.find('_encode')]
     clst_tiledemo_dir = os.path.join(heat_store_dir, clst_alg_name)
     if not os.path.exists(clst_tiledemo_dir):
         os.makedirs(clst_tiledemo_dir)
@@ -134,7 +134,7 @@ def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     slide_clst_s_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_s_spatmap_pkl_name)
     
-    clst_alg_name = clst_s_spatmap_pkl_name[:clst_s_spatmap_pkl_name.find('-encode')]
+    clst_alg_name = clst_s_spatmap_pkl_name[:clst_s_spatmap_pkl_name.find('_encode')]
     clst_s_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name)
     if not os.path.exists(clst_s_spatmap_dir):
         os.makedirs(clst_s_spatmap_dir)

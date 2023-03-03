@@ -26,7 +26,7 @@ def show_heatmap_on_image(img: np.ndarray,
 def draw_original_image(default_dir, image, im_info: tuple=None):
     '''
     '''
-    im_filename = im_info[0] + '_' + im_info[1] + '.png'
+    im_filename = im_info[0] + '_' + im_info[1] + '.jpeg'
     im_filepath = os.path.join(default_dir, im_filename)
     image = np.asarray(image)
     
@@ -38,7 +38,7 @@ def draw_attention_heatmap(map_dir,
                            troi_contours=None, im_info: tuple=None):
     '''
     '''
-    im_filename = im_info[0] + '_' + im_info[1] + '.png'
+    im_filename = im_info[0] + '_' + im_info[1] + '.jpeg'
     im_filepath = os.path.join(map_dir, im_filename)
     
     if im_info[0].find('org') != -1:
