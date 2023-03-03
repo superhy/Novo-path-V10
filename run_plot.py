@@ -27,9 +27,9 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [20, 21, 22]
-    # task_ids = [22]
+    task_ids = [20]
     # task_ids = [61, 62]
-    task_ids = [29.1]
+    # task_ids = [29.1]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
