@@ -40,7 +40,7 @@ if __name__ == '__main__':
         clsmap_pkl_name = 'clsmap_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pkl'
         _run_plot_vit_cls_map(ENV_task, clsmap_pkl_name)
     if 20 in task_ids:
-        clst_space_pkl_name = 'tsne_all_clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
+        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
         clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
