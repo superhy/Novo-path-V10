@@ -13,12 +13,14 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from support.files import parse_caseid_from_slideid
-from support.metadata import query_task_label_dict_fromcsv
+from support.metadata import query_task_label_dict_fromcsv, \
+    extract_slideid_subid_for_stain
 
 
 def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst):
     '''
     counting all clusters' average distribution on all slides, for lobular/non-lobular
+    PS: lobular label is only available for cd45 staining
     '''
     
     ''' loading/processing data '''
@@ -71,10 +73,42 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular.png')) )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
-def plot_lobular_clsts_dist_HV():
+def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):
     '''
-    health volunteers
+    counting all clusters' average distribution on the slides of health volunteers
+    for lobular/non-lobular
+    PS: lobular label is only available for cd45 staining
     '''
+    xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
+    xlsx_path_158 = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
+    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_158, ENV_task.STAIN_TYPE)
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    
+    tis_pcts, nb_hv_cases = [0.0] * nb_clst, 0
+    for slide_id in slide_tis_pct_dict.keys():
+        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+        subject_id = slideid_subid_dict[slide_id]
+        if subject_id.startswith('HV'):
+            nb_hv_cases += 1
+            for c in range(nb_clst):
+                tis_pcts[c] += tissue_pct_dict[c]
+                
+    print(tis_pcts)
+    print(nb_hv_cases)
+    nd_tis_pcts = np.array(tis_pcts)
+    nd_tis_pcts = nd_tis_pcts / nb_hv_cases
+    
+    t_pct_tuples = [['c-{}'.format(c+1), nd_tis_pcts[c]] for c in range(nb_clst) ]
+    df_hvlob_t_pct = pd.DataFrame(t_pct_tuples, columns=['clusters', 'tissue_percentage'])
+    
+    fig = plt.figure(figsize=(5, 5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    # ax_1.set_ylim(0, 0.5)
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['gray'], data=df_hvlob_t_pct)
+    ax_1.set_title('health volunteers\' cluster tissue percentage')
+    plt.tight_layout()
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-hv_lobular.png')) )
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6):
