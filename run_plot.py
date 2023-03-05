@@ -60,7 +60,6 @@ if __name__ == '__main__':
         plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6)
     if 29.2 in task_ids:
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         # query_slide_id = '23910-158_Sl278-C18-CD45'
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=6)
         
