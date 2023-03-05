@@ -86,9 +86,12 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):
     
     tis_pcts, nb_hv_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
+        if slide_id == 'avg':
+            continue
+        slide_org_id = slide_id.split('_')[1].split('-')[0]
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
-        subject_id = slideid_subid_dict[slide_id]
-        if subject_id.startswith('HV'):
+        subject_id = slideid_subid_dict[slide_org_id]
+        if type(subject_id) != int and subject_id.startswith('HV'):
             nb_hv_cases += 1
             for c in range(nb_clst):
                 tis_pcts[c] += tissue_pct_dict[c]
