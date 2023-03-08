@@ -321,7 +321,7 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
         
     
 ''' --------- tissue percentage --------- '''
-def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst=6):
+def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst=10):
     '''
     '''
     # initial
