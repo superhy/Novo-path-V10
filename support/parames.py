@@ -100,6 +100,7 @@ class parames_task(parames_basic):
                  sspt_record_pulse,
                  num_slide_samples,
                  vit_shape,
+                 nb_clst,
                  seg_train_folder_name,
                  seg_test_folder_name,
                  seg_pred_folder_name,
@@ -216,6 +217,9 @@ class parames_task(parames_basic):
         self.SSPT_RECORD_PULSE = sspt_record_pulse # after every ? epochs, record the training log once
         self.NUM_SLIDE_SAMPLES = num_slide_samples # in each epoch, how many tiles are sampled for sspt from one slide
         self.VIT_SHAPE = vit_shape # the shape of ViT patch map, h / w for (h * w), h == w
+        
+        ''' --- clustering parames --- '''
+        self.NUM_CLUSTERS = nb_clst
         
         ''' --- segmentation params --- '''
         self.SEG_TRAIN_FOLDER_PATH = os.path.join(self.DATA_DIR, seg_train_folder_name)

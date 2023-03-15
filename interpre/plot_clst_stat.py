@@ -70,7 +70,8 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     # ax_2.set_title('tissue percentage of clusters, for non-lobular cases')
     
     plt.tight_layout()
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular.png')) )
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix) )) )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):

@@ -39,7 +39,7 @@ def load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name):
     return clustering_pkg       
 
 
-def load_tiles_encode_rich_tuples(ENV_task, encoder):
+def load_tiles_en_rich_tuples(ENV_task, encoder):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     
@@ -68,7 +68,7 @@ def load_tiles_encode_rich_tuples(ENV_task, encoder):
     
     return tiles_richencode_tuples
 
-def load_tiles_neb_encode_rich_tuples(ENV_task, encoder):
+def load_tiles_neb_en_rich_tuples(ENV_task, encoder):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine neighbor tiles for the key tile to generate the combination encode
@@ -101,7 +101,7 @@ def load_tiles_neb_encode_rich_tuples(ENV_task, encoder):
     
     return tiles_richencode_tuples
 
-def load_tiles_dilneb_encode_rich_tuples(ENV_task, encoder):
+def load_tiles_dilneb_en_rich_tuples(ENV_task, encoder):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine dilated + neighbor tiles for the key tile to generate the combination encode
@@ -110,13 +110,19 @@ def load_tiles_dilneb_encode_rich_tuples(ENV_task, encoder):
         tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
     '''
 
-def load_tiles_semantic_rich_tuples(ENV_task, encoder):
+def load_tiles_slidectx_en_rich_tuples(ENV_task, encoder):
     '''
     '''
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
-def load_tiles_graph_embed_rich_tuples(ENV_task, encoder):
+def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder):
+    '''
+    '''
+    tiles_richencode_tuples = []
+    return tiles_richencode_tuples
+
+def load_tiles_graph_en_rich_tuples(ENV_task, encoder):
     '''
     '''
     tiles_richencode_tuples = []
@@ -202,16 +208,16 @@ class Instance_Clustering():
         
     def gen_tiles_richencode_tuples(self):
         if self.embed_type == 'encode':
-            tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'neb_encode':
-            tiles_richencode_tuples = load_tiles_neb_encode_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'semantic':
-            tiles_richencode_tuples = load_tiles_semantic_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_slidectx_en_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'graph':
-            tiles_richencode_tuples = load_tiles_graph_embed_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder)
         else:
             # default use the 'encode' mode
-            tiles_richencode_tuples = load_tiles_encode_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
         return tiles_richencode_tuples
     
     def fit_predict(self):
@@ -451,6 +457,27 @@ def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
             res_dict[res_tuple[0]] += 1
     print(res_dict)
     
+def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
+                                     cluster_name='Kmeans', embed_type='neb_encode',
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
+    
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers) )
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+    
+''' ----  ---- '''
+    
 def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
@@ -472,24 +499,6 @@ def _run_dbscan_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres (-1 is noise):', len(cluster_centers) - 1, cluster_centers )
-    res_dict = {}
-    for res_tuple in clustering_res_pkg:
-        if res_tuple[0] not in res_dict.keys():
-            res_dict[res_tuple[0]] = 0
-        else:
-            res_dict[res_tuple[0]] += 1
-    print(res_dict)
-    
-def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
-    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
-                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name) )
-    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
-                                     cluster_name='Kmeans', embed_type='neb_encode',
-                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
-    
-    clustering_res_pkg, cluster_centers = clustering.fit_predict()
-    print('clustering number of centres:', len(cluster_centers) )
     res_dict = {}
     for res_tuple in clustering_res_pkg:
         if res_tuple[0] not in res_dict.keys():
