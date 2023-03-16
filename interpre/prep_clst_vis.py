@@ -310,7 +310,7 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         # count tissue percentage
-        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples)
+        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples, ENV_task.NUM_CLUSTERS)
         slide_tis_pct_dict[slide_id] = tissue_pct_dict
         tissue_pct_dict_list.append(tissue_pct_dict)
     
@@ -321,7 +321,7 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
         
     
 ''' --------- tissue percentage --------- '''
-def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst=10):
+def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst):
     '''
     '''
     # initial

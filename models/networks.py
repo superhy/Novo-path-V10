@@ -193,6 +193,7 @@ class ViT_D6_H8(ViT_base):
                                         depth, heads)
         self.name = 'ViT-6-8'
     
+    
 class ViT_D9_H12(ViT_base):
     
     def __init__(self, image_size, patch_size, output_dim):
@@ -206,9 +207,51 @@ class ViT_D9_H12(ViT_base):
                                          depth, heads)
         self.name = 'ViT-9-12'
 
+
+''' --- some networks for patch-region context modeling and encoding combination --- '''
+class ViT_Region_4_6(ViT_base):
+    
+    def __init__(self, image_size, patch_size, output_dim, en_dim=128):
+        '''
+        ViT for Region context modeling
+        '''
+        depth=4, heads=6
+        super(ViT_Region_4_6, self).__init__(image_size, patch_size, output_dim,
+                                             depth=depth, heads=heads)
+        self.image_size = image_size
+        self.dim = int(self.image_size * 2) if self.image_size < 64 else int(self.image_size)
+        self.mlp_dim = int(128)
+        self.backbone = ViT(
+            image_size = self.image_size,
+            patch_size = patch_size,
+            num_classes = output_dim,
+            dim = self.dim,
+            depth = depth,
+            heads = heads,
+            mlp_dim = self.mlp_dim,
+            dropout = 0.1,
+            emb_dropout = 0.1
+            )
+        ''' 
+        cut the output head of the original network and extract the backbone for accessing images' encoding
+        re-put another fc layer for classification output
+        '''
+        self.backbone.mlp_head = nn.Identity()
+        self.fc = nn.Linear(in_features=self.dim, out_features=output_dim, bias=True)
+        
+        self.name = 'ViT-Region_4_6'
+        
+class CombLayers(nn.Module):
+    
+    def __init__(self, in_dim, out_dim, inh_weights):
+        '''
+        TODO:
+        '''
+    
     
 ''' --- some test encoders with Transformer --- '''
 class ViT_D3_H4_T(ViT_base):
+    
     def __init__(self, image_size, patch_size, output_dim):
         ''' tiny (T) ViT encoder for test on PC '''
         super(ViT_D3_H4_T, self).__init__(image_size, patch_size, output_dim, depth=3, heads=4)       

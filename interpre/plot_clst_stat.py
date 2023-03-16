@@ -74,7 +74,7 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix) )) )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
-def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):
+def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name):
     '''
     counting all clusters' average distribution on the slides of health volunteers
     for lobular/non-lobular
@@ -84,6 +84,8 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):
     xlsx_path_158 = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
     slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_158, ENV_task.STAIN_TYPE)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    
+    nb_clst = ENV_task.NUM_CLUSTERS
     
     tis_pcts, nb_hv_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
@@ -115,7 +117,7 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst):
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
     
-def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6):
+def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):
     '''
     counting specific cluster's percentage distribution on all slides (numbers), for lobular/non-lobular
     '''
@@ -123,6 +125,8 @@ def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fnam
     ''' loading/processing data '''
     lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    
+    nb_clst = ENV_task.NUM_CLUSTERS
     
     clst_t_pct_dist_dict = {}
     for c in range(nb_clst):

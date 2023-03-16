@@ -61,12 +61,12 @@ if __name__ == '__main__':
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         # query_slide_id = '23910-158_Sl278-C18-CD45'
-        plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=10)
+        plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname)
     if 29.2 in task_ids:
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10
         # query_slide_id = '23910-158_Sl278-C18-CD45'
-        plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=10)
+        plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name)
         
         
     if 61 in task_ids:

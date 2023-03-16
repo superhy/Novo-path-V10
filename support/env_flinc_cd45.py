@@ -53,6 +53,7 @@ ENV_FLINC_CD45_U = parames_task(
     sspt_record_pulse=50,
     num_slide_samples=500,
     vit_shape=16, # 32 on old model
+    nb_clst=6,
     seg_train_folder_name='train', 
     seg_test_folder_name='train',
     seg_pred_folder_name = 'prediction',
