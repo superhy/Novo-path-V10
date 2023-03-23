@@ -11,6 +11,7 @@ the list:
 '''
 
 import os
+import warnings
 
 from torch import nn
 import torch
@@ -211,7 +212,7 @@ class ViT_D9_H12(ViT_base):
 ''' --- some networks for patch-region context modeling and encoding combination --- '''
 class ViT_Region_4_6(ViT_base):
     
-    def __init__(self, image_size, patch_size, output_dim, en_dim=128):
+    def __init__(self, image_size, patch_size, output_dim=2, en_dim=128):
         '''
         ViT for Region context modeling
         '''
@@ -219,8 +220,8 @@ class ViT_Region_4_6(ViT_base):
         super(ViT_Region_4_6, self).__init__(image_size, patch_size, output_dim,
                                              depth=depth, heads=heads)
         self.image_size = image_size
-        self.dim = int(self.image_size * 2) if self.image_size < 64 else int(self.image_size)
-        self.mlp_dim = int(128)
+        self.dim = 256
+        self.mlp_dim = 128
         self.backbone = ViT(
             image_size = self.image_size,
             patch_size = patch_size,
@@ -237,17 +238,51 @@ class ViT_Region_4_6(ViT_base):
         re-put another fc layer for classification output
         '''
         self.backbone.mlp_head = nn.Identity()
-        self.fc = nn.Linear(in_features=self.dim, out_features=output_dim, bias=True)
+        self.fc = nn.Linear(in_features=self.dim, out_features=en_dim, bias=True)
         
         self.name = 'ViT-Region_4_6'
         
 class CombLayers(nn.Module):
     
-    def __init__(self, in_dim, out_dim, inh_weights):
+    def __init__(self, in_dim, out_dim, inh_weights=None):
         '''
-        TODO:
+        fully-connected layers for combining 2 part of features
+        
+        now the application purpose is: 
+            feature-1 (128-dim encoded with ViT_? for single tile)
+            feature-2 (128-dim encoded with ViT_Region_? for regional context for a specific tile)
+            combine [feature-1, feature-2] (256-dim) -> transform to -> (128-dim)
+            
+        In the above case:
+            in_dim = 128, (in_dim * 2 = 256)
+            out_dim = 128
         '''
-    
+        self.fc_comb = nn.Sequential(
+            nn.LayerNorm(in_dim * 2),
+            nn.Linear(in_features=in_dim, out_features=out_dim, bias=True if inh_weights is not None else False)
+        )
+        
+    def reuse_weights(self, inh_weights):
+        '''
+        inh_weights: should be [model.fc1.weight, model.fc1.bias]
+        
+        recommend to use: fc layer in ViT_Region_4_6 with weights: 256 -> 128
+        '''
+        shapes_match = (
+            self.fc1.weight.shape == inh_weights[0].shape and
+            self.fc1.bias.shape == inh_weights[1].shape
+        )
+        if not shapes_match:
+            warnings.warn("the shape of weights is not matching, please check!")
+            return
+        
+        self.fc_comb.weight = nn.Parameter(inh_weights[0].clone())
+        self.fc_comb.bias = nn.Parameter(inh_weights[1].clone())
+        
+    def forward(self, e1, e2):
+        comb_e = torch.cat((e1, e2), dim=-1)
+        output = self.fc_comb(comb_e)  
+        return output
     
 ''' --- some test encoders with Transformer --- '''
 class ViT_D3_H4_T(ViT_base):
@@ -256,7 +291,7 @@ class ViT_D3_H4_T(ViT_base):
         ''' tiny (T) ViT encoder for test on PC '''
         super(ViT_D3_H4_T, self).__init__(image_size, patch_size, output_dim, depth=3, heads=4)       
         self.image_size = image_size
-        self.dim = int(64) # 256 for size: 256, 512 for size: 512
+        self.dim = 64 # 256 for size: 256, 512 for size: 512
         self.mlp_dim = int(self.dim / 2) # 128 for dim: 256, 256 for dim: 512
         self.backbone = ViT(
             image_size = self.image_size,
