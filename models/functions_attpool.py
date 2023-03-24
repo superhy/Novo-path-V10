@@ -276,7 +276,7 @@ class AttPool_MIL():
         self.record_points = self.ENV_task.ATTPOOL_RECORD_EPOCHS
         
         if encoder is None:
-            self.encoder = BasicResNet18(output_dim=2)
+            self.encoder = BasicResNet18(pseudo_dim=2)
         else:
             self.encoder = encoder
         self.encoder = self.encoder.cuda()
@@ -303,11 +303,11 @@ class AttPool_MIL():
             embedding_dim = np.load(self.test_slidemat_file_sets[0][2]).shape[-1]
         
         if aggregator_name == 'GatedAttPool':
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         elif aggregator_name == 'AttPool':
-            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = AttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         else:
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         self.check_point = None
         if model_filename != None:
             if model_filename.find(self.aggregator.name) == -1:

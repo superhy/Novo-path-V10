@@ -97,16 +97,77 @@ def avg_dilated_neigb_encodes():
 functions family for combined encoding the tile's feature and its regional context's semantic 
 '''
 
-def gen_ctx_grid_tensor():
+def gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple):
     '''
     '''
+    encode, tile, slide_id = key_encode_tuple
+    
+    h, w = tile.h_id, tile.w_id
+    dim = encode.shape[-1]
+    
+    left = max(0, w - radius)
+    right = w + radius
+    top = max(0, h - radius)
+    bottom = h + radius
 
-def comput_region_ctx_comb_encodes(key_encode_tuple):
+    # create a empty region_ctx_nd
+    C = radius * 2 + 1
+    region_ctx_nd = np.zeros((C, C, dim))
+
+    # calculate the coordinates on the image corresponding to each point on the square
+    coordinates = [(i, j) for i in range(top, bottom) for j in range(left, right)]
+
+    # fill the region context region_ctx_nd
+    for i, coord in enumerate(coordinates):
+        q_h, q_w = coord
+        if q_h == h and q_w == w:
+            region_ctx_nd[q_h, q_w] = encode # encode of key tile
+            continue
+        
+        ctx_keys = '{}-h{}-w{}'.format(slide_id, q_h, q_w)
+        if ctx_keys in tile_loc_dict.keys():
+            ctx_en_idx = tile_loc_dict[ctx_keys][0]
+            ctx_en = tiles_en_nd[ctx_en_idx]
+            region_ctx_nd[q_h, q_w] = ctx_en
+            
+    return region_ctx_nd, coordinates
+    
+def encode_region_ctx_prior(region_ctx_nd, tile_en_nd, vit_region, comb_layer):
+    '''
+    '''
+    vit_region.eval()
+    comb_layer.eval()
+    
+    ctx_tensor = torch.from_numpy(region_ctx_nd)
+    ctx_tensor = ctx_tensor.cuda()
+    en_ctx = vit_region(ctx_tensor)
+    
+    en_t = torch.from_numpy(tile_en_nd)
+    en_t = en_t.cuda()
+    print(en_ctx.shape, en_t.shape)
+
+    ctx_prior_e = comb_layer(en_ctx, en_t)
+    t_ctx_e_nd = ctx_prior_e.detach().cpu().numpy()
+    return t_ctx_e_nd
+
+def comput_region_ctx_comb_encodes(reg_radius, tiles_en_nd, tile_loc_dict, key_encode_tuple,
+                                   vit_region, comb_layer):
     '''
     Args:
+        reg_radius:
+        tiles_en_nd:
+        tile_loc_dict:
         key_encode_tuple: (encode, tile, slide_id) for the key tile's encode, in middle
+        vit_region:
+        comb_layer:
     '''
+    encode, _, _ = key_encode_tuple
+    region_ctx_nd, coordinates = gen_ctx_grid_tensor(reg_radius, tiles_en_nd, tile_loc_dict, key_encode_tuple)
+    print(coordinates)
+    tile_region_ctx_encode_nd = encode_region_ctx_prior(region_ctx_nd, encode, vit_region, comb_layer)
     
+    return tile_region_ctx_encode_nd
+
     
 ''' 
 ------------- access functions for pick up some visualization information ------------- 

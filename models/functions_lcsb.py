@@ -233,7 +233,7 @@ class LCSB_MIL():
         self.fold = self.ENV_task.FOLD_SUFFIX
         
         if encoder is None:
-            self.encoder = BasicResNet18(output_dim=2)
+            self.encoder = BasicResNet18(pseudo_dim=2)
         else:
             self.encoder = encoder
         self.encoder = self.encoder.cuda()
@@ -270,11 +270,11 @@ class LCSB_MIL():
             embedding_dim = np.load(self.test_slidemat_file_sets[0][2]).shape[-1]
         
         if aggregator_name == 'GatedAttPool':
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         elif aggregator_name == 'AttPool':
-            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = AttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         else:
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, pseudo_dim=2)
         
         if self.pt_agt_name is not None and continue_train is False:
             '''use pre-trained weights for aggregator, not suitable for continue training '''

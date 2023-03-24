@@ -212,12 +212,12 @@ class ViT_D9_H12(ViT_base):
 ''' --- some networks for patch-region context modeling and encoding combination --- '''
 class ViT_Region_4_6(ViT_base):
     
-    def __init__(self, image_size, patch_size, output_dim=2, en_dim=128):
+    def __init__(self, image_size, patch_size, pseudo_dim=2):
         '''
         ViT for Region context modeling
         '''
         depth=4, heads=6
-        super(ViT_Region_4_6, self).__init__(image_size, patch_size, output_dim,
+        super(ViT_Region_4_6, self).__init__(image_size, patch_size, pseudo_dim,
                                              depth=depth, heads=heads)
         self.image_size = image_size
         self.dim = 256
@@ -225,7 +225,7 @@ class ViT_Region_4_6(ViT_base):
         self.backbone = ViT(
             image_size = self.image_size,
             patch_size = patch_size,
-            num_classes = output_dim,
+            num_classes = pseudo_dim,
             dim = self.dim,
             depth = depth,
             heads = heads,
@@ -238,35 +238,37 @@ class ViT_Region_4_6(ViT_base):
         re-put another fc layer for classification output
         '''
         self.backbone.mlp_head = nn.Identity()
-        self.fc = nn.Linear(in_features=self.dim, out_features=en_dim, bias=True)
+        self.fc = nn.Identity() # the real encode dim is self.dim = 256
         
         self.name = 'ViT-Region_4_6'
         
 class CombLayers(nn.Module):
     
-    def __init__(self, in_dim, out_dim, inh_weights=None):
+    def __init__(self, in_dim1, in_dim2, out_dim, inh_weights=None):
         '''
         fully-connected layers for combining 2 part of features
         
         now the application purpose is: 
-            feature-1 (128-dim encoded with ViT_? for single tile)
-            feature-2 (128-dim encoded with ViT_Region_? for regional context for a specific tile)
-            combine [feature-1, feature-2] (256-dim) -> transform to -> (128-dim)
+            feature-1 (256-dim encoded with ViT_? for single tile)
+            feature-2 (256-dim encoded with ViT_Region_? for regional context for a specific tile)
+            combine [feature-1, feature-2] (512-dim) -> transform to -> (256-dim)
             
         In the above case:
-            in_dim = 128, (in_dim * 2 = 256)
-            out_dim = 128
+            in_dim (1, 2) = 256, 256 (in_dim * 2 = 512)
+            out_dim = 256
         '''
         self.fc_comb = nn.Sequential(
-            nn.LayerNorm(in_dim * 2),
-            nn.Linear(in_features=in_dim, out_features=out_dim, bias=True if inh_weights is not None else False)
+            nn.LayerNorm(in_dim1 + in_dim2),
+            nn.Linear(in_features=in_dim1 + in_dim2, out_features=out_dim, bias=True)
         )
+        nn.init.normal_(self.fc_comb[-1].weight) # mean=0, std=1
+        nn.init.zeros_(self.fc_comb[-1].bias)        
         
     def reuse_weights(self, inh_weights):
         '''
         inh_weights: should be [model.fc1.weight, model.fc1.bias]
         
-        recommend to use: fc layer in ViT_Region_4_6 with weights: 256 -> 128
+        ! now, there is no suitable reuse network layers.
         '''
         shapes_match = (
             self.fc1.weight.shape == inh_weights[0].shape and
@@ -276,8 +278,8 @@ class CombLayers(nn.Module):
             warnings.warn("the shape of weights is not matching, please check!")
             return
         
-        self.fc_comb.weight = nn.Parameter(inh_weights[0].clone())
-        self.fc_comb.bias = nn.Parameter(inh_weights[1].clone())
+        self.fc_comb[-1].weight = nn.Parameter(inh_weights[0].clone())
+        self.fc_comb[-1].bias = nn.Parameter(inh_weights[1].clone())
         
     def forward(self, e1, e2):
         comb_e = torch.cat((e1, e2), dim=-1)
