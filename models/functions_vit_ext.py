@@ -91,6 +91,27 @@ def avg_dilated_neigb_encodes():
     '''
     '''
     
+    
+
+''' 
+functions family for combined encoding the tile's feature and its regional context's semantic 
+'''
+
+def gen_ctx_grid_tensor():
+    '''
+    '''
+
+def comput_region_ctx_comb_encodes(key_encode_tuple):
+    '''
+    Args:
+        key_encode_tuple: (encode, tile, slide_id) for the key tile's encode, in middle
+    '''
+    
+    
+''' 
+------------- access functions for pick up some visualization information ------------- 
+'''
+    
 def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1):
     '''
     access and extract the original signal of attention maps from trained ViT model
