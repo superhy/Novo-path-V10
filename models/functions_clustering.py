@@ -123,7 +123,7 @@ def load_tiles_slidectx_en_rich_tuples(ENV_task, encoder):
 
 
 def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
-                                        reg_encoder, comb_layer):
+                                        reg_encoder, comb_layer, ctx_type):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine the encode of tile and its regional context encode for the 
@@ -162,7 +162,7 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
         key_encode_tuple = (tile_encode, tile, slide_id)
         tiles_richencode_tuples.append((comput_region_ctx_comb_encodes(ENV_task.REG_RADIUS, tiles_en_nd,
                                                                        tile_loc_dict, key_encode_tuple,
-                                                                       reg_encoder, comb_layer),
+                                                                       reg_encoder, comb_layer, ctx_type),
                                         tile, slide_id))
     print('%d tiles\' regional context combined encodes have been loaded, take %s sec' % (len(tiles_richencode_tuples),
                                                                                           str(loading_time.elapsed())))
@@ -216,7 +216,7 @@ class Instance_Clustering():
 
     def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode',
                  tiles_r_tuples_pkl_name=None, exist_clustering=None,
-                 reg_encoder=None, comb_layer=None):
+                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
         '''
         Args:
             ENV_task: task environment (hyper-parameters)
@@ -252,6 +252,7 @@ class Instance_Clustering():
                 self.reg_encoder, self.comb_layer = reg_encoder, comb_layer
                 self.reg_encoder = self.reg_encoder.cuda()
                 self.comb_layer = self.comb_layer.cuda()
+        self.ctx_type = ctx_type
         
         print('![Initial Stage] clustering mode')
         print('Initialising the embedding of overall tile features...')
@@ -273,7 +274,8 @@ class Instance_Clustering():
             tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder)
         elif self.embed_type == 'region_ctx':
             tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                          self.reg_encoder, self.comb_layer)
+                                                                          self.reg_encoder, self.comb_layer,
+                                                                          self.ctx_type)
         elif self.embed_type == 'graph':
             tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder)
         else:
@@ -540,19 +542,32 @@ def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_nam
     
 def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
                                           reg_vit_pt_name,
-                                          tiles_r_tuples_pkl_name=None):
+                                          tiles_r_tuples_pkl_name=None,
+                                          ctx_type='reg_ass'):
+    '''
+    Args:
+        ctx_type: 
+            'reg' -> only region context
+            'ass' - > only associations to key tile
+            'reg_ass' -> both region context & associations to key tile
+    '''
+    reg_ctx_size = (ENV_task.REG_RADIUS * 2) + 1
+    in_dim1_dict = {'reg': 256,
+                    'ass': reg_ctx_size ** 2 - 1,
+                    'reg_ass': 256 + (reg_ctx_size ** 2 - 1)}
     
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     reg_vit_encoder = ViT_Region_4_6(image_size=2 * ENV_task.REG_RADIUS + 1, patch_size=1)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
-    comb_layer = CombLayers(in_dim1=256, in_dim2=256, out_dim=256, inh_weights=None)
     reg_vit_encoder, _ = reload_net(reg_vit_encoder, 
                                     os.path.join(ENV_task.MODEL_FOLDER, reg_vit_pt_name))
+    comb_layer = CombLayers(in_dim1=in_dim1_dict[ctx_type], in_dim2=256, out_dim=256, inh_weights=None)
+
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
                                      cluster_name='Kmeans', embed_type='region_ctx',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
-                                     reg_vit_encoder, comb_layer)
+                                     reg_vit_encoder, comb_layer, ctx_type)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers))

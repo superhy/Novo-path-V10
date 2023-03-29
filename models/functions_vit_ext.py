@@ -5,7 +5,7 @@
 import math
 import warnings
 
-from einops.einops import reduce, rearrange
+import einops
 import torch
 
 from models import functions
@@ -132,15 +132,30 @@ def gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple):
             
     return region_ctx_nd, coordinates
     
-def encode_region_ctx_prior(region_ctx_nd, tile_en_nd, vit_region, comb_layer):
+def encode_region_ctx_prior(region_ctx_nd, tile_en_nd, vit_region, comb_layer, 
+                            radius, ctx_type):
     '''
+    Args:
+        ctx_type: 
+            'reg' -> only region context
+            'ass' - > only associations to key tile
+            'reg_ass' -> both region context & associations to key tile
     '''
     vit_region.eval()
     comb_layer.eval()
     
     ctx_tensor = torch.from_numpy(region_ctx_nd)
     ctx_tensor = ctx_tensor.cuda()
-    en_ctx = vit_region(ctx_tensor)
+    ctx_tensor = torch.unsqueeze(ctx_tensor, 0) # (h, w) -> (1, h, w)
+    vit_region.deploy_recorder()
+    en_ctx, attn_ctx = vit_region.backbone(ctx_tensor)
+    en_ctx = torch.squeeze(en_ctx, 0) # back to (1, d) -> (d)
+    if ctx_type == 'ass':
+        attn_ctx = extra_reg_assoc_key_tile(attn_ctx, radius)
+        en_ctx = attn_ctx
+    elif ctx_type == 'reg_ass':
+        attn_ctx = extra_reg_assoc_key_tile(attn_ctx, radius)
+        en_ctx = torch.cat((en_ctx, attn_ctx), -1)
     
     en_t = torch.from_numpy(tile_en_nd)
     en_t = en_t.cuda()
@@ -150,8 +165,24 @@ def encode_region_ctx_prior(region_ctx_nd, tile_en_nd, vit_region, comb_layer):
     t_ctx_e_nd = ctx_prior_e.detach().cpu().numpy()
     return t_ctx_e_nd
 
+def extra_reg_assoc_key_tile(attn_ctx, radius):
+    '''
+    TODO: set a dimensionality reduction via PCA to reduce the ass_featrue dim
+    '''
+    # attn_ctx: (batch, layers, heads, patch, patch)
+    attn_ctx = attn_ctx.detach().cpu().numpy()
+    
+    heads_attn_map = attn_ctx[0, -1, :, 1:, 1:]
+    attn_map = einops.reduce(heads_attn_map, 'b l h p1 p2 -> b l p1 p2', 'mean', 'h')
+    key_i = (radius * 2 + 1) * radius + radius
+    att_vec_1 = einops.rearrange(attn_map[:, :, key_i, :], '... -> ...')
+    att_vec_2 = einops.rearrange(attn_map[:, :, :, key_i], '... -> ...')
+    att_vec = (att_vec_1 + att_vec_2) / 2.0
+    
+    return torch.from_numpy(att_vec).cuda()
+    
 def comput_region_ctx_comb_encodes(reg_radius, tiles_en_nd, tile_loc_dict, key_encode_tuple,
-                                   vit_region, comb_layer):
+                                   vit_region, comb_layer, ctx_type):
     '''
     Args:
         reg_radius:
@@ -160,11 +191,13 @@ def comput_region_ctx_comb_encodes(reg_radius, tiles_en_nd, tile_loc_dict, key_e
         key_encode_tuple: (encode, tile, slide_id) for the key tile's encode, in middle
         vit_region:
         comb_layer:
+        ctx_type:
     '''
     encode, _, _ = key_encode_tuple
     region_ctx_nd, coordinates = gen_ctx_grid_tensor(reg_radius, tiles_en_nd, tile_loc_dict, key_encode_tuple)
     print(coordinates)
-    tile_region_ctx_encode_nd = encode_region_ctx_prior(region_ctx_nd, encode, vit_region, comb_layer)
+    tile_region_ctx_encode_nd = encode_region_ctx_prior(region_ctx_nd, encode, vit_region, comb_layer,
+                                                        reg_radius, ctx_type)
     
     return tile_region_ctx_encode_nd
 
@@ -238,9 +271,9 @@ def ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean'):
     l_attns_nd = tiles_attns_nd
     # fuse the attention values on various heads
     if comb_heads == 'max':
-        l_attns_nd = reduce(l_attns_nd, 't h q k -> t q k', reduction='max')
+        l_attns_nd = einops.reduce(l_attns_nd, 't h q k -> t q k', reduction='max')
     elif comb_heads == 'mean':
-        l_attns_nd = reduce(l_attns_nd, 't h q k -> t q k', reduction='mean')
+        l_attns_nd = einops.reduce(l_attns_nd, 't h q k -> t q k', reduction='mean')
     else:
         pass
     
@@ -265,10 +298,10 @@ def ext_cls_patch_att_maps(l_attns_nd):
     # detect the order of layer attention map, (t h q k) or (t q k)
     if len(l_attns_nd.shape) == 4:
         cls_atts_nd = l_attns_nd[:, :, 0, 1:]
-        cls_atts_nd = rearrange(cls_atts_nd, 't h (r c) -> t h r c', r=nb_row)
+        cls_atts_nd = einops.rearrange(cls_atts_nd, 't h (r c) -> t h r c', r=nb_row)
     else:
         cls_atts_nd = l_attns_nd[:, 0, 1:]
-        cls_atts_nd = rearrange(cls_atts_nd, 't (r c) -> t r c', r=nb_row)
+        cls_atts_nd = einops.rearrange(cls_atts_nd, 't (r c) -> t r c', r=nb_row)
         
     return cls_atts_nd
 
@@ -321,20 +354,20 @@ def norm_exted_maps(maps_nd, in_pattern):
         norm_nd = np.array(norm_nd)
     elif in_pattern == 't h q k':
         (t, h, q, k) = maps_nd.shape
-        maps_nd = rearrange(maps_nd, 't h q k -> t h (q k)')
+        maps_nd = einops.rearrange(maps_nd, 't h q k -> t h (q k)')
         norm_nd = []
         for i in range(t):
             norm_nd.append([normalization(maps_nd[i, j, :]) for j in range(h)])
         norm_nd = np.array(norm_nd)
-        norm_nd = rearrange(norm_nd, 't h (a b) -> t h a b', a=q)
+        norm_nd = einops.rearrange(norm_nd, 't h (a b) -> t h a b', a=q)
     elif in_pattern == 't v':
         (t, v) = maps_nd.shape
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
     else:
         (t, q, k) = maps_nd.shape
-        maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
+        maps_nd = einops.rearrange(maps_nd, 't q k -> t (q k)')
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
-        norm_nd = rearrange(norm_nd, 't (a b) -> t a b', a=q)
+        norm_nd = einops.rearrange(norm_nd, 't (a b) -> t a b', a=q)
         
     return norm_nd
 
@@ -358,9 +391,9 @@ def norm_sk_exted_maps(maps_nd, in_pattern, amplify=1, mode='max'):
         norm_nd = normalization_sk(maps_nd*amplify, mode)
     else:
         (t, q, k) = maps_nd.shape
-        maps_nd = rearrange(maps_nd, 't q k -> t (q k)')
+        maps_nd = einops.rearrange(maps_nd, 't q k -> t (q k)')
         norm_nd = normalization_sk(maps_nd*amplify, mode)
-        norm_nd = rearrange(norm_nd, 't (a b) -> t a b', a=q)
+        norm_nd = einops.rearrange(norm_nd, 't (a b) -> t a b', a=q)
         
     return norm_nd
     
