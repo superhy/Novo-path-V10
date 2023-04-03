@@ -19,8 +19,6 @@ from wsi import tiles_tools
 # from support import env_monuseg, env_gtex_seg
 
 
-
-
 sys.path.append("..")       
 def generate_tiles_list_pkl_filepath(slide_filepath, tiles_list_pkl_dir):
     """

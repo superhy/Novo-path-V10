@@ -212,6 +212,8 @@ def combine_slide_labels_group_cx(slide_label_dict_list, groups):
     label_name = label_dist_titles[1] if label_dist_titles[0] == 'slide_id' else label_dist_titles[0]
     for dict_item in slide_label_dict_list:
         org_label = int(dict_item[label_name])
+        if org_label not in group_label_dict.keys():
+            continue
         new_slide_label_dict_list.append({'slide_id': dict_item['slide_id'], label_name: group_label_dict[org_label]} )
         group_label_count[group_label_dict[org_label] ] += 1
     print('Combine the labels into groups, with new dict:')
@@ -307,7 +309,8 @@ def _prod_combine_labels():
 def _prod_bi_lobular_combine_labels():
     
     ENV_task = ENV_FLINC_CD45_U
-    groups = {0: [0], 1: [1, 2, 3]}
+    # groups = {0: [0], 1: [1, 2, 3]} # just for binary
+    groups = {0: [0], 1:[3]} # for dual-poles
     aim_label = 'lobular_inflammation_score'
     
     slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task, 
