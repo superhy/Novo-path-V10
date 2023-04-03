@@ -269,7 +269,7 @@ class ViT_Region_4_6(ViT_base):
         self.backbone.mlp_head = nn.Identity()
         self.fc = nn.Identity() # the real encode dim is self.dim = 256
         
-        self.name = 'ViT-Region_4_6'
+        self.name = 'ViT-Region-4-6'
         
 class CombLayers(nn.Module):
     

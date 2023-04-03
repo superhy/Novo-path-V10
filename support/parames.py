@@ -218,7 +218,7 @@ class parames_task(parames_basic):
         self.NUM_ENC_SSPT_EPOCH = sspt_num_epoch # the number of total training epochs for self-supervised pre-train (sspt)
         self.SSPT_RECORD_PULSE = sspt_record_pulse # after every ? epochs, record the training log once
         self.NUM_SLIDE_SAMPLES = num_slide_samples # in each epoch, how many tiles are sampled for sspt from one slide
-        self.VIT_SHAPE = vit_shape # the shape of ViT patch map, h / w for (h * w), h == w
+        self.VIT_SHAPE = vit_shape # the shape of ViT patch map, h or w for (h * w), h == w
         
         ''' --- clustering parames (include the encode extract) --- '''
         self.NUM_CLUSTERS = nb_clst
