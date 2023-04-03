@@ -454,7 +454,6 @@ class LCSB_MIL():
                         queue_auc.remove(queue_auc[0])
                 
             del train_slidemat_loader
-            gc.collect()
             
             '''
             the round-0 is the initializing for attention pool with ImageNet pre-trained resnet embeddings
@@ -473,7 +472,6 @@ class LCSB_MIL():
                                                                                                                                                             top_range=self.top_range,
                                                                                                                                                             buf_range=self.buf_range)
                 del train_slidemat_loader
-                gc.collect()
                 
                 # refresh the tile training set with attK tiles
                 self.train_attK_tiles_set.refresh_data(train_filter_K_slide_tileidx_dict)
@@ -491,7 +489,6 @@ class LCSB_MIL():
                         self.train_attK_tiles_set.refresh_data(filter_K_slide_tileidx_dict)
                       
                     del train_attK_tile_loader
-                    gc.collect()
             
             # record milestone round for visualization
             if now_round in self.history_record_rounds:

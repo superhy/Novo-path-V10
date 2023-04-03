@@ -14,7 +14,7 @@ ENV = parames_basic(
         scale_factor=16,
         tile_size=256,
         tp_tiles_threshold=50,
-        pil_image_file_format='.png',
+        pil_image_file_format='.jpeg',
         debug_mode=False
     )
 

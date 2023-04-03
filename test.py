@@ -12,11 +12,17 @@ import torch
 from vit_pytorch.vit import ViT
 
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from models.functions import optimizer_adam_basic
 from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
 from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats, \
     filter_node_pos_t_adjmat, node_pos_t_adjmat
+from models.networks import ViT_Region_4_6, store_net, reload_net, \
+    check_reuse_net
 import networkx as nx
 import networkx as nx
+import numpy as np
 import numpy as np
 from support.tools import normalization
 from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
@@ -194,9 +200,6 @@ def test_neb_nx_graph():
     # print(node_list, canvas_nxG.nodes())
         
         
-import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib.pyplot as plt
 
 cmaps = {}
 gradient = np.linspace(0, 1, 256)
@@ -225,12 +228,37 @@ def plot_color_gradients(category, cmap_list):
     
     plt.show()
     
-
-
+    
+def _test_vit_reuse():
+    
+    vit_reg_pt = ViT_Region_4_6(144, 16, 3)
+    input_1 = torch.randn(3, 144, 144).unsqueeze(0).float()
+    opt = optimizer_adam_basic(vit_reg_pt)
+    
+    output_1 = vit_reg_pt(input_1)
+    print(output_1.shape)
+    
+    for name, param in vit_reg_pt.named_parameters():
+        if param.requires_grad:
+            print(name, param.shape)
+    
+    vit_pt_path = store_net('./', vit_reg_pt, 'test', opt)
+    
+    vit_reg_en = ViT_Region_4_6(9, 1, 256)
+    for name, param in vit_reg_en.named_parameters():
+        if param.requires_grad:
+            print(name, param.shape)
+    
+    vit_reg_en, _ = check_reuse_net(vit_reg_en, vit_reg_pt, vit_pt_path)
+    
+    input_2 = torch.randn(256, 9, 9).unsqueeze(0).float()
+    
+    output_2 = vit_reg_en(input_2)
+    print(output_2.shape)
 
     
 if __name__ == '__main__':
-#     test_filter_slide_img() # 1
+    test_filter_slide_img() # 1
     # test_vit_forward() # 2
     # test_networkx() # 3
 
@@ -238,7 +266,9 @@ if __name__ == '__main__':
     # test_nx_graph()
     # test_neb_nx_graph()
     
-    plot_color_gradients('Qualitative', ['tab10'])
+    # plot_color_gradients('Qualitative', ['tab10'])
+    
+    # _test_vit_reuse()
 
 
 

@@ -29,7 +29,8 @@ task_ids = [2]
 # ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB
 # ENV_task = env_flinc_psr_fib.ENV_FLINC_PSR_FIB_C3
 
-ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+# ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT
 
 
 if __name__ == '__main__':

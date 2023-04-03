@@ -68,7 +68,6 @@ def filter_countours_in_tilemask(tile_mask, threshold, solidity=0.5):
     print('get nuclei mask size: %s, number %d' % (str(threshold), len(sp_nuclei_contours) ), end=' ' )
     
     del mask
-    gc.collect()
     
     return filter_tile_mask, len(sp_nuclei_contours)
     
@@ -160,7 +159,6 @@ def pred_slide_nuclei_mask(ENV_task, slide_tiles_dataset, net, org_slide, pred_m
         print('Store the statistic pkl at: %s' % stat_dict_pkl_path )
         
     del nuclei_mask_dict
-    gc.collect()
     
     return nuclei_tile_stat_dict
         

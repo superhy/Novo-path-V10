@@ -134,6 +134,23 @@ def get_zoom_transform(z_rate=0.5):
         ])
     return transform_augs
 
+def get_fixsize_transform(img_size=144):
+    '''
+    used for pre-train the region context vit encoder
+    resize all image to the fixed shape: (img_size, img_size)
+    '''
+    normalize = transforms.Normalize(
+        mean=[0.5, 0.5, 0.5],
+        std=[0.1, 0.1, 0.1]
+    )
+    
+    transform_augs = transforms.Compose([
+        transforms.Resize(size=(img_size, img_size) ),
+        transforms.ToTensor(),
+        normalize
+        ])
+    return transform_augs
+
 def get_data_arg_transform():
     '''
     data transform with slight data augumentation

@@ -54,7 +54,6 @@ def store_net(store_dir, trained_net,
     
     return store_filepath
 
-
 def reload_net(model_net, model_filepath):
     """
     reload network models only for testing
@@ -70,6 +69,31 @@ def reload_net(model_net, model_filepath):
     print('load model from: {}'.format(model_filepath))
     
     return model_net, checkpoint
+
+def check_reuse_net(target_net, load_net, model_filepath):
+    """
+    reuse the parameters in load_net to target_net
+    automatically check if the shape of each layer is consistent with target_net,
+    skip the layers which not with the same shape of parameters
+    
+    Return: only the 'state_dict' of target_net
+    """
+    checkpoint = torch.load(model_filepath)
+    load_net.load_state_dict(checkpoint['state_dict'], False)
+    
+    for name1, param1 in load_net.state_dict().items():
+        if name1 not in target_net.state_dict():
+            continue
+        param2 = target_net.state_dict()[name1]
+        if param1.shape == param2.shape:
+            target_net.state_dict()[name1].copy_(param1)
+            print('>> copy layer:', name1)
+            
+    del load_net
+    
+    print('reuse model from: {}'.format(model_filepath))
+    
+    return target_net, checkpoint
     
 ''' ------------------- Transformer (encoder) --------------------- '''
 class ViT_base(nn.Module):
@@ -212,11 +236,15 @@ class ViT_D9_H12(ViT_base):
 ''' --- some networks for patch-region context modeling and encoding combination --- '''
 class ViT_Region_4_6(ViT_base):
     
-    def __init__(self, image_size, patch_size, pseudo_dim=2):
+    def __init__(self, image_size, patch_size, channels, pseudo_dim=2):
         '''
         ViT for Region context modeling
+        
+        Args:
+            channels: when pre-training, use 3 means rgb image,
+                when encoding, use 256 (or other) means embedding of patch
         '''
-        depth=4, heads=6
+        depth, heads=4, 6
         super(ViT_Region_4_6, self).__init__(image_size, patch_size, pseudo_dim,
                                              depth=depth, heads=heads)
         self.image_size = image_size
@@ -230,6 +258,7 @@ class ViT_Region_4_6(ViT_base):
             depth = depth,
             heads = heads,
             mlp_dim = self.mlp_dim,
+            channels=channels,
             dropout = 0.1,
             emb_dropout = 0.1
             )

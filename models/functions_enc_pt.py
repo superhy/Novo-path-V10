@@ -6,7 +6,8 @@ import random
 
 from models import functions
 from models.datasets import load_slides_tileslist, Simple_Tile_Dataset
-from models.networks import ViT_D6_H8, store_net, ViT_D3_H4_T, ViT_D4_H6
+from models.networks import ViT_D6_H8, store_net, ViT_D3_H4_T, ViT_D4_H6,\
+    ViT_Region_4_6
 from support.env import devices
 
 
@@ -46,7 +47,10 @@ def pretrain_dino(ENV_task, vit_net):
     vit_net = vit_net.cuda()
     learner = vit_net.get_dino_learner()
     optimizer = functions.optimizer_adam_basic(learner, lr=ENV_task.LR_TILE)
-    transform = functions.get_zoom_transform()
+    if vit_net.name.startswith('ViT-Region'):
+        transform = functions.get_fixsize_transform()
+    else:
+        transform = functions.get_zoom_transform()
     
     print('On-standby: {} training'.format(alg_name))
     print('Network: {}, train on -> {}'.format(vit_net.name, devices))
@@ -73,7 +77,6 @@ def pretrain_dino(ENV_task, vit_net):
             print('store the dino pretrained model at: {}'.format(pretrain_model_path))
         
         del pretrain_tile_dataloader
-        gc.collect()
     
 
 def pretrain_mae(ENV_task, vit_net):
@@ -113,7 +116,6 @@ def pretrain_mae(ENV_task, vit_net):
             print('store the mae pretrained model at: {}'.format(pretrain_model_path))
         
         del pretrain_tile_dataloader
-        gc.collect()
     
 
 ''' --------------------- functions for calling --------------------- '''
@@ -127,6 +129,10 @@ def _run_pretrain_6_8_dino(ENV_task):
     vit_net = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                         patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     pretrain_dino(ENV_task, vit_net)
+    
+def _run_pretrain_reg_6_8_dino(ENV_task):
+    vit_reg_net = ViT_Region_4_6(image_size=144, patch_size=int(144/ENV_task.VIT_SHAPE), channels=3)
+    pretrain_dino(ENV_task, vit_reg_net)
 
     
 def _run_pretrain_6_8_mae(ENV_task):
