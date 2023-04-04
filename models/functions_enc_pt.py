@@ -130,7 +130,7 @@ def _run_pretrain_6_8_dino(ENV_task):
                         patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
     pretrain_dino(ENV_task, vit_net)
     
-def _run_pretrain_reg_6_8_dino(ENV_task):
+def _run_pretrain_reg_4_6_dino(ENV_task):
     vit_reg_net = ViT_Region_4_6(image_size=144, patch_size=int(144/ENV_task.VIT_SHAPE), channels=3)
     pretrain_dino(ENV_task, vit_reg_net)
 

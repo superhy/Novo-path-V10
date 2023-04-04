@@ -89,8 +89,6 @@ def check_reuse_net(target_net, load_net, model_filepath):
             target_net.state_dict()[name1].copy_(param1)
             print('>> copy layer:', name1)
             
-    del load_net
-    
     print('reuse model from: {}'.format(model_filepath))
     
     return target_net, checkpoint
@@ -273,7 +271,7 @@ class ViT_Region_4_6(ViT_base):
         
 class CombLayers(nn.Module):
     
-    def __init__(self, in_dim1, in_dim2, out_dim, inh_weights=None):
+    def __init__(self, in_dim1, in_dim2, out_dim):
         '''
         fully-connected layers for combining 2 part of features
         
@@ -286,6 +284,8 @@ class CombLayers(nn.Module):
             in_dim (1, 2) = 256, 256 (in_dim * 2 = 512)
             out_dim = 256
         '''
+        super(CombLayers, self).__init__()
+        
         self.fc_comb = nn.Sequential(
             nn.LayerNorm(in_dim1 + in_dim2),
             nn.Linear(in_features=in_dim1 + in_dim2, out_features=out_dim, bias=True)

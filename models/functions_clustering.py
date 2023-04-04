@@ -14,8 +14,10 @@ from sklearn.cluster._spectral import SpectralClustering
 
 from models.functions_vit_ext import access_encodes_vit, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes
-from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers
+from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
+    check_reuse_net
 import numpy as np
+from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
 
@@ -146,7 +148,7 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
     for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
         slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
         tile_list.extend(slide_tiles_list)
-    
+        
     ''' >>>> the encoder here only support ViT <for the moment> '''
     tiles_en_nd, tile_loc_dict = access_encodes_vit(tile_list, encoder,
                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)    
@@ -160,9 +162,10 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
         tile_encode = tiles_en_nd[i]
         slide_id = tile.query_slideid()
         key_encode_tuple = (tile_encode, tile, slide_id)
+        print_info = True if i == 0 else False
         tiles_richencode_tuples.append((comput_region_ctx_comb_encodes(ENV_task.REG_RADIUS, tiles_en_nd,
                                                                        tile_loc_dict, key_encode_tuple,
-                                                                       reg_encoder, comb_layer, ctx_type),
+                                                                       reg_encoder, comb_layer, ctx_type, print_info),
                                         tile, slide_id))
     print('%d tiles\' regional context combined encodes have been loaded, take %s sec' % (len(tiles_richencode_tuples),
                                                                                           str(loading_time.elapsed())))
@@ -554,20 +557,25 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     reg_ctx_size = (ENV_task.REG_RADIUS * 2) + 1
     in_dim1_dict = {'reg': 256,
                     'ass': reg_ctx_size ** 2 - 1,
-                    'reg_ass': 256 + (reg_ctx_size ** 2 - 1)}
+                    'reg_ass': 256 + (reg_ctx_size ** 2)}
     
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
-    reg_vit_encoder = ViT_Region_4_6(image_size=2 * ENV_task.REG_RADIUS + 1, patch_size=1)
+    reg_vit_encoder = ViT_Region_4_6(image_size=2 * ENV_task.REG_RADIUS + 1, patch_size=1,
+                                     channels=ENV_task.TRANSFORMS_RESIZE)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
-    reg_vit_encoder, _ = reload_net(reg_vit_encoder, 
-                                    os.path.join(ENV_task.MODEL_FOLDER, reg_vit_pt_name))
-    comb_layer = CombLayers(in_dim1=in_dim1_dict[ctx_type], in_dim2=256, out_dim=256, inh_weights=None)
+    
+    vit_reg_load = ViT_Region_4_6(image_size=144, patch_size=int(144/ENV_FLINC_CD45_REG_PT.VIT_SHAPE), channels=3)
+    reg_vit_encoder, _ = check_reuse_net(reg_vit_encoder, vit_reg_load,
+                                         os.path.join(ENV_task.MODEL_FOLDER, reg_vit_pt_name))
+    del vit_reg_load
+    
+    comb_layer = CombLayers(in_dim1=in_dim1_dict[ctx_type], in_dim2=256, out_dim=256)
 
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=vit_encoder,
                                      cluster_name='Kmeans', embed_type='region_ctx',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
-                                     reg_vit_encoder, comb_layer, ctx_type)
+                                     reg_encoder=reg_vit_encoder, comb_layer=comb_layer, ctx_type=ctx_type)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers))

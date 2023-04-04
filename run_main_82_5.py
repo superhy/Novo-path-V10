@@ -5,7 +5,7 @@
 import os
 import sys
 
-from models.functions_enc_pt import _run_pretrain_reg_6_8_dino
+from models.functions_enc_pt import _run_pretrain_reg_4_6_dino
 from run_main import Logger
 from support import tools
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
@@ -30,4 +30,4 @@ if __name__ == '__main__':
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
     
     if 82.5 in task_ids:
-        _run_pretrain_reg_6_8_dino(ENV_task)
+        _run_pretrain_reg_4_6_dino(ENV_task)

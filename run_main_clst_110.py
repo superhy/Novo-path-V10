@@ -29,7 +29,7 @@ if __name__ == '__main__':
     
     if 110 in task_ids:
         vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
-        reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]?.pth'
+        reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-04.pth'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
         tiles_r_tuples_pkl_name = None

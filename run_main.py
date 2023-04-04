@@ -61,6 +61,15 @@ testing part:
 4. 
 '''
 
+'''
+Experiments running steps, 2023.4.4:
+    1. set ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT, run run_pre.py in task_ids = [2], prepare the slide tiles 
+    2. set ENV_task = ENV_FLINC_CD45_REG_PT, run run_main_82_5.py in task_ids = [82.5], dino pre-trian the reg_vit
+    3. set ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT, run run_main_clst_110.py in task_ids = [110], 
+        perform the clustering with region context prior encoding
+
+'''
+
 
 class Logger(object):
 

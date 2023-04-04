@@ -13,7 +13,7 @@ ENV = parames_basic(
         project_name='Novo-path-V10',
         scale_factor=16,
         tile_size=256,
-        tp_tiles_threshold=50,
+        tp_tiles_threshold=25,
         pil_image_file_format='.jpeg',
         debug_mode=False
     )
