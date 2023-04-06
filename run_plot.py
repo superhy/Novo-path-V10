@@ -27,8 +27,8 @@ if __name__ == '__main__':
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [21, 22]
-    # task_ids = [20]
+    # task_ids = [21, 22]
+    task_ids = [20, 21]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -42,11 +42,13 @@ if __name__ == '__main__':
         _run_plot_vit_cls_map(ENV_task, clsmap_pkl_name)
     if 20 in task_ids:
         # clst_space_pkl_name = 'tsne_5000_clst6-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        clst_space_pkl_name = 'tsne_5000_clst10-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
+        # clst_space_pkl_name = 'tsne_5000_clst10-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
+        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-05.pkl' # clst-6 reg
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
         # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
+        # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
+        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-region_ctx_unsupervised2023-04-05.pkl'
         _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name)
     if 22 in task_ids:
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
