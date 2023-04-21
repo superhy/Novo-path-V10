@@ -12,7 +12,7 @@ import cv2
 from scipy.stats._continuous_distns import dweibull
 
 from interpre.prep_tools import safe_random_sample, tSNE_transform, \
-    store_nd_dict_pkl
+    store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
 from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
@@ -318,6 +318,30 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     tis_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tis-pct')
     store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
     print('Store clusters tissue percentage record as: {}'.format(tis_pct_pkl_name))
+    
+def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, sp_clst, nb_top):
+    '''
+    PS: get both top-k and lowest-k
+    '''
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    slide_sp_clst_tispct = [0.0] * len(slide_id_list)
+    for i, slide_id in enumerate(slide_id_list):
+        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+        tissue_pct_sp_clst = tissue_pct_dict[sp_clst]
+        slide_sp_clst_tispct[i] = tissue_pct_sp_clst
+    
+    order = np.argsort(slide_sp_clst_tispct)
+    lowest_ord = order[:nb_top]
+    top_ord = order[nb_top:]
+    
+    top_slides_ids, lowest_slides_ids = [], []
+    for ord in top_ord:
+        top_slides_ids.append(slide_id_list[ord])
+    for ord in lowest_ord:
+        lowest_slides_ids.append(slide_id_list[ord])
+        
+    return top_slides_ids, lowest_slides_ids
         
     
 ''' --------- tissue percentage --------- '''

@@ -8,12 +8,14 @@ from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist, \
     plot_clsts_avg_dist_in_HV
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
-    _run_plot_slides_clst_each_spatmap, print_slide_tis_pct
+    _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
+    plot_slides_spatmap_4_sp_clst
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map
+from interpre.prep_clst_vis import top_pct_slides_4_sp_clst
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
 
 
@@ -71,7 +73,17 @@ if __name__ == '__main__':
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10
         # query_slide_id = '23910-158_Sl278-C18-CD45'
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name)
-        
+    if 29.3 in task_ids:
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        clst_s_spatmap_pkl_name = ''
+        lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
+        sp_clst=5
+        nb_top=10
+        # load top and lowest tissue percentage slides
+        top_slides_ids, lowest_slides_ids = top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, sp_clst, nb_top)
+        # plot top and lowest tissue percentage slides for specific cluster
+        plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
+                                      top_slides_ids, lowest_slides_ids)
         
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
