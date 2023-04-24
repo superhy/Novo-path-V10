@@ -270,7 +270,7 @@ def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     store_nd_dict_pkl(heat_store_dir, clst_tile_img_dict, clst_tiledemo_pkl_name)
     print('Store clusters tile demo image numpy package as: {}'.format(clst_tiledemo_pkl_name))
     
-def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_batchsize=8):
+def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -289,11 +289,14 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, storage_
         
         label_spatmap_dict = {}
         for label_picked in clst_labels:
+            if sp_clst is not None and label_picked != sp_clst:
+                continue
             heat_s_clst_col = gen_single_slide_clst_each_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
             label_spatmap_dict[label_picked] = heat_s_clst_col
         slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
             
-    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-s-spat')
+    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 
+                                                          'clst-s-spat' if sp_clst != None else 'clst-{}-spat'.format(str(sp_clst)))
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
@@ -383,8 +386,8 @@ def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org
 def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     
-def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name):
-    make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name)
+def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
+    make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst)
 
 def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)

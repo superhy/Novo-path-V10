@@ -61,8 +61,9 @@ if __name__ == '__main__':
     if 23 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-05.pkl' # clst-6 reg
-        _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name)
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        sp_clst=5
+        _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=sp_clst)
     if 29 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
