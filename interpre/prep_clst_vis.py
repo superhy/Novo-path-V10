@@ -153,7 +153,7 @@ def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
     '''
     
     def apply_mask(heat, white_mask):
-        new_heat = np.uint32(np.float64(heat) + np.float64(white_mask))
+        new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
     
@@ -195,7 +195,7 @@ def gen_single_slide_clst_each_spatial(ENV_task, slide_tile_clst_tuples, slide_i
     '''
     
     def apply_mask(heat, white_mask):
-        new_heat = np.uint32(np.float64(heat) + np.float64(white_mask))
+        new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
     
