@@ -30,7 +30,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.1]
+    task_ids = [29.3]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -75,12 +75,13 @@ if __name__ == '__main__':
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name)
     if 29.3 in task_ids:
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
-        clst_s_spatmap_pkl_name = ''
+        clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-region_ctx_unsupervised2023-04-05.pkl'
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         sp_clst=5
         nb_top=10
         # load top and lowest tissue percentage slides
-        top_slides_ids, lowest_slides_ids = top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, sp_clst, nb_top)
+        top_slides_ids, lowest_slides_ids = top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname,
+                                                                     sp_clst, nb_top)
         # plot top and lowest tissue percentage slides for specific cluster
         plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                       top_slides_ids, lowest_slides_ids)

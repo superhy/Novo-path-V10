@@ -16,6 +16,8 @@ from interpre.prep_tools import safe_random_sample, tSNE_transform, \
 from models import datasets
 from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
+from support.files import parse_caseid_from_slideid
+from support.metadata import query_task_label_dict_fromcsv
 from support.tools import Time
 from wsi import image_tools, slide_tools
 
@@ -322,12 +324,20 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
     print('Store clusters tissue percentage record as: {}'.format(tis_pct_pkl_name))
     
-def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, sp_clst, nb_top):
+def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp_clst, nb_top):
     '''
     PS: get both top-k and lowest-k
     '''
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
-    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    all_slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    # filter the slide_ids appear in 0-3 bi-labels
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    slide_id_list = []
+    for slide_id in all_slide_id_list:
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id in lobular_label_dict.keys():
+            slide_id_list.append(slide_id)
+    
     slide_sp_clst_tispct = [0.0] * len(slide_id_list)
     for i, slide_id in enumerate(slide_id_list):
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
@@ -336,7 +346,7 @@ def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, sp_clst, nb_top):
     
     order = np.argsort(slide_sp_clst_tispct)
     lowest_ord = order[:nb_top]
-    top_ord = order[nb_top:]
+    top_ord = order[-nb_top:]
     
     top_slides_ids, lowest_slides_ids = [], []
     for ord in top_ord:
