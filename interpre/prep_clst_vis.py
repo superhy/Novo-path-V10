@@ -324,6 +324,7 @@ def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
     print('Store clusters tissue percentage record as: {}'.format(tis_pct_pkl_name))
     
+    
 def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp_clst, nb_top):
     '''
     PS: get both top-k and lowest-k
@@ -371,6 +372,22 @@ def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst):
         tissue_pct_dict[label] += (1.0/nb_tissue)
         
     return tissue_pct_dict
+
+def norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst):
+    '''
+    Args:
+        slide_tis_pct_dict: tissue percentage dictionary with slide_id and embedded dictionary with cluster labels
+    '''
+    for label in range(nb_clst):
+        label_t_pcts = []
+        for slide_id in slide_tis_pct_dict.keys():
+            label_t_pcts.append(slide_tis_pct_dict[slide_id][label])
+        label_max_t_pct = max(label_t_pcts)
+        for slide_id in slide_tis_pct_dict.keys():
+            org_t_pct = slide_tis_pct_dict[slide_id][label]
+            slide_tis_pct_dict[slide_id][label] = (org_t_pct + 1e-3) / (label_max_t_pct + 1e-3)
+    
+    return slide_tis_pct_dict
 
 def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
     '''
