@@ -5,7 +5,7 @@
 import os
 
 from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist, \
-    plot_clsts_avg_dist_in_HV
+    plot_clsts_avg_dist_in_HV, plot_flex_clsts_avg_dist
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10
         # query_slide_id = '23910-158_Sl278-C18-CD45'
-        plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name)
+        plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=6)
     if 29.3 in task_ids:
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-region_ctx_unsupervised2023-04-05.pkl'
@@ -85,6 +85,16 @@ if __name__ == '__main__':
         # plot top and lowest tissue percentage slides for specific cluster
         plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                       top_slides_ids, lowest_slides_ids)
+    if 29.5 in task_ids:
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        flex_label_fname_1 = ''
+        flex_label_fname_2 = ''
+        ENV_flex_list = [None, None]
+        
+        for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2]):
+            plot_flex_clsts_avg_dist(ENV_task, ENV_flex_list[i], tis_pct_pkl_name, 
+                                     fname, nb_clst=6, norm_t_pct=False)
+        
         
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'

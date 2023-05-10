@@ -7,6 +7,7 @@ Created on 15 Feb 2023
 import math
 import os
 
+from interpre.prep_clst_vis import norm_t_pct_clst_single_slide
 from interpre.prep_tools import load_vis_pkg_from_pkl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,7 +18,8 @@ from support.metadata import query_task_label_dict_fromcsv, \
     extract_slideid_subid_for_stain
 
 
-def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst):
+def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, 
+                                nb_clst, norm_t_pct=False):
     '''
     counting all clusters' average distribution on all slides, for lobular/non-lobular
     PS: lobular label is only available for cd45 staining
@@ -26,6 +28,9 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     ''' loading/processing data '''
     lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    if norm_t_pct is True:
+        slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
+    
     lobular_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
     non_lobular_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
@@ -74,7 +79,7 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix) )) )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
-def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name):
+def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=False):
     '''
     counting all clusters' average distribution on the slides of health volunteers
     for lobular/non-lobular
@@ -84,6 +89,8 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name):
     xlsx_path_158 = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
     slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_158, ENV_task.STAIN_TYPE)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    if norm_t_pct is True:
+        slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
     
     nb_clst = ENV_task.NUM_CLUSTERS
     
@@ -116,6 +123,88 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name):
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-hv_lobular.png')) )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
+
+def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
+                             flex_label_fname, nb_clst, norm_t_pct=False):
+    '''
+    Args:
+        ENV_task: 
+        ENV_flex_lbl:
+        tis_pct_pkl_name:
+        flex_label_fname: PS, cannot be None please
+        nb_clst:
+    '''
+    
+    ''' loading/processing data '''
+    flex_label_dict = query_task_label_dict_fromcsv(ENV_flex_lbl, flex_label_fname)
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    if norm_t_pct is True:
+        slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
+    ''' for HV cases '''
+    xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
+    xlsx_path_158 = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
+    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_158, ENV_task.STAIN_TYPE)
+    
+    label_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
+    non_label_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
+    hv_tis_pcts, nb_hv_cases = [0.0] * nb_clst, 0
+    for slide_id in slide_tis_pct_dict.keys():
+        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+        case_id = parse_caseid_from_slideid(slide_id)
+        
+        if case_id not in flex_label_dict.keys() or slide_id == 'avg':
+            continue
+        if flex_label_dict[case_id] == 0:
+            # non-lobular cases
+            nb_nlob_cases += 1
+            for c in range(nb_clst):
+                non_label_tis_pcts[c] += tissue_pct_dict[c]
+        else:
+            nb_lob_cases += 1
+            for c in range(nb_clst):
+                label_tis_pcts[c] += tissue_pct_dict[c]
+        
+        slide_org_id = slide_id.split('_')[1].split('-')[0]  
+        subject_id = slideid_subid_dict[slide_org_id]
+        if type(subject_id) != int and subject_id.startswith('HV'):
+            nb_hv_cases += 1
+            for c in range(nb_clst):
+                hv_tis_pcts[c] += tissue_pct_dict[c]
+    
+    print(label_tis_pcts)
+    print(non_label_tis_pcts)
+    print(nb_lob_cases)
+    print(nb_nlob_cases)
+    nd_lbl_tis_pct = np.array(label_tis_pcts)
+    nd_nonlbl_tis_pct = np.array(non_label_tis_pcts)
+    nd_lbl_tis_pct = nd_lbl_tis_pct / nb_lob_cases
+    nd_nonlbl_tis_pct = nd_nonlbl_tis_pct / nb_nlob_cases
+    
+    print(hv_tis_pcts)
+    print(nb_hv_cases)
+    nd_hv_tis_pcts = np.array(hv_tis_pcts)
+    nd_hv_tis_pcts = nd_hv_tis_pcts / nb_hv_cases
+    
+    ''' plot '''
+    label_name = flex_label_fname.split('_')[1]
+    lbl_t_pct_tuples = [['c-{}'.format(c+1), nd_lbl_tis_pct[c], '{} cases'.format(label_name)] for c in range(nb_clst) ]
+    nonlbl_t_pct_tuples = [['c-{}'.format(c+1), nd_nonlbl_tis_pct[c], 'non-{} cases'.format(label_name)] for c in range(nb_clst) ]
+    hv_t_pct_tuples = [['c-{}'.format(c+1), nd_hv_tis_pcts[c], 'hv cases'] for c in range(nb_clst) ]
+    df_alllbl_t_pct = pd.DataFrame(lbl_t_pct_tuples + nonlbl_t_pct_tuples + hv_t_pct_tuples, 
+                                   columns=['clusters', 'tissue_percentage', 'case_label'])
+    
+    fig = plt.figure(figsize=(5, 7))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1.set_ylim(0, 0.5)
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen', 'gray'], 
+                       data=df_alllbl_t_pct, hue='case_label')
+    ax_1.set_title('tissue percentage of each clusters')
+    
+    plt.tight_layout()
+    lbl_suffix = flex_label_fname[:flex_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             tis_pct_pkl_name.replace('.pkl', '-{}_{}.png'.format(label_name, lbl_suffix) )) )
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):
     '''

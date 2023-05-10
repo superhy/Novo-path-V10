@@ -306,7 +306,32 @@ def _prod_combine_labels():
     print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
     return new_slide_label_dict_list
 
+def _prod_bi_label_combine_labels(ENV_task, groups, aim_label):
+    '''
+    produce binary label for flexible annotations
+    
+    Args:
+        there are some examples for ENV_task, groups, aim_label in lobular_inflammation
+            ENV_task = ENV_FLINC_CD45_U
+            # groups = {0: [0], 1: [1, 2, 3]} # just for binary
+            groups = {0: [0], 1:[3]} # for dual-poles
+            aim_label = 'lobular_inflammation_score'
+    '''
+    
+    slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task, 
+                                                               task_csv_filename='{}_{}.csv'.format(ENV_task.STAIN_TYPE, aim_label))
+    new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups)
+    # 'bi' same with 'c2'
+    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label+'_bi')
+    csv_to_df = pd.DataFrame(new_slide_label_dict_list)
+    csv_to_df.to_csv(csv_test_path, index=False)
+    print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
+    return new_slide_label_dict_list
+
 def _prod_bi_lobular_combine_labels():
+    '''
+    produce binary label file specifically for lobular inflammation
+    '''
     
     ENV_task = ENV_FLINC_CD45_U
     # groups = {0: [0], 1: [1, 2, 3]} # just for binary
@@ -392,5 +417,10 @@ if __name__ == '__main__':
     
     _load_lobular_clinical_labels()
     _ = _prod_bi_lobular_combine_labels()
+    
+    pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
+    pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
+    _ = _prod_bi_label_combine_labels(pkg_param_fib)
+    _ = _prod_bi_label_combine_labels(pkg_param_stea)
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
