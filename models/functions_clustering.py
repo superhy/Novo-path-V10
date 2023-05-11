@@ -502,6 +502,51 @@ class Instance_Clustering():
         return clustering
     
     
+''' ------ further split the clustering results into more refined clusters ------ '''
+
+def make_tileid_label_dict(clustering_res_pkg):
+    '''
+    '''
+    tileid_label_dict = {}
+    for clst_res_tuple in clustering_res_pkg:
+        label, _, tile, slide_id = clst_res_tuple
+        tile_id = '{}-h{}-w{}'.format(slide_id, str(tile.h_id), str(tile.w_id))
+        tileid_label_dict[tile_id] = label
+        
+    return tileid_label_dict
+
+def check_neig_clst_labels(slide_id, tile, tileid_label_dict):
+    '''
+    '''
+    directions = [[-2, -2], [-2, -1], [-2, 0], [-2, 1], [-2, 2],
+                  [-1, -2], [-1, -1], [-1, 0], [-1, 1], [-1, 2],
+                  [0 , -2], [0 , -1],          [0 , 1], [0 , 2],
+                  [1 , -2], [1 , -1], [1 , 0], [1 , 1], [1 , 2],
+                  [2 , -2], [2 , -1], [2 , 0], [2 , 1], [2 , 2]]
+    
+    neig_labels = []
+    for d in directions:
+        tile_loc_nd = np.array([tile.h_id, tile.w_id])
+        neig_loc_nd = tile_loc_nd + d
+        if neig_loc_nd[0] < 0 or neig_loc_nd[1] < 1:
+            continue
+        neig_tile_id = '{}-h{}-w{}'.format(slide_id, str(neig_loc_nd[0]), str(neig_loc_nd[1]))
+        if neig_tile_id in tileid_label_dict.keys():
+            neig_labels.append(tileid_label_dict[neig_tile_id])
+            
+    return neig_labels
+    
+def refine_sp_cluster_homoneig(clustering_res_pkg, label):
+    '''
+    split a specific cluster into several more small clusters
+    check surrounding +/- 2, 5*5-1 24 neighbours
+    
+    Args:
+        clustering_res_pkg:
+        label: the cluster label (from 0) need to be refined
+    '''
+     
+    
 ''' ------------------ use kmeans ------------------- '''
 
 
