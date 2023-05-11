@@ -415,12 +415,12 @@ if __name__ == '__main__':
     # _count_stain_amount()
     # _prod_combine_labels()
     
-    _load_lobular_clinical_labels()
-    _ = _prod_bi_lobular_combine_labels()
+    # _load_lobular_clinical_labels()
+    # _ = _prod_bi_lobular_combine_labels()
     
     pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
     pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
-    _ = _prod_bi_label_combine_labels(pkg_param_fib)
-    _ = _prod_bi_label_combine_labels(pkg_param_stea)
+    _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
+    _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)

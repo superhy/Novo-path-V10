@@ -17,6 +17,9 @@ from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map
 from interpre.prep_clst_vis import top_pct_slides_4_sp_clst
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
+from support.env_flinc_cd45 import ENV_FLINC_CD45_U
+from support.env_flinc_he import ENV_FLINC_HE_STEA
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
@@ -30,7 +33,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.3]
+    task_ids = [29.5]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -87,13 +90,14 @@ if __name__ == '__main__':
                                       top_slides_ids, lowest_slides_ids)
     if 29.5 in task_ids:
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
-        flex_label_fname_1 = ''
-        flex_label_fname_2 = ''
-        ENV_flex_list = [None, None]
+        flex_label_fname_1 = 'HE_steatosis_score_bi.csv'
+        flex_label_fname_2 = 'PSR_fibrosis_score_bi.csv'
+        felx_label_fname_3 = 'CD45_lobular_inflammation_score_bi.csv'
+        ENV_flex_list = [ENV_FLINC_HE_STEA, ENV_FLINC_PSR_FIB, ENV_FLINC_CD45_U]
         
-        for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2]):
+        for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2, felx_label_fname_3]):
             plot_flex_clsts_avg_dist(ENV_task, ENV_flex_list[i], tis_pct_pkl_name, 
-                                     fname, nb_clst=6, norm_t_pct=False)
+                                     fname, nb_clst=6, norm_t_pct=True)
         
         
     if 61 in task_ids:

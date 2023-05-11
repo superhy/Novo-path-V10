@@ -378,6 +378,10 @@ def norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst):
     Args:
         slide_tis_pct_dict: tissue percentage dictionary with slide_id and embedded dictionary with cluster labels
     '''
+    new_slide_tis_pct_dict = {}
+    for slide_id in slide_tis_pct_dict.keys():
+        new_slide_tis_pct_dict[slide_id] = {}
+    
     for label in range(nb_clst):
         label_t_pcts = []
         for slide_id in slide_tis_pct_dict.keys():
@@ -385,9 +389,9 @@ def norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst):
         label_max_t_pct = max(label_t_pcts)
         for slide_id in slide_tis_pct_dict.keys():
             org_t_pct = slide_tis_pct_dict[slide_id][label]
-            slide_tis_pct_dict[slide_id][label] = (org_t_pct + 1e-3) / (label_max_t_pct + 1e-3)
+            new_slide_tis_pct_dict[slide_id][label] = (org_t_pct + 1e-3) / (label_max_t_pct + 1e-3)
     
-    return slide_tis_pct_dict
+    return new_slide_tis_pct_dict
 
 def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
     '''

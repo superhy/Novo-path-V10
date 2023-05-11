@@ -141,9 +141,13 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     if norm_t_pct is True:
         slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
     ''' for HV cases '''
-    xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
-    xlsx_path_158 = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
-    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_158, ENV_task.STAIN_TYPE)
+    if ENV_flex_lbl.STAIN_TYPE in ['HE', 'PSR']:
+        xmeta_name = 'FLINC_23910-157_withSubjectID.xlsx'
+    else:
+        xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
+    xlsx_path_15X = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
+    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_15X, ENV_flex_lbl.STAIN_TYPE)
+    print(slideid_subid_dict)
     
     label_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
     non_label_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
@@ -164,7 +168,7 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
             for c in range(nb_clst):
                 label_tis_pcts[c] += tissue_pct_dict[c]
         
-        slide_org_id = slide_id.split('_')[1].split('-')[0]  
+        slide_org_id = slide_id.split('_')[1].split('-')[0]
         subject_id = slideid_subid_dict[slide_org_id]
         if type(subject_id) != int and subject_id.startswith('HV'):
             nb_hv_cases += 1
@@ -193,9 +197,9 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     df_alllbl_t_pct = pd.DataFrame(lbl_t_pct_tuples + nonlbl_t_pct_tuples + hv_t_pct_tuples, 
                                    columns=['clusters', 'tissue_percentage', 'case_label'])
     
-    fig = plt.figure(figsize=(5, 7))
+    fig = plt.figure(figsize=(7, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1.set_ylim(0, 0.5)
+    ax_1.set_ylim(0, 1.0)
     ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen', 'gray'], 
                        data=df_alllbl_t_pct, hue='case_label')
     ax_1.set_title('tissue percentage of each clusters')

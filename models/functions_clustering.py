@@ -588,7 +588,7 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     print(res_dict)
 
     
-''' ----  ---- '''
+''' ---- some other clustering algorithm ---- '''
 
     
 def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
