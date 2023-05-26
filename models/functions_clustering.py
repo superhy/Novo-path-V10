@@ -545,6 +545,11 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, label):
         clustering_res_pkg:
         label: the cluster label (from 0) need to be refined
     '''
+    
+    for clst_res_tuple in clustering_res_pkg:
+        res_lbl, _, tile, slide_ids = clst_res_tuple
+        if res_lbl == label:
+            '''TODO: '''
      
     
 ''' ------------------ use kmeans ------------------- '''
