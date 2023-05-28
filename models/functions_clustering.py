@@ -512,6 +512,7 @@ def make_tileid_label_dict(clustering_res_pkg):
         label, _, tile, slide_id = clst_res_tuple
         tile_id = '{}-h{}-w{}'.format(slide_id, str(tile.h_id), str(tile.w_id))
         tileid_label_dict[tile_id] = label
+    print('load clustering results package from .pkl')
         
     return tileid_label_dict
 
@@ -536,21 +537,33 @@ def check_neig_clst_labels(slide_id, tile, tileid_label_dict):
             
     return neig_labels
     
-def refine_sp_cluster_homoneig(clustering_res_pkg, label):
+def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd=0.25):
     '''
     split a specific cluster into several more small clusters
     check surrounding +/- 2, 5*5-1 24 neighbours
     
     Args:
         clustering_res_pkg:
-        label: the cluster label (from 0) need to be refined
+        tgt_lbl: the cluster label (from 0) need to be refined
     '''
     
+    tileid_label_dict = make_tileid_label_dict(clustering_res_pkg)
+    slide_tgt_tiles_dict = {}
     for clst_res_tuple in clustering_res_pkg:
-        res_lbl, _, tile, slide_ids = clst_res_tuple
-        if res_lbl == label:
-            '''TODO: '''
-     
+        res_lbl, _, tile, slide_id = clst_res_tuple
+        if slide_id not in slide_tgt_tiles_dict.keys():
+            slide_tgt_tiles_dict[slide_id] = []
+        
+        if res_lbl == tgt_lbl:
+            neig_labels = check_neig_clst_labels(slide_id, tile, tileid_label_dict)
+            nb_tgt_lbl = neig_labels.count(tgt_lbl)
+            pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(neig_labels)
+            slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1))
+            print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
+                                                                      'iso' if pct_tgt_lbl < iso_thd else 'gath'))
+            
+    return slide_tgt_tiles_dict
+
     
 ''' ------------------ use kmeans ------------------- '''
 
@@ -636,7 +649,7 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
         else:
             res_dict[res_tuple[0]] += 1
     print(res_dict)
-
+    
     
 ''' ---- some other clustering algorithm ---- '''
 

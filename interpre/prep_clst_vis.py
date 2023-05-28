@@ -14,7 +14,8 @@ from scipy.stats._continuous_distns import dweibull
 from interpre.prep_tools import safe_random_sample, tSNE_transform, \
     store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
-from models.functions_clustering import load_clustering_pkg_from_pkl
+from models.functions_clustering import load_clustering_pkg_from_pkl, \
+    refine_sp_cluster_homoneig
 import numpy as np
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
@@ -303,7 +304,7 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=
     print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
     
-def count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
+def cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -356,6 +357,31 @@ def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp
         lowest_slides_ids.append(slide_id_list[ord])
         
     return top_slides_ids, lowest_slides_ids
+
+def cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25):
+    '''
+    count the number of refined clusters (into 2 groups by homogeneity in context)
+    for each slide
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst, iso_thd)
+    
+    slide_iso_gath_nb_dict = {}
+    for slide_id in slide_tgt_tiles_dict.keys():
+        ref_tiles_tuple = slide_tgt_tiles_dict[slide_id]
+        nb_iso, nb_gath = 0, 0
+        for tile_tuple in ref_tiles_tuple:
+            if tile_tuple[2] == 0:
+                nb_iso += 1
+            else:
+                nb_gath += 1
+        slide_iso_gath_nb_dict[slide_id] = (nb_iso, nb_gath)
+        print('slide %s has %d/%d iso/gath tiles for cluster %d' % (slide_id,
+                                                                    nb_iso, nb_gath, sp_clst))
+        
+    return slide_iso_gath_nb_dict
         
     
 ''' --------- tissue percentage --------- '''
@@ -421,7 +447,7 @@ def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_
     make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst)
 
 def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
-    count_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
+    cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
 
 
 if __name__ == '__main__':
