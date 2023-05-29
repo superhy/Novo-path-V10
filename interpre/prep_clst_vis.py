@@ -382,6 +382,46 @@ def cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_t
                                                                     nb_iso, nb_gath, sp_clst))
         
     return slide_iso_gath_nb_dict
+
+def top_nb_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, nb_top):
+    '''
+    find the slide_ids with top-k and lowest-k number of iso/gath refined group in sp_clst
+    '''
+    all_slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    # filter the slide_ids appear in 0-3 bi-labels
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    slide_id_list = []
+    for slide_id in all_slide_id_list:
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id in lobular_label_dict.keys():
+            slide_id_list.append(slide_id)
+            
+    # number of iso/gath tiles for sp_clst
+    slide_nb_iso = [0] * len(slide_id_list)
+    slide_nb_gath = [0] * len(slide_id_list)
+    for i, slide_id in enumerate(slide_id_list):
+        nb_iso, nb_gath = slide_iso_gath_nb_dict[slide_id]
+        slide_nb_iso[i] = nb_iso
+        slide_nb_gath[i] = nb_gath
+        
+        
+    order_iso = np.argsort(slide_nb_iso)
+    order_gath = np.argsort(slide_nb_gath)
+    lowest_ord_iso, top_ord_iso = order_iso[:nb_top], order_iso[-nb_top:]
+    lowest_ord_gath, top_ord_gath = order_gath[:nb_top], order_gath[-nb_top:]
+    top_iso_slides_ids, lowest_iso_slides_ids = [], []
+    top_gath_slides_ids, lowest_gath_slides_ids = [], []
+    for ord in top_ord_iso:
+        top_iso_slides_ids.append(slide_id_list[ord])
+    for ord in lowest_ord_iso:
+        lowest_iso_slides_ids.append(slide_id_list[ord])
+    for ord in top_ord_gath:
+        top_gath_slides_ids.append(slide_id_list[ord])
+    for ord in lowest_ord_gath:
+        lowest_gath_slides_ids.append(slide_id_list[ord])
+    
+    return top_iso_slides_ids, lowest_iso_slides_ids, top_gath_slides_ids, lowest_gath_slides_ids
+    
         
     
 ''' --------- tissue percentage --------- '''
