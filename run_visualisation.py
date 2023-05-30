@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # task_ids = [20, 21, 22, 29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
-    task_ids = [23]
+    task_ids = [24]
     
     if 10 in task_ids:
         vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
