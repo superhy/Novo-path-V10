@@ -529,7 +529,7 @@ def check_neig_clst_labels(slide_id, tile, tileid_label_dict):
     for d in directions:
         tile_loc_nd = np.array([tile.h_id, tile.w_id])
         neig_loc_nd = tile_loc_nd + d
-        if neig_loc_nd[0] < 0 or neig_loc_nd[1] < 1:
+        if neig_loc_nd[0] < 1 or neig_loc_nd[1] < 1:
             continue
         neig_tile_id = '{}-h{}-w{}'.format(slide_id, str(neig_loc_nd[0]), str(neig_loc_nd[1]))
         if neig_tile_id in tileid_label_dict.keys():
@@ -558,7 +558,7 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd=0.25):
             neig_labels = check_neig_clst_labels(slide_id, tile, tileid_label_dict)
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
             pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(neig_labels)
-            slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1))
+            slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
             print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
                                                                       'iso' if pct_tgt_lbl < iso_thd else 'gath'))
             

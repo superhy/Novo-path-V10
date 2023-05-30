@@ -202,51 +202,49 @@ def plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lo
         print('draw cluster {}\'s spatial map in: {}'.format(str(sp_clst), 
                                                                  os.path.join(lowest_sp_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
         
-def plot_slides_spatmap_4_iso_group(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
+def plot_slides_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                     top_iso_slides_ids, lowest_iso_slides_ids):
     '''
-    TODO:
+    plot the spatial maps for slides with top/lowest number of iso group of sp_clst
     '''
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
-    slide_clst_s_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_s_spatmap_pkl_name)
+    slide_iso_s_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_iso_spatmap_pkl_name)
     
-    clst_alg_name = clst_s_spatmap_pkl_name[:clst_s_spatmap_pkl_name.find('_unsupervised')] + '-c{}'.format(str(sp_clst))
-    top_sp_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name + '-top')
-    lowest_sp_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name + '-lowest')
+    clst_alg_name = clst_iso_spatmap_pkl_name[:clst_iso_spatmap_pkl_name.find('_unsupervised')] + '-c{}'.format(str(sp_clst))
+    top_nb_iso_dir = os.path.join(heat_store_dir, clst_alg_name + '-top')
+    lowest_nb_iso_dir = os.path.join(heat_store_dir, clst_alg_name + '-lowest')
     
-    if not os.path.exists(top_sp_spatmap_dir):
-        os.makedirs(top_sp_spatmap_dir)
-        print('create file dir {}'.format(top_sp_spatmap_dir) )
-    if not os.path.exists(lowest_sp_spatmap_dir):
-        os.makedirs(lowest_sp_spatmap_dir)
-        print('create file dir {}'.format(lowest_sp_spatmap_dir) )
+    if not os.path.exists(top_nb_iso_dir):
+        os.makedirs(top_nb_iso_dir)
+        print('create file dir {}'.format(top_nb_iso_dir) )
+    if not os.path.exists(lowest_nb_iso_dir):
+        os.makedirs(lowest_nb_iso_dir)
+        print('create file dir {}'.format(lowest_nb_iso_dir) )
         
     lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
     slide_tile_list_dict = datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE)
-    print('> draw spatial maps for slides with top tissue percentage for specific cluster...')
-    for slide_id in top_slides_ids:
+    print('> draw spatial maps for slides with top number of iso tiles for specific cluster...')
+    for slide_id in top_iso_slides_ids:
         org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_list_dict[slide_id][0].original_slide_filepath,
-                                                                           ENV_task.SCALE_FACTOR, print_opening=False)
+                                                                       ENV_task.SCALE_FACTOR, print_opening=False)
         org_np_img = image_tools.pil_to_np_rgb(org_image)
-        clst_s_spatmap_into_dict = slide_clst_s_spatmap_dict[slide_id]
-        heat_s_clst_col = clst_s_spatmap_into_dict[sp_clst]
+        heat_s_iso_col = slide_iso_s_spatmap_dict[slide_id]
         case_id = parse_caseid_from_slideid(slide_id)
-        draw_attention_heatmap(top_sp_spatmap_dir, heat_s_clst_col, org_np_img, None, 
-                               (slide_id, 'c%d_spat-lobular-%s' % (sp_clst, lobular_label_dict[case_id]) ) )
+        draw_attention_heatmap(top_nb_iso_dir, heat_s_iso_col, org_np_img, None, 
+                               (slide_id, 'c%d_iso-lobular-%s' % (sp_clst, lobular_label_dict[case_id]) ) )
         print('draw cluster {}\'s spatial map in: {}'.format(str(sp_clst), 
-                                                                 os.path.join(top_sp_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
-    print('> draw spatial maps for slides with lowest tissue percentage for specific cluster...')
-    for slide_id in lowest_slides_ids:
+                                                                 os.path.join(top_nb_iso_dir, '{}-{}.png'.format(slide_id, 'c%d_iso' % sp_clst) ) ))
+    print('> draw spatial maps for slides with lowest number of iso tiles for specific cluster...')
+    for slide_id in lowest_iso_slides_ids:
         org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_list_dict[slide_id][0].original_slide_filepath,
-                                                                           ENV_task.SCALE_FACTOR, print_opening=False)
+                                                                       ENV_task.SCALE_FACTOR, print_opening=False)
         org_np_img = image_tools.pil_to_np_rgb(org_image)
-        clst_s_spatmap_into_dict = slide_clst_s_spatmap_dict[slide_id]
-        heat_s_clst_col = clst_s_spatmap_into_dict[sp_clst]
+        heat_s_iso_col = slide_iso_s_spatmap_dict[slide_id]
         case_id = parse_caseid_from_slideid(slide_id)
-        draw_attention_heatmap(lowest_sp_spatmap_dir, heat_s_clst_col, org_np_img, None, 
-                               (slide_id, 'c%d_spat-lobular-%s' % (sp_clst, lobular_label_dict[case_id]) ) )
-        print('draw cluster {}\'s spatial map in: {}'.format(str(sp_clst), 
-                                                                 os.path.join(lowest_sp_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
+        draw_attention_heatmap(lowest_nb_iso_dir, heat_s_iso_col, org_np_img, None, 
+                               (slide_id, 'c%d_iso-lobular-%s' % (sp_clst, lobular_label_dict[case_id]) ) )
+        print('draw cluster {}\'s iso spatial map in: {}'.format(str(sp_clst),
+                                                                 os.path.join(lowest_nb_iso_dir, '{}-{}.png'.format(slide_id, 'c%d_iso' % sp_clst) ) ))
 
             
 def print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id):
