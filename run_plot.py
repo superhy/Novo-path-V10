@@ -10,7 +10,8 @@ from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist, \
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
-    plot_slides_spatmap_4_sp_clst, plot_slides_spatmap_4_iso_group
+    plot_slides_spatmap_4_sp_clst, plot_slides_spatmap_4_iso_group, \
+    _run_plot_slides_iso_spatmap
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
@@ -79,8 +80,9 @@ if __name__ == '__main__':
         plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                       top_slides_ids, lowest_slides_ids)
     if 24 in task_ids:
-        #TODO:
-        pass
+        clst_iso_spatmap_pkl_name = ''
+        sp_clst=5
+        _run_plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst)
     if 24.1 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         clst_iso_spatmap_pkl_name = ''

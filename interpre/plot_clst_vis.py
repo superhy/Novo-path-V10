@@ -136,7 +136,7 @@ def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     slide_clst_s_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_s_spatmap_pkl_name)
     
-    clst_alg_name = clst_s_spatmap_pkl_name[:clst_s_spatmap_pkl_name.find('_encode')]
+    clst_alg_name = clst_s_spatmap_pkl_name[:clst_s_spatmap_pkl_name.find('20')]
     clst_s_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name)
     if not os.path.exists(clst_s_spatmap_dir):
         os.makedirs(clst_s_spatmap_dir)
@@ -154,6 +154,31 @@ def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
             draw_attention_heatmap(clst_s_spatmap_dir, heat_s_clst_col, org_np_img, None, (slide_id, 'c%d_spat' % label) )
             print('draw cluster {}\'s spatial map in: {}'.format(str(label), 
                                                                  os.path.join(clst_s_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % label) ) ))
+            
+def plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
+    '''
+    plot the spatial map for iso group in sp_clst
+    '''
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    slide_iso_s_spatmap_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_iso_spatmap_pkl_name)
+    
+    clst_alg_name = clst_iso_spatmap_pkl_name[:clst_iso_spatmap_pkl_name.find('20')]
+    clst_iso_spatmap_dir = os.path.join(heat_store_dir, clst_alg_name)
+    if not os.path.exists(clst_iso_spatmap_dir):
+        os.makedirs(clst_iso_spatmap_dir)
+        print('create file dir {}'.format(clst_iso_spatmap_dir) )
+        
+    slide_tile_list_dict = datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE)
+    for slide_id in slide_iso_s_spatmap_dict.keys():
+        org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_list_dict[slide_id][0].original_slide_filepath,
+                                                                           ENV_task.SCALE_FACTOR, print_opening=False)
+        org_np_img = image_tools.pil_to_np_rgb(org_image)
+        heat_s_iso_col = slide_iso_s_spatmap_dict[slide_id]
+        draw_attention_heatmap(clst_iso_spatmap_dir, heat_s_iso_col, org_np_img, None, (slide_id, 'c%d_spat' % sp_clst) )
+        print('draw cluster {}\'s iso group tiles on spatial map in: {}'.format(str(sp_clst),
+                                                                                os.path.join(clst_iso_spatmap_dir,
+                                                                                             '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
+    
             
 def plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                   top_slides_ids, lowest_slides_ids):
@@ -275,6 +300,9 @@ def _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
     
 def _run_plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name)
+    
+def _run_plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
+    plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst)
 
 if __name__ == '__main__':
     pass
