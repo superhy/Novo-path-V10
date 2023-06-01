@@ -36,7 +36,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.4]
+    task_ids = [24]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -80,12 +80,12 @@ if __name__ == '__main__':
         plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                       top_slides_ids, lowest_slides_ids)
     if 24 in task_ids:
-        clst_iso_spatmap_pkl_name = ''
+        clst_iso_spatmap_pkl_name = 'clst-s-iso_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         sp_clst=5
         _run_plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst)
     if 24.1 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
-        clst_iso_spatmap_pkl_name = ''
+        clst_iso_spatmap_pkl_name = 'clst-s-iso_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         sp_clst=5
         nb_top=10

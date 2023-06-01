@@ -557,7 +557,7 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd=0.25):
         if res_lbl == tgt_lbl:
             neig_labels = check_neig_clst_labels(slide_id, tile, tileid_label_dict)
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
-            pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(neig_labels)
+            pct_tgt_lbl = nb_tgt_lbl * 1.0 / 24
             slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
             print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
                                                                       'iso' if pct_tgt_lbl < iso_thd else 'gath'))
