@@ -96,27 +96,36 @@ def avg_dilated_neigb_encodes():
 ''' 
 functions family for combined encoding the tile's feature and its regional context's semantic 
 '''
-
-def gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple, print_info):
-    '''
-    '''
-    encode, tile, slide_id = key_encode_tuple
     
+def make_neighb_coords(radius, tile):
+    '''
+    calculate the coordinates on the image corresponding to each point on the square
+    '''
     h, w = tile.h_id, tile.w_id
-    dim = encode.shape[-1]
     
     left = max(0, w - radius)
     right = w + radius
     top = max(0, h - radius)
     bottom = h + radius
 
+    # calculate the coordinates on the image corresponding to each point on the square
+    coordinates = [(i, j) for i in range(top, bottom) for j in range(left, right)]
+    
+    return coordinates, left, right, top, bottom, h, w
+
+def gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple, print_info):
+    '''
+    '''
+    encode, tile, slide_id = key_encode_tuple
+    
+    dim = encode.shape[-1]
     # create a empty region_ctx_nd
     C = radius * 2 + 1
     region_ctx_nd = np.zeros((C, C, dim))
 
     # calculate the coordinates on the image corresponding to each point on the square
-    coordinates = [(i, j) for i in range(top, bottom) for j in range(left, right)]
-
+    coordinates, left, right, top, bottom, h, w = make_neighb_coords(radius, tile)
+    
     # fill the region context region_ctx_nd
     for i, coord in enumerate(coordinates):
         q_h, q_w = coord

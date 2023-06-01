@@ -18,7 +18,7 @@ from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map
 from interpre.prep_clst_vis import top_pct_slides_4_sp_clst, \
-    cnt_nb_slides_ref_homo_sp_clst, top_nb_slides_4_ref_group
+    cnt_pop_slides_ref_homo_sp_clst, top_pop_slides_4_ref_group
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_STEA
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [24]
+    task_ids = [29.4]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -89,8 +89,8 @@ if __name__ == '__main__':
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         sp_clst=5
         nb_top=10
-        slide_iso_gath_nb_dict = cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=sp_clst)
-        top_iso_slides_ids, lowest_iso_slides_ids, _, _ = top_nb_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict,
+        slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=sp_clst)
+        top_iso_slides_ids, lowest_iso_slides_ids, _, _ = top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict,
                                                                                     lobular_label_fname, nb_top)
         plot_slides_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                         top_iso_slides_ids, lowest_iso_slides_ids)
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     if 29.4 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
-        slide_iso_gath_nb_dict = cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=5)
+        slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=5)
         plot_lobular_nb_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl=5)
         
     if 61 in task_ids:

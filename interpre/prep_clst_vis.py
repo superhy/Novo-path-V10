@@ -437,9 +437,9 @@ def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp
         
     return top_slides_ids, lowest_slides_ids
 
-def cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25):
+def cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25):
     '''
-    count the number of refined clusters (into 2 groups by homogeneity in context)
+    count the population (nb_iso / (nb_iso + nb_gath) ) of refined clusters (into 2 groups by homogeneity in context)
     for each slide
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -449,20 +449,22 @@ def cnt_nb_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_t
     
     slide_iso_gath_nb_dict = {}
     for slide_id in slide_tgt_tiles_dict.keys():
-        ref_tiles_tuple = slide_tgt_tiles_dict[slide_id]
+        ref_tiles_tuples = slide_tgt_tiles_dict[slide_id]
         nb_iso, nb_gath = 0, 0
-        for tile_tuple in ref_tiles_tuple:
+        for tile_tuple in ref_tiles_tuples:
             if tile_tuple[2] == 0:
                 nb_iso += 1
             else:
                 nb_gath += 1
-        slide_iso_gath_nb_dict[slide_id] = (nb_iso, nb_gath)
+        pop_iso = nb_iso * 1.0 / len(ref_tiles_tuples)
+        pop_gath = nb_gath * 1.0 / len(ref_tiles_tuples)
+        slide_iso_gath_nb_dict[slide_id] = (nb_iso, nb_gath, pop_iso, pop_gath)
         print('slide %s has %d/%d iso/gath tiles for cluster %d' % (slide_id,
                                                                     nb_iso, nb_gath, sp_clst))
         
     return slide_iso_gath_nb_dict
 
-def top_nb_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, nb_top):
+def top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, nb_top):
     '''
     find the slide_ids with top-k and lowest-k number of iso/gath refined group in sp_clst
     '''
@@ -476,16 +478,21 @@ def top_nb_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fn
             slide_id_list.append(slide_id)
             
     # number of iso/gath tiles for sp_clst
-    slide_nb_iso = [0] * len(slide_id_list)
-    slide_nb_gath = [0] * len(slide_id_list)
+    # slide_nb_iso = [0] * len(slide_id_list)
+    # slide_nb_gath = [0] * len(slide_id_list)
+    slide_pop_iso = [0.0] * len(slide_id_list)
+    slide_pop_gath = [0.0] * len(slide_id_list)
     for i, slide_id in enumerate(slide_id_list):
-        nb_iso, nb_gath = slide_iso_gath_nb_dict[slide_id]
-        slide_nb_iso[i] = nb_iso
-        slide_nb_gath[i] = nb_gath
+        nb_iso, nb_gath, pop_iso, pop_gath = slide_iso_gath_nb_dict[slide_id]
+        # slide_nb_iso[i] = nb_iso
+        # slide_nb_gath[i] = nb_gath
+        slide_pop_iso[i] = pop_iso
+        slide_pop_gath[i] = pop_gath
         
-        
-    order_iso = np.argsort(slide_nb_iso)
-    order_gath = np.argsort(slide_nb_gath)
+    # order_iso = np.argsort(slide_nb_iso)
+    # order_gath = np.argsort(slide_nb_gath)
+    order_iso = np.argsort(slide_pop_iso)
+    order_gath = np.argsort(slide_pop_gath)
     lowest_ord_iso, top_ord_iso = order_iso[:nb_top], order_iso[-nb_top:]
     lowest_ord_gath, top_ord_gath = order_gath[:nb_top], order_gath[-nb_top:]
     top_iso_slides_ids, lowest_iso_slides_ids = [], []

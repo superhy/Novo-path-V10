@@ -13,7 +13,7 @@ from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 
 from models.functions_vit_ext import access_encodes_vit, avg_neigb_encodes, \
-    comput_region_ctx_comb_encodes
+    comput_region_ctx_comb_encodes, make_neighb_coords
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
     check_reuse_net
 import numpy as np
@@ -516,28 +516,22 @@ def make_tileid_label_dict(clustering_res_pkg):
         
     return tileid_label_dict
 
-def check_neig_clst_labels(slide_id, tile, tileid_label_dict):
+def check_neig_clst_labels(slide_id, tile, tileid_label_dict, radius):
     '''
     '''
-    directions = [[-2, -2], [-2, -1], [-2, 0], [-2, 1], [-2, 2],
-                  [-1, -2], [-1, -1], [-1, 0], [-1, 1], [-1, 2],
-                  [0 , -2], [0 , -1],          [0 , 1], [0 , 2],
-                  [1 , -2], [1 , -1], [1 , 0], [1 , 1], [1 , 2],
-                  [2 , -2], [2 , -1], [2 , 0], [2 , 1], [2 , 2]]
+    coordinates, _, _, _, _, _, _ = make_neighb_coords(radius, tile)
     
     neig_labels = []
-    for d in directions:
-        tile_loc_nd = np.array([tile.h_id, tile.w_id])
-        neig_loc_nd = tile_loc_nd + d
-        if neig_loc_nd[0] < 1 or neig_loc_nd[1] < 1:
+    for q_h, q_w in coordinates:
+        if q_h < 0 or q_w < 0:
             continue
-        neig_tile_id = '{}-h{}-w{}'.format(slide_id, str(neig_loc_nd[0]), str(neig_loc_nd[1]))
+        neig_tile_id = '{}-h{}-w{}'.format(slide_id, str(q_h), str(q_w))
         if neig_tile_id in tileid_label_dict.keys():
             neig_labels.append(tileid_label_dict[neig_tile_id])
             
-    return neig_labels
+    return neig_labels, coordinates
     
-def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd=0.25):
+def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd, radius):
     '''
     split a specific cluster into several more small clusters
     check surrounding +/- 2, 5*5-1 24 neighbours
@@ -555,9 +549,9 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd=0.25):
             slide_tgt_tiles_dict[slide_id] = []
         
         if res_lbl == tgt_lbl:
-            neig_labels = check_neig_clst_labels(slide_id, tile, tileid_label_dict)
+            neig_labels, coords = check_neig_clst_labels(slide_id, tile, tileid_label_dict, radius)
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
-            pct_tgt_lbl = nb_tgt_lbl * 1.0 / 24
+            pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(coords)
             slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
             print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
                                                                       'iso' if pct_tgt_lbl < iso_thd else 'gath'))
