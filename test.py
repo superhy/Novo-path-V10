@@ -255,10 +255,42 @@ def _test_vit_reuse():
     
     output_2 = vit_reg_en(input_2)
     print(output_2.shape)
+    
+
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def _test_plot_box():
+    queue = [("group1", 0.5, "label1"), 
+             ("group1", 0.6, "label2"), 
+             ("group2", 0.7, "label1"), 
+             ("group2", 0.8, "label2"), 
+             ("group1", 0.5, "label1"), 
+             ("group1", 0.4, "label2"), 
+             ("group2", 0.5, "label1"), 
+             ("group2", 0.6, "label2"), 
+             ("group1", 0.7, "label1"), 
+             ("group1", 0.5, "label2"), 
+             ("group2", 0.3, "label1"), 
+             ("group2", 0.5, "label2"), 
+             ("group1", 0.6, "label1"), 
+             ("group1", 0.8, "label2"), 
+             ("group2", 0.4, "label1"), 
+             ("group2", 0.5, "label2"), 
+             ]
+    
+    df = pd.DataFrame(queue, columns=["group", "percentage", "label"])
+    
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(x="group", y="percentage", hue="label", data=df, palette="Set3")
+    
+    plt.title("Boxplot of Percentages by Group and Label")
+    plt.show()
 
     
 if __name__ == '__main__':
-    test_filter_slide_img() # 1
+    # test_filter_slide_img() # 1
     # test_vit_forward() # 2
     # test_networkx() # 3
 
@@ -269,6 +301,8 @@ if __name__ == '__main__':
     # plot_color_gradients('Qualitative', ['tab10'])
     
     # _test_vit_reuse()
+    
+    _test_plot_box()
 
 
 
