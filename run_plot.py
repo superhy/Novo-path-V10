@@ -6,7 +6,8 @@ import os
 
 from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist, \
     plot_clsts_avg_dist_in_HV, plot_flex_clsts_avg_dist, \
-    plot_lobular_nb_group_dist
+    df_lobular_pop_group_dist, df_plot_lobular_pop_group_dist, \
+    dfs_plot_lobular_pop_group_dist
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
@@ -36,7 +37,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.4]
+    task_ids = [29.5]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -119,9 +120,32 @@ if __name__ == '__main__':
     if 29.4 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
-        slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=5)
-        plot_lobular_nb_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl=5)
+        clst_lbl=5
+        radius=5
+        slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
+                                                                 sp_clst=5, iso_thd=0.25, radius=radius)
+        df_alllob_pop_group = df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict,
+                                                        lobular_label_fname, clst_lbl)
+        df_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group, lobular_label_fname, clst_lbl)
+    if 29.5 in task_ids:
+        ''' plot lobular_pop_group_dist with multiple iso threshold'''
         
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
+        iso_th_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        clst_lbl=5
+        radius=5
+        df_alllob_pop_group_list = []
+        for i, th in enumerate(iso_th_list):
+            slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
+                                                                     sp_clst=5, iso_thd=th, radius=radius)
+            df_alllob_pop_group = df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict,
+                                                            lobular_label_fname, clst_lbl)
+            df_alllob_pop_group_list.append(df_alllob_pop_group)
+        dfs_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group_list,
+                                        lobular_label_fname, clst_lbl, iso_th_list)
+    
+    
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_onehot_nx_graphs(ENV_task, adjdict_pkl_name)

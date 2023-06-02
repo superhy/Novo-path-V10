@@ -69,12 +69,14 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         sp_clst=5
-        _run_make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst=sp_clst)
+        radius=5
+        _run_make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst=sp_clst, radius=radius)
     if 29 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
+    
     
     load_tile_slideids = None
     if 61 in task_ids:

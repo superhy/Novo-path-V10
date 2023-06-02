@@ -249,12 +249,6 @@ def gen_single_slide_iso_spatial(ENV_task, slide_tgt_tiles_dict, slide_id):
     heat_s_iso = np.ones((H, W, 3), dtype=np.float64)
     white_mask = np.ones((H, W, 3), dtype=np.float64)
     
-    directions = [[-2, -2], [-2, -1], [-2, 0], [-2, 1], [-2, 2],
-                  [-1, -2], [-1, -1], [-1, 0], [-1, 1], [-1, 2],
-                  [0 , -2], [0 , -1],          [0 , 1], [0 , 2],
-                  [1 , -2], [1 , -1], [1 , 0], [1 , 1], [1 , 2],
-                  [2 , -2], [2 , -1], [2 , 0], [2 , 1], [2 , 2]]
-    
     for _, _, iso_label, tile in tgt_tile_tuples:
         if iso_label == 0:
             h, w = tile.h_id - 1, tile.w_id - 1
@@ -264,14 +258,6 @@ def gen_single_slide_iso_spatial(ENV_task, slide_tgt_tiles_dict, slide_id):
             heat_s_iso[h, w] = 0.8
             white_mask[h, w] = 0.0
             
-            # make light-colored mask on the context of iso tiles
-            for d in directions:
-                neig_loc_nd = np.array([h, w]) + d
-                if neig_loc_nd[0] >= H or neig_loc_nd[1] >= W or neig_loc_nd[0] < 1 or neig_loc_nd[1] < 1:
-                    continue
-                heat_s_iso[neig_loc_nd[0], neig_loc_nd[1]] = 0.2
-                white_mask[neig_loc_nd[0], neig_loc_nd[1]] = 0.0
-                
     c_panel = cmapy.cmap('Reds')
     heat_s_iso = image_tools.np_to_pil(heat_s_iso).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
@@ -357,7 +343,7 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
-def make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst):
+def make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius):
     '''
     make the pkl package with spatial heatmaps of iso group in sp_clst
     '''
@@ -365,7 +351,7 @@ def make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst):
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     
     clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
-    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst)
+    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst, radius)
     
     slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
     print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
@@ -437,7 +423,7 @@ def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp
         
     return top_slides_ids, lowest_slides_ids
 
-def cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25):
+def cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
     '''
     count the population (nb_iso / (nb_iso + nb_gath) ) of refined clusters (into 2 groups by homogeneity in context)
     for each slide
@@ -445,7 +431,7 @@ def cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_
     model_store_dir = ENV_task.MODEL_FOLDER
     clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
     
-    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst, iso_thd)
+    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst, iso_thd, radius)
     
     slide_iso_gath_nb_dict = {}
     for slide_id in slide_tgt_tiles_dict.keys():
@@ -572,8 +558,8 @@ def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
 def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
     make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst)
 
-def _run_make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
-    make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst)
+def _run_make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst=None, radius=5):
+    make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius)
 
 def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
