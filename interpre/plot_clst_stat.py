@@ -300,7 +300,7 @@ def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix)))
+                             'ref-group(c-{})_dist-lobular_{}-bar.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
 def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
@@ -320,7 +320,7 @@ def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             'ref-group(c-{})_dist-lobular_{}(multi-threshold).png'.format(str(clst_lbl), lbl_suffix)))
+                             'ref-group(c-{})_dist-lobular_{}(multi-thd)-bar.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
@@ -337,7 +337,7 @@ def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix)))
+                             'ref-group(c-{})_dist-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
@@ -357,7 +357,7 @@ def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             'ref-group(c-{})_dist-lobular_{}(multi-threshold).png'.format(str(clst_lbl), lbl_suffix)))
+                             'ref-group(c-{})_dist-lobular_{}(multi-thd)-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
     

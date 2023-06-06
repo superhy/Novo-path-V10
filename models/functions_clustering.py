@@ -622,6 +622,8 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
                                      channels=ENV_task.TRANSFORMS_RESIZE)
     vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
     
+    # here, 144 = ((5 * 2 + 1) + 1) ^ 2, 5 is the radius, 
+    # the first 1 is the core and the second 1 just make the image_size not odd 
     vit_reg_load = ViT_Region_4_6(image_size=144, patch_size=int(144/ENV_FLINC_CD45_REG_PT.VIT_SHAPE), channels=3)
     reg_vit_encoder, _ = check_reuse_net(reg_vit_encoder, vit_reg_load,
                                          os.path.join(ENV_task.MODEL_FOLDER, reg_vit_pt_name))
