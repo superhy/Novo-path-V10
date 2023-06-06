@@ -212,17 +212,17 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
     
-def df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
+def df_lobular_prop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
     '''
-    generate the dataFrame
+    generate the dataFrame, calculate the average amount distribution
     '''
     
     ''' loading/processing data '''
     lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
-    lobular_pop_iso, nb_lob_cases = 0, 0
-    non_lobular_pop_iso, nb_nlob_cases = 0, 0
-    lobular_pop_gath = 0
-    non_lobular_pop_gath = 0
+    lobular_prop_iso, nb_lob_cases = 0, 0
+    non_lobular_prop_iso, nb_nlob_cases = 0, 0
+    lobular_prop_gath = 0
+    non_lobular_prop_gath = 0
     for slide_id in slide_iso_gath_nb_dict.keys():
         nb_iso, nb_gath, pop_iso, pop_gath = slide_iso_gath_nb_dict[slide_id]
         case_id = parse_caseid_from_slideid(slide_id)
@@ -231,43 +231,70 @@ def df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fn
         if lobular_label_dict[case_id] == 0:
             # non-lobular cases
             nb_nlob_cases += 1
-            non_lobular_pop_iso += pop_iso
-            non_lobular_pop_gath += pop_gath
+            non_lobular_prop_iso += pop_iso
+            non_lobular_prop_gath += pop_gath
         else:
             nb_lob_cases += 1
-            lobular_pop_iso += pop_iso
-            lobular_pop_gath += pop_gath
+            lobular_prop_iso += pop_iso
+            lobular_prop_gath += pop_gath
                 
-    print(lobular_pop_iso, lobular_pop_gath)
-    print(non_lobular_pop_iso, non_lobular_pop_gath)
+    print(lobular_prop_iso, lobular_prop_gath)
+    print(non_lobular_prop_iso, non_lobular_prop_gath)
     print(nb_lob_cases)
     print(nb_nlob_cases)
                 
-    avg_lob_pop_iso = lobular_pop_iso * 1.0 / nb_lob_cases
-    avg_nonlob_pop_iso = non_lobular_pop_iso * 1.0 / nb_nlob_cases
-    avg_lob_pop_gath = lobular_pop_gath * 1.0 / nb_lob_cases
-    avg_nonlob_pop_gath = non_lobular_pop_gath * 1.0 / nb_nlob_cases
+    avg_lob_prop_iso = lobular_prop_iso * 1.0 / nb_lob_cases
+    avg_nonlob_prop_iso = non_lobular_prop_iso * 1.0 / nb_nlob_cases
+    avg_lob_prop_gath = lobular_prop_gath * 1.0 / nb_lob_cases
+    avg_nonlob_prop_gath = non_lobular_prop_gath * 1.0 / nb_nlob_cases
     
     ''' plot '''
-    both_nb_tuples = [['iso tiles in c-%d' % clst_lbl, avg_lob_pop_iso, 'lobular-inf cases'],
-                      ['iso tiles in c-%d' % clst_lbl, avg_nonlob_pop_iso, 'non-lobular-inf cases'],
-                      ['gath tiles in c-%d' % clst_lbl, avg_lob_pop_gath, 'lobular-inf cases'],
-                      ['gath tiles in c-%d' % clst_lbl, avg_nonlob_pop_gath, 'non-lobular-inf cases']]
-    df_alllob_pop_group = pd.DataFrame(both_nb_tuples,
-                                       columns=['groups', 'number_refined_group', 'lobular_label'])
+    both_nb_tuples = [['iso tiles in c-%d' % clst_lbl, avg_lob_prop_iso, 'lobular-inf cases'],
+                      ['iso tiles in c-%d' % clst_lbl, avg_nonlob_prop_iso, 'non-lobular-inf cases'],
+                      ['gath tiles in c-%d' % clst_lbl, avg_lob_prop_gath, 'lobular-inf cases'],
+                      ['gath tiles in c-%d' % clst_lbl, avg_nonlob_prop_gath, 'non-lobular-inf cases']]
+    df_alllob_prop_group = pd.DataFrame(both_nb_tuples,
+                                        columns=['groups', 'number_in_group', 'lobular_label'])
     
-    return df_alllob_pop_group
+    return df_alllob_prop_group
 
-    
-def df_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group, lobular_label_fname, clst_lbl):
+def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
     '''
-    plot with dateFrame
+    generate the dataFrame, list the values with different labels
+    '''
+    ''' loading/processing data '''
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    
+    all_prop_tuples = []
+    for slide_id in slide_iso_gath_nb_dict.keys():
+        nb_iso, nb_gath, pop_iso, pop_gath = slide_iso_gath_nb_dict[slide_id]
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
+            continue
+        
+        if lobular_label_dict[case_id] == 0:
+            lob_label_str = 'non-lobular-inf cases'
+        else:
+            lob_label_str = 'lobular-inf cases'
+        # add iso tile element and gath tile element
+        all_prop_tuples.append(['iso tiles in c-%d' % clst_lbl, pop_iso, lob_label_str])
+        all_prop_tuples.append(['gath tiles in c-%d' % clst_lbl, pop_gath, lob_label_str])
+        
+    df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
+                                        columns=['groups', 'prop_of_group', 'lobular_label'])
+    
+    return df_alllob_prop_elemts
+        
+    
+def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label_fname, clst_lbl):
+    '''
+    plot with dateFrame, bar with average proportion 
     '''
     
     fig = plt.figure(figsize=(3.5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'],
-                       data=df_alllob_pop_group, hue='lobular_label')
+    ax_1 = sns.barplot(x='groups', y='number_in_group', palette=['blue', 'springgreen'],
+                       data=df_alllob_prop_group, hue='lobular_label')
     ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
     plt.tight_layout()
@@ -276,16 +303,55 @@ def df_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group, lobular_label_
                              'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
-    
-def dfs_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group_list,
+def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
                                     lobular_label_fname, clst_lbl, iso_th_list):
+    '''
+    plot with a list of dataFrames, bar with average proportion
+    '''
     
-    fig = plt.figure(figsize=(3.5 * len(df_alllob_pop_group_list) / 2, 5 * 2))
+    fig = plt.figure(figsize=(3.5 * len(df_alllob_prop_group_list) / 2, 5 * 2))
     
-    for i, df_alllob_pop_group in enumerate(df_alllob_pop_group_list):
-        ax_th = fig.add_subplot(2, int((len(df_alllob_pop_group_list) + 1) / 2), i + 1)
-        ax_th = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'],
-                           data=df_alllob_pop_group, hue='lobular_label')
+    for i, df_alllob_prop_group in enumerate(df_alllob_prop_group_list):
+        ax_th = fig.add_subplot(2, int((len(df_alllob_prop_group_list) + 1) / 2), i + 1)
+        ax_th = sns.barplot(x='groups', y='number_in_group', palette=['blue', 'springgreen'],
+                            data=df_alllob_prop_group, hue='lobular_label')
+        ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
+        
+    plt.tight_layout()
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_dist-lobular_{}(multi-threshold).png'.format(str(clst_lbl), lbl_suffix)))
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    
+def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
+    '''
+    plot with dateFrame, bar with average proportion 
+    '''
+    
+    fig = plt.figure(figsize=(3.5, 5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1 = sns.boxplot(x='groups', y='prop_of_group', palette=['blue', 'springgreen'],
+                       data=df_alllob_prop_elemts, hue='lobular_label')
+    ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
+    
+    plt.tight_layout()
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix)))
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    
+def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
+                                    lobular_label_fname, clst_lbl, iso_th_list):
+    '''
+    plot with a list of dataFrames, bar with average proportion
+    '''
+    
+    fig = plt.figure(figsize=(3.5 * len(df_alllob_prop_elemts_list) / 2, 5 * 2))
+    
+    for i, df_alllob_prop_elemts in enumerate(df_alllob_prop_elemts_list):
+        ax_th = fig.add_subplot(2, int((len(df_alllob_prop_elemts_list) + 1) / 2), i + 1)
+        ax_th = sns.boxplot(x='groups', y='prop_of_group', palette=['blue', 'springgreen'],
+                            data=df_alllob_prop_elemts, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
         
     plt.tight_layout()
