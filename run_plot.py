@@ -121,7 +121,7 @@ if __name__ == '__main__':
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         clst_lbl=5
-        radius=5
+        radius=3
         slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
                                                                  sp_clst=5, iso_thd=0.25, radius=radius)
         df_alllob_pop_group = df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict,
@@ -132,9 +132,9 @@ if __name__ == '__main__':
         
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
-        iso_th_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        iso_th_list = [0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
         clst_lbl=5
-        radius=5
+        radius=3
         df_alllob_pop_group_list = []
         for i, th in enumerate(iso_th_list):
             slide_iso_gath_nb_dict = cnt_pop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,

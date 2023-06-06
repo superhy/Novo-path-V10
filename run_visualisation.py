@@ -7,7 +7,7 @@ import os
 from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
     _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters, \
     _run_make_spatial_each_clusters_on_slides, \
-    _run_count_tis_pct_clsts_on_slides, _run_make_spatial_iso_group_on_slides
+    _run_count_tis_pct_clsts_on_slides, _run_make_spatial_iso_gath_on_slides
 from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
     _run_make_vit_neb_graph_adj_clusters
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
@@ -69,8 +69,10 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         sp_clst=5
-        radius=5
-        _run_make_spatial_iso_group_on_slides(ENV_task, clustering_pkl_name, sp_clst=sp_clst, radius=radius)
+        iso_thd=0.1
+        radius=3
+        _run_make_spatial_iso_gath_on_slides(ENV_task, clustering_pkl_name,
+                                             sp_clst=sp_clst, iso_thd=iso_thd, radius=radius)
     if 29 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10

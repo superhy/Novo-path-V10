@@ -18,7 +18,7 @@ from support.metadata import query_task_label_dict_fromcsv, \
     extract_slideid_subid_for_stain
 
 
-def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, 
+def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
                                 nb_clst, norm_t_pct=False):
     '''
     counting all clusters' average distribution on all slides, for lobular/non-lobular
@@ -59,8 +59,8 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     nd_nonlob_tis_pct = nd_nonlob_tis_pct / nb_nlob_cases
     
     ''' plot '''
-    lob_t_pct_tuples = [['c-{}'.format(c+1), nd_lob_tis_pct[c], 'lobular cases'] for c in range(nb_clst) ]
-    nonlob_t_pct_tuples = [['c-{}'.format(c+1), nd_nonlob_tis_pct[c], 'non-lobular cases'] for c in range(nb_clst) ]
+    lob_t_pct_tuples = [['c-{}'.format(c + 1), nd_lob_tis_pct[c], 'lobular cases'] for c in range(nb_clst) ]
+    nonlob_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlob_tis_pct[c], 'non-lobular cases'] for c in range(nb_clst) ]
     df_alllob_t_pct = pd.DataFrame(lob_t_pct_tuples + nonlob_t_pct_tuples, columns=['clusters', 'tissue_percentage', 'lobular_label'])
     
     fig = plt.figure(figsize=(5, 5))
@@ -76,8 +76,9 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix) )) )
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix))))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+
     
 def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=False):
     '''
@@ -111,7 +112,7 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=Fa
     nd_tis_pcts = np.array(tis_pcts)
     nd_tis_pcts = nd_tis_pcts / nb_hv_cases
     
-    t_pct_tuples = [['c-{}'.format(c+1), nd_tis_pcts[c]] for c in range(nb_clst) ]
+    t_pct_tuples = [['c-{}'.format(c + 1), nd_tis_pcts[c]] for c in range(nb_clst) ]
     df_hvlob_t_pct = pd.DataFrame(t_pct_tuples, columns=['clusters', 'tissue_percentage'])
     
     fig = plt.figure(figsize=(5, 5))
@@ -120,7 +121,7 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=Fa
     ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['gray'], data=df_hvlob_t_pct)
     ax_1.set_title('health volunteers\' cluster tissue percentage')
     plt.tight_layout()
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-hv_lobular.png')) )
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-hv_lobular.png')))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
 
@@ -191,24 +192,25 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     
     ''' plot '''
     label_name = flex_label_fname.split('_')[1]
-    lbl_t_pct_tuples = [['c-{}'.format(c+1), nd_lbl_tis_pct[c], '{} cases'.format(label_name)] for c in range(nb_clst) ]
-    nonlbl_t_pct_tuples = [['c-{}'.format(c+1), nd_nonlbl_tis_pct[c], 'non-{} cases'.format(label_name)] for c in range(nb_clst) ]
-    hv_t_pct_tuples = [['c-{}'.format(c+1), nd_hv_tis_pcts[c], 'hv cases'] for c in range(nb_clst) ]
-    df_alllbl_t_pct = pd.DataFrame(lbl_t_pct_tuples + nonlbl_t_pct_tuples + hv_t_pct_tuples, 
+    lbl_t_pct_tuples = [['c-{}'.format(c + 1), nd_lbl_tis_pct[c], '{} cases'.format(label_name)] for c in range(nb_clst) ]
+    nonlbl_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlbl_tis_pct[c], 'non-{} cases'.format(label_name)] for c in range(nb_clst) ]
+    hv_t_pct_tuples = [['c-{}'.format(c + 1), nd_hv_tis_pcts[c], 'hv cases'] for c in range(nb_clst) ]
+    df_alllbl_t_pct = pd.DataFrame(lbl_t_pct_tuples + nonlbl_t_pct_tuples + hv_t_pct_tuples,
                                    columns=['clusters', 'tissue_percentage', 'case_label'])
     
     fig = plt.figure(figsize=(7, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1.set_ylim(0, 1.0)
-    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen', 'gray'], 
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen', 'gray'],
                        data=df_alllbl_t_pct, hue='case_label')
     ax_1.set_title('tissue percentage of each clusters')
     
     plt.tight_layout()
     lbl_suffix = flex_label_fname[:flex_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             tis_pct_pkl_name.replace('.pkl', '-{}_{}.png'.format(label_name, lbl_suffix) )) )
+                             tis_pct_pkl_name.replace('.pkl', '-{}_{}.png'.format(label_name, lbl_suffix))))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+
     
 def df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
     '''
@@ -255,6 +257,7 @@ def df_lobular_pop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fn
                                        columns=['groups', 'number_refined_group', 'lobular_label'])
     
     return df_alllob_pop_group
+
     
 def df_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group, lobular_label_fname, clst_lbl):
     '''
@@ -263,31 +266,32 @@ def df_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group, lobular_label_
     
     fig = plt.figure(figsize=(3.5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'], 
+    ax_1 = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'],
                        data=df_alllob_pop_group, hue='lobular_label')
     ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
-                             'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix) ) )
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_dist-lobular_{}.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+
     
-def dfs_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group_list, 
+def dfs_plot_lobular_pop_group_dist(ENV_task, df_alllob_pop_group_list,
                                     lobular_label_fname, clst_lbl, iso_th_list):
     
-    fig = plt.figure(figsize=(3.5 * len(df_alllob_pop_group_list), 5))
+    fig = plt.figure(figsize=(3.5 * len(df_alllob_pop_group_list) / 2, 5 * 2))
     
     for i, df_alllob_pop_group in enumerate(df_alllob_pop_group_list):
-        ax_th = fig.add_subplot(1, len(df_alllob_pop_group_list), i+1)
-        ax_th = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'], 
+        ax_th = fig.add_subplot(2, int((len(df_alllob_pop_group_list) + 1) / 2), i + 1)
+        ax_th = sns.barplot(x='groups', y='number_refined_group', palette=['blue', 'springgreen'],
                            data=df_alllob_pop_group, hue='lobular_label')
-        ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl) )
+        ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
         
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
-                             'ref-group(c-{})_dist-lobular_{}(multi-threshold).png'.format(str(clst_lbl), lbl_suffix) ) )
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_dist-lobular_{}(multi-threshold).png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
     
@@ -304,7 +308,7 @@ def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fnam
     
     clst_t_pct_dist_dict = {}
     for c in range(nb_clst):
-        clst_t_pct_dist_dict['c-{}'.format(c+1)] = ([0] * 10, [0] * 10)
+        clst_t_pct_dist_dict['c-{}'.format(c + 1)] = ([0] * 10, [0] * 10)
     
     tis_pct_range_labels = ['< 10', '10 ~ 20', '20 ~ 30', '30 ~ 40', '40 ~ 50',
                             '50 ~ 60', '60 ~ 70', '70 ~ 80', '80 ~ 90', '>= 90']
@@ -321,27 +325,25 @@ def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fnam
                 lob_tis_pct_dist[math.floor(tissue_pct_dict[c] / 0.1)] += 1
             else:
                 nonlob_tis_pct_dist[math.floor(tissue_pct_dict[c] / 0.1)] += 1
-        clst_t_pct_dist_dict['c-{}'.format(c+1)] = (lob_tis_pct_dist, nonlob_tis_pct_dist)
+        clst_t_pct_dist_dict['c-{}'.format(c + 1)] = (lob_tis_pct_dist, nonlob_tis_pct_dist)
         
     ''' plot '''
     fig = plt.figure(figsize=(10, 15))
     for c in range(nb_clst):
-        lob_t_pct_dist_tuples = [[r, clst_t_pct_dist_dict['c-{}'.format(c+1)][0][i], 'lobular cases'] for i, r in enumerate(tis_pct_range_labels) ]
-        nonlob_t_pct_dist_tuples = [[r, clst_t_pct_dist_dict['c-{}'.format(c+1)][1][i], 'non-lobular cases'] for i, r in enumerate(tis_pct_range_labels) ]
-        df_alllob_t_pct_dist = pd.DataFrame(lob_t_pct_dist_tuples + nonlob_t_pct_dist_tuples, 
+        lob_t_pct_dist_tuples = [[r, clst_t_pct_dist_dict['c-{}'.format(c + 1)][0][i], 'lobular cases'] for i, r in enumerate(tis_pct_range_labels) ]
+        nonlob_t_pct_dist_tuples = [[r, clst_t_pct_dist_dict['c-{}'.format(c + 1)][1][i], 'non-lobular cases'] for i, r in enumerate(tis_pct_range_labels) ]
+        df_alllob_t_pct_dist = pd.DataFrame(lob_t_pct_dist_tuples + nonlob_t_pct_dist_tuples,
                                             columns=['tissue_percentage', 'number_cases', 'lobular_label'])
         
-        ax_c = fig.add_subplot(2, int((nb_clst+1)/2), c+1)
+        ax_c = fig.add_subplot(2, int((nb_clst + 1) / 2), c + 1)
         ax_c = sns.displot(data=df_alllob_t_pct_dist, x='tissue_percentage', y='number_cases',
                            palette=['blue', 'springgreen'], hue='lobular_label')
         ax_c.set_title('cluster-%d' % (c + 1))
         
     plt.tight_layout()
     plt.show()
+
     
 if __name__ == '__main__':
     pass
-
-
-
 
