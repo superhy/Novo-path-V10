@@ -58,15 +58,18 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     nd_lob_tis_pct = nd_lob_tis_pct / nb_lob_cases
     nd_nonlob_tis_pct = nd_nonlob_tis_pct / nb_nlob_cases
     
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
+    
     ''' plot '''
-    lob_t_pct_tuples = [['c-{}'.format(c + 1), nd_lob_tis_pct[c], 'lobular cases'] for c in range(nb_clst) ]
-    nonlob_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlob_tis_pct[c], 'non-lobular cases'] for c in range(nb_clst) ]
+    lob_t_pct_tuples = [['c-{}'.format(c + 1), nd_lob_tis_pct[c], 'lobular-inf cases'] for c in range(nb_clst) ]
+    nonlob_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlob_tis_pct[c], 'non-lobular-inf cases'] for c in range(nb_clst) ]
     df_alllob_t_pct = pd.DataFrame(lob_t_pct_tuples + nonlob_t_pct_tuples, columns=['clusters', 'tissue_percentage', 'lobular_label'])
     
     fig = plt.figure(figsize=(5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1.set_ylim(0, 0.5)
-    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen'], data=df_alllob_t_pct, hue='lobular_label')
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=palette_dict, data=df_alllob_t_pct, hue='lobular_label')
     ax_1.set_title('tissue percentage of each clusters')
     
     # ax_2 = fig.add_subplot(1, 2, 2)
@@ -192,6 +195,10 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     
     ''' plot '''
     label_name = flex_label_fname.split('_')[1]
+    palette_dict = {'{} cases'.format(label_name): 'blue', 
+                    'non-{} cases'.format(label_name): 'springgreen',
+                    'hv cases': 'gray'}
+    
     lbl_t_pct_tuples = [['c-{}'.format(c + 1), nd_lbl_tis_pct[c], '{} cases'.format(label_name)] for c in range(nb_clst) ]
     nonlbl_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlbl_tis_pct[c], 'non-{} cases'.format(label_name)] for c in range(nb_clst) ]
     hv_t_pct_tuples = [['c-{}'.format(c + 1), nd_hv_tis_pcts[c], 'hv cases'] for c in range(nb_clst) ]
@@ -201,7 +208,7 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     fig = plt.figure(figsize=(7, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1.set_ylim(0, 1.0)
-    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=['blue', 'springgreen', 'gray'],
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=palette_dict,
                        data=df_alllbl_t_pct, hue='case_label')
     ax_1.set_title('tissue percentage of each clusters')
     
@@ -291,9 +298,12 @@ def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label
     plot with dateFrame, bar with average proportion 
     '''
     
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
+    
     fig = plt.figure(figsize=(3.5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.barplot(x='groups', y='number_in_group', palette=['blue', 'springgreen'],
+    ax_1 = sns.barplot(x='groups', y='number_in_group', palette=palette_dict,
                        data=df_alllob_prop_group, hue='lobular_label')
     ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
@@ -308,12 +318,14 @@ def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
     '''
     plot with a list of dataFrames, bar with average proportion
     '''
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
     
     fig = plt.figure(figsize=(3.5 * len(df_alllob_prop_group_list) / 2, 5 * 2))
     
     for i, df_alllob_prop_group in enumerate(df_alllob_prop_group_list):
         ax_th = fig.add_subplot(2, int((len(df_alllob_prop_group_list) + 1) / 2), i + 1)
-        ax_th = sns.barplot(x='groups', y='number_in_group', palette=['blue', 'springgreen'],
+        ax_th = sns.barplot(x='groups', y='number_in_group', palette=palette_dict,
                             data=df_alllob_prop_group, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
         
@@ -327,10 +339,12 @@ def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     '''
     plot with dateFrame, bar with average proportion 
     '''
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
     
     fig = plt.figure(figsize=(3.5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.boxplot(x='groups', y='prop_of_group', palette=['blue', 'springgreen'],
+    ax_1 = sns.boxplot(x='groups', y='prop_of_group', palette=palette_dict,
                        data=df_alllob_prop_elemts, hue='lobular_label')
     ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
@@ -345,12 +359,14 @@ def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
     '''
     plot with a list of dataFrames, bar with average proportion
     '''
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
     
     fig = plt.figure(figsize=(3.5 * len(df_alllob_prop_elemts_list) / 2, 5 * 2))
     
     for i, df_alllob_prop_elemts in enumerate(df_alllob_prop_elemts_list):
         ax_th = fig.add_subplot(2, int((len(df_alllob_prop_elemts_list) + 1) / 2), i + 1)
-        ax_th = sns.boxplot(x='groups', y='prop_of_group', palette=['blue', 'springgreen'],
+        ax_th = sns.boxplot(x='groups', y='prop_of_group', palette=palette_dict,
                             data=df_alllob_prop_elemts, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
         

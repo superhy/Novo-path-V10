@@ -2,6 +2,7 @@
 @author: Yang Hu
 '''
 
+import bisect
 import os
 import pickle
 import warnings
@@ -542,21 +543,54 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd, radius):
     '''
     
     tileid_label_dict = make_tileid_label_dict(clustering_res_pkg)
-    slide_tgt_tiles_dict = {}
+    slide_tgt_tiles_2_dict = {}
     for clst_res_tuple in clustering_res_pkg:
         res_lbl, _, tile, slide_id = clst_res_tuple
-        if slide_id not in slide_tgt_tiles_dict.keys():
-            slide_tgt_tiles_dict[slide_id] = []
+        if slide_id not in slide_tgt_tiles_2_dict.keys():
+            slide_tgt_tiles_2_dict[slide_id] = []
         
         if res_lbl == tgt_lbl:
             neig_labels, coords = check_neig_clst_labels(slide_id, tile, tileid_label_dict, radius)
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
             pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(coords)
-            slide_tgt_tiles_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
+            slide_tgt_tiles_2_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
             print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
                                                                       'iso' if pct_tgt_lbl < iso_thd else 'gath'))
             
-    return slide_tgt_tiles_dict
+    return slide_tgt_tiles_2_dict
+
+def assign_label(value, boundaries=[0.05, 0.1, 0.15, 0.2, 0.5, 1.0]):
+    label = bisect.bisect(boundaries, min(value, 1))
+    return label
+
+def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, iso_thd, radius,
+                             boundaries=[0.05, 0.1, 0.15, 0.2, 0.5, 1.0]):
+    '''
+    split a specific cluster into several more small clusters
+    check surrounding +/- 2, 5*5-1 24 neighbours
+    
+    Args:
+        clustering_res_pkg:
+        tgt_lbl: the cluster label (from 0) need to be refined
+    '''
+    
+    tileid_label_dict = make_tileid_label_dict(clustering_res_pkg)
+    slide_tgt_tiles_n_dict = {}
+    for clst_res_tuple in clustering_res_pkg:
+        res_lbl, _, tile, slide_id = clst_res_tuple
+        if slide_id not in slide_tgt_tiles_n_dict.keys():
+            slide_tgt_tiles_n_dict[slide_id] = []
+        
+        if res_lbl == tgt_lbl:
+            neig_labels, coords = check_neig_clst_labels(slide_id, tile, tileid_label_dict, radius)
+            nb_tgt_lbl = neig_labels.count(tgt_lbl)
+            pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(coords)
+            slide_tgt_tiles_n_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 
+                                                   assign_label(pct_tgt_lbl, boundaries), tile))
+            print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
+                                                                      'iso' if pct_tgt_lbl < iso_thd else 'gath'))
+            
+    return slide_tgt_tiles_n_dict
 
     
 ''' ------------------ use kmeans ------------------- '''
