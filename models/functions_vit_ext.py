@@ -183,7 +183,7 @@ def encode_region_ctx_prior(region_ctx_nd, tile_en_nd, vit_region, comb_layer,
 
 def extra_reg_assoc_key_tile(attn_ctx, radius):
     '''
-    TODO (for feature): set a dimensionality reduction via PCA to reduce the ass_featrue dim
+    TODO (for future): set a dimensionality reduction via PCA to reduce the ass_featrue dim
     '''
     # attn_ctx: (batch, layers, heads, patch, patch)
     attn_ctx = attn_ctx.detach().cpu().numpy()
@@ -320,6 +320,8 @@ def ext_cls_patch_att_maps(l_attns_nd):
         cls_atts_nd = einops.rearrange(cls_atts_nd, 't (r c) -> t r c', r=nb_row)
         
     return cls_atts_nd
+
+''' ----------- visualization accessing for regional context (around key tiles) ----------- '''
 
 
 ''' --------------------- graph extraction functions ---------------------- '''
