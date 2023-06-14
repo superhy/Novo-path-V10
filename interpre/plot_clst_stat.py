@@ -291,6 +291,34 @@ def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_lab
                                         columns=['groups', 'prop_of_group', 'lobular_label'])
     
     return df_alllob_prop_elemts
+
+def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobular_label_fname, clst_lbl):
+    '''
+    generate the dataFrame, list the proportion of values with different levels
+    '''
+    ''' loading/processing data '''
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    
+    all_prop_tuples = []
+    for slide_id in slide_levels_nb_dict.keys():
+        levels_nb_dict, levels_pop_dict = slide_levels_nb_dict[slide_id]
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
+            continue
+        
+        if lobular_label_dict[case_id] == 0:
+            lob_label_str = 'non-lobular-inf cases'
+        else:
+            lob_label_str = 'lobular-inf cases'
+        # add different levels of iso tile element
+        for level in range(len(bounds)):
+            b_s, b_e = bounds[level - 1], bounds[level] if level >= 1 else 0.0, bounds[level]
+            all_prop_tuples.append(['iso-(%.2f - %.2f) in c-%d' % (b_s, b_e, clst_lbl), levels_pop_dict[level], lob_label_str])
+        
+    df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
+                                         columns=['levels', 'prop_of_level', 'lobular_label'])
+    
+    return df_alllob_prop_elemts
         
     
 def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label_fname, clst_lbl):
@@ -337,7 +365,7 @@ def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
     
 def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
     '''
-    plot with dateFrame, bar with average proportion 
+    plot with dateFrame, box with average proportion 
     '''
     palette_dict = {'lobular-inf cases': 'blue', 
                     'non-lobular-inf cases': 'springgreen'}
@@ -376,6 +404,24 @@ def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
                              'ref-group(c-{})_dist-lobular_{}(multi-thd)-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
 
+def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
+    '''
+    plot with dateFrame, box with average proportion for levels
+    '''
+    palette_dict = {'lobular-inf cases': 'blue', 
+                    'non-lobular-inf cases': 'springgreen'}
+    
+    fig = plt.figure(figsize=(3.5, 5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1 = sns.boxplot(x='levels', y='prop_of_level', palette=palette_dict,
+                       data=df_alllob_prop_elemts, hue='lobular_label')
+    ax_1.set_title('proportion of diff-level tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
+    
+    plt.tight_layout()
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-level(c-{})_dist-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):
     '''

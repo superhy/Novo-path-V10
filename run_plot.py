@@ -8,11 +8,12 @@ from interpre.plot_clst_stat import plot_lobular_clsts_avg_dist, \
     plot_clsts_avg_dist_in_HV, plot_flex_clsts_avg_dist, \
     df_lobular_prop_group_dist, df_plot_lobular_prop_group_bar, \
     dfs_plot_lobular_prop_group_bar, df_lobular_prop_group_elements, \
-    df_plot_lobular_prop_group_box, dfs_plot_lobular_prop_group_box
+    df_plot_lobular_prop_group_box, dfs_plot_lobular_prop_group_box, \
+    df_lobular_prop_level_elements, df_plot_lobular_prop_level_box
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
-    plot_slides_spatmap_4_sp_clst, plot_slides_spatmap_4_iso_group, \
+    plot_demo_spatmap_4_sp_clst, plot_demo_spatmap_4_iso_group, \
     _run_plot_slides_iso_spatmap
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
@@ -20,7 +21,8 @@ from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map
 from interpre.prep_clst_vis import top_pct_slides_4_sp_clst, \
-    cnt_prop_slides_ref_homo_sp_clst, top_pop_slides_4_ref_group
+    cnt_prop_slides_ref_homo_sp_clst, top_pop_slides_4_ref_group, \
+    cnt_prop_slides_ref_levels_sp_clst
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_STEA
@@ -79,7 +81,7 @@ if __name__ == '__main__':
         top_slides_ids, lowest_slides_ids = top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname,
                                                                      sp_clst, nb_top)
         # plot top and lowest tissue percentage slides for specific cluster
-        plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
+        plot_demo_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                       top_slides_ids, lowest_slides_ids)
     if 24 in task_ids:
         clst_iso_spatmap_pkl_name = 'clst-s-iso_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
@@ -94,7 +96,7 @@ if __name__ == '__main__':
         slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst=sp_clst)
         top_iso_slides_ids, lowest_iso_slides_ids, _, _ = top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict,
                                                                                     lobular_label_fname, nb_top)
-        plot_slides_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
+        plot_demo_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                         top_iso_slides_ids, lowest_iso_slides_ids)
     if 29.1 in task_ids:
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6
@@ -127,7 +129,7 @@ if __name__ == '__main__':
         clst_lbl=5
         radius=3
         slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
-                                                                  sp_clst=5, iso_thd=0.25, radius=radius)
+                                                                  sp_clst=clst_lbl, iso_thd=0.25, radius=radius)
         if plot_type == 'bar':
             df_alllob_prop_group = df_lobular_prop_group_dist(ENV_task, slide_iso_gath_nb_dict,
                                                               lobular_label_fname, clst_lbl)
@@ -151,7 +153,7 @@ if __name__ == '__main__':
             df_alllob_prop_group_list = []
             for i, th in enumerate(iso_th_list):
                 slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
-                                                                          sp_clst=5, iso_thd=th, radius=radius)
+                                                                          sp_clst=clst_lbl, iso_thd=th, radius=radius)
                 df_alllob_prop_group = df_lobular_prop_group_dist(ENV_task, slide_iso_gath_nb_dict,
                                                                 lobular_label_fname, clst_lbl)
                 df_alllob_prop_group_list.append(df_alllob_prop_group)
@@ -167,6 +169,17 @@ if __name__ == '__main__':
                 df_alllob_prop_elemts_list.append(df_alllob_prop_elemts)
             dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
                                             lobular_label_fname, clst_lbl, iso_th_list)
+    if 29.6 in task_ids:
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
+        
+        clst_lbl=5
+        radius=3
+        slide_levels_nb_dict, bounds = cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name,
+                                                                          sp_clst=clst_lbl, radius=radius)
+        df_alllob_prop_elemts = df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, 
+                                                               lobular_label_fname, clst_lbl)
+        df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl)
     
     
     if 61 in task_ids:

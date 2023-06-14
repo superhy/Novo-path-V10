@@ -14,7 +14,9 @@ from vit_pytorch.vit import ViT
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from models.functions import optimizer_adam_basic
+from models.functions_clustering import assign_label
 from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
 from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats, \
     filter_node_pos_t_adjmat, node_pos_t_adjmat
@@ -24,6 +26,8 @@ import networkx as nx
 import networkx as nx
 import numpy as np
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from support.tools import normalization
 from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
     apply_image_filters_cd45
@@ -257,9 +261,6 @@ def _test_vit_reuse():
     print(output_2.shape)
     
 
-import seaborn as sns
-import pandas as pd
-import matplotlib.pyplot as plt
 
 def _test_plot_box():
     queue = [("group1", 0.5, "label1"), 
@@ -287,6 +288,11 @@ def _test_plot_box():
     
     plt.title("Boxplot of Percentages by Group and Label")
     plt.show()
+    
+def _test_assign_label():
+    values = [0.01, 0.4, 0.2, 0.76, 0.39, 0.18]
+    for v in values:
+        print(assign_label(v))
 
     
 if __name__ == '__main__':
@@ -302,7 +308,8 @@ if __name__ == '__main__':
     
     # _test_vit_reuse()
     
-    _test_plot_box()
+    # _test_plot_box()
+    _test_assign_label()
 
 
 

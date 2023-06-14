@@ -15,7 +15,7 @@ from interpre.prep_tools import safe_random_sample, tSNE_transform, \
     store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
 from models.functions_clustering import load_clustering_pkg_from_pkl, \
-    refine_sp_cluster_homoneig
+    refine_sp_cluster_homoneig, refine_sp_cluster_levels
 import numpy as np
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
@@ -456,6 +456,37 @@ def cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso
                                                                     nb_iso, nb_gath, sp_clst))
         
     return slide_iso_gath_nb_dict
+
+def cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name, sp_clst, radius=5):
+    '''
+    count the population (nb_iso / (nb_iso + nb_gath) ) of refined clusters (into n groups by proportion of homo-neighbours)
+    for each slide
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    slide_tgt_tiles_n_dict, bounds = refine_sp_cluster_levels(clustering_res_pkg, sp_clst, radius)
+    
+    slide_levels_nb_dict = {}
+    for slide_id in slide_tgt_tiles_n_dict.keys():
+        ref_tiles_tuples = slide_tgt_tiles_n_dict[slide_id]
+        
+        levels_nb_dict = {}
+        for tile_tuple in ref_tiles_tuples:
+            if tile_tuple[2] not in levels_nb_dict.keys():
+                levels_nb_dict[tile_tuple[2]] = 1
+            else:
+                levels_nb_dict[tile_tuple[2]] += 1
+        
+        levels_pop_dict = {}
+        for level in range(len(bounds)):
+            levels_pop_dict[level] = levels_nb_dict[level] * 1.0 / ref_tiles_tuples
+        
+        slide_levels_nb_dict[slide_id] = (levels_nb_dict, levels_pop_dict)
+        print('slide %s has levels: %s for cluster %d' % (slide_id, str(levels_nb_dict), sp_clst))
+        
+    return slide_levels_nb_dict, bounds
+
 
 def top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, nb_top):
     '''

@@ -563,7 +563,7 @@ def assign_label(value, boundaries=[0.05, 0.1, 0.15, 0.2, 0.5, 1.0]):
     label = bisect.bisect(boundaries, min(value, 1))
     return label
 
-def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, iso_thd, radius,
+def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, radius,
                              boundaries=[0.05, 0.1, 0.15, 0.2, 0.5, 1.0]):
     '''
     split a specific cluster into several more small clusters
@@ -585,12 +585,11 @@ def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, iso_thd, radius,
             neig_labels, coords = check_neig_clst_labels(slide_id, tile, tileid_label_dict, radius)
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
             pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(coords)
-            slide_tgt_tiles_n_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 
-                                                   assign_label(pct_tgt_lbl, boundaries), tile))
-            print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
-                                                                      'iso' if pct_tgt_lbl < iso_thd else 'gath'))
+            level_lbl = assign_label(pct_tgt_lbl, boundaries)
+            slide_tgt_tiles_n_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, level_lbl, tile) )
+            print('find tile in slide: {}, with level '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl, level_lbl))
             
-    return slide_tgt_tiles_n_dict
+    return slide_tgt_tiles_n_dict, boundaries
 
     
 ''' ------------------ use kmeans ------------------- '''

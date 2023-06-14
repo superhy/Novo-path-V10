@@ -155,7 +155,7 @@ def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
             print('draw cluster {}\'s spatial map in: {}'.format(str(label), 
                                                                  os.path.join(clst_s_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % label) ) ))
             
-def plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
+def plot_slides_iso_gath_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
     '''
     plot the spatial map for iso group in sp_clst
     '''
@@ -180,7 +180,7 @@ def plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
                                                                                              '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
     
             
-def plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
+def plot_demo_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                   top_slides_ids, lowest_slides_ids):
     '''
     Args:
@@ -227,7 +227,7 @@ def plot_slides_spatmap_4_sp_clst(ENV_task, clst_s_spatmap_pkl_name, sp_clst, lo
         print('draw cluster {}\'s spatial map in: {}'.format(str(sp_clst), 
                                                                  os.path.join(lowest_sp_spatmap_dir, '{}-{}.png'.format(slide_id, 'c%d_spat' % sp_clst) ) ))
         
-def plot_slides_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
+def plot_demo_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                     top_iso_slides_ids, lowest_iso_slides_ids):
     '''
     plot the spatial maps for slides with top/lowest number of iso group of sp_clst
@@ -302,7 +302,7 @@ def _run_plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name)
     
 def _run_plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst):
-    plot_slides_iso_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst)
+    plot_slides_iso_gath_spatmap(ENV_task, clst_iso_spatmap_pkl_name, sp_clst)
 
 if __name__ == '__main__':
     pass
