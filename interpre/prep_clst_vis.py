@@ -547,7 +547,7 @@ def cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name, sp_clst, r
         
         levels_pop_dict = {}
         for level in range(len(bounds)):
-            levels_pop_dict[level] = levels_nb_dict[level] * 1.0 / ref_tiles_tuples
+            levels_pop_dict[level] = levels_nb_dict[level] * 1.0 / len(ref_tiles_tuples)
         
         slide_levels_nb_dict[slide_id] = (levels_nb_dict, levels_pop_dict)
         print('slide %s has levels: %s for cluster %d' % (slide_id, str(levels_nb_dict), sp_clst))
