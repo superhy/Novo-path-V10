@@ -406,7 +406,7 @@ def norm_sk_exted_maps(maps_nd, in_pattern, amplify=1, mode='max'):
     
     if in_pattern == 't v':
         (t, v) = maps_nd.shape
-        norm_nd = normalization_sk(maps_nd*amplify, mode)
+        norm_nd = normalization_sk(maps_nd * amplify, mode)
     else:
         (t, q, k) = maps_nd.shape
         maps_nd = einops.rearrange(maps_nd, 't q k -> t (q k)')

@@ -9,7 +9,6 @@ from PIL import Image
 import PIL
 import cmapy
 import cv2
-from scipy.stats._continuous_distns import dweibull
 
 from interpre.prep_tools import safe_random_sample, tSNE_transform, \
     store_nd_dict_pkl, load_vis_pkg_from_pkl
