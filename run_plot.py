@@ -14,7 +14,7 @@ from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
     plot_demo_spatmap_4_sp_clst, plot_demo_spatmap_4_iso_group, \
-    _run_plot_slides_iso_spatmap
+    _run_plot_slides_iso_spatmap, _run_plot_slides_levels_spatmap
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.5]
+    task_ids = [29.6]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 
@@ -98,6 +98,10 @@ if __name__ == '__main__':
                                                                                     lobular_label_fname, nb_top)
         plot_demo_spatmap_4_iso_group(ENV_task, clst_iso_spatmap_pkl_name, sp_clst, lobular_label_fname,
                                         top_iso_slides_ids, lowest_iso_slides_ids)
+    if 25 in task_ids:
+        clst_levels_spatmap_pkl_name = 'clst-s-lv_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        sp_clst=5
+        _run_plot_slides_levels_spatmap(ENV_task, clst_levels_spatmap_pkl_name, sp_clst)
     if 29.1 in task_ids:
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10

@@ -273,6 +273,51 @@ def gen_single_slide_iso_gath_spatial(ENV_task, slide_tgt_tiles_dict, slide_id):
     
     print('generate iso-group\'s spatial map for slide: {}'.format(slide_id))
     return heat_s_iso_col
+
+def gen_single_slide_level_spatial(ENV_task, slide_tgt_tiles_n_dict, bounds, slide_id):
+    '''
+    generate the iso-group spatial map for specific cluster on a single slide
+    
+    Return:
+        
+    '''
+    def apply_mask(heat, white_mask):
+        new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
+        new_heat = np.uint8(np.minimum(new_heat, 255))
+        return new_heat
+    
+    # (nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile)
+    tgt_tile_tuples = slide_tgt_tiles_n_dict[slide_id]
+    
+    slide_np, _ = tgt_tile_tuples[0][3].get_np_scaled_slide()
+    H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
+    W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
+    heat_s_levels = np.ones((H, W, 3), dtype=np.float64)
+    white_mask = np.ones((H, W, 3), dtype=np.float64)
+    
+    color_dict = {}
+    for i, b in enumerate(bounds):
+        if i == 0:
+            color_dict[i] = 1.0 - b * 1.0 / 2
+        else:
+            color_dict[i] = 1.0 - ((b - bounds[i-1]) * 1.0 / 2 + bounds[i-1])
+    
+    for _, _, level_label, tile in tgt_tile_tuples:
+        h, w = tile.h_id - 1, tile.w_id - 1
+        if h >= H or w >= W or h < 0 or w < 0:
+            warnings.warn('Out of range coordinates.')
+            continue
+        heat_s_levels[h, w] = color_dict[level_label]
+        white_mask[h, w] = 0.0
+        
+    c_panel = cmapy.cmap('bwr')
+    heat_s_levels = image_tools.np_to_pil(heat_s_levels).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    heat_s_levels_col = cv2.applyColorMap(np.uint8(heat_s_levels), c_panel)
+    heat_s_levels_col = apply_mask(heat_s_levels_col, white_mask)
+    
+    print('generate iso-group\'s spatial map for slide: {}'.format(slide_id))
+    return heat_s_levels_col
             
 
 def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
@@ -372,6 +417,29 @@ def make_spatial_iso_gath_on_slides(ENV_task, clustering_pkl_name, sp_clst, iso_
                                                             'clst-s-iso' if sp_clst != None else 'clst-{}-iso'.format(str(sp_clst)))
     store_nd_dict_pkl(heat_store_dir, slide_iso_s_spatmap_dict, clst_iso_spatmap_pkl_name)
     print('Store slides iso_group for sp_clst spatial maps numpy package as: {}'.format(clst_iso_spatmap_pkl_name))
+    
+def make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius):
+    '''
+    make the pkl package with spatial heatmaps of iso group in sp_clst
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    slide_tgt_tiles_dict, bounds = refine_sp_cluster_levels(clustering_res_pkg, sp_clst, radius)
+    
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
+    
+    slide_levels_s_spatmap_dict = {}
+    for slide_id in slide_id_list:
+        heat_s_levels_col = gen_single_slide_level_spatial(ENV_task, slide_tgt_tiles_dict, bounds, slide_id)
+        slide_levels_s_spatmap_dict[slide_id] = heat_s_levels_col
+        
+    clst_levels_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 
+                                                               'clst-s-lv' if sp_clst != None else 'clst-{}-lv'.format(str(sp_clst)))
+    store_nd_dict_pkl(heat_store_dir, slide_levels_s_spatmap_dict, clst_levels_spatmap_pkl_name)
+    print('Store slides levels_group for sp_clst spatial maps numpy package as: {}'.format(clst_levels_spatmap_pkl_name))
 
  
 ''' -------------------------------------------------------------------------------------------- ''' 
@@ -598,6 +666,9 @@ def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_
 
 def _run_make_spatial_iso_gath_on_slides(ENV_task, clustering_pkl_name, sp_clst=None, iso_thd=0.1, radius=5):
     make_spatial_iso_gath_on_slides(ENV_task, clustering_pkl_name, sp_clst, iso_thd, radius)
+    
+def _run_make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius):
+    make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius)
 
 def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
