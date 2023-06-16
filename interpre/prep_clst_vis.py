@@ -539,11 +539,10 @@ def cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name, sp_clst, r
         ref_tiles_tuples = slide_tgt_tiles_n_dict[slide_id]
         
         levels_nb_dict = {}
+        for level in range(len(bounds)):
+            levels_nb_dict[level] = 0
         for tile_tuple in ref_tiles_tuples:
-            if tile_tuple[2] not in levels_nb_dict.keys():
-                levels_nb_dict[tile_tuple[2]] = 1
-            else:
-                levels_nb_dict[tile_tuple[2]] += 1
+            levels_nb_dict[tile_tuple[2]] += 1
         
         levels_pop_dict = {}
         for level in range(len(bounds)):
