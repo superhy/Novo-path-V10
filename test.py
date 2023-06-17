@@ -290,7 +290,7 @@ def _test_plot_box():
     plt.show()
     
 def _test_assign_label():
-    values = [0.02, 0.07, 0.12, 0.16, 0.39, 0.78]
+    values = [0.02, 0.07, 0.12, 0.16, 0.39, 0.78, 1.0]
     for v in values:
         print(assign_label(v))
 

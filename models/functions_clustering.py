@@ -560,7 +560,7 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd, radius):
     return slide_tgt_tiles_2_dict
 
 def assign_label(value, boundaries=[0.1, 0.2, 0.5, 1.0]):
-    label = bisect.bisect(boundaries, min(value, 1))
+    label = bisect.bisect(boundaries, min(value, 1 - 1e-5))
     return label
 
 def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, radius,
