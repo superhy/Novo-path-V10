@@ -312,7 +312,7 @@ def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobul
             lob_label_str = 'lobular-inf cases'
         # add different levels of iso tile element
         for level in range(len(bounds)):
-            b_s, b_e = bounds[level - 1], bounds[level] if level >= 1 else 0.0, bounds[level]
+            (b_s, b_e) = (bounds[level - 1], bounds[level]) if level >= 1 else (0.0, bounds[level])
             all_prop_tuples.append(['iso-(%.2f - %.2f) in c-%d' % (b_s, b_e, clst_lbl), levels_pop_dict[level], lob_label_str])
         
     df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
