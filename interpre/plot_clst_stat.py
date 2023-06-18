@@ -411,7 +411,7 @@ def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     palette_dict = {'lobular-inf cases': 'blue', 
                     'non-lobular-inf cases': 'springgreen'}
     
-    fig = plt.figure(figsize=(3.5, 5))
+    fig = plt.figure(figsize=(3.5 * 5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1 = sns.boxplot(x='levels', y='prop_of_level', palette=palette_dict,
                        data=df_alllob_prop_elemts, hue='lobular_label')
