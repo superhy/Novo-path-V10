@@ -265,7 +265,7 @@ def df_lobular_prop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_f
     
     return df_alllob_prop_group
 
-def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
+def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl, nb_or_prop=0):
     '''
     generate the dataFrame, list the values with different labels
     '''
@@ -275,6 +275,9 @@ def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_lab
     all_prop_tuples = []
     for slide_id in slide_iso_gath_nb_dict.keys():
         nb_iso, nb_gath, pop_iso, pop_gath = slide_iso_gath_nb_dict[slide_id]
+        
+        if nb_iso > 500 or nb_gath > 500:
+            continue
         case_id = parse_caseid_from_slideid(slide_id)
         if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
             continue
@@ -284,15 +287,15 @@ def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_lab
         else:
             lob_label_str = 'lobular-inf cases'
         # add iso tile element and gath tile element
-        all_prop_tuples.append(['iso tiles in c-%d' % clst_lbl, pop_iso, lob_label_str])
-        all_prop_tuples.append(['gath tiles in c-%d' % clst_lbl, pop_gath, lob_label_str])
+        all_prop_tuples.append(['iso tiles in c-%d' % clst_lbl, pop_iso if nb_or_prop == 1 else nb_iso, lob_label_str])
+        all_prop_tuples.append(['gath tiles in c-%d' % clst_lbl, pop_gath if nb_or_prop == 1 else nb_gath, lob_label_str])
         
     df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
                                         columns=['groups', 'prop_of_group', 'lobular_label'])
     
     return df_alllob_prop_elemts
 
-def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobular_label_fname, clst_lbl):
+def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobular_label_fname, clst_lbl, nb_or_prop=0):
     '''
     generate the dataFrame, list the proportion of values with different levels
     '''
@@ -302,6 +305,14 @@ def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobul
     all_prop_tuples = []
     for slide_id in slide_levels_nb_dict.keys():
         levels_nb_dict, levels_pop_dict = slide_levels_nb_dict[slide_id]
+        
+        flag_out_dist = False
+        for level in range(len(bounds)):
+            level_nb = levels_nb_dict[level]
+            if level_nb > 500:
+                flag_out_dist = True
+        if flag_out_dist == True:
+            continue
         case_id = parse_caseid_from_slideid(slide_id)
         if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
             continue
@@ -313,7 +324,8 @@ def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobul
         # add different levels of iso tile element
         for level in range(len(bounds)):
             (b_s, b_e) = (bounds[level - 1], bounds[level]) if level >= 1 else (0.0, bounds[level])
-            all_prop_tuples.append(['iso-(%.2f - %.2f) in c-%d' % (b_s, b_e, clst_lbl), levels_pop_dict[level], lob_label_str])
+            levels_value = levels_pop_dict[level] if nb_or_prop == 1 else levels_nb_dict[level]
+            all_prop_tuples.append(['iso-(%.2f - %.2f) in c-%d' % (b_s, b_e, clst_lbl), levels_value, lob_label_str])
         
     df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
                                          columns=['levels', 'prop_of_level', 'lobular_label'])
@@ -411,7 +423,7 @@ def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     palette_dict = {'lobular-inf cases': 'blue', 
                     'non-lobular-inf cases': 'springgreen'}
     
-    fig = plt.figure(figsize=(3.5 * 5, 5))
+    fig = plt.figure(figsize=(3.5 * 3, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1 = sns.boxplot(x='levels', y='prop_of_level', palette=palette_dict,
                        data=df_alllob_prop_elemts, hue='lobular_label')
