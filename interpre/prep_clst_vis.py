@@ -3,6 +3,8 @@ Created on 17 Nov 2022
 
 @author: Yang Hu
 '''
+import csv
+import os
 import warnings
 
 from PIL import Image
@@ -80,6 +82,38 @@ def load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name):
             slide_tile_clst_dict[slide_id].append((tile, label))
     
     return slide_tile_clst_dict
+
+def load_ref_group_slide_tile_sp_clst(model_store_dir, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
+    '''
+    Return:
+        {slide_id: [(tile, group_label)]}
+    '''
+    slide_id_list = []
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        _, _, _, slide_id = clst_res_tuple
+        slide_id_list.append(slide_id)
+    
+    slide_tgt_tiles_dict = refine_sp_cluster_homoneig(clustering_res_pkg, sp_clst, iso_thd, radius)
+    
+    slide_tile_ref_gp_dict = {}
+    for slide_id in slide_id_list:
+        if slide_id not in slide_tgt_tiles_dict.keys():
+            continue
+        ref_tiles_tuples = slide_tgt_tiles_dict[slide_id]
+        slide_tile_ref_gp_dict[slide_id] = []
+        for tile_tuple in ref_tiles_tuples:
+            slide_tile_ref_gp_dict[slide_id].append((tile_tuple[3], tile_tuple[2]))
+            
+    slide_tis_nb_dict = {}
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        _, _, _, slide_id = clst_res_tuple
+        if slide_id not in slide_tis_nb_dict.keys():
+            slide_tis_nb_dict[slide_id] = 1
+        else:
+            slide_tis_nb_dict[slide_id] += 1
+    
+    return slide_tile_ref_gp_dict, slide_tis_nb_dict
 
 def load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name):
     '''
@@ -553,6 +587,44 @@ def cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name, sp_clst, r
         
     return slide_levels_nb_dict, bounds
 
+def cnt_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    # slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    #
+    
+    slide_tile_ref_gp_dict, slide_tis_nb_dict = load_ref_group_slide_tile_sp_clst(model_store_dir, clustering_pkl_name,
+                                                               sp_clst, iso_thd, radius)
+    
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    slide_tis_pct_dict = {}
+    for slide_id in slide_id_list:
+        if slide_id not in slide_tile_ref_gp_dict.keys():
+            continue
+        tile_ref_gp_tuples = slide_tile_ref_gp_dict[slide_id]
+        tissue_pct_dict = tissue_pct_clst_single_slide(tile_ref_gp_tuples, 2, slide_tis_nb_dict[slide_id])
+        slide_tis_pct_dict[slide_id] = tissue_pct_dict
+        
+    tis_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-gp-tis-pct')
+    store_nd_dict_pkl(heat_store_dir, slide_tis_pct_dict, tis_pct_pkl_name)
+    print('Store clusters tissue percentage for clst-ref-group as: {}'.format(tis_pct_pkl_name))
+    
+    tis_pct_csv_name = tis_pct_pkl_name.replace('.pkl', '.csv')
+    with open(os.path.join(heat_store_dir, tis_pct_csv_name), 'w', newline='') as csvfile:
+        fieldnames = ['slide_id', 'iso_tiles', 'gath_tiles']  
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for slide_id in slide_id_list:
+            tissue_pct_dict = slide_tis_pct_dict[slide_id]
+            writer.writerow({
+                'slide_id': slide_id,
+                'iso_tiles': tissue_pct_dict.get(0),
+                'gath_tiles': tissue_pct_dict.get(1)
+            })
+    print('Write clusters tissue percentage csv for clst-ref-group in: {}'.format(tis_pct_csv_name))
+
 
 def top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, nb_top):
     '''
@@ -601,11 +673,16 @@ def top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_f
         
     
 ''' --------- tissue percentage --------- '''
-def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst):
+def tissue_pct_clst_single_slide(slide_tile_clst_tuples, nb_clst, nb_tis_this_slide=None):
     '''
     '''
     # initial
-    tissue_pct_dict, nb_tissue = {}, len(slide_tile_clst_tuples)
+    tissue_pct_dict = {}
+    if nb_tis_this_slide == None:
+        nb_tissue = len(slide_tile_clst_tuples)
+    else:
+        nb_tissue = nb_tis_this_slide
+        
     for id in range(nb_clst):
         tissue_pct_dict[id] = .0
         
@@ -670,6 +747,9 @@ def _run_make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, r
 
 def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
+    
+def _run_count_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.1, radius=5):
+    cnt_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd, radius)
 
 
 if __name__ == '__main__':
