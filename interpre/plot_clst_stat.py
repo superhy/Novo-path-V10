@@ -291,7 +291,7 @@ def df_lobular_prop_group_elements(ENV_task, slide_iso_gath_nb_dict, lobular_lab
         all_prop_tuples.append(['gath tiles in c-%d' % clst_lbl, pop_gath if nb_or_prop == 1 else nb_gath, lob_label_str])
         
     df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
-                                        columns=['groups', 'prop_of_group', 'lobular_label'])
+                                        columns=['groups', 'nb/prop_group', 'lobular_label'])
     
     return df_alllob_prop_elemts
 
@@ -328,9 +328,49 @@ def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobul
             all_prop_tuples.append(['iso-(%.2f - %.2f) in c-%d' % (b_s, b_e, clst_lbl), levels_value, lob_label_str])
         
     df_alllob_prop_elemts = pd.DataFrame(all_prop_tuples,
-                                         columns=['levels', 'prop_of_level', 'lobular_label'])
+                                         columns=['levels', 'nb/prop_level', 'lobular_label'])
     
     return df_alllob_prop_elemts
+
+def df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, slide_iso_gath_nb_dict, lobular_label_fname):
+    '''
+    generate the dataFrame, for tissue percentage, list the values with different labels
+    '''
+    ''' loading/processing data '''
+    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
+    xlsx_path_15X = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
+    slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_15X, ENV_task.STAIN_TYPE)
+    
+    all_tis_pct_tuples = []
+    for slide_id in slide_iso_gath_nb_dict.keys():
+        nb_iso, nb_gath, pop_iso, pop_gath = slide_iso_gath_nb_dict[slide_id]
+        
+        if nb_iso > 500 or nb_gath > 500:
+            continue
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
+            continue
+        
+        if lobular_label_dict[case_id] == 0:
+            lob_label_str = 'non-lobular-inf cases'
+        else:
+            lob_label_str = 'lobular-inf cases'
+        slide_org_id = slide_id.split('_')[1].split('-')[0]
+        subject_id = slideid_subid_dict[slide_org_id]
+        if type(subject_id) != int and subject_id.startswith('HV'):
+            lob_label_str = 'healthy volunteers'
+            
+        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+            
+        # add iso tile element and gath tile element
+        all_tis_pct_tuples.append(['iso tiles', tissue_pct_dict, lob_label_str])
+        all_tis_pct_tuples.append(['gath tiles', tissue_pct_dict, lob_label_str])
+    
+    df_alllob_tis_pct_elemts = pd.DataFrame(all_tis_pct_tuples,
+                                            columns=['groups', 'tissue_percentage', 'lobular_label'])
+    
+    return df_alllob_tis_pct_elemts
         
     
 def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label_fname, clst_lbl):
@@ -384,7 +424,7 @@ def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     
     fig = plt.figure(figsize=(3.5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.boxplot(x='groups', y='prop_of_group', palette=palette_dict,
+    ax_1 = sns.boxplot(x='groups', y='nb/prop_group', palette=palette_dict,
                        data=df_alllob_prop_elemts, hue='lobular_label')
     ax_1.set_title('iso tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
@@ -406,7 +446,7 @@ def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
     
     for i, df_alllob_prop_elemts in enumerate(df_alllob_prop_elemts_list):
         ax_th = fig.add_subplot(2, int((len(df_alllob_prop_elemts_list) + 1) / 2), i + 1)
-        ax_th = sns.boxplot(x='groups', y='prop_of_group', palette=palette_dict,
+        ax_th = sns.boxplot(x='groups', y='nb/prop_group', palette=palette_dict,
                             data=df_alllob_prop_elemts, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
         
@@ -425,7 +465,7 @@ def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     
     fig = plt.figure(figsize=(3.5 * 3, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
-    ax_1 = sns.boxplot(x='levels', y='prop_of_level', palette=palette_dict,
+    ax_1 = sns.boxplot(x='levels', y='nb/prop_level', palette=palette_dict,
                        data=df_alllob_prop_elemts, hue='lobular_label')
     ax_1.set_title('proportion of diff-level tiles in lob/non-lob slides ((c-%d))' % clst_lbl)
     
@@ -433,6 +473,49 @@ def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_labe
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-level(c-{})_dist-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    
+def df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl):
+    '''
+    plot with dateFrame, for tissue percentage in each slide
+    '''
+    palette_dict = {'lobular-inf cases': 'red', 
+                    'non-lobular-inf cases': 'blue',
+                    'healthy volunteers': 'gray'}
+    
+    fig = plt.figure(figsize=(3.5, 5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1 = sns.boxplot(x='groups', y='tissue_percentage', palette=palette_dict,
+                       data=df_alllob_tis_pct_elemts, hue='lobular_label')
+    ax_1.set_title('tis-pct in lob/non-lob slides ((c-%d))' % clst_lbl)
+    
+    plt.tight_layout()
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_tp-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    
+def dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
+                                 lobular_label_fname, clst_lbl, iso_th_list):
+    '''
+    plot with a list of dataFrames, bar with average proportion
+    '''
+    palette_dict = {'lobular-inf cases': 'red', 
+                    'non-lobular-inf cases': 'blue',
+                    'healthy volunteers': 'gray'}
+    
+    fig = plt.figure(figsize=(3.5 * 5, 5 * (len(df_alllob_tis_pct_elemts_list) / 5)))
+    
+    for i, df_alllob_prop_elemts in enumerate(df_alllob_tis_pct_elemts_list):
+        ax_th = fig.add_subplot(2, int((len(df_alllob_tis_pct_elemts_list) + 1) / 2), i + 1)
+        ax_th = sns.boxplot(x='groups', y='tissue_percentage', palette=palette_dict,
+                            data=df_alllob_prop_elemts, hue='lobular_label')
+        ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
+        
+    plt.tight_layout()
+    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'ref-group(c-{})_tp-lobular_{}(multi-thd)-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):

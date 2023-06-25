@@ -599,6 +599,7 @@ def cnt_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, 
                                                                sp_clst, iso_thd, radius)
     
     slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    slide_id_list.sort() # sort by string of slide_id
     slide_tis_pct_dict = {}
     for slide_id in slide_id_list:
         if slide_id not in slide_tile_ref_gp_dict.keys():
