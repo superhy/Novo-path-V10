@@ -120,6 +120,16 @@ def parse_caseid_from_slideid(slide_id):
         case_id = slide_id
         
     return case_id
+
+def parse_23910_clinicalid_from_slideid(slide_id):
+    '''
+    get the clinical_id from slide_id, only for 23910 files
+    '''
+    id_part = slide_id.split('_')[1]
+    clinical_id_part = id_part.split('-')[1]
+    
+    clinical_id = clinical_id_part[1:]
+    return clinical_id
     
 
 def move_stain_slides_dir_2_dir(slideid_subid_dict, stain_type,

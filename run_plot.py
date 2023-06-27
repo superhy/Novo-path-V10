@@ -43,7 +43,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [29.5, 29.6]
+    task_ids = [30, 30.1]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
 

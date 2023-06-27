@@ -33,7 +33,7 @@ def parse_flinc_clinical_elsx(xlsx_filepath, aim_columns=['steatosis_score', 'lo
     sheet = wb['clinical_data']
     
     table_heads_dict = {}
-    nb_column = sheet. max_column
+    nb_column = sheet.max_column
     for col_id in range(nb_column):
         table_heads_dict[sheet.cell(row=1, column=col_id + 1).value] = col_id
     print('<Get table heads and their column id>: \n', table_heads_dict.items() )

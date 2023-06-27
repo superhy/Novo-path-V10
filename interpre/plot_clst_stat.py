@@ -364,8 +364,8 @@ def df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, slide_iso_gath_nb_di
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
             
         # add iso tile element and gath tile element
-        all_tis_pct_tuples.append(['iso tiles', tissue_pct_dict, lob_label_str])
-        all_tis_pct_tuples.append(['gath tiles', tissue_pct_dict, lob_label_str])
+        all_tis_pct_tuples.append(['iso tiles', tissue_pct_dict[0], lob_label_str])
+        all_tis_pct_tuples.append(['gath tiles', tissue_pct_dict[1], lob_label_str])
     
     df_alllob_tis_pct_elemts = pd.DataFrame(all_tis_pct_tuples,
                                             columns=['groups', 'tissue_percentage', 'lobular_label'])
