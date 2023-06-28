@@ -26,6 +26,9 @@ from interpre.prep_clst_vis import top_pct_slides_4_sp_clst, \
     cnt_prop_slides_ref_homo_sp_clst, top_pop_slides_4_ref_group, \
     cnt_prop_slides_ref_levels_sp_clst
 from interpre.prep_tools import load_vis_pkg_from_pkl
+from interpre.statistics import df_cd45_cg_tis_pct_fib_score_corr, \
+    df_plot_cd45_cg_tp_fib_box, df_cd45_cg_tis_pct_3a_score_corr, \
+    df_plot_cd45_cg_tp_3a_scat
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_STEA
@@ -43,9 +46,10 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [30, 30.1]
+    # task_ids = [30.1]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
+    task_ids = [101, 102]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -231,6 +235,21 @@ if __name__ == '__main__':
     if 62 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_x_0.0_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_neb_nx_graphs(ENV_task, adjdict_pkl_name)
+        
+    if 101 in task_ids:
+        tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        
+        slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+        df_tis_pct_fib_elemts = df_cd45_cg_tis_pct_fib_score_corr(ENV_task, slide_tis_pct_dict)
+        df_plot_cd45_cg_tp_fib_box(ENV_task, df_tis_pct_fib_elemts)
+    if 102 in task_ids:
+        tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        
+        slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+        df_tis_pct_alt_elemts, df_tis_pct_ast_elemts, df_tis_pct_alp_elemts = \
+            df_cd45_cg_tis_pct_3a_score_corr(ENV_task, slide_tis_pct_dict)
+        df_plot_cd45_cg_tp_3a_scat(ENV_task, df_tis_pct_alt_elemts, df_tis_pct_ast_elemts, df_tis_pct_alp_elemts)
+        
         
         
         

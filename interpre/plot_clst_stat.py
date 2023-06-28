@@ -81,6 +81,7 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix))))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
 
     
 def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=False):
@@ -126,6 +127,7 @@ def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=Fa
     plt.tight_layout()
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-hv_lobular.png')))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
 
 
 def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
@@ -217,6 +219,7 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              tis_pct_pkl_name.replace('.pkl', '-{}_{}.png'.format(label_name, lbl_suffix))))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
 
     
 def df_lobular_prop_group_dist(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname, clst_lbl):
@@ -392,6 +395,7 @@ def df_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group, lobular_label
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-group(c-{})_dist-lobular_{}-bar.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
 
 def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
                                     lobular_label_fname, clst_lbl, iso_th_list):
@@ -414,6 +418,7 @@ def dfs_plot_lobular_prop_group_bar(ENV_task, df_alllob_prop_group_list,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-group(c-{})_dist-lobular_{}(multi-thd)-bar.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
     
 def df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
     '''
@@ -455,6 +460,7 @@ def dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-group(c-{})_dist-lobular_{}(multi-thd)-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
 
 def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl):
     '''
@@ -494,6 +500,7 @@ def df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_labe
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-group(c-{})_tp-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
     
 def dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
                                  lobular_label_fname, clst_lbl, iso_th_list):
@@ -504,10 +511,11 @@ def dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
                     'non-lobular-inf cases': 'blue',
                     'healthy volunteers': 'gray'}
     
-    fig = plt.figure(figsize=(3.5 * 5, 5 * (len(df_alllob_tis_pct_elemts_list) / 5)))
+    nb_row = int((len(df_alllob_tis_pct_elemts_list) + 1) / 5)
+    fig = plt.figure(figsize=(3.5 * 5, 5 * nb_row))
     
     for i, df_alllob_prop_elemts in enumerate(df_alllob_tis_pct_elemts_list):
-        ax_th = fig.add_subplot(2, int((len(df_alllob_tis_pct_elemts_list) + 1) / 2), i + 1)
+        ax_th = fig.add_subplot(nb_row, 5, i + 1)
         ax_th = sns.boxplot(x='groups', y='tissue_percentage', palette=palette_dict,
                             data=df_alllob_prop_elemts, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
@@ -517,6 +525,7 @@ def dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'ref-group(c-{})_tp-lobular_{}(multi-thd)-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
+    plt.close(fig)
     
 def plot_lobular_sp_clst_pct_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname):
     '''
