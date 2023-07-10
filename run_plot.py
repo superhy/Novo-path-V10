@@ -46,10 +46,10 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    # task_ids = [30.1]
+    task_ids = [30.1]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
-    task_ids = [101, 102]
+    # task_ids = [101, 102]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -222,7 +222,7 @@ if __name__ == '__main__':
         for i, th in enumerate(iso_th_list):
             slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
             slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
-                                                                      sp_clst=clst_lbl, iso_thd=0.25, radius=radius)
+                                                                      sp_clst=clst_lbl, iso_thd=th, radius=radius)
             df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, 
                                                                  slide_iso_gath_nb_dict, lobular_label_fname)
             df_alllob_tis_pct_list.append(df_alllob_tis_pct_elemts)
