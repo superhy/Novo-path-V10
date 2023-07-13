@@ -21,7 +21,7 @@ from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
 from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
-    _run_plot_vit_heads_map
+    _run_plot_vit_heads_map, _run_plot_reg_ass_homotiles_slides
 from interpre.prep_clst_vis import top_pct_slides_4_sp_clst, \
     cnt_prop_slides_ref_homo_sp_clst, top_pop_slides_4_ref_group, \
     cnt_prop_slides_ref_levels_sp_clst
@@ -227,7 +227,10 @@ if __name__ == '__main__':
                                                                  slide_iso_gath_nb_dict, lobular_label_fname)
             df_alllob_tis_pct_list.append(df_alllob_tis_pct_elemts)
         dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
-    
+    if 31 in task_ids:
+        sp_clst_reg_ass_pkl_name = ''
+        edge_thd = 0.5
+        _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
     
     if 61 in task_ids:
         adjdict_pkl_name = 'c-2-adjs_o_0.5_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
