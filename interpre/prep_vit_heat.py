@@ -13,12 +13,15 @@ import torch
 from interpre.prep_tools import store_nd_dict_pkl
 from models import functions, networks
 from models.datasets import Simple_Tile_Dataset
-from models.functions_clustering import refine_sp_cluster_homoneig
+from models.functions_clustering import refine_sp_cluster_homoneig, \
+    load_clustering_pkg_from_pkl
 from models.functions_vit_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_cls_patch_att_maps, norm_exted_maps, \
     access_encodes_vit, gen_ctx_grid_tensor, extra_reg_assoc_key_tile
-from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T
+from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T, ViT_Region_4_6, \
+    reload_net, check_reuse_net
 import numpy as np
+from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
 from support.tools import normalization, Time
 from wsi.process import recovery_tiles_list_from_pkl
 
@@ -305,10 +308,23 @@ def _run_vit_d6_h8_cls_heads_map_slides(ENV_task, vit_model_filename):
                             vit_model_filepath=os.path.join(ENV_task.MODEL_FOLDER, vit_model_filename),
                             layer_id=-1, zoom=16, map_types=['cls', 'heads'])
     
-def _run_reg_ass_sp_clst_homotiles_slides(ENV_task):
-    '''
-    TODO:
-    '''
+def _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, tgt_lbl, iso_thd,
+                                          vit_pt_name, reg_vit_pt_name):
+    clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
+    
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    reg_vit_encoder = ViT_Region_4_6(image_size=2 * ENV_task.REG_RADIUS + 1, patch_size=1,
+                                     channels=ENV_task.TRANSFORMS_RESIZE)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
+    
+    vit_reg_load = ViT_Region_4_6(image_size=144, patch_size=int(144/ENV_FLINC_CD45_REG_PT.VIT_SHAPE), channels=3)
+    reg_vit_encoder, _ = check_reuse_net(reg_vit_encoder, vit_reg_load,
+                                         os.path.join(ENV_task.MODEL_FOLDER, reg_vit_pt_name))
+    del vit_reg_load
+    
+    reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_thd, 
+                                     vit_encoder, reg_vit_encoder)
 
 
 if __name__ == '__main__':

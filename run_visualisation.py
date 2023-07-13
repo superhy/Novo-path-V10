@@ -13,7 +13,8 @@ from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
 from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
     _run_make_vit_neb_graph_adj_clusters
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
-    _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides
+    _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides, \
+    _run_reg_ass_sp_clst_homotiles_slides
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
 
 
@@ -92,6 +93,14 @@ if __name__ == '__main__':
         radius=3
         _run_count_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
                                                    sp_clst=sp_clst, iso_thd=iso_thd, radius=radius)
+    if 31 in task_ids:
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
+        reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-04.pth'
+        sp_clst=5
+        iso_thd=0.1
+        _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, sp_clst, iso_thd, 
+                                              vit_pt_name, reg_vit_pt_name)
     
     load_tile_slideids = None
     if 61 in task_ids:
