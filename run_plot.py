@@ -46,7 +46,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [30.1]
+    task_ids = [30]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
     # task_ids = [101, 102]
@@ -196,22 +196,22 @@ if __name__ == '__main__':
     if 30 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
-        tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        # tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         clst_lbl = 5
         radius = 3
         
-        slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+        # slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
         slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
-                                                                  sp_clst=clst_lbl, iso_thd=0.25, radius=radius)
-        df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, 
-                                                             slide_iso_gath_nb_dict, lobular_label_fname)
+                                                                  sp_clst=clst_lbl, iso_thd=0.2, radius=radius)
+        df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict,
+                                                             lobular_label_fname)
         
         df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl)
     
     if 30.1 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
-        tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        # tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         iso_th_list = [0.02, 0.04, 0.06, 0.08, 0.10,
                        0.12, 0.14, 0.16, 0.18, 0.20,
                        0.22, 0.24, 0.26, 0.28, 0.30]
@@ -220,11 +220,11 @@ if __name__ == '__main__':
         
         df_alllob_tis_pct_list = []
         for i, th in enumerate(iso_th_list):
-            slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+            # slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
             slide_iso_gath_nb_dict = cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
                                                                       sp_clst=clst_lbl, iso_thd=th, radius=radius)
-            df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, 
-                                                                 slide_iso_gath_nb_dict, lobular_label_fname)
+            df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict,
+                                                                 lobular_label_fname)
             df_alllob_tis_pct_list.append(df_alllob_tis_pct_elemts)
         dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
     if 31 in task_ids:

@@ -531,7 +531,7 @@ def top_pct_slides_4_sp_clst(ENV_task, tis_pct_pkl_name, lobular_label_fname, sp
         
     return top_slides_ids, lowest_slides_ids
 
-def cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
+def cnt_prop_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd, radius):
     '''
     count the population (nb_iso / (nb_iso + nb_gath) ) of refined clusters (into 2 groups by homogeneity in context)
     for each slide

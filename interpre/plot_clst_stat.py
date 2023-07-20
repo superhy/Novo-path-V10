@@ -335,7 +335,7 @@ def df_lobular_prop_level_elements(ENV_task, slide_levels_nb_dict, bounds, lobul
     
     return df_alllob_prop_elemts
 
-def df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, slide_iso_gath_nb_dict, lobular_label_fname):
+def df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict, lobular_label_fname):
     '''
     generate the dataFrame, for tissue percentage, list the values with different labels
     '''
@@ -364,7 +364,7 @@ def df_lobular_tis_pct_groups(ENV_task, slide_tis_pct_dict, slide_iso_gath_nb_di
         if type(subject_id) != int and subject_id.startswith('HV'):
             lob_label_str = 'healthy volunteers'
             
-        tissue_pct_dict = slide_tis_pct_dict[slide_id]
+        tissue_pct_dict = slide_iso_gath_nb_dict[slide_id]
             
         # add iso tile element and gath tile element
         all_tis_pct_tuples.append(['iso tiles', tissue_pct_dict[0], lob_label_str])
