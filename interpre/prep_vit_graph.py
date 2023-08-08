@@ -145,7 +145,7 @@ def _run_make_vit_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_fi
 def _run_make_vit_neb_graph_adj_clusters(ENV_task, clustering_pkl_name, vit_model_filename,
                                          load_tile_slideids=None, clst_id=0, nb_sample=20, edge_th=0.0):
     '''
-    generation and storage the graph adj-mat for vit & neb graph
+    generation and storage the graph adj-mat for vit & neb graph, with DFS-like construction algorithm
     with edge_th = 0.0 (full graph) and don't save the one-hot graph
     '''
     # vit = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,

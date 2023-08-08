@@ -247,6 +247,8 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
 def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_thd,
                                      vit_encoder, reg_encoder):
     '''
+    create visualisation (graph based) to describe the regional associations for each tile and it's context
+    for tiles in specific cluster
     '''
     radius = ENV_task.REG_RADIUS
     
