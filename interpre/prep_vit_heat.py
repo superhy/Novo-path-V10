@@ -251,6 +251,8 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
     for tiles in specific cluster
     '''
     radius = ENV_task.REG_RADIUS
+    vit_encoder = vit_encoder.cuda()
+    reg_encoder = reg_encoder.cuda()
     
     # load iso/gath tiles for specific clusters in slides
     slide_tgt_tiles_2_dict = refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd, radius)

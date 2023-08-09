@@ -46,7 +46,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [30]
+    task_ids = [31]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
     # task_ids = [101, 102]
@@ -228,8 +228,8 @@ if __name__ == '__main__':
             df_alllob_tis_pct_list.append(df_alllob_tis_pct_elemts)
         dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
     if 31 in task_ids:
-        sp_clst_reg_ass_pkl_name = ''
-        edge_thd = 0.5
+        sp_clst_reg_ass_pkl_name = 'sp_clst_homotiles_reg_ass-2023-08-09.pkl'
+        edge_thd = 0.8
         _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
     
     if 61 in task_ids:

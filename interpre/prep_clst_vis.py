@@ -589,6 +589,8 @@ def cnt_prop_slides_ref_levels_sp_clst(ENV_task, clustering_pkl_name, sp_clst, r
 
 def cnt_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
     '''
+    load the tissue percentage of iso/gath tiles in specific cluster and write them into .csv file
+    PS: for other researchers who need raw data
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR

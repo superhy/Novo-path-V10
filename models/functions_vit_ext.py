@@ -190,7 +190,7 @@ def extra_reg_assoc_key_tile(attn_ctx, radius):
     
     heads_attn_map = attn_ctx[0, -1, :, 1:, 1:] # b l h p1 p2 -> h p1 p2
     attn_map = einops.reduce(heads_attn_map, 'h p1 p2 -> p1 p2', 'mean')
-    key_i = (radius * 2 + 1) * radius + radius
+    key_i = (radius * 2 + 1) * radius + radius # centre
     att_vec_1 = einops.rearrange(attn_map[key_i, :], '... -> ...')
     att_vec_2 = einops.rearrange(attn_map[:, key_i], '... -> ...')
     att_vec = (att_vec_1 + att_vec_2) / 2.0

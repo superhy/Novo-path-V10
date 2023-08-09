@@ -554,8 +554,8 @@ def refine_sp_cluster_homoneig(clustering_res_pkg, tgt_lbl, iso_thd, radius):
             nb_tgt_lbl = neig_labels.count(tgt_lbl)
             pct_tgt_lbl = nb_tgt_lbl * 1.0 / len(coords)
             slide_tgt_tiles_2_dict[slide_id].append((nb_tgt_lbl, pct_tgt_lbl, 0 if pct_tgt_lbl < iso_thd else 1, tile))
-            print('find tile in slide: {}, with: '.format(slide_id), (nb_tgt_lbl, pct_tgt_lbl,
-                                                                      'iso' if pct_tgt_lbl < iso_thd else 'gath'))
+            print('find tile (h{}-w{}) in slide: {}, with: '.format(slide_id, str(tile.h_id), str(tile.w_id) ), 
+                  (nb_tgt_lbl, pct_tgt_lbl, 'iso' if pct_tgt_lbl < iso_thd else 'gath') )
             
     return slide_tgt_tiles_2_dict
 

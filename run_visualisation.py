@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # task_ids = [20, 21, 22, 29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
-    task_ids = [30]
+    task_ids = [31]
     
     if 10 in task_ids:
         vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
@@ -94,9 +94,10 @@ if __name__ == '__main__':
         _run_count_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name,
                                                    sp_clst=sp_clst, iso_thd=iso_thd, radius=radius)
     if 31 in task_ids:
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-05.pkl'
+        # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
-        reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-04.pth'
+        reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-06.pth'
         sp_clst=5
         iso_thd=0.1
         _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, sp_clst, iso_thd, 
