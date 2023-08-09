@@ -133,6 +133,8 @@ def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd):
             # TDDO: have bug, need to clean the previous graph
             
             plt.savefig(os.path.join(reg_ass_homo_dir, '{}.png'.format(tile_id)), format='png')
+            # clear the plt, otherwise, the figures will be repeated coverage
+            plt.clf(), plt.cla(), plt.close()
 
     
     

@@ -229,7 +229,7 @@ if __name__ == '__main__':
         dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
     if 31 in task_ids:
         sp_clst_reg_ass_pkl_name = 'sp_clst_homotiles_reg_ass-2023-08-09.pkl'
-        edge_thd = 0.8
+        edge_thd = 0.75
         _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
     
     if 61 in task_ids:
