@@ -100,8 +100,10 @@ if __name__ == '__main__':
         reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-06.pth'
         sp_clst=5
         iso_thd=0.1
+        centre_ass=False # default using the graph for all points
+        # TODO: test it
         _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, sp_clst, iso_thd, 
-                                              vit_pt_name, reg_vit_pt_name)
+                                              vit_pt_name, reg_vit_pt_name, centre_ass)
     
     load_tile_slideids = None
     if 61 in task_ids:

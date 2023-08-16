@@ -11,13 +11,15 @@ from einops.einops import reduce, rearrange
 import torch
 
 from interpre.prep_tools import store_nd_dict_pkl
+from interpre.prep_vit_graph import extra_adjmats
 from models import functions, networks
 from models.datasets import Simple_Tile_Dataset
 from models.functions_clustering import refine_sp_cluster_homoneig, \
     load_clustering_pkg_from_pkl
 from models.functions_vit_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_cls_patch_att_maps, norm_exted_maps, \
-    access_encodes_vit, gen_ctx_grid_tensor, extra_reg_assoc_key_tile
+    access_encodes_vit, gen_ctx_grid_tensor, extra_reg_assoc_key_tile, \
+    reg_ass_key_tile, filter_node_pos_t_adjmat
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T, ViT_Region_4_6, \
     reload_net, check_reuse_net
 import numpy as np
@@ -156,39 +158,6 @@ def vit_map_tiles(ENV_task, tiles, trained_vit, layer_id=-1, zoom=0, map_types=[
     return tiles_cls_map_list, tiles_heads_map_list
 
 
-def reg_ass_key_tile(radius, key_encode_tuple, tiles_en_nd, tile_loc_dict, vit_region):
-    '''
-    '''
-    region_ctx_nd, coordinates = gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple, print_info=True)
-    vit_region.eval()
-    
-    ctx_tensor = torch.from_numpy(region_ctx_nd).to(torch.float)
-    ctx_tensor = ctx_tensor.cuda()
-    ctx_tensor = torch.unsqueeze(ctx_tensor, 0) # (h, w) -> (1, h, w)
-    if vit_region.with_wrapper is False:
-        vit_region.deploy_recorder()
-    en_ctx, attn_ctx = vit_region.backbone(ctx_tensor)
-    ass_vec = extra_reg_assoc_key_tile(attn_ctx, radius)
-    ass_vec = ass_vec.cpu().detach().numpy()
-    
-    return vector_to_matrix(ass_vec, radius)
-
-    
-def vector_to_matrix(vector, r):
-    attention_matrix = np.zeros((2*r + 1, 2*r + 1))
-    center = r
-
-    idx = 0
-    for i in range(2*r + 1):
-        for j in range(2*r + 1):
-            if i == center and j == center:
-                continue
-            attention_matrix[i][j] = vector[idx]
-            idx += 1
-
-    return attention_matrix
-
-
 ''' ----------------- functions for slides ----------------- '''
 def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
                             sample_num=20, layer_id=-1, zoom=4, map_types=['cls', 'heads']):
@@ -245,9 +214,9 @@ def make_vit_att_map_slides(ENV_task, vit, vit_model_filepath,
         
 
 def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_thd,
-                                     vit_encoder, reg_encoder):
+                                     vit_encoder, reg_encoder, centre_ass=False):
     '''
-    create visualisation (graph based) to describe the regional associations for each tile and it's context
+    create visualisation (graph based) to describe the regional associations for each tile's context
     for tiles in specific cluster
     '''
     radius = ENV_task.REG_RADIUS
@@ -281,12 +250,23 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
             tile_encode = tiles_en_nd[tile_en_idx]
             key_encode_tuple = (tile_encode, tile, slide_id)
             
-            ass_mat = reg_ass_key_tile(radius, key_encode_tuple, tiles_en_nd, tile_loc_dict, reg_encoder)
-            slide_tile_reg_ass_dict[slide_id].append((ass_mat, tile, sp_homo_lbl) )
+            # default, DO NOT use central association (only target to centre key tiles)
+            ass_mat = reg_ass_key_tile(radius, key_encode_tuple, tiles_en_nd,
+                                       tile_loc_dict, reg_encoder, centre_ass=centre_ass)
+            if centre_ass is True:
+                reg_mat_tuple = (ass_mat, None) # TODO: need to add return pos_dict
+            else:
+                # ass_mat here is an attn_nd
+                adj_mats_nd = extra_adjmats(ass_mat, symm=True, one_hot=False, 
+                                            edge_th=0.5, norm_pattern='q k')
+                reg_mat_tuple = filter_node_pos_t_adjmat(adj_mats_nd)
             
-    sp_clst_reg_ass_pkl_name = 'sp_clst_homotiles_reg_ass-{}.pkl'.format(str(Time().date))
-    store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slide_tile_reg_ass_dict, sp_clst_reg_ass_pkl_name)
-    print('Store specific cluster\'s region association matrices at {}.'.format(sp_clst_reg_ass_pkl_name))
+            slide_tile_reg_ass_dict[slide_id].append((reg_mat_tuple, tile, sp_homo_lbl) )
+            
+    sp_clst_reg_mat_pkl_name = 'sp_clst_homotiles_reg_{}-{}.pkl'.format('ass' if centre_ass else 'ctx',
+                                                                        str(Time().date))
+    store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, slide_tile_reg_ass_dict, sp_clst_reg_mat_pkl_name)
+    print('Store specific cluster\'s region association matrices at {}.'.format(sp_clst_reg_mat_pkl_name))
         
 
 ''' --------------------- functions for calling --------------------- '''
@@ -313,7 +293,7 @@ def _run_vit_d6_h8_cls_heads_map_slides(ENV_task, vit_model_filename):
                             layer_id=-1, zoom=16, map_types=['cls', 'heads'])
     
 def _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, tgt_lbl, iso_thd,
-                                          vit_pt_name, reg_vit_pt_name):
+                                          vit_pt_name, reg_vit_pt_name, centre_ass=False):
     clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
     
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
@@ -328,7 +308,7 @@ def _run_reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_pkl_name, tgt_lbl
     del vit_reg_load
     
     reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_thd, 
-                                     vit_encoder, reg_vit_encoder)
+                                     vit_encoder, reg_vit_encoder, centre_ass)
 
 
 if __name__ == '__main__':

@@ -75,7 +75,7 @@ def plot_tiles_vit_neb_nx_graphs(ENV_task, adj_mats_dict, clst_id):
         print('create file dir {}'.format(clst_tilegraph_dir) )
         
     for i, tile in enumerate(tiles):
-        tile_symm_adj_nd = symm_adj_list[i]
+        tile_symm_adj_nd = symm_adj_list[i] # [q, k]
         id_pos_dict = pos_list[i]
         neig_nxG, neig_id_pos_dict = nx_neb_graph_from_symadj(tile_symm_adj_nd, id_pos_dict)
         

@@ -16,14 +16,16 @@ from models.networks import ViT_D6_H8, ViT_D4_H6
 import numpy as np
 
 
-def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th):
+def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th,
+                  norm_pattern='t q k'):
     '''
     extra the graph adjacency matrix
     '''
     l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd) # t q+1 k+1
+    ''' !!! did [1:, 1:] at here '''
     adj_mats_nd = ext_patches_adjmats(l_attns_nd) # t q k
     # adj_mats_nd = norm_sk_exted_maps(adj_mats_nd, 't q k', amplify=1000)
-    adj_mats_nd = norm_exted_maps(adj_mats_nd, 't q k')
+    adj_mats_nd = norm_exted_maps(adj_mats_nd, norm_pattern)
     if symm is True:
         adj_mats_nd = symm_adjmats(adj_mats_nd, rm_selfloop=True)
     if one_hot or edge_th > .0:
@@ -58,6 +60,7 @@ def vit_graph_adjmat_tiles(ENV_task, tiles, trained_vit, layer_id=-1,
         
     symm_heat_adjmats_nd = extra_adjmats(tiles_attns_nd, symm=True, one_hot=False, edge_th=edge_th)
     for i in range(len(tiles)):
+        # each tile
         if edge_th == 0.0:
             f_t_adjmat = symm_heat_adjmats_nd[i]
             f_id_pos_dict = node_pos_t_adjmat(symm_heat_adjmats_nd[i])

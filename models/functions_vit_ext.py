@@ -186,7 +186,7 @@ def extra_reg_assoc_key_tile(attn_ctx, radius):
     TODO (for future): set a dimensionality reduction via PCA to reduce the ass_featrue dim
     '''
     # attn_ctx: (batch, layers, heads, patch, patch)
-    attn_ctx = attn_ctx.detach().cpu().numpy()
+    attn_ctx = attn_ctx.cpu().detach().numpy()
     
     heads_attn_map = attn_ctx[0, -1, :, 1:, 1:] # b l h p1 p2 -> h p1 p2
     attn_map = einops.reduce(heads_attn_map, 'h p1 p2 -> p1 p2', 'mean')
@@ -323,6 +323,47 @@ def ext_cls_patch_att_maps(l_attns_nd):
 
 ''' ----------- visualization accessing for regional context (around key tiles) ----------- '''
 
+def reg_ass_key_tile(radius, key_encode_tuple, tiles_en_nd, tile_loc_dict, vit_region,
+                     centre_ass=False):
+    '''
+    access the regional context association based on the attention 
+    '''
+    region_ctx_nd, coordinates = gen_ctx_grid_tensor(radius, tiles_en_nd, tile_loc_dict, key_encode_tuple, print_info=True)
+    vit_region.eval()
+    
+    ctx_tensor = torch.from_numpy(region_ctx_nd).to(torch.float)
+    ctx_tensor = ctx_tensor.cuda()
+    ctx_tensor = torch.unsqueeze(ctx_tensor, 0) # (h, w) -> (1, h, w)
+    if vit_region.with_wrapper is False:
+        vit_region.deploy_recorder()
+    en_ctx, attn_ctx = vit_region.backbone(ctx_tensor)
+    if centre_ass is True:
+        ''' !!! did [1:, 1:] at below function '''
+        ass_vec = extra_reg_assoc_key_tile(attn_ctx, radius)
+        ass_vec = ass_vec.cpu().detach().numpy()
+        ass_mat = vector_to_matrix(ass_vec, radius)
+    else:
+        attn_ctx = attn_ctx.cpu().detach().numpy()
+        ''' !!! did [1:, 1:] at here, but without any normalization '''
+        heads_attn_map = attn_ctx[0, -1, :, 1:, 1:] # b l h p1 p2 -> h p1 p2
+        ass_mat = einops.reduce(heads_attn_map, 'h p1 p2 -> p1 p2', 'mean')
+    
+    return ass_mat
+
+def vector_to_matrix(vector, r):
+    attention_matrix = np.zeros((2*r + 1, 2*r + 1))
+    center = r
+
+    idx = 0
+    for i in range(2*r + 1):
+        for j in range(2*r + 1):
+            if i == center and j == center:
+                continue
+            attention_matrix[i][j] = vector[idx]
+            idx += 1
+
+    return attention_matrix
+
 
 ''' --------------------- graph extraction functions ---------------------- '''
 
@@ -381,6 +422,10 @@ def norm_exted_maps(maps_nd, in_pattern):
     elif in_pattern == 't v':
         (t, v) = maps_nd.shape
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
+    elif in_pattern == 'q k':
+        maps_nd = einops.rearrange(maps_nd, 'q k -> (q k)')
+        norm_nd = normalization(maps_nd)
+        norm_nd = einops.rearrange(norm_nd, '(a b) -> a b', a=q)
     else:
         (t, q, k) = maps_nd.shape
         maps_nd = einops.rearrange(maps_nd, 't q k -> t (q k)')
@@ -421,7 +466,7 @@ def symm_adjmats(adjmats_nd, rm_selfloop=True):
     
     Args:
         adjmats_nd:
-        rm_selfloop: indicate to if eliminate the self-loops, make mat[i, i] == 0
+        rm_selfloop: indicate to if remove the self-loops, make mat[i, i] == 0
     '''
     if len(adjmats_nd.shape) == 4:
         (t, h, q, k) = adjmats_nd.shape
@@ -431,7 +476,7 @@ def symm_adjmats(adjmats_nd, rm_selfloop=True):
                 symmats_nd[:, :, i, j] = (adjmats_nd[:, :, i, j] + adjmats_nd[:, :, j, i]) / 2.0
                 if rm_selfloop and i == j:
                     symmats_nd[:, :, i, j] = .0
-    else:
+    elif len(adjmats_nd.shape) == 4:
         (t, q, k) = adjmats_nd.shape
         symmats_nd = np.zeros((t, q, k), dtype='float16')
         # print(symmats_nd)
@@ -440,6 +485,15 @@ def symm_adjmats(adjmats_nd, rm_selfloop=True):
                 symmats_nd[:, i, j] = (adjmats_nd[:, i, j] + adjmats_nd[:, j, i]) / 2.0
                 if rm_selfloop and i == j:
                     symmats_nd[:, i, j] = .0
+    else:
+        # for only one tile's ass or attn -> (q, k)
+        (q, k) = adjmats_nd.shape
+        symmats_nd = np.zeros((q, k), dtype='float16')
+        for i in range(q):
+            for j in range(k):
+                symmats_nd[i, j] = (adjmats_nd[i, j] + adjmats_nd[j, i]) / 2.0
+                if rm_selfloop and i == j:
+                    symmats_nd[i, j] = .0
            
     return symmats_nd     
 

@@ -6,6 +6,7 @@ import os
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
 from interpre.prep_tools import load_vis_pkg_from_pkl
 import matplotlib.pyplot as plt
+from models.functions_graph import nx_neb_graph_from_symadj
 import networkx as nx
 import numpy as np
 from support.tools import normalization
@@ -85,20 +86,20 @@ def plot_vit_heads_map(ENV_task, headsmap_pkl_name):
                                        (slide_id + '-{}-'.format(h_str) + tile_str, alg_name))
                 print('** draw head: {} attention map in: {} for slide: {}, tile: {}'.format(h_str, map_dir, slide_id, tile_str))
     
-def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd):
+def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name, edge_thd):
     '''
     plot regional association for iso/gath tiles in specific cluster
     
     slide_tile_reg_ass_dict format:
         {
             slide_id: [
-                    (ass_mat, tile, sp_homo_lbl)...
+                    (ass_mat_tuple: (mat, None), tile, sp_homo_lbl)...
                 ]
         }
     '''
-    slide_tile_reg_ass_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_ass_pkl_name)
+    slide_tile_reg_ass_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_mat_pkl_name)
     
-    reg_ass_dir = os.path.join(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_ass_pkl_name.split('-')[0])
+    reg_ass_dir = os.path.join(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_mat_pkl_name.split('-')[0])
     for slide_id in slide_tile_reg_ass_dict.keys():
         tile_reg_ass_tuples = slide_tile_reg_ass_dict[slide_id]
         for tile_reg_ass in tile_reg_ass_tuples:
@@ -109,7 +110,7 @@ def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd):
             tile = tile_reg_ass[1]
             tile_id = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
             
-            reg_ass_mat = tile_reg_ass[0]
+            reg_ass_mat, _ = tile_reg_ass[0]
             G = nx.Graph() # create an empty graph
             center = np.array(reg_ass_mat.shape) // 2 # centre of the matrix
             reg_ass_mat[tuple(center)] = np.median(reg_ass_mat) # centre value is odd, avoid it affect Norm
@@ -130,12 +131,59 @@ def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd):
             nx.draw(G, pos, with_labels=False, node_color='blue', node_size=1500)
             # nx.draw_networkx_edge_labels(G, pos, edge_labels=weights)
             
-            # TDDO: have bug, need to clean the previous graph
-            
             plt.savefig(os.path.join(reg_ass_homo_dir, '{}.png'.format(tile_id)), format='png')
             # clear the plt, otherwise, the figures will be repeated coverage
             plt.clf(), plt.cla(), plt.close()
+            
+def plot_reg_ctx_graph(ENV_task, reg_ctx_G, positions, tile_graph_name='test.png'):
+    '''
+    '''
+    graph_store_dir = ENV_task.GRAPH_STORE_DIR
+    
+    nx.draw(reg_ctx_G,
+            pos=positions,
+            node_color = 'b', 
+            edge_color = 'r',
+            with_labels=False,
+            node_size=30)
+    print(positions, 'nodes: %d' % len(reg_ctx_G.nodes()), 
+          'edges: %d' % len(reg_ctx_G.edges()) )
 
+    plt.tight_layout()
+    plt.savefig(os.path.join(graph_store_dir, tile_graph_name) )
+    # clear the plt, otherwise, the figures will be repeated coverage
+    plt.clf(), plt.cla(), plt.close()
+
+def plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name):
+    '''
+    plot regional context graph for iso/gath tiles in specific cluster
+    
+    slide_tile_reg_ctx_dict format:
+        {
+            slide_id: [
+                    (ass_mat_tuple: (mat, pos), tile, sp_homo_lbl)...
+                ]
+        }
+    '''
+    slide_tile_reg_ctx_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_mat_pkl_name)
+    
+    reg_ctx_dir = os.path.join(ENV_task.HEATMAP_STORE_DIR, sp_clst_reg_mat_pkl_name.split('-')[0])
+    for slide_id in slide_tile_reg_ctx_dict.keys():
+        tile_reg_ctx_tuples = slide_tile_reg_ctx_dict[slide_id]
+        for tile_reg_ctx in tile_reg_ctx_tuples:
+            reg_ctx_homo_dir = os.path.join(reg_ctx_dir, tile_reg_ctx[2])
+            if not os.path.exists(reg_ctx_homo_dir):
+                os.makedirs(reg_ctx_homo_dir)
+            
+            tile = tile_reg_ctx[1]
+            tile_id = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
+            
+            reg_ctx_mat, reg_pos_dict = tile_reg_ctx[0]
+            reg_neig_nxG, reg_neig_id_pos_dict = nx_neb_graph_from_symadj(reg_ctx_mat, reg_pos_dict,
+                                                                          T_n=10.0, T_e_1=0.2, T_e_2=0.1)
+            g_tile_subpath = os.path.join(reg_ctx_homo_dir, '{}-rcg.png'.format(tile_id))
+            plot_reg_ctx_graph(ENV_task, reg_neig_nxG, reg_neig_id_pos_dict,
+                               tile_graph_name=g_tile_subpath)
     
     
 def _run_plot_vit_cls_map(ENV_task, clsmap_pkl_name):
@@ -146,6 +194,9 @@ def _run_plot_vit_heads_map(ENV_task, headsmap_pkl_name):
     
 def _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd):
     plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
+    
+def _run_plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name):
+    plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name)
 
 if __name__ == '__main__':
     pass
