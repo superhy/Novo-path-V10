@@ -44,7 +44,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22]
-    task_ids = [31]
+    task_ids = [31.1]
     # task_ids = [61, 62]
     # task_ids = [29.1, 29.2]
     # task_ids = [101, 102]
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         edge_thd = 0.75
         _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
     if 31.1 in task_ids:
-        sp_clst_reg_mat_pkl_name = ''
+        sp_clst_reg_mat_pkl_name = 'sp_clst_homotiles_reg_ctx-2023-08-17.pkl'
         # plot tile context graph with centre_ass=False
         # TODO: test it
         _run_plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name)

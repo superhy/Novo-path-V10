@@ -20,15 +20,26 @@ def extra_adjmats(tiles_attns_nd, symm, one_hot, edge_th,
                   norm_pattern='t q k'):
     '''
     extra the graph adjacency matrix
+    
+    Args:
+        norm_pattern: pattern for normalisation
+        if with tiles column like: (t, ?, ?), need to ext_patches_adjmats to do -> [1:, 1:]
+        if the pattern is like: (q, k), doesn't need ext_patches_adjmats which has been already done.
     '''
-    l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd) # t q+1 k+1
-    ''' !!! did [1:, 1:] at here '''
-    adj_mats_nd = ext_patches_adjmats(l_attns_nd) # t q k
+    if len(tiles_attns_nd.shape) < 4:
+        l_attns_nd = tiles_attns_nd
+    else:
+        l_attns_nd = ext_att_maps_pick_layer(tiles_attns_nd) # t q+1 k+1
+    if norm_pattern == 'q k':
+        adj_mats_nd = l_attns_nd
+    else:
+        ''' !!! did [1:, 1:] at here '''
+        adj_mats_nd = ext_patches_adjmats(l_attns_nd) # t q k
     # adj_mats_nd = norm_sk_exted_maps(adj_mats_nd, 't q k', amplify=1000)
     adj_mats_nd = norm_exted_maps(adj_mats_nd, norm_pattern)
     if symm is True:
         adj_mats_nd = symm_adjmats(adj_mats_nd, rm_selfloop=True)
-    if one_hot or edge_th > .0:
+    if one_hot and edge_th > .0:
         adj_mats_nd = gen_edge_adjmats(adj_mats_nd, one_hot, edge_th)
     
     # tiles, q, k

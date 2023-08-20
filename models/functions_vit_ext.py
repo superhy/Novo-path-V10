@@ -281,7 +281,7 @@ def ext_att_maps_pick_layer(tiles_attns_nd, comb_heads='mean'):
     
     Return:
         l_attns_nd:
-            shape: (t h q k) or (t q k), with/without heads combination
+            shape: (t q k) or (t h q k), with/without heads combination
     '''
     # l_attns_nd = tiles_attns_nd[:, layer_id]
     l_attns_nd = tiles_attns_nd
@@ -476,7 +476,7 @@ def symm_adjmats(adjmats_nd, rm_selfloop=True):
                 symmats_nd[:, :, i, j] = (adjmats_nd[:, :, i, j] + adjmats_nd[:, :, j, i]) / 2.0
                 if rm_selfloop and i == j:
                     symmats_nd[:, :, i, j] = .0
-    elif len(adjmats_nd.shape) == 4:
+    elif len(adjmats_nd.shape) == 3:
         (t, q, k) = adjmats_nd.shape
         symmats_nd = np.zeros((t, q, k), dtype='float16')
         # print(symmats_nd)

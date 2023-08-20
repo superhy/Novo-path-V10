@@ -256,9 +256,12 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
             if centre_ass is True:
                 reg_mat_tuple = (ass_mat, None) # TODO: need to add return pos_dict
             else:
+                center = np.array(ass_mat.shape) // 2 # centre of the matrix
+                ass_mat[tuple(center)] = np.median(ass_mat) # centre value is odd, avoid it affect Norm
                 # ass_mat here is an attn_nd
                 adj_mats_nd = extra_adjmats(ass_mat, symm=True, one_hot=False, 
-                                            edge_th=0.5, norm_pattern='q k')
+                                            edge_th=0.0, norm_pattern='q k')
+                print(adj_mats_nd)
                 reg_mat_tuple = filter_node_pos_t_adjmat(adj_mats_nd)
             
             slide_tile_reg_ass_dict[slide_id].append((reg_mat_tuple, tile, sp_homo_lbl) )
