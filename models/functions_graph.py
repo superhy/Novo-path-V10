@@ -71,6 +71,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
         
     '''
     canvas_nxG = nx.from_numpy_array(t_sym_adj_nd)
+    # print(canvas_nxG)
     neig_nxG = nx.Graph()
     new_old_nodeid_dict, old_new_nodeid_dict, new_roots = {}, {}, []
     new_node_id, new_id_pos_dict = 0, {}
@@ -78,6 +79,7 @@ def nx_neb_graph_from_symadj(t_sym_adj_nd, id_pos_dict,
     ''' build the root nodes in neighbors-based new graph '''
     for old_node in canvas_nxG.nodes():
         # old_node is the node_id on old graph
+        print(canvas_nxG.degree(old_node, weight='weight'))
         if canvas_nxG.degree(old_node, weight='weight') >= T_n:
             # print(old_node, canvas_nxG.degree(old_node, weight='weight'))
             # check if enough far from the exist nodes first

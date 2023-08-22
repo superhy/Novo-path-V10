@@ -401,7 +401,7 @@ def norm_exted_maps(maps_nd, in_pattern):
         in_pattern: can only be: 1. 't h v' (tiles, heads, values), 2. 't h q k' (tiles, heads, patches, patches),
                                  3. 't v' (tiles, values), 4. 't q k' (tiles, patches, patches).
     '''
-    if in_pattern not in ['t h v', 't h q k', 't v', 't q k']:
+    if in_pattern not in ['t h v', 't h q k', 't v', 't q k', 'q k']:
         warnings.warn('!!! Sorry, the input pattern statement is wrong, so cannot conduct normalization and return the ORG tensor.')
         return maps_nd
     
@@ -423,6 +423,7 @@ def norm_exted_maps(maps_nd, in_pattern):
         (t, v) = maps_nd.shape
         norm_nd = np.array([normalization(maps_nd[i, :]) for i in range(t)])
     elif in_pattern == 'q k':
+        (q, k) = maps_nd.shape
         maps_nd = einops.rearrange(maps_nd, 'q k -> (q k)')
         norm_nd = normalization(maps_nd)
         norm_nd = einops.rearrange(norm_nd, '(a b) -> a b', a=q)

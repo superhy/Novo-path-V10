@@ -242,9 +242,9 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
         slide_sp_clst_tiles = slide_tgt_tiles_2_dict[slide_id]
         
         slide_tile_reg_ass_dict[slide_id] = []
-        for tuple in slide_sp_clst_tiles:
-            sp_homo_lbl = 'iso' if tuple[2] == 0 else 'gath'
-            tile = tuple[3]
+        for tile_info_tuple in slide_sp_clst_tiles:
+            sp_homo_lbl = 'iso' if tile_info_tuple[2] == 0 else 'gath'
+            tile = tile_info_tuple[3]
             tile_id = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
             tile_en_idx = tile_loc_dict[tile_id][0]
             tile_encode = tiles_en_nd[tile_en_idx]
@@ -257,7 +257,7 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
                 reg_mat_tuple = (ass_mat, None) # TODO: need to add return pos_dict
             else:
                 center = np.array(ass_mat.shape) // 2 # centre of the matrix
-                ass_mat[tuple(center)] = np.median(ass_mat) # centre value is odd, avoid it affect Norm
+                ass_mat[tuple(center)] = np.median(ass_mat.flatten()) # centre value is odd, avoid it affect Norm
                 # ass_mat here is an attn_nd
                 adj_mats_nd = extra_adjmats(ass_mat, symm=True, one_hot=False, 
                                             edge_th=0.0, norm_pattern='q k')

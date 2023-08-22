@@ -230,7 +230,7 @@ if __name__ == '__main__':
         edge_thd = 0.75
         _run_plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_ass_pkl_name, edge_thd)
     if 31.1 in task_ids:
-        sp_clst_reg_mat_pkl_name = 'sp_clst_homotiles_reg_ctx-2023-08-17.pkl'
+        sp_clst_reg_mat_pkl_name = 'sp_clst_homotiles_reg_ctx-2023-08-20.pkl'
         # plot tile context graph with centre_ass=False
         # TODO: test it
         _run_plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name)

@@ -113,7 +113,7 @@ def plot_reg_ass_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name, edge_thd):
             reg_ass_mat, _ = tile_reg_ass[0]
             G = nx.Graph() # create an empty graph
             center = np.array(reg_ass_mat.shape) // 2 # centre of the matrix
-            reg_ass_mat[tuple(center)] = np.median(reg_ass_mat) # centre value is odd, avoid it affect Norm
+            reg_ass_mat[tuple(center)] = np.median(reg_ass_mat.flatten()) # centre value is odd, avoid it affect Norm
             reg_ass_mat = normalization(reg_ass_mat)
             print('check tile: {}, with nb_linked/total: '.format(tile_id), np.sum(reg_ass_mat > edge_thd), reg_ass_mat.size)
             
@@ -180,9 +180,9 @@ def plot_reg_ctx_g_homotiles_slides(ENV_task, sp_clst_reg_mat_pkl_name):
             tile_id = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
             
             reg_ctx_mat, reg_pos_dict = tile_reg_ctx[0]
-            # print(reg_pos_dict)
+            # print(reg_pos_dict, reg_ctx_mat)
             reg_neig_nxG, reg_neig_id_pos_dict = nx_neb_graph_from_symadj(reg_ctx_mat, reg_pos_dict,
-                                                                          T_n=10.0, T_e_1=0.2, T_e_2=0.1)
+                                                                          T_n=0.95, T_e_1=0.1, T_e_2=0.05)
             g_tile_subpath = os.path.join(reg_ctx_homo_dir, '{}-rcg.png'.format(tile_id))
             plot_reg_ctx_graph(ENV_task, reg_neig_nxG, reg_neig_id_pos_dict,
                                tile_graph_name=g_tile_subpath)
