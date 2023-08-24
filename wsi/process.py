@@ -154,6 +154,8 @@ def slide_tiles_split_keep_object_cls(ENV_task):
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
         elif ENV_task.STAIN_TYPE == 'CD45':
             np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
+        elif ENV_task.STAIN_TYPE == 'P62':
+            np_small_filtered_img = filter_tools.apply_image_filters_p62(np_small_img)
         else:
             np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)
@@ -179,6 +181,8 @@ def slide_tiles_split_keep_object_cls(ENV_task):
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
         elif ENV_task.STAIN_TYPE == 'CD45':
             np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
+        elif ENV_task.STAIN_TYPE == 'P62':
+            np_small_filtered_img = filter_tools.apply_image_filters_p62(np_small_img)
         else:
             np_small_filtered_img = filter_tools.apply_image_filters_he(np_small_img)
         shape_set_img = (large_w, large_h, small_w, small_h)

@@ -8,14 +8,15 @@ import warnings
 
 import openpyxl
 
-from support.env_flinc_he import ENV_FLINC_HE_FIB
-from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_psr import ENV_FLINC_PSR_FIB
-from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
+from support.env_flinc_he import ENV_FLINC_HE_FIB
+from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_p62 import ENV_FLINC_P62_U
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB
+from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -285,6 +286,20 @@ def _load_lobular_clinical_labels():
                                                    xlsx_filepath=xlsx_path_slide,
                                                    spec_aim_label=aim_label)
     count_flinc_stain_labels(slide_label_dict_list, ENV_task.STAIN_TYPE, aim_label)
+    
+def _load_ballooning_clinical_labels():
+    
+    ENV_task = ENV_FLINC_P62_U
+    xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(ENV_task.META_FOLDER)
+    clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
+    
+    xlsx_path_slide = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(ENV_task.META_FOLDER)
+    aim_label = 'ballooning_score'
+    
+    slide_label_dict_list = make_flinc_slide_label(ENV_task, clinical_label_dicts,
+                                                   xlsx_filepath=xlsx_path_slide,
+                                                   spec_aim_label=aim_label)
+    count_flinc_stain_labels(slide_label_dict_list, ENV_task.STAIN_TYPE, aim_label)
         
 def _prod_combine_labels():
     '''
@@ -337,6 +352,26 @@ def _prod_bi_lobular_combine_labels():
     # groups = {0: [0], 1: [1, 2, 3]} # just for binary
     groups = {0: [0], 1:[3]} # for dual-poles
     aim_label = 'lobular_inflammation_score'
+    
+    slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task, 
+                                                               task_csv_filename='{}_{}.csv'.format(ENV_task.STAIN_TYPE, aim_label))
+    new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups)
+    # 'bi' same with 'c2'
+    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label+'_bi')
+    csv_to_df = pd.DataFrame(new_slide_label_dict_list)
+    csv_to_df.to_csv(csv_test_path, index=False)
+    print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
+    return new_slide_label_dict_list
+
+def _prod_bi_ballooning_combine_labels():
+    '''
+    produce binary label file specifically for lobular inflammation
+    '''
+    
+    ENV_task = ENV_FLINC_P62_U
+    # groups = {0: [0], 1: [1, 2, 3]} # just for binary
+    groups = {0: [0], 1:[2]} # for dual-poles
+    aim_label = 'ballooning_score'
     
     slide_label_dict_list = query_task_label_dict_list_fromcsv(ENV_task, 
                                                                task_csv_filename='{}_{}.csv'.format(ENV_task.STAIN_TYPE, aim_label))
@@ -417,10 +452,13 @@ if __name__ == '__main__':
     
     # _load_lobular_clinical_labels()
     # _ = _prod_bi_lobular_combine_labels()
+
+    _load_ballooning_clinical_labels()
+    _ = _prod_bi_ballooning_combine_labels()
     
-    pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
-    pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
-    _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
-    _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
+    # pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
+    # pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
+    # _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
+    # _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
