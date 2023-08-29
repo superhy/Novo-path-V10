@@ -15,7 +15,7 @@ from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides, \
     _run_reg_ass_sp_clst_homotiles_slides
-from support import env_flinc_cd45, env_flinc_he, env_flinc_psr
+from support import env_flinc_cd45, env_flinc_he, env_flinc_psr, env_flinc_p62
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
@@ -24,7 +24,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 if __name__ == '__main__':
     
-    ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+    # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+    ENV_task = env_flinc_p62.ENV_FLINC_P62_U
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
@@ -43,22 +44,37 @@ if __name__ == '__main__':
         vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
         _run_vit_d6_h8_heads_map_slides(ENV_task, vit_model_filename)
     if 20 in task_ids:
+        ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        
+        ''' p62 '''
+        clustering_pkl_name = ''
+        
         _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=5000)
     if 21 in task_ids:
+        ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        
+        ''' p62 '''
+        clustering_pkl_name = ''
+        
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=False)
     if 22 in task_ids:
+        ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        
+        ''' p62 '''
+        clustering_pkl_name = ''
+        
         nb_sample=2000
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     if 23 in task_ids:

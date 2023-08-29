@@ -3,6 +3,7 @@
 '''
 
 import os
+from support.env_flinc_p62 import ENV_FLINC_P62_U
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import sys
 
@@ -20,7 +21,8 @@ if __name__ == '__main__':
     
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     
-    ENV_task = ENV_FLINC_CD45_U
+    # ENV_task = ENV_FLINC_CD45_U
+    ENV_task = ENV_FLINC_P62_U
     
     log_name = 'running_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
                                                 ENV_task.TASK_NAME + task_str,

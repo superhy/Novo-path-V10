@@ -165,7 +165,8 @@ def _move_slides_multi_stains():
     # s_dir_names = ['23910-157', '23910-157']
     # xmeta_names = ['FLINC_23910-157_withSubjectID.xlsx', 'FLINC_23910-157_withSubjectID.xlsx']
     
-    TASK_ENVS = [ENV_FLINC_CD45_U, ENV_FLINC_P62_U]
+    # TASK_ENVS = [ENV_FLINC_CD45_U]
+    TASK_ENVS = [ENV_FLINC_P62_U]
     s_dir_names = ['23910-158']
     xmeta_names = ['FLINC_23910-158_withSubjectID.xlsx']
     

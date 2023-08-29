@@ -30,7 +30,7 @@ import pandas as pd
 import seaborn as sns
 from support.tools import normalization
 from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
-    apply_image_filters_cd45
+    apply_image_filters_cd45, apply_image_filters_p62
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
@@ -45,7 +45,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 def test_filter_slide_img():
     # slide_filepath = 'D:/FLINC_dataset/slides/yang_psr_fib/tissues/23910-157_Sl040-C24-PSR.ndpi'
     # slide_filepath = 'D:/FLINC_dataset/slides/yang_he_stea/tissues/23910-157_Sl049-C32-HE.ndpi'
-    slide_filepath = 'D:/FLINC_dataset/slides/yang_cd45_u/tissues/23910-158_Sl251-C2-CD45.ndpi'
+    # slide_filepath = 'D:/FLINC_dataset/slides/yang_cd45_u/tissues/23910-158_Sl251-C2-CD45.ndpi'
+    slide_filepath = 'D:/FLINC_dataset/slides/yang_p62_u/tissues/23910-158_Sl006-C5-P62.ndpi'
     
 #     slide_filepath = 'D:/IBD-Matthias/example_dx/slides/6574_20_l1 - 2022-08-02 13.26.48.ndpi'
     
@@ -53,7 +54,8 @@ def test_filter_slide_img():
     
 #     np_filtered_img = apply_image_filters_he(np_slide_img)
     # np_filtered_img = apply_image_filters_psr(np_slide_img)
-    np_filtered_img = apply_image_filters_cd45(np_slide_img)
+    # np_filtered_img = apply_image_filters_cd45(np_slide_img)
+    np_filtered_img = apply_image_filters_p62(np_slide_img)
     
     pil_img = np_to_pil(np_filtered_img)
     print(pil_img)
@@ -296,7 +298,7 @@ def _test_assign_label():
 
     
 if __name__ == '__main__':
-    # test_filter_slide_img() # 1
+    test_filter_slide_img() # 1
     # test_vit_forward() # 2
     # test_networkx() # 3
 
@@ -309,7 +311,7 @@ if __name__ == '__main__':
     # _test_vit_reuse()
     
     # _test_plot_box()
-    _test_assign_label()
+    # _test_assign_label()
 
 
 

@@ -9,6 +9,7 @@ from models.functions_enc_pt import _run_pretrain_reg_4_6_dino
 from run_main import Logger
 from support import tools
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
+from support.env_flinc_p62 import ENV_FLINC_P62_REG_PT
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
@@ -22,7 +23,8 @@ if __name__ == '__main__':
     
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     
-    ENV_task = ENV_FLINC_CD45_REG_PT
+    # ENV_task = ENV_FLINC_CD45_REG_PT
+    ENV_task = ENV_FLINC_P62_REG_PT
     
     log_name = 'running_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
                                                 ENV_task.TASK_NAME + task_str,

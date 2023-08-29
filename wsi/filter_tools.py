@@ -600,7 +600,7 @@ def apply_image_filters_p62(np_img, tumor_region_jsonpath=None, tumor_or_backgro
         print('Filter noise of various colors and objects that are too small')
         
     mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
-    mask_not_gray = filter_grays(np_rgb, tolerance=8)
+    mask_not_gray = filter_grays(np_rgb, tolerance=14)
     mask_right = filter_l_r_half(np_rgb, direction='right')
     
     mask_no_red_pen = filter_red_pen(np_rgb)
