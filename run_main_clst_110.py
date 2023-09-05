@@ -34,8 +34,8 @@ if __name__ == '__main__':
         # reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-04.pth'
         
         # p62
-        vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-08-25.pth'
-        reg_vit_pt_name = 'checkpoint_ViT-Reg-4-6-img144-PT-Dino_unsupervised-9x9[50]2023-08-27.pth'
+        vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-09-02.pth'
+        reg_vit_pt_name = 'checkpoint_ViT-Reg-4-6-img144-PT-Dino_unsupervised-9x9[50]2023-09-03.pth'
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
