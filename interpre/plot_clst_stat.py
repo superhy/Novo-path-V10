@@ -32,10 +32,10 @@ def plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, biom_label_fname,
             'CD45': (['lobular-inf cases', 'non-lobular-inf cases'],
                      {'lobular-inf cases': 'blue', 
                       'non-lobular-inf cases': 'springgreen'},
-                     'lobular-inf'),
+                      'lobular-inf'),
             'P62': (['ballooning cases', 'non-ballooning cases'],
                     {'ballooning cases': 'blue', 
-                     'ballooning cases': 'springgreen'},
+                     'non-ballooning cases': 'springgreen'},
                      'ballooning')
         }
     
