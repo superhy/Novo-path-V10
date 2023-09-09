@@ -18,58 +18,75 @@ from support.metadata import query_task_label_dict_fromcsv, \
     extract_slideid_subid_for_stain
 
 
-def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
-                                nb_clst, norm_t_pct=False):
+def plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, biom_label_fname,
+                                  nb_clst, norm_t_pct=False):
     '''
-    counting all clusters' average distribution on all slides, for lobular/non-lobular
+    counting all clusters' average distribution on all slides, for biomarker/non-biomarker,
+        like lobular-inf / non-lobular-inf, ballooning / ballooning
     PS: lobular label is only available for cd45 staining
+        ballooning label is only available for P62 staining
     '''
     
+    ''' {STAIN_TYPE: (biom_keys, palette_dict, label_name)} '''
+    biomarker_info_dict = {
+            'CD45': (['lobular-inf cases', 'non-lobular-inf cases'],
+                     {'lobular-inf cases': 'blue', 
+                      'non-lobular-inf cases': 'springgreen'},
+                     'lobular-inf'),
+            'P62': (['ballooning cases', 'non-ballooning cases'],
+                    {'ballooning cases': 'blue', 
+                     'ballooning cases': 'springgreen'},
+                     'ballooning')
+        }
+    
     ''' loading/processing data '''
-    lobular_label_dict = query_task_label_dict_fromcsv(ENV_task, lobular_label_fname)
+    biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
     if norm_t_pct is True:
         slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
     
-    lobular_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
-    non_lobular_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
+    biom_tis_pcts, nb_biom_cases = [0.0] * nb_clst, 0
+    non_biom_tis_pcts, nb_nbiom_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
         case_id = parse_caseid_from_slideid(slide_id)
-        if case_id not in lobular_label_dict.keys() or slide_id == 'avg':
+        if case_id not in biom_label_dict.keys() or slide_id == 'avg':
             continue
-        if lobular_label_dict[case_id] == 0:
-            # non-lobular cases
-            nb_nlob_cases += 1
+        if biom_label_dict[case_id] == 0:
+            # non-biomarker cases
+            nb_nbiom_cases += 1
             for c in range(nb_clst):
-                non_lobular_tis_pcts[c] += tissue_pct_dict[c]
+                non_biom_tis_pcts[c] += tissue_pct_dict[c]
         else:
-            nb_lob_cases += 1
+            nb_biom_cases += 1
             for c in range(nb_clst):
-                lobular_tis_pcts[c] += tissue_pct_dict[c]
+                biom_tis_pcts[c] += tissue_pct_dict[c]
                 
-    print(lobular_tis_pcts)
-    print(non_lobular_tis_pcts)
-    print(nb_lob_cases)
-    print(nb_nlob_cases)
+    print(biom_tis_pcts)
+    print(non_biom_tis_pcts)
+    print(nb_biom_cases)
+    print(nb_nbiom_cases)
                 
-    nd_lob_tis_pct = np.array(lobular_tis_pcts)
-    nd_nonlob_tis_pct = np.array(non_lobular_tis_pcts)
-    nd_lob_tis_pct = nd_lob_tis_pct / nb_lob_cases
-    nd_nonlob_tis_pct = nd_nonlob_tis_pct / nb_nlob_cases
+    nd_biom_tis_pct = np.array(biom_tis_pcts)
+    nd_nonbiom_tis_pct = np.array(non_biom_tis_pcts)
+    nd_biom_tis_pct = nd_biom_tis_pct / nb_biom_cases
+    nd_nonbiom_tis_pct = nd_nonbiom_tis_pct / nb_nbiom_cases
     
-    palette_dict = {'lobular-inf cases': 'blue', 
-                    'non-lobular-inf cases': 'springgreen'}
+    biom_keys = biomarker_info_dict[ENV_task.STAIN_TYPE][0]
+    palette_dict = biomarker_info_dict[ENV_task.STAIN_TYPE][1]
+    biom_lbl_name = biomarker_info_dict[ENV_task.STAIN_TYPE][2]
     
     ''' plot '''
-    lob_t_pct_tuples = [['c-{}'.format(c + 1), nd_lob_tis_pct[c], 'lobular-inf cases'] for c in range(nb_clst) ]
-    nonlob_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonlob_tis_pct[c], 'non-lobular-inf cases'] for c in range(nb_clst) ]
-    df_alllob_t_pct = pd.DataFrame(lob_t_pct_tuples + nonlob_t_pct_tuples, columns=['clusters', 'tissue_percentage', 'lobular_label'])
+    biom_t_pct_tuples = [['c-{}'.format(c + 1), nd_biom_tis_pct[c], biom_keys[0]] for c in range(nb_clst) ]
+    nonbiom_t_pct_tuples = [['c-{}'.format(c + 1), nd_nonbiom_tis_pct[c], biom_keys[1]] for c in range(nb_clst) ]
+    df_allbiom_t_pct = pd.DataFrame(biom_t_pct_tuples + nonbiom_t_pct_tuples, columns=['clusters', 'tissue_percentage', 
+                                                                                    '{}_label'.format(biom_lbl_name)])
     
     fig = plt.figure(figsize=(5, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1.set_ylim(0, 0.5)
-    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=palette_dict, data=df_alllob_t_pct, hue='lobular_label')
+    ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=palette_dict, data=df_allbiom_t_pct, 
+                       hue='{}_label'.format(biom_lbl_name))
     ax_1.set_title('tissue percentage of each clusters')
     
     # ax_2 = fig.add_subplot(1, 2, 2)
@@ -78,11 +95,12 @@ def plot_lobular_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname,
     # ax_2.set_title('tissue percentage of clusters, for non-lobular cases')
     
     plt.tight_layout()
-    lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
-    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name.replace('.pkl', '-lobular_{}.png'.format(lbl_suffix))))
+    lbl_suffix = biom_label_fname[:biom_label_fname.find('.csv')].split('_')[-1]
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
+                             tis_pct_pkl_name.replace('.pkl', '-{}_{}.png'.format(biom_lbl_name, lbl_suffix))))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     plt.close(fig)
-
+    
     
 def plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst, norm_t_pct=False):
     '''

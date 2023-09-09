@@ -29,10 +29,10 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    # task_ids = [20, 21, 22, 29]
+    task_ids = [20, 21, 22, 29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
-    task_ids = [31]
+    # task_ids = [31]
     
     if 10 in task_ids:
         vit_model_filename = 'checkpoint_ViT-6-8-PT-Dino_unsupervised[250]2022-11-02.pth'
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         
         ''' p62 '''
-        clustering_pkl_name = ''
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
         
         _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=5000)
     if 21 in task_ids:
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         
         ''' p62 '''
-        clustering_pkl_name = ''
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
         
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=False)
     if 22 in task_ids:
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
         
         ''' p62 '''
-        clustering_pkl_name = ''
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
         
         nb_sample=2000
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
@@ -98,9 +98,14 @@ if __name__ == '__main__':
         radius=3
         _run_make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius)
     if 29 in task_ids:
+        ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # clst-10
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        
+        ''' p62 '''
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
+        
         _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
     if 30 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
