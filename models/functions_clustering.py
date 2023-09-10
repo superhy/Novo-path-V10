@@ -246,6 +246,7 @@ class Instance_Clustering():
         self.alg_name = '{}-{}_{}'.format(self.cluster_name, self.embed_type, _env_task_name)
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
+        self.n_clusters = ENV_task.NUM_CLUSTERS
         
         self.reg_encoder, self.comb_layer = None, None
         if self.embed_type in ['region_ctx']:
@@ -420,17 +421,17 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 6
+        # n_clusters = 6
         
-        clustering = KMeans(n_clusters=n_clusters)
+        clustering = KMeans(n_clusters=self.n_clusters)
         return clustering
     
     def load_minibatch_K_means(self, batch_size):
         '''
         '''
-        n_clusters = 6
+        # n_clusters = 6
         
-        clustering = MiniBatchKMeans(n_clusters, batch_size=batch_size)
+        clustering = MiniBatchKMeans(n_clusters=self.n_clusters, batch_size=batch_size)
         return clustering
     
     def load_SpectralClustering(self):
@@ -442,10 +443,10 @@ class Instance_Clustering():
         Return:
             clustering: empty clustering model without fit
         '''
-        n_clusters = 6
+        # n_clusters = 6
         assign_labels = 'discretize'
         
-        clustering = SpectralClustering(n_clusters=n_clusters, assign_labels=assign_labels)
+        clustering = SpectralClustering(n_clusters=self.n_clusters, assign_labels=assign_labels)
         return clustering
         
     def load_MeanShift(self, X):
