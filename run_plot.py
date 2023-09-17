@@ -33,6 +33,7 @@ from interpre.statistics import df_cd45_cg_tis_pct_fib_score_corr, \
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr, env_flinc_p62
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_STEA
+from support.env_flinc_p62 import ENV_FLINC_P62_U
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB
 
 
@@ -156,15 +157,23 @@ if __name__ == '__main__':
         # query_slide_id = '23910-158_Sl278-C18-CD45'
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=6)
     if 29.3 in task_ids:
-        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
+        # cd45 lobular_inflammation
+        # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # nb_clst=6 reg
+        # n_clst=6
+        
+        # p62 ballooning
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-11.pkl' # nb_clst=8
+        n_clst=8
+        
         flex_label_fname_1 = 'HE_steatosis_score_bi.csv'
         flex_label_fname_2 = 'PSR_fibrosis_score_bi.csv'
         felx_label_fname_3 = 'CD45_lobular_inflammation_score_bi.csv'
-        ENV_flex_list = [ENV_FLINC_HE_STEA, ENV_FLINC_PSR_FIB, ENV_FLINC_CD45_U]
+        felx_label_fname_4 = 'P62_ballooning_score_bi.csv'
+        ENV_flex_list = [ENV_FLINC_HE_STEA, ENV_FLINC_PSR_FIB, ENV_FLINC_CD45_U, ENV_FLINC_P62_U]
         
-        for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2, felx_label_fname_3]):
+        for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2, felx_label_fname_3, felx_label_fname_4]):
             plot_flex_clsts_avg_dist(ENV_task, ENV_flex_list[i], tis_pct_pkl_name,
-                                     fname, nb_clst=6, norm_t_pct=True)
+                                     fname, nb_clst=n_clst, norm_t_pct=True)
     if 29.4 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
