@@ -52,7 +52,7 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-09-11.pkl' # clst-8
+        clustering_pkl_name = '' # clst-6
         
         _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=5000)
     if 21 in task_ids:
@@ -64,7 +64,7 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-09-11.pkl' # clst-8
+        clustering_pkl_name = '' # clst-6
         
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=False)
     if 22 in task_ids:
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-09-11.pkl' # clst-8
+        clustering_pkl_name = '' # clst-6
         
         nb_sample=2000
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-09-11.pkl' # clst-8
+        clustering_pkl_name = '' # clst-6
         
         _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
     if 30 in task_ids:
