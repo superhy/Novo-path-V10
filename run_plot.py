@@ -10,8 +10,8 @@ from interpre.plot_clst_stat import plot_biomarker_clsts_avg_dist, \
     dfs_plot_lobular_prop_group_bar, df_lobular_prop_group_elements, \
     df_plot_lobular_prop_group_box, dfs_plot_lobular_prop_group_box, \
     df_lobular_prop_level_elements, df_plot_lobular_prop_level_box, \
-    df_plot_lobular_tis_pct_box, df_lobular_tis_pct_groups, \
-    dfs_plot_lobular_tis_pct_box
+    df_plot_lobular_gp_tis_pct_box, df_lobular_tis_pct_groups, \
+    dfs_plot_lobular_gp_tis_pct_box
 from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
@@ -41,8 +41,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 if __name__ == '__main__':
     
-    # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
-    ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+    ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+    # ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
@@ -50,8 +50,9 @@ if __name__ == '__main__':
     # task_ids = [20]
     # task_ids = [31.1]
     # task_ids = [61, 62]
-    task_ids = [29.1]
-    # task_ids = [101, 102]
+    task_ids = [29.3]
+    # task_ids = [101.1]
+    # task_ids = [101.1, 102]
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -69,7 +70,7 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clst_space_pkl_name = '' # clst-6
+        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
         
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
@@ -91,7 +92,7 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clst_tiledemo_pkl_name = '' # nb_clst=6
+        clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
         
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 23 in task_ids:
@@ -141,7 +142,7 @@ if __name__ == '__main__':
         elif ENV_task.STAIN_TYPE == 'P62':
             ''' P62 '''
             # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # nb_clst=6 reg
-            tis_pct_pkl_name = '' # nb_clst=6
+            tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
             lobular_label_fname = 'P62_ballooning_score_bi.csv'
             # query_slide_id = '23910-158_Sl278-C18-CD45'
             plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, lobular_label_fname, nb_clst=6)
@@ -152,18 +153,19 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # nb_clst=6 reg
-        tis_pct_pkl_name = '' # nb_clst=6
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
         
         # query_slide_id = '23910-158_Sl278-C18-CD45'
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=6)
     if 29.3 in task_ids:
         # cd45 lobular_inflammation
-        # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # nb_clst=6 reg
-        # n_clst=6
+        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # nb_clst=6 reg
+        n_clst=6
         
         # p62 ballooning
-        tis_pct_pkl_name = '' # nb_clst=6
-        n_clst=6
+        # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # nb_clst=6 reg
+        # # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
+        # n_clst=6
         
         flex_label_fname_1 = 'HE_steatosis_score_bi.csv'
         flex_label_fname_2 = 'PSR_fibrosis_score_bi.csv'
@@ -175,6 +177,10 @@ if __name__ == '__main__':
             plot_flex_clsts_avg_dist(ENV_task, ENV_flex_list[i], tis_pct_pkl_name,
                                      fname, nb_clst=n_clst, norm_t_pct=True)
     if 29.4 in task_ids:
+        ''' plot lobular_pop_group_dist with one iso threshold, 
+            show the proportion of each group
+        '''
+        
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         # plot_type = 'bar'
@@ -193,7 +199,9 @@ if __name__ == '__main__':
                                                                    lobular_label_fname, clst_lbl)
             df_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl)
     if 29.5 in task_ids:
-        ''' plot lobular_pop_group_dist with multiple iso threshold'''
+        ''' plot lobular_pop_group_dist with multiple iso thresholds,
+            show the proportion of each group
+        '''
         
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
@@ -225,6 +233,7 @@ if __name__ == '__main__':
             dfs_plot_lobular_prop_group_box(ENV_task, df_alllob_prop_elemts_list,
                                             lobular_label_fname, clst_lbl, iso_th_list)
     if 29.6 in task_ids:
+        # not suggest to use
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         
@@ -237,6 +246,8 @@ if __name__ == '__main__':
                                                                lobular_label_fname, clst_lbl, nb_or_prop)
         df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl)
     if 30 in task_ids:
+        ''' show the tissue percentage of each group, with one iso threshold '''
+        
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         # tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
@@ -249,9 +260,11 @@ if __name__ == '__main__':
         df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict,
                                                              lobular_label_fname)
         
-        df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl)
+        df_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl)
     
     if 30.1 in task_ids:
+        ''' show the tissue percentage of each group, with multiple iso thresholds '''
+        
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
         # tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
@@ -269,7 +282,7 @@ if __name__ == '__main__':
             df_alllob_tis_pct_elemts = df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict,
                                                                  lobular_label_fname)
             df_alllob_tis_pct_list.append(df_alllob_tis_pct_elemts)
-        dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
+        dfs_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_list, lobular_label_fname, clst_lbl, iso_th_list)
     if 31 in task_ids:
         sp_clst_reg_ass_pkl_name = 'sp_clst_homotiles_reg_ass-2023-08-09.pkl'
         edge_thd = 0.75
@@ -287,7 +300,7 @@ if __name__ == '__main__':
         adjdict_pkl_name = 'c-2-adjs_x_0.0_Kmeans-neb_encode_unsupervised2022-11-28.pkl'
         _run_plot_tiles_neb_nx_graphs(ENV_task, adjdict_pkl_name)
         
-    if 101 in task_ids:
+    if 101.1 in task_ids:
         tis_pct_pkl_name = 'clst-gp-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         
         slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)

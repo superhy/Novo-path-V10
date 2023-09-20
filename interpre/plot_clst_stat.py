@@ -13,9 +13,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from support.files import parse_caseid_from_slideid
+from support.files import parse_caseid_from_slideid, \
+    parse_23910_clinicalid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv, \
-    extract_slideid_subid_for_stain
+    extract_slideid_subid_for_stain, trans_slide_label_dict_to_subid
 
 
 def plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, biom_label_fname,
@@ -157,10 +158,13 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
         tis_pct_pkl_name:
         flex_label_fname: PS, cannot be None please
         nb_clst:
+        
+    PS: 
+        
     '''
     
     ''' loading/processing data '''
-    flex_label_dict = query_task_label_dict_fromcsv(ENV_flex_lbl, flex_label_fname)
+    flex_slideid_label_dict = query_task_label_dict_fromcsv(ENV_flex_lbl, flex_label_fname)
     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
     if norm_t_pct is True:
         slide_tis_pct_dict = norm_t_pct_clst_single_slide(slide_tis_pct_dict, nb_clst)
@@ -171,18 +175,24 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
         xmeta_name = 'FLINC_23910-158_withSubjectID.xlsx'
     xlsx_path_15X = '{}/{}'.format(ENV_task.META_FOLDER, xmeta_name)
     slideid_subid_dict = extract_slideid_subid_for_stain(xlsx_path_15X, ENV_flex_lbl.STAIN_TYPE)
-    print(slideid_subid_dict)
+    print('The slide_id <-> sub_id mapping in this stain type is: \n', slideid_subid_dict)
+    flex_subid_label_dict = trans_slide_label_dict_to_subid(flex_slideid_label_dict, slideid_subid_dict)
+    print('Transfered to subid_label_dict as: \n', flex_subid_label_dict)
     
     label_tis_pcts, nb_lob_cases = [0.0] * nb_clst, 0
     non_label_tis_pcts, nb_nlob_cases = [0.0] * nb_clst, 0
     hv_tis_pcts, nb_hv_cases = [0.0] * nb_clst, 0
     for slide_id in slide_tis_pct_dict.keys():
+        print(slide_id, len(slide_tis_pct_dict.keys()) )
         tissue_pct_dict = slide_tis_pct_dict[slide_id]
-        case_id = parse_caseid_from_slideid(slide_id)
+        # case_id = parse_caseid_from_slideid(slide_id) # case_id here is just for each slide in meta data but not clinical_id (indeed not a good name)
+        subject_id = parse_23910_clinicalid_from_slideid(slide_id) # subject_id is just clinical_id
+        subject_id = subject_id if subject_id.startswith('HV') or subject_id == 'avg' else int(subject_id) # for HV, it's str, for others it's int
+        # print(subject_id)
         
-        if case_id not in flex_label_dict.keys() or slide_id == 'avg':
+        if subject_id not in flex_subid_label_dict.keys() or subject_id == 'avg':
             continue
-        if flex_label_dict[case_id] == 0:
+        if flex_subid_label_dict[subject_id] == 0:
             # non-lobular cases
             nb_nlob_cases += 1
             for c in range(nb_clst):
@@ -192,8 +202,6 @@ def plot_flex_clsts_avg_dist(ENV_task, ENV_flex_lbl, tis_pct_pkl_name,
             for c in range(nb_clst):
                 label_tis_pcts[c] += tissue_pct_dict[c]
         
-        slide_org_id = slide_id.split('_')[1].split('-')[0]
-        subject_id = slideid_subid_dict[slide_org_id]
         if type(subject_id) != int and subject_id.startswith('HV'):
             nb_hv_cases += 1
             for c in range(nb_clst):
@@ -499,7 +507,7 @@ def df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_labe
                              'ref-level(c-{})_dist-lobular_{}-box.png'.format(str(clst_lbl), lbl_suffix)))
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     
-def df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl):
+def df_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_label_fname, clst_lbl):
     '''
     plot with dateFrame, for tissue percentage in each slide
     '''
@@ -520,7 +528,7 @@ def df_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_labe
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR))
     plt.close(fig)
     
-def dfs_plot_lobular_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
+def dfs_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
                                  lobular_label_fname, clst_lbl, iso_th_list):
     '''
     plot with a list of dataFrames, bar with average proportion
