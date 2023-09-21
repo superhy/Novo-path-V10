@@ -41,16 +41,16 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 if __name__ == '__main__':
     
-    ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
-    # ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+    # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+    ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [20, 21, 22, 29.1, 29.2]
-    # task_ids = [20]
+    task_ids = [20]
     # task_ids = [31.1]
     # task_ids = [61, 62]
-    task_ids = [29.3]
+    # task_ids = [29.3]
     # task_ids = [101.1]
     # task_ids = [101.1, 102]
 
@@ -69,8 +69,8 @@ if __name__ == '__main__':
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         
         ''' P62 '''
-        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
+        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
+        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
         
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
