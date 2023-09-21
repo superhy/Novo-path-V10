@@ -17,7 +17,7 @@ from support.metadata import parse_flinc_clinical_elsx
 def df_cd45_cg_tis_pct_fib_score_corr(ENV_task, slide_tis_pct_dict):
     '''
     count the correlation between tissue percentage and fibrosis score
-    tissue percentage was checked for iso/gath tiles in specific cluster and group
+    tissue percentage was checked for iso/gath tiles in specific cluster(c) and group(g)
     
     return a dataFrame
     '''

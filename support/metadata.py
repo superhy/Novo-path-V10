@@ -444,6 +444,18 @@ def query_task_label_dict_fromcsv(ENV_task, task_csv_filename=None):
             
     return task_label_dict
 
+def trans_slide_label_dict_to_subid(slideid_label_dict, slideid_subid_dict):
+    '''
+    transfer the slide_label_dict to using subject_id (clinical_id) as the key
+    {slide_id (Sl???): label} -> {subject_id (?): label}
+    '''
+    subid_label_dict = {}
+    for slide_id in slideid_label_dict.keys():
+        sub_id = slideid_subid_dict[slide_id]
+        subid_label_dict[sub_id] = slideid_label_dict[slide_id]
+        
+    return subid_label_dict
+
 
 if __name__ == '__main__':
     # _load_clinical_labels()

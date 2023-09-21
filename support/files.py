@@ -125,11 +125,23 @@ def parse_caseid_from_slideid(slide_id):
 def parse_23910_clinicalid_from_slideid(slide_id):
     '''
     get the clinical_id from slide_id, only for 23910 files
-    '''
-    id_part = slide_id.split('_')[1]
-    clinical_id_part = id_part.split('-')[1]
     
-    clinical_id = clinical_id_part[1:]
+    PS: in slideid_subid_dict and other label_dicts, clinical_id (subject_id) is int/str
+        but here, we only return str, please remember to transfer it.
+    '''
+    if slide_id.startswith('23910'):
+        id_part = slide_id.split('_')[1]
+        clinical_id_parts = id_part.split('-')
+        clinical_id = ''
+        for part in clinical_id_parts[1:-1]:
+            clinical_id += part
+        clinical_id = clinical_id[clinical_id.find('C') + 1:]
+        if clinical_id.startswith('HV'):
+            clinical_id = clinical_id.replace('HV', 'HV-')
+        # print(slide_id, clinical_id, type(clinical_id))
+    else:
+        clinical_id = slide_id
+        
     return clinical_id
     
 
