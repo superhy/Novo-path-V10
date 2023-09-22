@@ -46,14 +46,6 @@ if __name__ == '__main__':
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-<<<<<<< HEAD
-    task_ids = [21, 22, 29.1, 29.2]
-    # task_ids = [20]
-    # task_ids = [31.1]
-    # task_ids = [61, 62]
-    # task_ids = [29.1]
-    # task_ids = [101, 102]
-=======
     # task_ids = [20, 21, 22, 29.1, 29.2]
     task_ids = [20]
     # task_ids = [31.1]
@@ -61,7 +53,6 @@ if __name__ == '__main__':
     # task_ids = [29.3]
     # task_ids = [101.1]
     # task_ids = [101.1, 102]
->>>>>>> 3d062f741f6cd333eb9f0dbb06c94e0500156a1d
 
     if 0 in task_ids:
         _plot_draw_scaled_slide_imgs(ENV_task)
@@ -73,35 +64,24 @@ if __name__ == '__main__':
         _run_plot_vit_cls_map(ENV_task, clsmap_pkl_name)
     if 20 in task_ids:
         ''' CD45 '''
-        # clst_space_pkl_name = 'tsne_5000_clst6-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        # clst_space_pkl_name = 'tsne_5000_clst10-res_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         
         ''' P62 '''
-<<<<<<< HEAD
-        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
-=======
         clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
->>>>>>> 3d062f741f6cd333eb9f0dbb06c94e0500156a1d
         
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
         ''' CD45 '''
-        # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
         # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         
         ''' P62 '''
-        # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
+        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
+        # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
         
         _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name)
     if 22 in task_ids:
         ''' CD45 '''
-        # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-neb_encode_unsupervised2023-03-02.pkl'
-        # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-neb_encode_unsupervised2023-03-03.pkl'
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
         
         ''' P62 '''
@@ -147,8 +127,6 @@ if __name__ == '__main__':
     if 29.1 in task_ids:
         if ENV_task.STAIN_TYPE == 'CD45':
             ''' CD45 '''
-            # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6
-            # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-03.pkl' # nb_clst=10
             tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl'
             lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
             # query_slide_id = '23910-158_Sl278-C18-CD45'
@@ -173,18 +151,15 @@ if __name__ == '__main__':
         plot_clsts_avg_dist_in_HV(ENV_task, tis_pct_pkl_name, nb_clst=6)
     if 29.3 in task_ids:
         # cd45 lobular_inflammation
-        tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # nb_clst=6 reg
-        n_clst=6
+        # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # nb_clst=6 reg
+        # n_clst=6
         
         # p62 ballooning
-<<<<<<< HEAD
         tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
         n_clst=6
-=======
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # nb_clst=6 reg
         # # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-encode_unsupervised2023-09-18.pkl' # nb_clst=6
         # n_clst=6
->>>>>>> 3d062f741f6cd333eb9f0dbb06c94e0500156a1d
         
         flex_label_fname_1 = 'HE_steatosis_score_bi.csv'
         flex_label_fname_2 = 'PSR_fibrosis_score_bi.csv'
@@ -265,7 +240,9 @@ if __name__ == '__main__':
                                                                lobular_label_fname, clst_lbl, nb_or_prop)
         df_plot_lobular_prop_level_box(ENV_task, df_alllob_prop_elemts, lobular_label_fname, clst_lbl)
     if 30 in task_ids:
-        ''' show the tissue percentage of each group, with one iso threshold '''
+        ''' show the tissue percentage of each group, with one iso threshold.
+            the task_id continue with 29.x
+        '''
         
         clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         lobular_label_fname = 'CD45_lobular_inflammation_score_bi.csv'
