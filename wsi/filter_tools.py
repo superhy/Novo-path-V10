@@ -721,7 +721,7 @@ def apply_image_filters_he(np_img, tumor_region_jsonpath=None, tumor_or_backgrou
 #     rgb_not_green = image_tools.mask_rgb(np_rgb, mask_not_green)
 #     save_display(save, display, info, rgb_not_green, slide_num, 2, "Not Green", "np_rgb-not-green")
     
-    mask_not_gray = filter_grays(np_rgb)
+    mask_not_gray = filter_grays(np_rgb, tolerance=12)
 #     rgb_not_gray = image_tools.mask_rgb(np_rgb, mask_not_gray)
     
     mask_no_red_pen = filter_red_pen(np_rgb)

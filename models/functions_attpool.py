@@ -15,8 +15,7 @@ from models.datasets import load_slides_tileslist, Simple_Tile_Dataset, \
 from models.functions import regular_evaluation, store_evaluation_roc, \
     train_agt_epoch
 from models.networks import GatedAttentionPool, AttentionPool, \
-    reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12
-from models.networks_timm import BasicResNet18
+    reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12, BasicResNet18
 import numpy as np
 from support.env import ENV, devices
 from support.files import clear_dir

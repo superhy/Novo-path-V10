@@ -13,16 +13,21 @@ task_id:
 
 from copy import copy
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
-
 
 from support import env_flinc_psr, env_flinc_he, env_flinc_cd45, env_flinc_p62
+from support.env_flinc_he import ENV_FLINC_HE_BALL_BI
 from support.files import _move_slides_multi_stains
 from wsi import process
 
 
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+
+
+
+
 
 # task_ids = [1, 2]
+# task_ids = [1]
 task_ids = [2]
 
 # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
@@ -33,7 +38,8 @@ task_ids = [2]
 # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT
 
 # ENV_task = env_flinc_p62.ENV_FLINC_P62_U
-ENV_task = env_flinc_p62.ENV_FLINC_P62_REG_PT
+# ENV_task = env_flinc_p62.ENV_FLINC_P62_REG_PT
+ENV_task = ENV_FLINC_HE_BALL_BI
 
 
 if __name__ == '__main__':

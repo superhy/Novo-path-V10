@@ -263,6 +263,57 @@ class AttK_MIL_Dataset(Dataset):
         
     def __len__(self):
         return len(self.tiles_list_train_pool)
+    
+class Rev_AttK_MIL_Dataset(Dataset):
+     
+    def __init__(self, tiles_list, label_dict, transform: transforms):
+        self.tiles_list = tiles_list
+        self.tiles_idxs_train_pool_neg = []
+        self.tiles_list_train_pool_neg = tiles_list
+         
+        self.label_dict = label_dict
+         
+        self.transform = transform
+        ''' make slide cache in memory '''
+        self.cache_slide_neg = ('none', None)
+         
+    def refresh_data(self, filter_revgN_slide_tileidx_dict):
+        '''
+        must be called before training
+        '''
+ 
+        self.tiles_idxs_train_pool_neg = []
+        for _, tile_idx_list in filter_revgN_slide_tileidx_dict.items():
+            for idx in tile_idx_list:
+                self.tiles_idxs_train_pool_neg.append(idx) 
+                     
+        self.tiles_list_train_pool_neg = []
+        for idx in self.tiles_idxs_train_pool_neg:
+            self.tiles_list_train_pool_neg.append(self.tiles_list[idx])
+        print('Dataset Info: [refresh reversed gradient training tile list, now with: %d negative tiles...]' % (len(self.tiles_idxs_train_pool_neg)))
+     
+    def __getitem__(self, index):
+        tile_neg = self.tiles_list_train_pool_neg[index]
+         
+        case_id_neg = parse_slide_caseid_from_filepath(tile_neg.original_slide_filepath)
+         
+        ''' using slide cache '''
+        loading_slide_neg_id = parse_slideid_from_filepath(tile_neg.original_slide_filepath)
+         
+        if loading_slide_neg_id == self.cache_slide_neg[0]:
+            preload_slide_neg = self.cache_slide_neg[1]
+        else:
+            _, preload_slide_neg = tile_neg.get_pil_scaled_slide()
+            self.cache_slide_neg = (loading_slide_neg_id, preload_slide_neg)
+             
+        image_neg = tile_neg.get_pil_tile(preload_slide_neg)
+        image_neg = self.transform(image_neg)
+        label_neg = self.label_dict[case_id_neg]
+         
+        return image_neg, label_neg
+         
+    def __len__(self):
+        return len(self.tiles_list_train_pool_neg)
 
 
 

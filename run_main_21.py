@@ -3,14 +3,17 @@
 '''
 
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import sys
 
 from models.functions_attpool import _run_train_gated_attpool_resnet18
 from run_main import Logger
 from support import tools
-from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
+from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2, \
+    ENV_FLINC_HE_BALL_BI
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
+
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+
 
 
 task_ids = [21]
@@ -20,8 +23,9 @@ if __name__ == '__main__':
     
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     
-    ENV_task = ENV_FLINC_HE_STEA_C2
+    # ENV_task = ENV_FLINC_HE_STEA_C2
     # ENV_task = ENV_FLINC_PSR_FIB_C3
+    ENV_task = ENV_FLINC_HE_BALL_BI
 
     log_name = 'running_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
                                                 ENV_task.TASK_NAME + task_str,

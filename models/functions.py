@@ -281,6 +281,42 @@ def train_enc_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -
                                                                                                  str(time.elapsed())[:-5])
     return train_log
 
+def train_rev_epoch(net, train_neg_loader, loss, optimizer,
+                         revg_grad_a=1e-4, epoch_info: tuple=(-2, -2)):
+    """
+    trainer for tile-level encoder, perform only negative gradient
+    
+    Args:
+        net:
+        train_pos_loader:
+        loss:
+        optimizer:
+        revg_grad_a: alpha of reversed gradient
+        epoch: the idx of running epoch (default: None (unknown))
+        now_round: record the round id to determine the alpha for reversed gradient bp
+    """
+    net.train()
+    epoch_loss_neg_sum, batch_count_neg, time = 0.0, 0, Time()
+    
+    # training on reversed gradient samples
+    for X_neg, y_neg in train_neg_loader:
+        X_neg = X_neg.cuda()
+        y_neg = y_neg.cuda()
+          
+        y_pred_neg = net(X_neg, ahead=False, alpha=revg_grad_a)
+        batch_loss_neg = loss(y_pred_neg, y_neg)
+        
+        optimizer.zero_grad()
+        batch_loss_neg.backward()
+        optimizer.step()
+          
+        epoch_loss_neg_sum += batch_loss_neg.cpu().item()
+        batch_count_neg += 1
+          
+    train_log = 'epoch [%d/%d], batch_neg_loss-> %.4f, time: %s sec' % (epoch_info[0] + 1, epoch_info[1],
+                                                                        epoch_loss_neg_sum / batch_count_neg,
+                                                                        str(time.elapsed())[:-5])
+
 def train_agt_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -2)):
     """
     trainer for slide-level(WSI) feature aggregation and/or classification

@@ -92,6 +92,87 @@ def check_reuse_net(target_net, load_net, model_filepath):
     print('reuse model from: {}'.format(model_filepath))
     
     return target_net, checkpoint
+
+''' ------------------ gradient reversed networks (encoder) ------------------ '''
+   
+class ReverseGrad_Layer(Function):
+
+    @staticmethod
+    def forward(ctx, x, alpha):
+        ctx.alpha = alpha
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        output = grad_output.neg() * ctx.alpha
+        return output, None
+    
+class BasicResNet18(nn.Module):
+    
+    def __init__(self, pseudo_dim, imagenet_pretrained=True):
+        super(BasicResNet18, self).__init__()
+        """
+        Args: 
+            pseudo_dim: number of classes
+            imagenet_pretrained: use the weight with pre-trained on ImageNet
+        """
+        
+        self.name = 'ResNet18'
+        
+        self.backbone = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1 if imagenet_pretrained else None)
+        self.fc_id = nn.Identity()
+        self.backbone.fc = self.fc_id
+        
+        self.fc = nn.Linear(in_features=512, out_features=pseudo_dim, bias=True)
+    
+    def forward(self, X):
+        x = self.backbone(X)
+        output = self.fc(x)  
+        return output
+    
+    
+class ReverseResNet18(nn.Module):
+    
+    def __init__(self, output_dim, imagenet_pretrained=True):
+        super(ReverseResNet18, self).__init__()
+        """
+        Args: 
+            output_dim: number of classes
+            imagenet_pretrained: use the weight with pre-trained on ImageNet
+        """
+        
+        self.name = 'ReResNet18'
+        
+        self.backbone = models.resnet18(pretrained=imagenet_pretrained)
+        self.fc_id = nn.Identity()
+        self.backbone.fc = self.fc_id
+        
+        self.fc = nn.Linear(in_features=512, out_features=output_dim, bias=True)
+        
+    def forward_ahd(self, X_pos):
+        x_pos = self.backbone(X_pos)
+
+        output_pos = self.fc(x_pos)
+        return output_pos
+    
+    def forward_rev(self, X_neg, alpha):
+        x_neg = self.backbone(X_neg)
+        x_reversed = ReverseGrad_Layer.apply(x_neg, alpha)
+        
+        output_neg = self.fc(x_reversed)
+        return output_neg
+    
+    def forward(self, X, ahead=True, alpha=1e-4):
+        '''
+        ahead (ahd) means with normal gradient BP
+        otherwise with reversed gradient BP
+        '''
+        if ahead == True:
+            output = self.forward_ahd(X)
+        else:
+            output = self.forward_rev(X, alpha)
+          
+        return output
     
 ''' ------------------- Transformer (encoder) --------------------- '''
 class ViT_base(nn.Module):
@@ -229,6 +310,89 @@ class ViT_D9_H12(ViT_base):
         super(ViT_D9_H12, self).__init__(image_size, patch_size, output_dim, 
                                          depth, heads)
         self.name = 'ViT-9-12'
+        
+''' ------------------- Reversed Transformer (encoder) --------------------- '''
+class ReverseViT_D6_H8(ViT_base):
+    
+    def __init__(self, image_size, patch_size, output_dim):
+        ''' 
+        D6(6 in name): depth
+        H8(8 in name): heads
+        Dino: Dino self-supervised learner
+        '''
+        depth, heads = 6, 8
+        super(ReverseViT_D6_H8, self).__init__(image_size, patch_size, output_dim,
+                                               depth, heads)
+        self.name = 'ReViT-6-8'
+    
+    def forward_ahd(self, X_pos):
+        e_pos = self.backbone(X_pos)
+        # in case with pytorch wrapper and produce 2 outcomes
+        x_pos = e_pos[0] if self.with_wrapper else e_pos
+        output_pos = self.fc(x_pos)  
+        return output_pos
+    
+    def forward_rev(self, X_neg, alpha):
+        # in case with pytorch wrapper
+        if self.with_wrapper:
+            self.discard_wrapper()
+        x = self.backbone(X_neg)
+        x_reversed = ReverseGrad_Layer.apply(x, alpha)
+        output = self.fc(x_reversed)
+        return output
+    
+    def forward(self, X, ahead=True, alpha=0.1):
+        '''
+        ahead (ahd) means with normal gradient BP
+        otherwise with reversed gradient BP
+        '''
+        if ahead == True:
+            output = self.forward_ahd(X)
+        else:
+            output = self.forward_rev(X, alpha)
+          
+        return output
+        
+class ReverseViT_D9_H12(ViT_base):
+    
+    def __init__(self, image_size, patch_size, output_dim):
+        ''' 
+        D6(6 in name): depth
+        H8(8 in name): heads
+        Dino: Dino self-supervised learner
+        '''
+        depth, heads = 9, 12
+        super(ReverseViT_D9_H12, self).__init__(image_size, patch_size, output_dim,
+                                                depth, heads)
+        self.name = 'ReViT-9-12'
+    
+    def forward_ahd(self, X_pos):
+        e_pos = self.backbone(X_pos)
+        # in case with pytorch wrapper and produce 2 outcomes
+        x_pos = e_pos[0] if self.with_wrapper else e_pos
+        output_pos = self.fc(x_pos)  
+        return output_pos
+    
+    def forward_rev(self, X_neg, alpha):
+        # in case with pytorch wrapper
+        if self.with_wrapper:
+            self.discard_wrapper()
+        x = self.backbone(X_neg)
+        x_reversed = ReverseGrad_Layer.apply(x, alpha)
+        output = self.fc(x_reversed)
+        return output
+    
+    def forward(self, X, ahead=True, alpha=0.1):
+        '''
+        ahead (ahd) means with normal gradient BP
+        otherwise with reversed gradient BP
+        '''
+        if ahead == True:
+            output = self.forward_ahd(X)
+        else:
+            output = self.forward_rev(X, alpha)
+          
+        return output
 
 
 ''' --- some networks for patch-region context modeling and encoding combination --- '''

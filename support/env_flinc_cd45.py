@@ -10,7 +10,7 @@ from support.parames import parames_task
 ENV_FLINC_CD45_U = parames_task(
     project_name=ENV.PROJECT_NAME,
     scale_factor=ENV.SCALE_FACTOR,
-    tile_size=ENV.TILE_H_SIZE,
+    tile_size=256,
     tp_tiles_threshold=ENV.TP_TILES_THRESHOLD,
     pil_image_file_format=ENV.PIL_IMAGE_FILE_FORMAT,
     debug_mode=True, # for unsupervised task, only use train set to generate the feature space

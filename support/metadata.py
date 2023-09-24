@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from support.env_flinc_cd45 import ENV_FLINC_CD45_U
-from support.env_flinc_he import ENV_FLINC_HE_FIB
+from support.env_flinc_he import ENV_FLINC_HE_FIB, ENV_FLINC_HE_BALL_BI, \
+    ENV_FLINC_HE_BALL
 from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
 from support.env_flinc_p62 import ENV_FLINC_P62_U
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB
@@ -256,8 +257,8 @@ def count_flinc_stain_amount(ENV_task, xlsx_filepath):
     
 def _load_clinical_labels():
     
-    TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
-    # TASK_ENVS = [ENV_FLINC_PSR_FIB]
+    # TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
+    TASK_ENVS = [ENV_FLINC_HE_BALL]
     
     xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
@@ -265,8 +266,8 @@ def _load_clinical_labels():
     
     xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     xlsx_path_slide_2 = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
-    xlsx_path_slide_list = [xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_2, xlsx_path_slide_2]
-    # xlsx_path_slide_list = [xlsx_path_slide_1]
+    # xlsx_path_slide_list = [xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_2, xlsx_path_slide_2]
+    xlsx_path_slide_list = [xlsx_path_slide_1]
     
     for i, task_env in enumerate(TASK_ENVS):
         slide_label_dict_list = make_flinc_slide_label(task_env, clinical_label_dicts,
@@ -458,19 +459,23 @@ def trans_slide_label_dict_to_subid(slideid_label_dict, slideid_subid_dict):
 
 
 if __name__ == '__main__':
-    # _load_clinical_labels()
+    ''' label preparing steps '''
+    # _load_clinical_labels() # this will be the 1st step
     # _count_stain_amount()
     # _prod_combine_labels()
     
     # _load_lobular_clinical_labels()
     # _ = _prod_bi_lobular_combine_labels()
 
-    _load_ballooning_clinical_labels()
-    _ = _prod_bi_ballooning_combine_labels()
+    # _load_ballooning_clinical_labels()
+    # _ = _prod_bi_ballooning_combine_labels()
     
+    ''' here will be the 2nd step '''
     # pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
     # pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
+    pkg_param_ball = (ENV_FLINC_HE_BALL_BI, {0: [0], 1:[2]}, 'ballooning_score')
     # _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
     # _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
+    _ = _prod_bi_label_combine_labels(pkg_param_ball[0], pkg_param_ball[1], pkg_param_ball[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)

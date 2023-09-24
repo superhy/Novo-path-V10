@@ -307,9 +307,9 @@ def gen_single_slide_iso_gath_spatial(ENV_task, slide_tgt_tiles_dict, slide_id):
     print('generate iso-group\'s spatial map for slide: {}'.format(slide_id))
     return heat_s_iso_col
 
-def gen_single_slide_level_spatial(ENV_task, slide_tgt_tiles_n_dict, bounds, slide_id):
+def gen_single_slide_levels_spatial(ENV_task, slide_tgt_tiles_n_dict, bounds, slide_id):
     '''
-    generate the iso-group spatial map for specific cluster on a single slide
+    generate the iso-group (levels) spatial map for specific cluster on a single slide
     
     Return:
         
@@ -466,7 +466,7 @@ def make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius
     
     slide_levels_s_spatmap_dict = {}
     for slide_id in slide_id_list:
-        heat_s_levels_col = gen_single_slide_level_spatial(ENV_task, slide_tgt_tiles_dict, bounds, slide_id)
+        heat_s_levels_col = gen_single_slide_levels_spatial(ENV_task, slide_tgt_tiles_dict, bounds, slide_id)
         slide_levels_s_spatmap_dict[slide_id] = heat_s_levels_col
         
     clst_levels_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 
