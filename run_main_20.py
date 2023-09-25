@@ -29,7 +29,7 @@ if __name__ == '__main__':
     ENV_task = ENV_FLINC_HE_BALL_BI
 
     log_name = 'running_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
-                                                ENV_task.LABEL_TYPE + task_str,
+                                                ENV_task.TASK_NAME + task_str,
                                                 str(tools.Time().start)[:13].replace(' ', '-'))
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
     

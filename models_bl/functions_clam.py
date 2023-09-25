@@ -32,14 +32,14 @@ def _run_train_CLAM_MIL_classification(ENV_task, num_epoch=80, num_least_epoch=1
     """
     
     _env_task_name = ENV_task.TASK_NAME
-    _env_model_store_dir = ENV_task.MODEL_STORE_DIR
+    _env_model_store_dir = ENV_task.MODEL_FOLDER
     _env_loss_package = ENV_task.LOSS_PACKAGE
     batch_size_ontiles = ENV_task.MINI_BATCH_TILE
     batch_size_onslides = ENV_task.MINI_BATCH_SLIDEMAT
     overall_stop_loss = ENV_task.OVERALL_STOP_LOSS
     
     ''' a nick name '''
-    alg_name = 'CLAM-MIL_{}{}_{}'.format(ENV_task.SLIDE_TYPE, ENV_task.FOLD_SUFFIX, _env_task_name)
+    alg_name = 'CLAM-MIL_{}_{}'.format(ENV_task.FOLD_SUFFIX, _env_task_name)
     
     ''' check the training (testing) slides matrices on disk '''
     print('Initializing the training/testing slide matrices...', end=', ')

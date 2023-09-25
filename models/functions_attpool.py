@@ -79,7 +79,7 @@ def recovery_slide_matrix_filesets(ENV_task, round_id=None, for_train=False):
     for slide_matrix_file in os.listdir(slide_matrix_dir):
         slide_id = slide_matrix_file[:slide_matrix_file.find('-(tiles')]
         # get the tiles len from pkl tiles_list
-        slide_tiles_len = len(recovery_tiles_list_from_pkl(os.path.join(pkl_dir, slide_id + '-(tiles_list).pkl')) )
+        slide_tiles_len = len(recovery_tiles_list_from_pkl(os.path.join(pkl_dir, slide_id + '-tiles.pkl')) )
         slide_matrix_file_sets.append((slide_id, slide_tiles_len, os.path.join(slide_matrix_dir, slide_matrix_file)) )
         
     return slide_matrix_file_sets
