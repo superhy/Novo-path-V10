@@ -109,11 +109,11 @@ class ReverseGrad_Layer(Function):
     
 class BasicResNet18(nn.Module):
     
-    def __init__(self, pseudo_dim, imagenet_pretrained=True):
+    def __init__(self, output_dim, imagenet_pretrained=True):
         super(BasicResNet18, self).__init__()
         """
         Args: 
-            pseudo_dim: number of classes
+            output_dim: number of classes
             imagenet_pretrained: use the weight with pre-trained on ImageNet
         """
         
@@ -123,7 +123,7 @@ class BasicResNet18(nn.Module):
         self.fc_id = nn.Identity()
         self.backbone.fc = self.fc_id
         
-        self.fc = nn.Linear(in_features=512, out_features=pseudo_dim, bias=True)
+        self.fc = nn.Linear(in_features=512, out_features=output_dim, bias=True)
     
     def forward(self, X):
         x = self.backbone(X)
