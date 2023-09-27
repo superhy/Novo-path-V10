@@ -565,21 +565,21 @@ class AttentionPool(nn.Module):
         self.att_dim = 1
         
         self.encoder = nn.Sequential(
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.embedding_dim, out_features=self.att_layer_width[0]),
             nn.ReLU(),
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.att_layer_width[0], out_features=self.att_layer_width[1]),
             nn.Tanh()
             )
         
         self.bn = nn.BatchNorm1d(self.att_layer_width[1])
         self.attention = nn.Linear(in_features=self.att_layer_width[1],
-                                   out_features=self.att_dim, bias=False)
+                                   out_features=self.att_dim, bias=True)
         
 #         self.softmax = nn.Softmax(dim=-1)
         self.fc_out = nn.Linear(in_features=self.output_layer_width,
-                                out_features=output_dim, bias=False)
+                                out_features=output_dim, bias=True)
         
     def forward(self, X_e, bag_lens):
         """
@@ -621,30 +621,30 @@ class GatedAttentionPool(nn.Module):
         self.att_dim = 1
         
         self.encoder = nn.Sequential(
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.embedding_dim, out_features=self.att_layer_width[0]),
             nn.ReLU(),
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.att_layer_width[0], out_features=self.att_layer_width[1]),
             )
         
         self.attention_U = nn.Sequential(
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.att_layer_width[1], out_features=self.att_layer_width[1]),
             nn.Tanh()
             )
         self.attention_V = nn.Sequential(
-            nn.Dropout(p=0.2),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=self.att_layer_width[1], out_features=self.att_layer_width[1]),
             nn.Sigmoid()
             )
         
         self.bn = nn.BatchNorm1d(self.att_layer_width[1])
         self.attention = nn.Linear(in_features=self.att_layer_width[1],
-                                   out_features=self.att_dim, bias=False)
+                                   out_features=self.att_dim, bias=True)
         
         self.fc_out = nn.Linear(in_features=self.output_layer_width,
-                                out_features=output_dim, bias=False)
+                                out_features=output_dim, bias=True)
         
     def forward(self, X_e, bag_lens):
         """
