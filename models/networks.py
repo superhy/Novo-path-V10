@@ -1,7 +1,7 @@
 '''
 @author: Yang Hu
 
-network models, self created or loaded from [torchvision, vit-pytorch, etc.]
+network models, self created or loaded from [torchvision, vit-pytorch, timm, hugging_face, etc.]
 the list:
     https://github.com/pytorch/vision
     https://github.com/lucidrains/vit-pytorch
@@ -588,7 +588,7 @@ class AttentionPool(nn.Module):
             bag_lens: 
         """
         X_e = self.encoder(X_e)
-#         X_e = self.bn(X_e.transpose(-2, -1)).transpose(-2, -1)
+        X_e = self.bn(X_e.transpose(-2, -1)).transpose(-2, -1)
         att = self.attention(X_e)
         att = att.transpose(-2, -1)
         ''' record the attention value (before softmax) '''
@@ -653,7 +653,7 @@ class GatedAttentionPool(nn.Module):
             bag_lens: 
         """
         X_e = self.encoder(X_e)
-#         X_e = self.bn(X_e.transpose(-2, -1)).transpose(-2, -1)
+        X_e = self.bn(X_e.transpose(-2, -1)).transpose(-2, -1)
         att_U = self.attention_U(X_e)
         att_V = self.attention_V(X_e)
         att = self.attention(att_V * att_U)
