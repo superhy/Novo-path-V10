@@ -15,7 +15,7 @@ from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_FIB, ENV_FLINC_HE_BALL_BI, \
     ENV_FLINC_HE_BALL
 from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_p62 import ENV_FLINC_P62_U
+from support.env_flinc_p62 import ENV_FLINC_P62_U, ENV_FLINC_P62_BALL_BI
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 
@@ -259,6 +259,7 @@ def _load_clinical_labels():
     
     # TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
     TASK_ENVS = [ENV_FLINC_HE_BALL]
+    # TASK_ENVS = [ENV_FLINC_P62_BALL_BI]
     
     xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
