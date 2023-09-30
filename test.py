@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from models.functions import optimizer_adam_basic
 from models.functions_clustering import assign_label
 from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
-from models.functions_vit_ext import symm_adjmats, gen_edge_adjmats, \
+from models.functions_feat_ext import symm_adjmats, gen_edge_adjmats, \
     filter_node_pos_t_adjmat, node_pos_t_adjmat
 from models.networks import ViT_Region_4_6, store_net, reload_net, \
     check_reuse_net

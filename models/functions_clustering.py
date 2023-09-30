@@ -13,7 +13,8 @@ from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 
-from models.functions_vit_ext import access_encodes_vit, avg_neigb_encodes, \
+from models import datasets, functions_attpool, functions_lcsb
+from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
     check_reuse_net
@@ -44,25 +45,28 @@ def load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name):
     return clustering_pkg       
 
 
-def load_tiles_en_rich_tuples(ENV_task, encoder):
+def load_tiles_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     
     Return:
         tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
     '''
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
-    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    _env_process_slide_tile_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_dir
     
     loading_time = Time()
     
-    tile_list = []
-    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
-        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
-        tile_list.extend(slide_tiles_list)
+    if load_tile_list == None:
+        tile_list = []
+        for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+            slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+            tile_list.extend(slide_tiles_list)
+    else:
+        tile_list = load_tile_list
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
-    tiles_en_nd, _ = access_encodes_vit(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+    tiles_en_nd, _ = access_encodes_imgs(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
     
     tiles_richencode_tuples = []
     for i, tile in enumerate(tile_list):
@@ -74,7 +78,7 @@ def load_tiles_en_rich_tuples(ENV_task, encoder):
     return tiles_richencode_tuples
 
 
-def load_tiles_neb_en_rich_tuples(ENV_task, encoder):
+def load_tiles_neb_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine neighbor tiles for the key tile to generate the combination encode
@@ -82,18 +86,21 @@ def load_tiles_neb_en_rich_tuples(ENV_task, encoder):
     Return:
         tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
     '''
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
-    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    _env_process_slide_tile_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_dir
     
     loading_time = Time()
     
-    tile_list = []
-    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
-        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
-        tile_list.extend(slide_tiles_list)
+    if load_tile_list == None:
+        tile_list = []
+        for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+            slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+            tile_list.extend(slide_tiles_list)
+    else:
+        tile_list = load_tile_list
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
-    tiles_en_nd, tile_loc_dict = access_encodes_vit(tile_list, encoder,
+    tiles_en_nd, tile_loc_dict = access_encodes_imgs(tile_list, encoder,
                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
     
     tiles_richencode_tuples = []
@@ -108,25 +115,32 @@ def load_tiles_neb_en_rich_tuples(ENV_task, encoder):
     return tiles_richencode_tuples
 
 
-def load_tiles_dilneb_en_rich_tuples(ENV_task, encoder):
+def load_tiles_dilneb_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine dilated + neighbor tiles for the key tile to generate the combination encode
     
     Return:
         tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
-    '''
-
-
-def load_tiles_slidectx_en_rich_tuples(ENV_task, encoder):
-    '''
+        
+    TODO: give the function
     '''
     tiles_richencode_tuples = []
     return tiles_richencode_tuples
 
 
-def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
-                                        reg_encoder, comb_layer, ctx_type):
+def load_tiles_slidectx_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
+    '''
+    What? from name, re-design...
+    
+    TODO: give the function
+    '''
+    tiles_richencode_tuples = []
+    return tiles_richencode_tuples
+
+
+def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder, reg_encoder,
+                                        comb_layer, ctx_type, load_tile_list=None):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine the encode of tile and its regional context encode for the 
@@ -140,19 +154,22 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder,
     Return:
         tiles_richencode_tuples: [(encode, tile object, slide_id) ...]
     '''
-    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
-    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_test_dir
+    _env_process_slide_tile_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    slides_tiles_pkl_dir = _env_process_slide_tile_pkl_dir
     
     loading_time = Time()
     
-    tile_list = []
-    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
-        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
-        tile_list.extend(slide_tiles_list)
+    if load_tile_list == None:
+        tile_list = []
+        for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+            slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+            tile_list.extend(slide_tiles_list)
+    else:
+        tile_list = load_tile_list
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
-    tiles_en_nd, tile_loc_dict = access_encodes_vit(tile_list, encoder,
-                                                    ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)    
+    tiles_en_nd, tile_loc_dict = access_encodes_imgs(tile_list, encoder,
+                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)    
     
     '''
     be noted that the encode for tiles now is combined 
@@ -211,6 +228,37 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
     print('load the exist tiles tuples from: %s' % pkl_filepath)
         
     return tiles_richencode_tuples
+
+
+
+''' ------------ select top attention tiles for un-supervised analysis ------------ '''
+  
+def select_top_att_tiles(ENV_task, attpool_net, K_ratio):
+    '''
+    select the top attention tiles by the attention pool aggregator
+    using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
+    '''
+    slides_tiles_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    
+    tiles_all_list = []
+    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
+        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
+        tiles_all_list.extend(slide_tiles_list)
+        
+    _, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(ENV_task)
+    
+    slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
+                                                                   cutoff_padding=True, norm=True)
+    
+    att_all_tiles_list = []
+    for slide_id in slides_tileidxs_dict.keys():
+        slide_tileidxs_list = slides_tileidxs_dict[slide_id]
+        slide_attscores = slide_attscores_dict[slide_id]
+        k_slide_tiles_list = functions_lcsb.filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list,
+                                                                            slide_attscores, K)
+        att_all_tiles_list.extend(k_slide_tiles_list)
+        
+    return att_all_tiles_list
     
 
 class Instance_Clustering():

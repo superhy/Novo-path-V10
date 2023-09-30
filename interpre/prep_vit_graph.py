@@ -8,7 +8,7 @@ import os
 from interpre.prep_clst_vis import load_clst_res_label_tile_slide
 from interpre.prep_tools import safe_random_sample, store_nd_dict_pkl
 from models import networks
-from models.functions_vit_ext import access_att_maps_vit, \
+from models.functions_feat_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_patches_adjmats, symm_adjmats, \
     gen_edge_adjmats, filter_node_pos_t_adjmat, norm_exted_maps, \
     norm_sk_exted_maps, node_pos_t_adjmat

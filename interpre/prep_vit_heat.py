@@ -16,9 +16,9 @@ from models import functions, networks
 from models.datasets import Simple_Tile_Dataset
 from models.functions_clustering import refine_sp_cluster_homoneig, \
     load_clustering_pkg_from_pkl
-from models.functions_vit_ext import access_att_maps_vit, \
+from models.functions_feat_ext import access_att_maps_vit, \
     ext_att_maps_pick_layer, ext_cls_patch_att_maps, norm_exted_maps, \
-    access_encodes_vit, gen_ctx_grid_tensor, extra_reg_assoc_key_tile, \
+    access_encodes_imgs, gen_ctx_grid_tensor, extra_reg_assoc_key_tile, \
     reg_ass_key_tile, filter_node_pos_t_adjmat
 from models.networks import ViT_D6_H8, ViT_D9_H12, ViT_D3_H4_T, ViT_Region_4_6, \
     reload_net, check_reuse_net
@@ -233,7 +233,7 @@ def reg_ass_sp_clst_homotiles_slides(ENV_task, clustering_res_pkg, tgt_lbl, iso_
         tile_list.extend(slide_tiles_list)
         
     ''' >>>> the vit_encoder here only support ViT <for the moment> '''
-    tiles_en_nd, tile_loc_dict = access_encodes_vit(tile_list, vit_encoder,
+    tiles_en_nd, tile_loc_dict = access_encodes_imgs(tile_list, vit_encoder,
                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
     
     slide_tile_reg_ass_dict = {}

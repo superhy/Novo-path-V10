@@ -31,7 +31,7 @@ def load_richtileslist_fromfile(ENV_task, for_train=True):
     Return:
         tiles_all_list: all tile list with tile-object
         tileidx_slideid_dict: mapping dictionary from tile_idx in tiles_all_list to slide_id
-        slide_tileidxs_dict: mapping dictionary from slide_id to tile_idxs (as a list)
+        slides_tileidxs_dict: mapping dictionary from slide_id to tile_idxs (as a list)
     
     """
     
@@ -44,21 +44,21 @@ def load_richtileslist_fromfile(ENV_task, for_train=True):
     pkl_files = os.listdir(pkl_dir)
     
     tileidx_slideid_dict = {}
-    slide_tileidxs_dict = {}
+    slides_tileidxs_dict = {}
     tiles_all_list = []
     tileidx = 0
     for pkl_f in pkl_files:
         # each slide each pkl
         tiles_slide_list = recovery_tiles_list_from_pkl(os.path.join(pkl_dir, pkl_f))
         slide_id = tiles_slide_list[0].query_slideid()
-        slide_tileidxs_dict[slide_id] = []
+        slides_tileidxs_dict[slide_id] = []
         for i in range(len(tiles_slide_list)): 
             tileidx_slideid_dict[tileidx] = slide_id
-            slide_tileidxs_dict[slide_id].append(tileidx)
+            slides_tileidxs_dict[slide_id].append(tileidx)
             tileidx += 1
         tiles_all_list.extend(tiles_slide_list)
         
-    return tiles_all_list, tileidx_slideid_dict, slide_tileidxs_dict
+    return tiles_all_list, tileidx_slideid_dict, slides_tileidxs_dict
 
 def load_slides_tileslist(ENV_task, for_train=True):
     """
@@ -76,7 +76,7 @@ def load_slides_tileslist(ENV_task, for_train=True):
         for_train:
         
     Return:
-        slide_tiles_dict: dict of slide -> tiles' objects
+        slides_tiles_dict: dict of slide -> tiles' objects
     
     """
     
@@ -89,14 +89,14 @@ def load_slides_tileslist(ENV_task, for_train=True):
     
     pkl_files = os.listdir(pkl_dir)
     
-    slide_tiles_dict = {}
+    slides_tiles_dict = {}
     for pkl_f in pkl_files:
         # each slide each pkl
         tiles_list = recovery_tiles_list_from_pkl(os.path.join(pkl_dir, pkl_f))
         slide_id = tiles_list[0].query_slideid()
-        slide_tiles_dict[slide_id] = tiles_list
+        slides_tiles_dict[slide_id] = tiles_list
         
-    return slide_tiles_dict
+    return slides_tiles_dict
 
     
 class Simple_Tile_Dataset(Dataset):

@@ -14,20 +14,20 @@ import numpy as np
 from support.tools import normalization, normalization_sk
 
 
-def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
+def access_encodes_imgs(tiles, trained_encoder, batch_size, nb_workers):
     '''
-    access and extract the encode with trained ViT model
+    access and extract the encode with trained ViT model or ResNet model
     for a list of tiles
     
     Return:
         tiles_encodes_nd: (t, k) - (tiles_number * encode_dim)
     '''
-    trained_vit.eval()
+    trained_encoder.eval()
     
     # prepare the tile list dataloader
     transform = functions.get_zoom_transform()
-    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
-    vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
+    tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
+    tiles_dataloader = functions.get_data_loader(dataset=tiles_set,
                                                      batch_size=batch_size,
                                                      num_workers=nb_workers,
                                                      sf=False, p_mem=True)
@@ -43,9 +43,9 @@ def access_encodes_vit(tiles, trained_vit, batch_size, nb_workers):
         
     tiles_en_nd = None
     with torch.no_grad():
-        for X in vis_tiles_dataloader:
+        for X in tiles_dataloader:
             X = X.cuda()
-            e = trained_vit.backbone(X)
+            e = trained_encoder.backbone(X)
             e_nd = e.detach().cpu().numpy()
             # t, k
             if tiles_en_nd is None:
@@ -89,10 +89,10 @@ def avg_neigb_encodes(tiles_en_nd, tile_loc_dict, key_encode_tuple):
     
 def avg_dilated_neigb_encodes():
     '''
+    TODO:
     '''
     
     
-
 ''' 
 functions family for combined encoding the tile's feature and its regional context's semantic 
 '''

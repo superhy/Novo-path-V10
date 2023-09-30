@@ -65,7 +65,7 @@ def filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list, slide_a
     return attK_slide_tiles_list
     
 
-def filter_slides_posKtiles(slide_attscores_dict, slide_tileidxs_dict,
+def filter_slides_posKtiles(slide_attscores_dict, slides_tileidxs_dict,
                             K, R_K=0, top_range=0.05, buf_range=[0.05, 0.5]):
     """
     pick K + R_K tiles (attention and supplementary tiles)
@@ -86,8 +86,8 @@ def filter_slides_posKtiles(slide_attscores_dict, slide_tileidxs_dict,
     filter_trainK_slide_tileidx_dict = {}
     reusable_slide_pos_pickpool_dict = {}
     reusable_slide_rand_pickpool_dict = {}
-    for slide_id in slide_tileidxs_dict.keys():
-        slide_tileidx_array = np.array(slide_tileidxs_dict[slide_id])
+    for slide_id in slides_tileidxs_dict.keys():
+        slide_tileidx_array = np.array(slides_tileidxs_dict[slide_id])
         slide_attscores = slide_attscores_dict[slide_id]
 
         order = np.argsort(slide_attscores)
@@ -114,7 +114,7 @@ def filter_slides_posKtiles(slide_attscores_dict, slide_tileidxs_dict,
     return filter_trainK_slide_tileidx_dict, reusable_slide_pos_pickpool_dict, reusable_slide_rand_pickpool_dict
 
 
-def filter_slides_posKtiles_fromloader(slidemat_loader, attpool_net, slide_tileidxs_dict,
+def filter_slides_posKtiles_fromloader(slidemat_loader, attpool_net, slides_tileidxs_dict,
                                        K, R_K, top_range=0.05, buf_range=[0.05, 0.5]):
     """
     pick K + R_K tiles (attention and supplementary tiles) with slidemat DataLoader
@@ -123,14 +123,14 @@ def filter_slides_posKtiles_fromloader(slidemat_loader, attpool_net, slide_tilei
     Args:
         slidemat_loader: 
         attpool_net:
-        slide_tileidxs_dict:
+        slides_tileidxs_dict:
         K:
         R_K: 
     """
     slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
                                                                    cutoff_padding=True, norm=True)
     filter_trainK_slide_tileidx_dict, reusable_slide_pos_pickpool_dict, reusable_slide_rand_pickpool_dict = filter_slides_posKtiles(slide_attscores_dict,
-                                                                                                                                    slide_tileidxs_dict,
+                                                                                                                                    slides_tileidxs_dict,
                                                                                                                                     K, R_K,
                                                                                                                                     top_range, buf_range)
             
@@ -296,10 +296,10 @@ class LCSB_MIL():
         
         # make tiles data
         if test_mode is False:
-            self.train_tiles_list, _, self.train_slide_tileidxs_dict = load_richtileslist_fromfile(self.ENV_task, for_train=True)
+            self.train_tiles_list, _, self.train_slides_tileidxs_dict = load_richtileslist_fromfile(self.ENV_task, for_train=True)
         else:
             ''' for test mode '''
-            self.train_tiles_list, self.train_slide_tileidxs_dict = [], None
+            self.train_tiles_list, self.train_slides_tileidxs_dict = [], None
         self.test_tiles_list, _, self.test_slide_tileidxs_dict = load_richtileslist_fromfile(self.ENV_task,
                                                                                              for_train=False if not self.ENV_task.DEBUG_MODE else True)
         
@@ -466,7 +466,7 @@ class LCSB_MIL():
                                                                   num_workers=self.slidemat_loader_num_workers, sf=False) 
                 train_filter_K_slide_tileidx_dict, reusable_slide_pos_pickpool_dict, reusable_slide_rand_pickpool_dict = filter_slides_posKtiles_fromloader(slidemat_loader=train_slidemat_loader,
                                                                                                                                                             attpool_net=self.aggregator,
-                                                                                                                                                            slide_tileidxs_dict=self.train_slide_tileidxs_dict,
+                                                                                                                                                            slides_tileidxs_dict=self.train_slides_tileidxs_dict,
                                                                                                                                                             K=self.att_K, R_K=self.rand_K,
                                                                                                                                                             top_range=self.top_range,
                                                                                                                                                             buf_range=self.buf_range)

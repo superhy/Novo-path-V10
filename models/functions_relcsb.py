@@ -210,13 +210,13 @@ class RevgLCSB_MIL(LCSB_MIL):
                                                                   num_workers=self.slidemat_loader_num_workers, sf=False)
                 train_filter_K_slide_tileidx_dict, reusable_slide_pos_pickpool_dict, reusable_slide_rand_pickpool_dict = filter_slides_posKtiles_fromloader(slidemat_loader=train_slidemat_loader,
                                                                                                                                                             attpool_net=self.aggregator,
-                                                                                                                                                            slide_tileidxs_dict=self.train_slide_tileidxs_dict,
+                                                                                                                                                            slides_tileidxs_dict=self.train_slides_tileidxs_dict,
                                                                                                                                                             K=self.att_K, R_K=self.rand_K,
                                                                                                                                                             top_range=self.top_range,
                                                                                                                                                             buf_range=self.buf_range)
                 train_filter_negN_slide_tileidx_dict, reusable_slide_neg_pickpool_dict = filter_slides_negNtiles_fromloader(slidemat_loader=train_slidemat_loader,
                                                                                                                             attpool_net=self.aggregator,
-                                                                                                                            slide_tileidxs_dict=self.train_slide_tileidxs_dict,
+                                                                                                                            slide_tileidxs_dict=self.train_slides_tileidxs_dict,
                                                                                                                             N=self.revg_N, last_range=self.last_range)
                 del train_slidemat_loader
                 gc.collect()

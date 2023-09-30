@@ -108,7 +108,7 @@ def encode_tiles_4slides(tile_loader, en_net, slide_id='N/A', print_info=True):
         if print_info == True:
             print('get the tiles encoding matrix for slide: {}'.format(slide_id))
             
-    return slide_matrix   
+    return slide_matrix
 
 
 def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num_workers, encoder_net, for_train=True, print_info=True):

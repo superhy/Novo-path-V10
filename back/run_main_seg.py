@@ -5,7 +5,8 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 import sys
 
-from models import functions_monu_seg, functions_gtex_seg
+from models import functions_monu_seg
+from back import functions_gtex_seg
 from wsi.process import _run_gtexseg_slide_tiles_split
 # from support import env_monuseg, env_gtex_seg
 from support import tools
