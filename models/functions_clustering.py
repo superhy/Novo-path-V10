@@ -233,7 +233,7 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
 
 ''' ------------ select top attention tiles for un-supervised analysis ------------ '''
   
-def select_top_att_tiles(ENV_task, attpool_net, K_ratio):
+def select_top_att_tiles(ENV_task, attpool_net, tile_encoder, K_ratio=0.3):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -247,6 +247,7 @@ def select_top_att_tiles(ENV_task, attpool_net, K_ratio):
         
     _, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(ENV_task)
     
+    # TODO: using <check_load_slide_matrix_files>, need to load an encoder
     slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
                                                                    cutoff_padding=True, norm=True)
     
@@ -254,6 +255,9 @@ def select_top_att_tiles(ENV_task, attpool_net, K_ratio):
     for slide_id in slides_tileidxs_dict.keys():
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
         slide_attscores = slide_attscores_dict[slide_id]
+        
+        nb_tiles = len(slide_tileidxs_list)
+        K = nb_tiles * K_ratio
         k_slide_tiles_list = functions_lcsb.filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list,
                                                                             slide_attscores, K)
         att_all_tiles_list.extend(k_slide_tiles_list)

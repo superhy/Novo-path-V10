@@ -69,15 +69,14 @@ def slide_tiles_split_keep_object_u(ENV_task):
     
     _env_slide_dir = ENV_task.SLIDE_FOLDER
     _env_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
-    stain_type= ENV_task.STAIN_TYPE
     
     ''' load all slides '''
     slide_path_list = parse_filesystem_slide(_env_slide_dir)
     for i, slide_path in enumerate(slide_path_list):
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(slide_path)
-        if stain_type == 'PSR':
+        if ENV_task.STAIN_TYPE == 'PSR':
             np_small_filtered_img = filter_tools.apply_image_filters_psr(np_small_img)
-        elif stain_type == 'CD45':
+        elif ENV_task.STAIN_TYPE == 'CD45':
             np_small_filtered_img = filter_tools.apply_image_filters_cd45(np_small_img)
         elif ENV_task.STAIN_TYPE == 'P62':
             np_small_filtered_img = filter_tools.apply_image_filters_p62(np_small_img)
