@@ -13,7 +13,8 @@ from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 
-from models import datasets, functions_attpool, functions_lcsb
+from models import datasets, functions_attpool, functions_lcsb, functions,\
+    networks
 from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
@@ -191,7 +192,7 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder, reg_encoder,
     return tiles_richencode_tuples
 
 
-def load_tiles_graph_en_rich_tuples(ENV_task, encoder):
+def load_tiles_graph_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
     '''
     '''
     tiles_richencode_tuples = []
@@ -233,12 +234,33 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
 
 ''' ------------ select top attention tiles for un-supervised analysis ------------ '''
   
-def select_top_att_tiles(ENV_task, attpool_net, tile_encoder, K_ratio=0.3):
+def select_top_att_tiles(ENV_task, attpool_net, tile_encoder, 
+                         agt_model_filenames, label_dict,
+                         K_ratio=0.3):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
+    
+    Args:
+        ENV_task:
+        attpool_net: aggregator, unloaded, need to load here
+        tile_encoder: encoder, loaded
+        agt_model_filenames: multi-fold aggregator trained model files, for loading here
+        label_dict: <SlideMatrix_Dataset> initialize need it
+        K_ratio: for calculating K for each slide, with a fixed ratio
     '''
+    
+    def average_vectors(list_of_vectors):
+        array = np.array(list_of_vectors)
+        average_vector = np.mean(array, axis=0)
+        return average_vector.tolist()
+    
     slides_tiles_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
+    batch_size_ontiles = ENV_task.MINI_BATCH_TILE
+    tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
+    batch_size_onslides = ENV_task.MINI_BATCH_SLIDEMAT
+    slidemat_loader_num_workers = ENV_task.SLIDEMAT_DATALOADER_WORKER
+    
     
     tiles_all_list = []
     for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
@@ -247,19 +269,36 @@ def select_top_att_tiles(ENV_task, attpool_net, tile_encoder, K_ratio=0.3):
         
     _, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(ENV_task)
     
-    # TODO: using <check_load_slide_matrix_files>, need to load an encoder
-    slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
-                                                                   cutoff_padding=True, norm=True)
+    slide_matrix_file_sets = functions_attpool.check_load_slide_matrix_files(ENV_task, 
+                                                                             batch_size_ontiles, 
+                                                                             tile_loader_num_workers, 
+                                                                             encoder_net=tile_encoder, 
+                                                                             force_refresh=False)
+    slidemat_set = datasets.SlideMatrix_Dataset(slide_matrix_file_sets, label_dict)
+    slidemat_loader = functions.get_data_loader(slidemat_set, batch_size_onslides, slidemat_loader_num_workers, 
+                                                sf=False, p_mem=False)
+    # load multi-fold attention scores
+    slide_attscores_dict_list = []
+    for agt_model_name in agt_model_filenames:
+        attpool_net = networks.reload_net(attpool_net, os.path.join(ENV_task.MODEL_FOLDER, agt_model_name) )
+        slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
+                                                                       cutoff_padding=True, norm=True)
+        slide_attscores_dict_list.append(slide_attscores_dict_list)
     
     att_all_tiles_list = []
     for slide_id in slides_tileidxs_dict.keys():
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
-        slide_attscores = slide_attscores_dict[slide_id]
+        # calculate the attention score (average) from multi-fold
+        list_of_attscores = []
+        for slide_attscores_dict in slide_attscores_dict_list:
+            slide_attscores = slide_attscores_dict[slide_id]
+            list_of_attscores.append(slide_attscores)
+        avg_attscores = average_vectors(list_of_attscores)
         
         nb_tiles = len(slide_tileidxs_list)
         K = nb_tiles * K_ratio
         k_slide_tiles_list = functions_lcsb.filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list,
-                                                                            slide_attscores, K)
+                                                                            avg_attscores, K)
         att_all_tiles_list.extend(k_slide_tiles_list)
         
     return att_all_tiles_list
@@ -271,7 +310,7 @@ class Instance_Clustering():
     '''
 
     def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode',
-                 tiles_r_tuples_pkl_name=None, exist_clustering=None,
+                 tiles_r_tuples_pkl_name=None, attention_tiles_list=None, exist_clustering=None,
                  reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
         '''
         Args:
@@ -299,6 +338,7 @@ class Instance_Clustering():
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
         self.n_clusters = ENV_task.NUM_CLUSTERS
+        self.attention_tiles_list = attention_tiles_list
         
         self.reg_encoder, self.comb_layer = None, None
         if self.embed_type in ['region_ctx']:
@@ -326,15 +366,18 @@ class Instance_Clustering():
         
     def gen_tiles_richencode_tuples(self):
         if self.embed_type == 'encode':
-            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                load_tile_list=self.attention_tiles_list)
         elif self.embed_type == 'neb_encode':
-            tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                    load_tile_list=self.attention_tiles_list)
         elif self.embed_type == 'region_ctx':
             tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                          self.reg_encoder, self.comb_layer,
-                                                                          self.ctx_type)
+                                                                          self.reg_encoder, self.comb_layer, self.ctx_type,
+                                                                          load_tile_list=self.attention_tiles_list)
         elif self.embed_type == 'graph':
-            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                      load_tile_list=self.attention_tiles_list)
         else:
             # default use the 'encode' mode
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
@@ -665,7 +708,6 @@ def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=No
         else:
             res_dict[res_tuple[0]] += 1
     print(res_dict)
-
     
 def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
@@ -684,7 +726,6 @@ def _run_kmeans_neb_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_nam
         else:
             res_dict[res_tuple[0]] += 1
     print(res_dict)
-
     
 def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
                                           reg_vit_pt_name,
@@ -734,8 +775,7 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     
     
 ''' ---- some other clustering algorithm ---- '''
-
-    
+ 
 def _run_meanshift_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)

@@ -128,6 +128,8 @@ ENV_FLINC_P62_REG_PT = parames_task(
     seg_num_epoch=20000 # @deprecated
     )
 
+
+
 ENV_FLINC_P62_BALL_BI = parames_task(
     project_name=ENV.PROJECT_NAME,
     scale_factor=ENV.SCALE_FACTOR,

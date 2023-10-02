@@ -19,7 +19,7 @@ from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_iso_spatmap, _run_plot_slides_levels_spatmap
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
-from interpre.plot_slide_heat import _plot_draw_scaled_slide_imgs
+from interpre.plot_tis_heat import _plot_draw_scaled_slide_imgs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
     _run_plot_vit_heads_map, _run_plot_reg_ass_homotiles_slides, \
     _run_plot_reg_ctx_g_homotiles_slides
