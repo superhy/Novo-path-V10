@@ -67,8 +67,8 @@ if __name__ == '__main__':
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         
         ''' P62 '''
-        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
-        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
+        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-09-04.pkl' # clst-6 reg
+        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-encode_unsupervised2023-09-18.pkl' # clst-6
         
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
