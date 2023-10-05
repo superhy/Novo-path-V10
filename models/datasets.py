@@ -147,7 +147,7 @@ class Simple_Tile_Dataset(Dataset):
 
 class SlideMatrix_Dataset(Dataset):
     
-    def __init__(self, slide_matrix_file_sets, label_dict, preload_slide_matrix_sets=None):
+    def __init__(self, slide_matrix_file_sets, label_dict, preload_slide_matrix_sets=None, label_free=False):
         '''
         Args:
             slide_matrix_file_sets: list: [(slide_id, len of tiles in this slide, slide matrix numpy filepath),
@@ -163,6 +163,7 @@ class SlideMatrix_Dataset(Dataset):
         self.label_dict = label_dict
         self.slide_matrix_sets = preload_slide_matrix_sets
         self.batch_loader = True
+        self.label_free = label_free # don't need the label like only query the attention values
         
         if self.slide_matrix_sets != None:
             self.batch_loader = False
@@ -195,14 +196,14 @@ class SlideMatrix_Dataset(Dataset):
             case_id = parse_caseid_from_slideid(slide_id)
             matrix = self.slide_matrix_sets[index][2]
             bag_dim = self.slide_matrix_sets[index][1]
-            label = self.label_dict[case_id]
+            label = 0 if self.label_free else self.label_dict[case_id]
             return matrix, bag_dim, label
         else:
             slide_id = self.slide_matrix_file_sets[index][0]
             case_id = parse_caseid_from_slideid(slide_id)
             matrix = np.load(self.slide_matrix_file_sets[index][2])
             bag_dim = self.slide_matrix_file_sets[index][1]
-            label = self.label_dict[case_id]
+            label = 0 if self.label_free else self.label_dict[case_id]
             return matrix, bag_dim, label
             
     def __len__(self):

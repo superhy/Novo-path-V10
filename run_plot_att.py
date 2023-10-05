@@ -26,5 +26,4 @@ if __name__ == '__main__':
         
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name)
     
-        
-        
+    

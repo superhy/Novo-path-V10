@@ -143,13 +143,22 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
     return org_np_img, heat_np, heat_med_style, heat_med_grad, attK_tiles_list
 
 
-def check_surrounding(heat_np, h, w, fill=3): 
-    # print(heat_np)
-    (H, W) = heat_np.shape
+def check_surrounding(state_map, h, w, fill=3):
+    '''
+    check the localised context if have hot spots enough
+    
+    Args:
+        state_map: the activate state map on whole picture (could be heat_np for instance)
+        h, w: position of point need to be check
+        fill: threshold to check if this point should be included as well
+    '''
+     
+    # print(state_map)
+    (H, W) = state_map.shape
     moves = [[-1, -1], [-1, 0], [-1, +1],
              [ 0, -1], [ 0, 0], [ 0, +1],
              [+1, -1], [+1, 0], [+1, +1]]
-    # print(np.max(heat_np))
+    # print(np.max(state_map))
     
     nb_surd = 0
     sum_surd = 0.0
@@ -157,11 +166,11 @@ def check_surrounding(heat_np, h, w, fill=3):
         p_h, p_w = h + m[0], w + m[1]
         if p_h < 0 or p_w < 0 or p_h >= H or p_w >= W:
             continue
-        if heat_np[p_h, p_w] > 0.0:
+        if state_map[p_h, p_w] > 0.0:
             # print('shot surd for: ', (h, w))
             nb_surd += 1
-            sum_surd += heat_np[p_h, p_w]
-    if heat_np[h, w] > 0.0:
+            sum_surd += state_map[p_h, p_w]
+    if state_map[h, w] > 0.0:
         stat = False # already activate, no need to change
     else:
         stat = nb_surd >= fill

@@ -286,7 +286,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
     else:
         attpool_net = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
     
-    slidemat_set = datasets.SlideMatrix_Dataset(slide_matrix_file_sets, label_dict)
+    slidemat_set = datasets.SlideMatrix_Dataset(slide_matrix_file_sets, label_dict, label_free=True)
     slidemat_loader = functions.get_data_loader(slidemat_set, batch_size_onslides, slidemat_loader_num_workers, 
                                                 sf=False, p_mem=False)
     # load multi-fold attention scores
