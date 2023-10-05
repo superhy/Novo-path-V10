@@ -393,8 +393,8 @@ def df_lobular_tis_pct_groups(ENV_task, slide_iso_gath_nb_dict, lobular_label_fn
         tissue_pct_dict = slide_iso_gath_nb_dict[slide_id]
             
         # add iso tile element and gath tile element
-        all_tis_pct_tuples.append(['iso tiles', tissue_pct_dict[0], lob_label_str])
-        all_tis_pct_tuples.append(['gath tiles', tissue_pct_dict[1], lob_label_str])
+        all_tis_pct_tuples.append(['indicative Lobular-inf', tissue_pct_dict[0], lob_label_str])
+        all_tis_pct_tuples.append(['indicative (peri-)portal-inf', tissue_pct_dict[1], lob_label_str])
     
     df_alllob_tis_pct_elemts = pd.DataFrame(all_tis_pct_tuples,
                                             columns=['groups', 'tissue_percentage', 'lobular_label'])
@@ -521,6 +521,7 @@ def df_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts, lobular_l
                        data=df_alllob_tis_pct_elemts, hue='lobular_label')
     ax_1.set_title('tis-pct in lob/non-lob slides ((c-%d))' % clst_lbl)
     
+    plt.xticks(rotation=45)
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
@@ -538,13 +539,14 @@ def dfs_plot_lobular_gp_tis_pct_box(ENV_task, df_alllob_tis_pct_elemts_list,
                     'healthy volunteers': 'gray'}
     
     nb_row = int((len(df_alllob_tis_pct_elemts_list) + 1) / 5)
-    fig = plt.figure(figsize=(3.5 * 5, 5 * nb_row))
+    fig = plt.figure(figsize=(3.5 * 5, 7 * nb_row))
     
     for i, df_alllob_prop_elemts in enumerate(df_alllob_tis_pct_elemts_list):
         ax_th = fig.add_subplot(nb_row, 5, i + 1)
         ax_th = sns.boxplot(x='groups', y='tissue_percentage', palette=palette_dict,
                             data=df_alllob_prop_elemts, hue='lobular_label')
         ax_th.set_title('iso-th: %.2f nb_tiles ((c-%d))' % (iso_th_list[i], clst_lbl))
+        ax_th.tick_params(axis='x', rotation=45)
         
     plt.tight_layout()
     lbl_suffix = lobular_label_fname[:lobular_label_fname.find('.csv')].split('_')[-1]

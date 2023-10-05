@@ -3,6 +3,7 @@
 '''
 
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
     _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters, \
@@ -16,9 +17,6 @@ from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides, \
     _run_reg_ass_sp_clst_homotiles_slides
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr, env_flinc_p62
-
-
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 

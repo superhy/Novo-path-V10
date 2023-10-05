@@ -12,13 +12,14 @@ from sklearn.cluster._dbscan import DBSCAN
 from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
+import torch
 
-from models import datasets, functions_attpool, functions_lcsb, functions,\
+from models import datasets, functions_attpool, functions_lcsb, functions, \
     networks
 from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
-    check_reuse_net
+    check_reuse_net, GatedAttentionPool, AttentionPool
 import numpy as np
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
 from support.tools import Time
@@ -234,26 +235,30 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
 
 ''' ------------ select top attention tiles for un-supervised analysis ------------ '''
   
-def select_top_att_tiles(ENV_task, attpool_net, tile_encoder, 
+def select_top_att_tiles(ENV_task, tile_encoder, 
                          agt_model_filenames, label_dict,
-                         K_ratio=0.3):
+                         K_ratio=0.3, att_thd=0.25):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
     
     Args:
         ENV_task:
-        attpool_net: aggregator, unloaded, need to load here
-        tile_encoder: encoder, loaded
+        attpool_net: aggregator, unloaded, !!! need to load here !!!
+        tile_encoder: encoder, loaded, must contains the backbone
         agt_model_filenames: multi-fold aggregator trained model files, for loading here
         label_dict: <SlideMatrix_Dataset> initialize need it
         K_ratio: for calculating K for each slide, with a fixed ratio
+        
+    Return:
+        att_all_tiles_list:
+        slide_k_tiles_atts_dict:
     '''
     
     def average_vectors(list_of_vectors):
         array = np.array(list_of_vectors)
         average_vector = np.mean(array, axis=0)
-        return average_vector.tolist()
+        return average_vector
     
     slides_tiles_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
     batch_size_ontiles = ENV_task.MINI_BATCH_TILE
@@ -272,20 +277,32 @@ def select_top_att_tiles(ENV_task, attpool_net, tile_encoder,
     slide_matrix_file_sets = functions_attpool.check_load_slide_matrix_files(ENV_task, 
                                                                              batch_size_ontiles, 
                                                                              tile_loader_num_workers, 
-                                                                             encoder_net=tile_encoder, 
+                                                                             encoder_net=tile_encoder.backbone, 
                                                                              force_refresh=False)
+    # embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
+    embedding_dim = 512
+    if agt_model_filenames[0].find('GatedAttPool') != -1:
+        attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+    else:
+        attpool_net = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
+    
     slidemat_set = datasets.SlideMatrix_Dataset(slide_matrix_file_sets, label_dict)
     slidemat_loader = functions.get_data_loader(slidemat_set, batch_size_onslides, slidemat_loader_num_workers, 
                                                 sf=False, p_mem=False)
     # load multi-fold attention scores
     slide_attscores_dict_list = []
     for agt_model_name in agt_model_filenames:
-        attpool_net = networks.reload_net(attpool_net, os.path.join(ENV_task.MODEL_FOLDER, agt_model_name) )
+        attpool_net, _ = networks.reload_net(attpool_net, os.path.join(ENV_task.MODEL_FOLDER, agt_model_name) )
+        attpool_net = attpool_net.cuda()
         slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
                                                                        cutoff_padding=True, norm=True)
-        slide_attscores_dict_list.append(slide_attscores_dict_list)
+        slide_attscores_dict_list.append(slide_attscores_dict)
+        # release the CUDA memory
+        attpool_net = attpool_net.cpu()
+        torch.cuda.empty_cache()
     
     att_all_tiles_list = []
+    slide_k_tiles_atts_dict = {}
     for slide_id in slides_tileidxs_dict.keys():
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
         # calculate the attention score (average) from multi-fold
@@ -294,14 +311,18 @@ def select_top_att_tiles(ENV_task, attpool_net, tile_encoder,
             slide_attscores = slide_attscores_dict[slide_id]
             list_of_attscores.append(slide_attscores)
         avg_attscores = average_vectors(list_of_attscores)
+        # print(avg_attscores, len(avg_attscores))
         
         nb_tiles = len(slide_tileidxs_list)
-        K = nb_tiles * K_ratio
-        k_slide_tiles_list = functions_lcsb.filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list,
-                                                                            avg_attscores, K)
+        # print(nb_tiles)
+        K = int(nb_tiles * K_ratio)
+        k_slide_tiles_list, k_attscores = functions_lcsb.filter_singlesldie_top_thd_attKtiles(tiles_all_list, slide_tileidxs_list,
+                                                                                              avg_attscores, K, att_thd)
         att_all_tiles_list.extend(k_slide_tiles_list)
+        # print(len(k_slide_tiles_list))
+        slide_k_tiles_atts_dict[slide_id] = (k_slide_tiles_list, k_attscores)
         
-    return att_all_tiles_list
+    return att_all_tiles_list, slide_k_tiles_atts_dict
     
 
 class Instance_Clustering():
@@ -690,7 +711,6 @@ def refine_sp_cluster_levels(clustering_res_pkg, tgt_lbl, radius,
     
 ''' ------------------ use kmeans ------------------- '''
 
-
 def _run_kmeans_encode_vit_6_8(ENV_task, vit_pt_name, tiles_r_tuples_pkl_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
@@ -772,6 +792,11 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
         else:
             res_dict[res_tuple[0]] += 1
     print(res_dict)
+    
+def _run_kmeans_attKtiles_encode_resnet18(ENV_task):
+    '''
+    TODO:
+    '''
     
     
 ''' ---- some other clustering algorithm ---- '''

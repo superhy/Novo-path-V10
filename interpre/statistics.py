@@ -14,6 +14,65 @@ from support.files import parse_23910_clinicalid_from_slideid
 from support.metadata import parse_flinc_clinical_elsx
 
 
+def df_cd45_cg_tis_pct_lob_score_corr(ENV_task, slide_tis_pct_dict):
+    '''
+    count the correlation between tissue percentage and lobular_inflammation_score
+    tissue percentage was checked for iso/gath tiles in specific cluster(c) and group(g)
+    
+    return a dataFrame
+    '''
+    
+    # clinical metadata file name
+    cmeta_name = 'FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'
+    xlsx_path_clinical = '{}/{}'.format(ENV_task.META_FOLDER, cmeta_name)
+    ''' clinical_label_dicts['col_label'][clinical_id] = score value / stage rank, etc. '''
+    clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
+    clinical_lob_dict = clinical_label_dicts['lobular_inflammation_score']
+    
+    tis_pct_lob_tuples = []
+    for slide_id in slide_tis_pct_dict.keys():
+        clinical_id = parse_23910_clinicalid_from_slideid(slide_id)
+        tis_pct_dict = slide_tis_pct_dict[slide_id]
+        if clinical_id.find('HV') == -1 and int(clinical_id) not in clinical_lob_dict.keys():
+            warnings.warn('there is no such slide in the record!')
+            continue
+        
+        lob_label = ''
+        if clinical_id.startswith('HV'):
+            lob_label = 'HV'
+        else:
+            lob_label = 'Lob-Inf-' + str(clinical_lob_dict[int(clinical_id)])
+            
+        tis_pct_lob_tuples.append([lob_label, tis_pct_dict[0], 'indicative Lobular-inf']) 
+        tis_pct_lob_tuples.append([lob_label, tis_pct_dict[1], 'indicative (peri-)portal-inf'])
+        
+    df_tis_pct_lob_elemts = pd.DataFrame(tis_pct_lob_tuples,
+                                         columns=['lobular_inflammation_score', 'tissue_percentage', 'groups'])
+    print(df_tis_pct_lob_elemts)
+    return df_tis_pct_lob_elemts
+
+def df_plot_cd45_cg_tp_lob_box(ENV_task, df_tis_pct_lob_elemts):
+    '''
+    plot the cluster special group tissue percentage to fibrosis score in box chart
+    '''
+    palette_dict = {'indicative Lobular-inf': 'hotpink',
+                    'indicative (peri-)portal-inf': 'dodgerblue'}
+    order = ['HV', 'Lob-Inf-0', 'Lob-Inf-1', 'Lob-Inf-2', 'Lob-Inf-3']
+    df_tis_pct_lob_elemts['lobular_inflammation_score'] = pd.Categorical(df_tis_pct_lob_elemts['lobular_inflammation_score'], 
+                                                                         categories=order, ordered=True)
+
+    
+    fig = plt.figure(figsize=(6.2, 3.5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1 = sns.boxplot(x='lobular_inflammation_score', y='tissue_percentage', palette=palette_dict,
+                       data=df_tis_pct_lob_elemts, hue='groups')
+    ax_1.set_title('cd45 groups (specific cluster) tissue percentage to lobular-inflammation score')
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(ENV_task.STATISTIC_STORE_DIR, 'ref-group_tp-lob_score-box.png'))
+    print('store the picture in {}'.format(ENV_task.STATISTIC_STORE_DIR))
+    plt.close(fig)
+
 def df_cd45_cg_tis_pct_fib_score_corr(ENV_task, slide_tis_pct_dict):
     '''
     count the correlation between tissue percentage and fibrosis score
@@ -43,8 +102,8 @@ def df_cd45_cg_tis_pct_fib_score_corr(ENV_task, slide_tis_pct_dict):
         else:
             fib_label = 'Fib-' + str(clinical_fib_dict[int(clinical_id)])
             
-        tis_pct_fib_tuples.append([fib_label, tis_pct_dict[0], 'iso tiles']) 
-        tis_pct_fib_tuples.append([fib_label, tis_pct_dict[1], 'gath tiles'])
+        tis_pct_fib_tuples.append([fib_label, tis_pct_dict[0], 'indicative Lobular-inf']) 
+        tis_pct_fib_tuples.append([fib_label, tis_pct_dict[1], 'indicative (peri-)portal-inf'])
         
     df_tis_pct_fib_elemts = pd.DataFrame(tis_pct_fib_tuples,
                                          columns=['fibrosis_score', 'tissue_percentage', 'groups'])
@@ -55,8 +114,8 @@ def df_plot_cd45_cg_tp_fib_box(ENV_task, df_tis_pct_fib_elemts):
     '''
     plot the cluster special group tissue percentage to fibrosis score in box chart
     '''
-    palette_dict = {'iso tiles': 'lightcoral',
-                    'gath tiles': 'turquoise'}
+    palette_dict = {'indicative Lobular-inf': 'lightcoral',
+                    'indicative (peri-)portal-inf': 'turquoise'}
     order = ['HV', 'Fib-0', 'Fib-1', 'Fib-2', 'Fib-3', 'Fib-4']
     df_tis_pct_fib_elemts['fibrosis_score'] = pd.Categorical(df_tis_pct_fib_elemts['fibrosis_score'], 
                                                              categories=order, ordered=True)

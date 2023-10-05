@@ -32,7 +32,7 @@ def safe_random_sample(pickpool, K):
         return pickpool
 
 
-def filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list, slide_attscores, K,
+def filter_singlesldie_top_attKtiles(tiles_all_list, slide_tileidxs_list, slide_attscores, K,
                                     reverse=False):
     """
     Args:
@@ -63,6 +63,54 @@ def filter_singlesldie_topattKtiles(tiles_all_list, slide_tileidxs_list, slide_a
         attK_slide_tiles_list.append(tiles_all_list[idx])
         
     return attK_slide_tiles_list
+
+
+def filter_singlesldie_top_thd_attKtiles(tiles_all_list, slide_tileidxs_list, slide_attscores, K, thd=0.5,
+                                         reverse=False):
+    """
+    This one will set a threshold to make sure that every filtered tile has attention score > thd
+    And will return the sorted attention scores (picked part) as well.
+    
+    Args:
+        tiles_all_list: tiles list with all tiles in (training / testing) set 
+        slide_tileidxs_list: list contains the tiles' idx for the slide,
+            each idx is corresponding with the original all tiles list
+        slide_attscores: numpy slide_attscores with same sequence as in <slide_tileidxs_list>
+        thd: 
+        
+        reverse: if sort the top K tiles but with the lowest attention value, default = False
+        
+    Return:
+        attK_slide_tiles_list (type = list): list of top-K attentional tiles for the inputed slide
+        
+    """
+    slide_tileidx_array = np.array(slide_tileidxs_list)
+    
+    order = np.argsort(slide_attscores)
+    
+    if reverse is False:
+        # from max to min
+        slide_tileidx_sort_array = np.flipud(slide_tileidx_array[order])
+        sort_attscores = np.flipud(slide_attscores[order])
+    else:
+        # from min to max
+        slide_tileidx_sort_array = slide_tileidx_array[order]
+        sort_attscores = slide_attscores[order]
+    # print('sorted: ', sort_attscores)
+        
+    if thd is not None:
+        thd_idx = np.where(sort_attscores < thd)[0][0] if reverse is False else np.where(sort_attscores > thd)[0][0]
+        thd_K = thd_idx if thd_idx < K else K
+    else:
+        thd_K = K
+    slide_K_tileidxs = slide_tileidx_sort_array.tolist()[:thd_K]
+    # print(np.where(sort_attscores > thd)[0][0])
+    
+    attK_slide_tiles_list = []
+    for idx in slide_K_tileidxs:
+        attK_slide_tiles_list.append(tiles_all_list[idx])
+        
+    return attK_slide_tiles_list, sort_attscores[:thd_K]
     
 
 def filter_slides_posKtiles(slide_attscores_dict, slides_tileidxs_dict,
