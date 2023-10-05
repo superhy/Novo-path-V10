@@ -280,7 +280,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
                                                                              encoder_net=tile_encoder.backbone, 
                                                                              force_refresh=False)
     # embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
-    embedding_dim = 512
+    embedding_dim = 512 # TODO: change back
     if agt_model_filenames[0].find('GatedAttPool') != -1:
         attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
     else:
@@ -323,7 +323,58 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         slide_k_tiles_atts_dict[slide_id] = (k_slide_tiles_list, k_attscores)
         
     return att_all_tiles_list, slide_k_tiles_atts_dict
+
+def check_surrounding(state_map, h, w, fill=3):
+    '''
+    check the localised context if have hot spots enough
     
+    Args:
+        state_map: the activate state map on whole picture (could be heat_np for instance)
+        h, w: position of point need to be check
+        fill: threshold to check if this point should be included as well
+    '''
+     
+    # print(state_map)
+    (H, W) = state_map.shape
+    moves = [[-1, -1], [-1, 0], [-1, +1],
+             [ 0, -1], [ 0, 0], [ 0, +1],
+             [+1, -1], [+1, 0], [+1, +1]]
+    # print(np.max(state_map))
+    
+    nb_surd = 0
+    sum_surd = 0.0
+    for m in moves:
+        p_h, p_w = h + m[0], w + m[1]
+        if p_h < 0 or p_w < 0 or p_h >= H or p_w >= W:
+            continue
+        if state_map[p_h, p_w] > 0.0:
+            # print('shot surd for: ', (h, w))
+            nb_surd += 1
+            sum_surd += state_map[p_h, p_w]
+    if state_map[h, w] > 0.0:
+        stat = False # already activate, no need to change
+    else:
+        stat = nb_surd >= fill
+    avg_surd = sum_surd / nb_surd if nb_surd > 0 else 0.0
+    return stat, avg_surd
+
+def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores):
+    '''
+    if a spot is surrounded by attention patches, we are going to fill it as the attention one
+    '''
+    slide_np, _ = k_slide_tiles_list[0].get_np_scaled_slide()
+    H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
+    W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
+    
+    heat_np = np.zeros((H, W), dtype=np.float64)
+    for i, att_score in enumerate(k_attscores):
+        h = k_slide_tiles_list[i].h_id - 1 
+        w = k_slide_tiles_list[i].w_id - 1
+        if h >= H or w >= W or h < 0 or w < 0:
+            warnings.warn('Out of range coordinates.')
+            continue
+        heat_np[h, w] = att_score
+    print('originally attention tiles: ', len(k_attscores) )
 
 class Instance_Clustering():
     '''

@@ -17,16 +17,16 @@ import torch
 from torch.nn.functional import softmax
 
 from interpre.prep_tools import store_nd_dict_pkl
-from models import datasets, functions_attpool
+from models import datasets, functions_attpool, functions_clustering
 from models.functions_clustering import select_top_att_tiles
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI
+from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization
 from wsi import image_tools, slide_tools
-from support.metadata import query_task_label_dict_fromcsv
 
 
 def load_slide_tiles_att_score(slide_matrix_info_tuple, attpool_net):
@@ -143,40 +143,6 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
     return org_np_img, heat_np, heat_med_style, heat_med_grad, attK_tiles_list
 
 
-def check_surrounding(state_map, h, w, fill=3):
-    '''
-    check the localised context if have hot spots enough
-    
-    Args:
-        state_map: the activate state map on whole picture (could be heat_np for instance)
-        h, w: position of point need to be check
-        fill: threshold to check if this point should be included as well
-    '''
-     
-    # print(state_map)
-    (H, W) = state_map.shape
-    moves = [[-1, -1], [-1, 0], [-1, +1],
-             [ 0, -1], [ 0, 0], [ 0, +1],
-             [+1, -1], [+1, 0], [+1, +1]]
-    # print(np.max(state_map))
-    
-    nb_surd = 0
-    sum_surd = 0.0
-    for m in moves:
-        p_h, p_w = h + m[0], w + m[1]
-        if p_h < 0 or p_w < 0 or p_h >= H or p_w >= W:
-            continue
-        if state_map[p_h, p_w] > 0.0:
-            # print('shot surd for: ', (h, w))
-            nb_surd += 1
-            sum_surd += state_map[p_h, p_w]
-    if state_map[h, w] > 0.0:
-        stat = False # already activate, no need to change
-    else:
-        stat = nb_surd >= fill
-    avg_surd = sum_surd / nb_surd if nb_surd > 0 else 0.0
-    return stat, avg_surd
-
 def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscores,
                                          boost_rate=2.0):
     """
@@ -215,7 +181,7 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
     fill_heat_np = np.zeros((H, W), dtype=np.float64)
     for i_h in range(H):
         for i_w in range(W):
-            stat, avg_surd = check_surrounding(heat_np, i_h, i_w)
+            stat, avg_surd = functions_clustering.check_surrounding(heat_np, i_h, i_w)
             if stat:
                 nb_fill += 1
                 fill_heat_np[i_h, i_w] = avg_surd
