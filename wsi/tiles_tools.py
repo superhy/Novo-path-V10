@@ -20,9 +20,6 @@ from wsi.filter_tools import tissue_percent
 
 sys.path.append("..")
 
-
-
-
 def tile_to_pil_tile(tile, preload_slide=None):
     """
     Convert tile information into the corresponding tile as a PIL image read from the whole-slide image file.
@@ -381,6 +378,20 @@ def get_slide_tiles(np_scaled_img, shape_set_img, original_slide_filepath,
         
     return tiles_list
 
+def indicate_slide_tile_loc(slide_tiles_list):
+    '''
+    indicate the slide's tiles' location
+    
+    Return:
+        tile_key_loc_dict: {slide_id: {tile_key: location(tile_obj)}}
+            for single slide
+    '''
+    tile_key_loc_dict = {}
+    for i, tile in enumerate(slide_tiles_list):
+        slide_tile_key = '{}-h{}-w{}'.format(tile.query_slideid(),
+                                             tile.h_id, tile.w_id)
+        tile_key_loc_dict[slide_tile_key] = tile
+    return tile_key_loc_dict
 
 if __name__ == '__main__':
     # some test about tile filename generation

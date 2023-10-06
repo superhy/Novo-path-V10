@@ -174,25 +174,25 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
         heat_soft[h, w] = att_score * boost_rate if att_score * boost_rate < 1.0 else 1.0 - 1e-6
         white_mask[h, w] = 0.0
         heat_np[h, w] = att_score
-    print('highlighted tiles: ', len(k_attscores) )
+    print('final highlighted tiles: ', len(k_attscores) )
         
-    # check the surrounding states
-    nb_fill = 0
-    fill_heat_np = np.zeros((H, W), dtype=np.float64)
-    for i_h in range(H):
-        for i_w in range(W):
-            stat, avg_surd = functions_clustering.check_surrounding(heat_np, i_h, i_w)
-            if stat:
-                nb_fill += 1
-                fill_heat_np[i_h, i_w] = avg_surd
-    for i_h in range(H):
-        for i_w in range(W):
-            if fill_heat_np[i_h, i_w] > 0.0:
-                heat_hard[i_h, i_w] = 1.0 - 1e-6
-                heat_soft[i_h, i_w] = fill_heat_np[i_h, i_w] * boost_rate if fill_heat_np[i_h, i_w] * boost_rate < 1.0 else 1.0 - 1e-6
-                white_mask[i_h, i_w] = 0.0
-                heat_np[i_h, i_w] = fill_heat_np[i_h, i_w]
-    print('fill surrounding tiles: ', nb_fill)
+    # # check the surrounding states
+    # nb_fill = 0
+    # fill_heat_np = np.zeros((H, W), dtype=np.float64)
+    # for i_h in range(H):
+    #     for i_w in range(W):
+    #         stat, avg_surd = functions_clustering.check_surrounding(heat_np, i_h, i_w)
+    #         if stat:
+    #             nb_fill += 1
+    #             fill_heat_np[i_h, i_w] = avg_surd
+    # for i_h in range(H):
+    #     for i_w in range(W):
+    #         if fill_heat_np[i_h, i_w] > 0.0:
+    #             heat_hard[i_h, i_w] = 1.0 - 1e-6
+    #             heat_soft[i_h, i_w] = fill_heat_np[i_h, i_w] * boost_rate if fill_heat_np[i_h, i_w] * boost_rate < 1.0 else 1.0 - 1e-6
+    #             white_mask[i_h, i_w] = 0.0
+    #             heat_np[i_h, i_w] = fill_heat_np[i_h, i_w]
+    # print('fill surrounding tiles: ', nb_fill)
     
     pil_img_type = PIL.Image.BOX
     c_panel_1 = cmapy.cmap('bwr')
@@ -312,7 +312,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     
     _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
                                                       agt_model_filenames, label_dict,
-                                                      K_ratio, att_thd)
+                                                      K_ratio, att_thd, fill_void=True)
     
     slide_topK_att_heatmap_dict = {}
     for slide_id in slide_k_tiles_atts_dict.keys():

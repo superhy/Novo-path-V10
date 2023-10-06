@@ -24,6 +24,7 @@ import numpy as np
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
+from wsi.tiles_tools import indicate_slide_tile_loc
 
 
 def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
@@ -237,7 +238,7 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
   
 def select_top_att_tiles(ENV_task, tile_encoder, 
                          agt_model_filenames, label_dict,
-                         K_ratio=0.3, att_thd=0.25):
+                         K_ratio=0.3, att_thd=0.25, fill_void=False):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -249,6 +250,8 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         agt_model_filenames: multi-fold aggregator trained model files, for loading here
         label_dict: <SlideMatrix_Dataset> initialize need it
         K_ratio: for calculating K for each slide, with a fixed ratio
+        att_thd: at least, the attention score should higher than this
+        fill_void: if fill the missed void surrounded by hot spots
         
     Return:
         att_all_tiles_list:
@@ -260,19 +263,12 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         average_vector = np.mean(array, axis=0)
         return average_vector
     
-    slides_tiles_pkl_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR if ENV_task.DEBUG_MODE else ENV_task.TASK_TILE_PKL_TEST_DIR
     batch_size_ontiles = ENV_task.MINI_BATCH_TILE
     tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
     batch_size_onslides = ENV_task.MINI_BATCH_SLIDEMAT
     slidemat_loader_num_workers = ENV_task.SLIDEMAT_DATALOADER_WORKER
     
-    
-    tiles_all_list = []
-    for slide_tiles_filename in os.listdir(slides_tiles_pkl_dir):
-        slide_tiles_list = recovery_tiles_list_from_pkl(os.path.join(slides_tiles_pkl_dir, slide_tiles_filename))
-        tiles_all_list.extend(slide_tiles_list)
-        
-    _, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(ENV_task)
+    tiles_all_list, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(ENV_task)
     
     slide_matrix_file_sets = functions_attpool.check_load_slide_matrix_files(ENV_task, 
                                                                              batch_size_ontiles, 
@@ -318,6 +314,16 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         K = int(nb_tiles * K_ratio)
         k_slide_tiles_list, k_attscores = functions_lcsb.filter_singlesldie_top_thd_attKtiles(tiles_all_list, slide_tileidxs_list,
                                                                                               avg_attscores, K, att_thd)
+        
+        if fill_void:
+            # fill the missed voids surrounded by hot spots
+            slide_tiles_list = []
+            for t_id in slide_tileidxs_list:
+                slide_tiles_list.append(tiles_all_list[t_id])
+            tile_key_loc_dict = indicate_slide_tile_loc(slide_tiles_list)
+            k_slide_tiles_list, k_attscores = fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
+                                                                    slide_id, tile_key_loc_dict)
+        
         att_all_tiles_list.extend(k_slide_tiles_list)
         # print(len(k_slide_tiles_list))
         slide_k_tiles_atts_dict[slide_id] = (k_slide_tiles_list, k_attscores)
@@ -358,7 +364,8 @@ def check_surrounding(state_map, h, w, fill=3):
     avg_surd = sum_surd / nb_surd if nb_surd > 0 else 0.0
     return stat, avg_surd
 
-def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores):
+def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
+                          slide_id, tile_key_loc_dict):
     '''
     if a spot is surrounded by attention patches, we are going to fill it as the attention one
     '''
@@ -366,6 +373,7 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores):
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
     W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
     
+    # place the original hot spots on slides
     heat_np = np.zeros((H, W), dtype=np.float64)
     for i, att_score in enumerate(k_attscores):
         h = k_slide_tiles_list[i].h_id - 1 
@@ -375,6 +383,21 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores):
             continue
         heat_np[h, w] = att_score
     print('originally attention tiles: ', len(k_attscores) )
+    
+    fill_k_slide_tiles_list, fill_k_attscores = k_slide_tiles_list, k_attscores.tolist()
+    # fill the voids which surrounded by hot-spots
+    nb_fill = 0
+    for i_h in range(H):
+        for i_w in range(W):
+            stat, avg_surd = check_surrounding(heat_np, i_h, i_w)
+            if stat:
+                tile_key = '{}-h{}-w{}'.format(slide_id, i_h, i_w)
+                fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
+                fill_k_attscores.append(avg_surd)
+    print('fill surrounding tiles: ', nb_fill)
+    
+    return fill_k_slide_tiles_list, fill_k_attscores
+    
 
 class Instance_Clustering():
     '''
