@@ -30,7 +30,7 @@ import torch.nn.functional as F
 
 
 def store_net(store_dir, trained_net, 
-              algorithm_name, optimizer, init_obj_dict={}):
+              algorithm_name, optimizer, init_obj_dict={}, with_time=True):
     """
     store the trained models
     
@@ -45,7 +45,8 @@ def store_net(store_dir, trained_net,
     if not os.path.exists(store_dir):
         os.makedirs(store_dir)
     
-    store_filename = 'checkpoint_' + trained_net.name + '-' + algorithm_name + Time().date + '.pth'
+    str_time = Time().date if with_time else ''
+    store_filename = 'checkpoint_' + trained_net.name + '-' + algorithm_name + str_time + '.pth'
     init_obj_dict.update({'state_dict': trained_net.state_dict(),
                           'optimizer': optimizer.state_dict()})
     
@@ -565,10 +566,10 @@ class AttentionPool(nn.Module):
         self.att_dim = 1
         
         self.encoder = nn.Sequential(
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.embedding_dim, out_features=self.att_layer_width[0]),
             nn.ReLU(),
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.att_layer_width[0], out_features=self.att_layer_width[1]),
             nn.Tanh()
             )
@@ -621,20 +622,20 @@ class GatedAttentionPool(nn.Module):
         self.att_dim = 1
         
         self.encoder = nn.Sequential(
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.embedding_dim, out_features=self.att_layer_width[0]),
             nn.ReLU(),
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.att_layer_width[0], out_features=self.att_layer_width[1]),
             )
         
         self.attention_U = nn.Sequential(
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.att_layer_width[1], out_features=self.att_layer_width[1]),
             nn.Tanh()
             )
         self.attention_V = nn.Sequential(
-            nn.Dropout(p=0.5),
+            nn.Dropout(p=0.2),
             nn.Linear(in_features=self.att_layer_width[1], out_features=self.att_layer_width[1]),
             nn.Sigmoid()
             )

@@ -398,7 +398,8 @@ class AttPool_MIL():
                 queue_auc.append(test_auc)
                 if len(queue_auc) > self.last_eval_epochs:
                     queue_auc.remove(queue_auc[0])
-                if epoch in self.record_points or overall_epoch_stop == True:
+                # if epoch in self.record_points or overall_epoch_stop == True:
+                if test_auc > checkpoint_auc: # keep the best for validation here
                     checkpoint_auc = test_auc
                     self.record(epoch, checkpoint_auc)
                 print('>>> on attpool -> test acc: %.4f, test auc: %.4f' % (test_acc, test_auc))

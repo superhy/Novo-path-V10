@@ -168,6 +168,7 @@ if __name__ == '__main__':
         felx_label_fname_4 = 'P62_ballooning_score_bi.csv'
         ENV_flex_list = [ENV_FLINC_HE_STEA, ENV_FLINC_PSR_FIB, ENV_FLINC_CD45_U, ENV_FLINC_P62_U]
         
+        # TODO: make the box version
         for i, fname in enumerate([flex_label_fname_1, flex_label_fname_2, felx_label_fname_3, felx_label_fname_4]):
             plot_flex_clsts_avg_dist(ENV_task, ENV_flex_list[i], tis_pct_pkl_name,
                                      fname, nb_clst=n_clst, norm_t_pct=True)

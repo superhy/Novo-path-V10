@@ -15,7 +15,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 
-task_ids = [110]
+task_ids = [121]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 
 if __name__ == '__main__':
@@ -28,7 +28,7 @@ if __name__ == '__main__':
                                                 str(tools.Time().start)[:13].replace(' ', '-'))
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
     
-    if 110 in task_ids:
+    if 121 in task_ids:
         # cd45
         # vit_pt_name = 'checkpoint_ViT-6-8-PT-Dino_unsupervised-16x16[50]2023-01-13.pth'
         # reg_vit_pt_name = 'checkpoint_ViT-Region-4-6-PT-Dino_unsupervised-9x9[50]2023-04-04.pth'

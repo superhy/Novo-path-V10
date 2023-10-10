@@ -19,12 +19,13 @@ from models import datasets, functions_attpool, functions_lcsb, functions, \
 from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
-    check_reuse_net, GatedAttentionPool, AttentionPool
+    check_reuse_net, GatedAttentionPool, AttentionPool, BasicResNet18
 import numpy as np
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
 from support.tools import Time
 from wsi.process import recovery_tiles_list_from_pkl
 from wsi.tiles_tools import indicate_slide_tile_loc
+from support.metadata import query_task_label_dict_fromcsv
 
 
 def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
@@ -247,6 +248,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         ENV_task:
         attpool_net: aggregator, unloaded, !!! need to load here !!!
         tile_encoder: encoder, loaded, must contains the backbone
+        
         agt_model_filenames: multi-fold aggregator trained model files, for loading here
         label_dict: <SlideMatrix_Dataset> initialize need it
         K_ratio: for calculating K for each slide, with a fixed ratio
@@ -276,7 +278,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
                                                                              encoder_net=tile_encoder.backbone, 
                                                                              force_refresh=False)
     # embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
-    embedding_dim = 512 # TODO: change back
+    embedding_dim = 512 # TODO: on whole cohort, remember to change back
     if agt_model_filenames[0].find('GatedAttPool') != -1:
         attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
     else:
@@ -330,7 +332,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         
     return att_all_tiles_list, slide_k_tiles_atts_dict
 
-def check_surrounding(state_map, h, w, fill=3):
+def check_surrounding(state_map, h, w, fill=4):
     '''
     check the localised context if have hot spots enough
     
@@ -406,7 +408,7 @@ class Instance_Clustering():
 
     def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode',
                  tiles_r_tuples_pkl_name=None, attention_tiles_list=None, exist_clustering=None,
-                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
+                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass', manu_n_clusters=None):
         '''
         Args:
             ENV_task: task environment (hyper-parameters)
@@ -432,7 +434,7 @@ class Instance_Clustering():
         self.alg_name = '{}-{}_{}'.format(self.cluster_name, self.embed_type, _env_task_name)
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
-        self.n_clusters = ENV_task.NUM_CLUSTERS
+        self.n_clusters = ENV_task.NUM_CLUSTERS if manu_n_clusters is None else manu_n_clusters
         self.attention_tiles_list = attention_tiles_list
         
         self.reg_encoder, self.comb_layer = None, None
@@ -693,7 +695,12 @@ class Instance_Clustering():
         clustering = DBSCAN(eps=eps, min_samples=min_samples)
         return clustering
     
-    
+class Feature_Assimilate():
+    '''
+    '''
+    def __init__(self, clustering_res_pkg, sensitive_labels):
+        pass
+  
 ''' ------ further split the clustering results into more refined clusters ------ '''
 
 def make_tileid_label_dict(clustering_res_pkg):
@@ -867,10 +874,43 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
             res_dict[res_tuple[0]] += 1
     print(res_dict)
     
-def _run_kmeans_attKtiles_encode_resnet18(ENV_task):
+def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_filenames,
+                                          K_ratio, att_thd, fill_void,
+                                          tiles_r_tuples_pkl_name=None):
     '''
-    TODO:
+    clustering the tiles with high attention values 
+    by classification trained on H&E reports annotations
+    
+    Args:
+        K_ratio: top % samples with attention value
+        att_thd: the minimum acceptable attention value
+        fill_void: whether to complete tiles surrounded by hot spots? (Yes/No)
     '''
+    tile_encoder = networks.BasicResNet18()
+    tile_encoder = tile_encoder.cuda()
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    att_all_tiles_list, _ = select_top_att_tiles(ENV_task, tile_encoder,
+                                                 agt_model_filenames, label_dict,
+                                                 K_ratio=K_ratio, att_thd=att_thd, fill_void=fill_void)
+    
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
+                                     cluster_name='Kmeans', embed_type='encode',
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
+                                     attention_tiles_list=att_all_tiles_list,
+                                     manu_n_clusters=3)
+    
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers))
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+    return clustering_res_pkg
     
     
 ''' ---- some other clustering algorithm ---- '''
