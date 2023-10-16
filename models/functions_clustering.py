@@ -729,13 +729,14 @@ class Feature_Assimilate():
         print('![Initial Stage] tiles assimilate')
         print('prepare: 1. tiles with sensitive labels as similarity source \
                         2. tiles not in clustering as candidate tiles')
-        last_clst = 0 # count the last cluster id
+        # last_clst = 0 # count the last cluster id
         tile_keys_list = []
         for clst_item in self.clustering_res:
             res, encode, tile, slide_id = clst_item
             # get the largest cluster no., use +1 indicates the assimilated tiles
-            if res > self.last_clst:
-                last_clst = res
+            # if res > self.last_clst:
+            #     last_clst = res
+            
             # prepare the sensitive tiles (rich tuple) list
             if res in self.sensitive_labels:
                 sensitive_res.append((res, encode, tile, slide_id))
@@ -745,7 +746,7 @@ class Feature_Assimilate():
             else:
                 if res in self.sensitive_labels:
                     tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
-        self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
+        # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
         
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
         self.remain_tiles_tuples = self.load_remain_tiles_encodes(tile_keys_list)
