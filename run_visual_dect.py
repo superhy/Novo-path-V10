@@ -6,7 +6,7 @@ Created on 3 Oct 2023
 
 import os
 
-from interpre.prep_att_vis import _run_make_topK_attention_heatmap_resnet_P62
+from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62
 from support import env_flinc_p62
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"

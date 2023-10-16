@@ -4,7 +4,7 @@
 
 import os
 
-from interpre.plot_att_vis import _plot_draw_scaled_slide_imgs
+from interpre.plot_dect_vis import _plot_draw_scaled_slide_imgs
 from interpre.plot_clst_stat import plot_biomarker_clsts_avg_dist, \
     plot_clsts_avg_dist_in_HV, plot_flex_clsts_avg_dist, \
     df_lobular_prop_group_dist, df_plot_lobular_prop_group_bar, \

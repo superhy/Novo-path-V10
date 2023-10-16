@@ -4,7 +4,7 @@
 
 import os
 
-from interpre.plot_att_vis import _plot_topK_attention_heatmaps
+from interpre.plot_dect_vis import _plot_topK_attention_heatmaps
 from support import env_flinc_p62
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
