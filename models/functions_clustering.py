@@ -22,10 +22,10 @@ from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
     check_reuse_net, GatedAttentionPool, AttentionPool, BasicResNet18
 import numpy as np
 from support.env_flinc_cd45 import ENV_FLINC_CD45_REG_PT
-from support.tools import Time
+from support.metadata import query_task_label_dict_fromcsv
+from support.tools import Time, normalization
 from wsi.process import recovery_tiles_list_from_pkl
 from wsi.tiles_tools import indicate_slide_tile_loc
-from support.metadata import query_task_label_dict_fromcsv
 
 
 def store_clustering_pkl(model_store_dir, clustering_model_res, cluster_store_name):
@@ -293,7 +293,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         attpool_net, _ = networks.reload_net(attpool_net, os.path.join(ENV_task.MODEL_FOLDER, agt_model_name) )
         attpool_net = attpool_net.cuda()
         slide_attscores_dict = functions_attpool.query_slides_attscore(slidemat_loader, attpool_net,
-                                                                       cutoff_padding=True, norm=True)
+                                                                       cutoff_padding=True, norm=False)
         slide_attscores_dict_list.append(slide_attscores_dict)
         # release the CUDA memory
         attpool_net = attpool_net.cpu()
@@ -309,6 +309,8 @@ def select_top_att_tiles(ENV_task, tile_encoder,
             slide_attscores = slide_attscores_dict[slide_id]
             list_of_attscores.append(slide_attscores)
         avg_attscores = average_vectors(list_of_attscores)
+        # normalization after averaging
+        avg_attscores = normalization(avg_attscores)
         # print(avg_attscores, len(avg_attscores))
         
         nb_tiles = len(slide_tileidxs_list)
@@ -367,7 +369,7 @@ def check_surrounding(state_map, h, w, fill=4):
     return stat, avg_surd
 
 def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
-                          slide_id, tile_key_loc_dict):
+                          slide_id, tile_key_loc_dict, fill=4, inc_org_tiles_list=True):
     '''
     if a spot is surrounded by attention patches, we are going to fill it as the attention one
     '''
@@ -384,18 +386,24 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
             warnings.warn('Out of range coordinates.')
             continue
         heat_np[h, w] = att_score
-    print('originally attention tiles: ', len(k_attscores) )
+    print('originally attention tiles: %d in slide: %s' % (len(k_attscores), slide_id) )
     
-    fill_k_slide_tiles_list, fill_k_attscores = k_slide_tiles_list, k_attscores.tolist()
+    if inc_org_tiles_list:
+        fill_k_slide_tiles_list, fill_k_attscores = k_slide_tiles_list, k_attscores.tolist()
+    else:
+        fill_k_slide_tiles_list, fill_k_attscores = [], []
     # fill the voids which surrounded by hot-spots
     nb_fill = 0
     for i_h in range(H):
         for i_w in range(W):
-            stat, avg_surd = check_surrounding(heat_np, i_h, i_w)
+            stat, avg_surd = check_surrounding(heat_np, i_h, i_w, fill=fill)
             if stat:
                 tile_key = '{}-h{}-w{}'.format(slide_id, i_h, i_w)
-                fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
-                fill_k_attscores.append(avg_surd)
+                if tile_key not in tile_key_loc_dict:
+                    print(f'! cannot find tile key: {tile_key}')
+                else:
+                    fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
+                    fill_k_attscores.append(avg_surd)
     print('fill surrounding tiles: ', nb_fill)
     
     return fill_k_slide_tiles_list, fill_k_attscores
@@ -431,9 +439,10 @@ class Instance_Clustering():
         self.model_store_dir = self.ENV_task.MODEL_FOLDER
         self.cluster_name = cluster_name
         self.embed_type = embed_type
-        self.alg_name = '{}-{}_{}'.format(self.cluster_name, self.embed_type, _env_task_name)
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
+        self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, self.encoder.name,
+                                             self.embed_type, _env_task_name)
         self.n_clusters = ENV_task.NUM_CLUSTERS if manu_n_clusters is None else manu_n_clusters
         self.attention_tiles_list = attention_tiles_list
         
@@ -703,7 +712,7 @@ class Feature_Assimilate():
     Assimilating the tiles with close distance 
     '''
     def __init__(self, ENV_task, clustering_res_pkg, sensitive_labels,
-                 encoder, attK_clst=True, embed_type='encode', 
+                 encoder, attK_clst=True, assimilate_thd=0.1, embed_type='encode', 
                  reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
         '''
         TODO: annotations of this function
@@ -714,21 +723,24 @@ class Feature_Assimilate():
         '''
         self._env_task = ENV_task
         self.for_train = True if self._env_task.DEBUG_MODE else False
+        self.model_store_dir = self._env_task.MODEL_FOLDER
         
+        self.assimilate_thd = assimilate_thd
         self.embed_type = embed_type
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
         self.reg_encoder = reg_encoder
         self.comb_layer = comb_layer
         self.ctx_type = ctx_type
+        self.alg_name = 'ft_ass-{}-{}_{}'.format(self.embed_type, self.encoder.name,
+                                                 self._env_task.TASK_NAME)
         
         self.clustering_res = clustering_res_pkg
         self.sensitive_labels = sensitive_labels
         sensitive_res = []
+        self.sensitive_tiles = []
         
         print('![Initial Stage] tiles assimilate')
-        print('prepare: 1. tiles with sensitive labels as similarity source \
-                        2. tiles not in clustering as candidate tiles')
         # last_clst = 0 # count the last cluster id
         tile_keys_list = []
         for clst_item in self.clustering_res:
@@ -740,6 +752,7 @@ class Feature_Assimilate():
             # prepare the sensitive tiles (rich tuple) list
             if res in self.sensitive_labels:
                 sensitive_res.append((res, encode, tile, slide_id))
+                self.sensitive_tiles.append((tile, slide_id))
             # prepare the 
             if attK_clst:
                 tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
@@ -747,9 +760,22 @@ class Feature_Assimilate():
                 if res in self.sensitive_labels:
                     tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
         # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
-        
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
         self.remain_tiles_tuples = self.load_remain_tiles_encodes(tile_keys_list)
+        print('prepare: 1. tiles with sensitive labels as similarity source \
+                        2. tiles not in clustering as candidate tiles')
+        
+        # load {slide_id: {tile_loc_key: tile}}, key -> tile dictionary for each slide
+        tiles_all_list, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(self._env_task)
+        self.slide_t_key_tiles_dict = {}
+        for slide_id in slides_tileidxs_dict.keys():
+            slide_tileidxs_list = slides_tileidxs_dict[slide_id]
+            slide_tiles_list = []
+            for t_id in slide_tileidxs_list:
+                slide_tiles_list.append(tiles_all_list[t_id])
+            tile_key_loc_dict = indicate_slide_tile_loc(slide_tiles_list)
+            self.slide_t_key_tiles_dict[slide_id] = tile_key_loc_dict
+        print('prepare: 3. key -> tile dict for %d slides' % len(self.slide_t_key_tiles_dict))
         
     def avg_encode_sensitive_tiles(self, sensitive_res_tuples):
         '''
@@ -811,12 +837,64 @@ class Feature_Assimilate():
     
     def assimilate(self):
         '''
-        TODO: fill the assimilate function
-        
         Need:
             self.sensitive_centre
             self.remain_tiles_tuples
+        
+        Return:
+            assim_tuples: [(tile, slide_id)...]
         '''
+        # compute distances
+        distances = [(np.linalg.norm(np.array(encode) - self.sensitive_centre), encode, tile, slide_id) 
+                     for encode, tile, slide_id in self.remain_tiles_tuples]
+        # sort tuples by distance
+        sorted_tuples = sorted(distances, key=lambda x: x[0])
+        # determine the index for the top 10%
+        assimilate_pct_index = int(len(sorted_tuples) * self.assimilate_thd)
+        # if the list is too small, ensure at least one element is selected
+        assimilate_pct_index = max(assimilate_pct_index, 1)
+        
+        # print the distance threshold
+        distance_threshold = sorted_tuples[assimilate_pct_index - 1][0]
+        print(f"--- distance threshold for top {self.assimilate_thd}: {distance_threshold}")
+        
+        # Step 4: Return the top 10% tuples, removing the distance value from each tuple
+        assim_tuples = [(tile, slide_id) for _, _, tile, slide_id in sorted_tuples[:assimilate_pct_index]]
+        print('> assimilated %d tiles with close distance.' % len(assim_tuples))
+        return assim_tuples
+    
+    def fill_void_4_assim_sensi_tiles(self, assim_tile_tuples):
+        '''
+        '''
+        hot_tiles_tuples = self.sensitive_tiles + assim_tile_tuples
+        # categorise tiles for each slide
+        slide_tile_dict = {}
+        for i, tile_tuple in enumerate(hot_tiles_tuples):
+            tile, slide_id = tile_tuple
+            if slide_id not in slide_tile_dict.keys():
+                slide_tile_dict[slide_id] = []
+                slide_tile_dict[slide_id].append(tile)
+            else:
+                slide_tile_dict[slide_id].append(tile)
+              
+        filled_tuples = []  
+        for slide_id in slide_tile_dict.keys():
+            slide_tiles_list = slide_tile_dict[slide_id]
+            t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
+            filled_tiles_list = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
+                                                      slide_id, tile_key_loc_dict=t_key_tile_dict, 
+                                                      fill=5, inc_org_tiles_list=False)
+            slide_filled_tuples = [(t, slide_id) for t in filled_tiles_list]
+            filled_tuples.extend(slide_filled_tuples)
+        print('> filled void %d tiles' % len(filled_tuples))
+        return filled_tuples
+    
+    def store(self, assim_tuples, filled_tuples=[]):
+        assim_tuples = assim_tuples + filled_tuples
+        prediction_res_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, assim_tuples, prediction_res_name)
+        print('store the assimilate tiles at: {} / {}'.format(self.model_store_dir, prediction_res_name))
+        
   
 ''' ------ further split the clustering results into more refined clusters ------ '''
 
@@ -1029,6 +1107,20 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     print(res_dict)
     
     return clustering_res_pkg
+
+def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg,
+                                          sensitive_labels, 
+                                          assim_thd=0.1, fill_void=True):
+    '''
+    '''
+    tile_encoder = networks.BasicResNet18(output_dim=2)
+    assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
+                                      encoder=tile_encoder, attK_clst=True,
+                                      assimilate_thd=assim_thd, embed_type='encode')
+    
+    assim_tuples = assimilating.assimilate()
+    filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples) if fill_void else []
+    assimilating.store(assim_tuples, filled_tuples)
     
     
 ''' ---- some other clustering algorithm ---- '''

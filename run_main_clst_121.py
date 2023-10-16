@@ -7,7 +7,7 @@ import os
 import sys
 
 from models.functions_clustering import _run_keamns_region_ctx_encode_vit_6_8, \
-    _run_kmeans_attKtiles_encode_resnet18
+    _run_kmeans_attKtiles_encode_resnet18, _run_tiles_assimilate_encode_resnet18
 from run_main import Logger
 from support import env_flinc_cd45, tools, env_flinc_p62
 
@@ -29,6 +29,7 @@ if __name__ == '__main__':
                                                 ENV_task.TASK_NAME + task_str,
                                                 str(tools.Time().start)[:13].replace(' ', '-'))
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
+    clustering_res_pkg = None
     
     if 121 in task_ids:
         # p62
@@ -43,6 +44,11 @@ if __name__ == '__main__':
                                'checkpoint_GatedAttPool-g_Pool_-8_ballooning_score_bi_[335]2023-10-12.pth',
                                'checkpoint_GatedAttPool-g_Pool_-9_ballooning_score_bi_[21]2023-10-13.pth']
         
+        '''
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool_-0_ballooning_score_bi_[126]2023-10-08.pth',
+                               'checkpoint_GatedAttPool-g_Pool_-1_ballooning_score_bi_[13]2023-10-08.pth']
+        '''
+        
         K_ratio = 0.25
         att_thd =  0.3
         fill_void = True
@@ -56,7 +62,14 @@ if __name__ == '__main__':
                                                                    K_ratio, att_thd, fill_void,
                                                                    tiles_r_tuples_pkl_name)
     if 121.1 in task_ids:
-        pass
+        if clustering_res_pkg is None:
+            print('! need to load clustering results first')
+        else:
+            sensitive_labels = []
+            assim_thd = 0.1
+            fill_void = True
+            _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg, 
+                                                  sensitive_labels, assim_thd, fill_void)
         
         
         
