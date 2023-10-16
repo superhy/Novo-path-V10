@@ -277,8 +277,8 @@ def select_top_att_tiles(ENV_task, tile_encoder,
                                                                              tile_loader_num_workers, 
                                                                              encoder_net=tile_encoder.backbone, 
                                                                              force_refresh=False)
-    # embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
-    embedding_dim = 512 # TODO: on whole cohort, remember to change back
+    embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
+    # embedding_dim = 512 # TODO: on whole cohort, remember to change back
     if agt_model_filenames[0].find('GatedAttPool') != -1:
         attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
     else:
@@ -695,11 +695,127 @@ class Instance_Clustering():
         clustering = DBSCAN(eps=eps, min_samples=min_samples)
         return clustering
     
+    
+''' ------- feature assimilating functions (based on clustering results) ------- '''
+    
 class Feature_Assimilate():
     '''
+    Assimilating the tiles with close distance 
     '''
-    def __init__(self, clustering_res_pkg, sensitive_labels):
-        pass
+    def __init__(self, ENV_task, clustering_res_pkg, sensitive_labels,
+                 encoder, attK_clst=True, embed_type='encode', 
+                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
+        '''
+        TODO: annotations of this function
+                
+        Args:
+            clustering_res_pkg = [(res, encodes[i], tiles[i], slide_ids[i])...]
+            attK_clst: if the cluster results from attention K clustering?
+        '''
+        self._env_task = ENV_task
+        self.for_train = True if self._env_task.DEBUG_MODE else False
+        
+        self.embed_type = embed_type
+        self.encoder = encoder
+        self.encoder = self.encoder.cuda()
+        self.reg_encoder = reg_encoder
+        self.comb_layer = comb_layer
+        self.ctx_type = ctx_type
+        
+        self.clustering_res = clustering_res_pkg
+        self.sensitive_labels = sensitive_labels
+        sensitive_res = []
+        
+        print('![Initial Stage] tiles assimilate')
+        print('prepare: 1. tiles with sensitive labels as similarity source \
+                        2. tiles not in clustering as candidate tiles')
+        last_clst = 0 # count the last cluster id
+        tile_keys_list = []
+        for clst_item in self.clustering_res:
+            res, encode, tile, slide_id = clst_item
+            # get the largest cluster no., use +1 indicates the assimilated tiles
+            if res > self.last_clst:
+                last_clst = res
+            # prepare the sensitive tiles (rich tuple) list
+            if res in self.sensitive_labels:
+                sensitive_res.append((res, encode, tile, slide_id))
+            # prepare the 
+            if attK_clst:
+                tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
+            else:
+                if res in self.sensitive_labels:
+                    tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
+        self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
+        
+        self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
+        self.remain_tiles_tuples = self.load_remain_tiles_encodes(tile_keys_list)
+        
+    def avg_encode_sensitive_tiles(self, sensitive_res_tuples):
+        '''
+        Computes the average encoding from a list of 1D vector encodings.
+        
+        Returns:
+            numpy.ndarray: The average encoding, represented as a 1D numpy array.
+        
+        Raises:
+            ValueError: If not all encodings have the same dimension.
+        '''
+        sensitive_encodes = []
+        for s_res_tuple in sensitive_res_tuples:
+            _, encode, _, _ = s_res_tuple
+            sensitive_encodes.append(encode)
+            
+        encodes_array = np.array(sensitive_encodes)
+        if len(set(encodes_array.shape)) > 1:
+            raise ValueError('All encodes must have the same dimension! ')
+        mean_encode = np.mean(encodes_array, axis=0)
+        return mean_encode
+        
+    def gen_tiles_richencode_tuples(self, remain_tiles_list):
+        if self.embed_type == 'encode':
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                load_tile_list=remain_tiles_list)
+        elif self.embed_type == 'neb_encode':
+            tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                    load_tile_list=remain_tiles_list)
+        elif self.embed_type == 'region_ctx':
+            tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                          self.reg_encoder, self.comb_layer, self.ctx_type,
+                                                                          load_tile_list=remain_tiles_list)
+        elif self.embed_type == 'graph':
+            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                      load_tile_list=remain_tiles_list)
+        else:
+            # default use the 'encode' mode
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
+                                                                load_tile_list=remain_tiles_list)
+        print('> loaded {} remain tiles and their encodes.'.format(str(len(tiles_richencode_tuples)) ) )
+        return tiles_richencode_tuples
+        
+    def load_remain_tiles_encodes(self, clst_tile_keys_list):
+        '''
+        load the tiles which are not participate in clustering 
+        
+        Return:
+            remian_tiles_richencode_tuples, [(encode, tile, slide_id)...] of remain_tiles_list
+        '''
+        tiles_all_list, _, _ = datasets.load_richtileslist_fromfile(self._env_task, self.for_train)
+        remain_tiles_list = []
+        for tile in tiles_all_list:
+            tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
+            if tile_key not in clst_tile_keys_list:
+                remain_tiles_list.append(tile)
+                
+        return self.gen_tiles_richencode_tuples(remain_tiles_list)
+    
+    def assimilate(self):
+        '''
+        TODO: fill the assimilate function
+        
+        Need:
+            self.sensitive_centre
+            self.remain_tiles_tuples
+        '''
   
 ''' ------ further split the clustering results into more refined clusters ------ '''
 
@@ -886,7 +1002,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
         att_thd: the minimum acceptable attention value
         fill_void: whether to complete tiles surrounded by hot spots? (Yes/No)
     '''
-    tile_encoder = networks.BasicResNet18()
+    tile_encoder = networks.BasicResNet18(output_dim=2)
     tile_encoder = tile_encoder.cuda()
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
     
@@ -894,6 +1010,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
                                                  agt_model_filenames, label_dict,
                                                  K_ratio=K_ratio, att_thd=att_thd, fill_void=fill_void)
     
+    # we set up manu_n_clusters=3 here, only 3 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
