@@ -10,15 +10,19 @@ import os
 import pickle
 import warnings
 
+from PIL import Image
 import PIL
 import cmapy
 import cv2
 import torch
 from torch.nn.functional import softmax
 
+from interpre.prep_clst_vis import load_clst_res_slide_tile_label, \
+    load_clst_res_label_tile_slide, col_pal_cv2_10
 from interpre.prep_tools import store_nd_dict_pkl
 from models import datasets, functions_attpool, functions_clustering
-from models.functions_clustering import select_top_att_tiles
+from models.functions_clustering import select_top_att_tiles, \
+    load_clustering_pkg_from_pkl
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
@@ -29,6 +33,7 @@ from support.tools import normalization
 from wsi import image_tools, slide_tools
 
 
+# include the reusable function from prep_clst_vis, only from prep_dect_vis -> prep_clst_vis
 def load_slide_tiles_att_score(slide_matrix_info_tuple, attpool_net):
     '''
     load the attention score for the tiles in each slide
@@ -146,7 +151,6 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
 def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscores,
                                          boost_rate=2.0):
     """
-    
     """
     
     def apply_mask(heat_soft, white_mask):
@@ -176,24 +180,6 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
         heat_np[h, w] = att_score
     print('final highlighted tiles: ', len(k_attscores) )
         
-    # # check the surrounding states
-    # nb_fill = 0
-    # fill_heat_np = np.zeros((H, W), dtype=np.float64)
-    # for i_h in range(H):
-    #     for i_w in range(W):
-    #         stat, avg_surd = functions_clustering.check_surrounding(heat_np, i_h, i_w)
-    #         if stat:
-    #             nb_fill += 1
-    #             fill_heat_np[i_h, i_w] = avg_surd
-    # for i_h in range(H):
-    #     for i_w in range(W):
-    #         if fill_heat_np[i_h, i_w] > 0.0:
-    #             heat_hard[i_h, i_w] = 1.0 - 1e-6
-    #             heat_soft[i_h, i_w] = fill_heat_np[i_h, i_w] * boost_rate if fill_heat_np[i_h, i_w] * boost_rate < 1.0 else 1.0 - 1e-6
-    #             white_mask[i_h, i_w] = 0.0
-    #             heat_np[i_h, i_w] = fill_heat_np[i_h, i_w]
-    # print('fill surrounding tiles: ', nb_fill)
-    
     pil_img_type = PIL.Image.BOX
     c_panel_1 = cmapy.cmap('bwr')
     
@@ -213,6 +199,88 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
     print('generate attention score heatmap (both hard and soft) for slide: {}'.format(k_slide_tiles_list[0].query_slideid()) )
     
     return org_np_img, heat_np, heat_hard_cv2, heat_soft_cv2
+
+
+def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_assim_tiles_list, slide_id, labels_picked):
+    '''
+    generate the clusters spatial map on single slide
+    
+    Return:
+        org_np_img: nd_array of scaled original image of slide
+        heat_s_clst_col: clusters spatial map for the slide
+    '''
+    
+    def apply_mask(heat, white_mask):
+        new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
+        new_heat = np.uint8(np.minimum(new_heat, 255))
+        return new_heat
+    
+    slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
+    H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
+    W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
+    heat_s_clst = np.ones((H, W, 3), dtype=np.float64)
+    white_mask = np.ones((H, W, 3), dtype=np.float64)
+    
+    for tile, label in slide_tile_clst_tuples:
+        if label in labels_picked:
+            h = tile.h_id - 1 
+            w = tile.w_id - 1
+            if h >= H or w >= W or h < 0 or w < 0:
+                warnings.warn('Out of range coordinates.')
+                continue
+            heat_s_clst[h, w] = 1.0 - 1e-3
+            white_mask[h, w] = 0.0
+    print('checked %d tiles for sensitive clusters' % len(slide_tile_clst_tuples) )
+    for tile in slide_assim_tiles_list:
+        h = tile.h_id - 1 
+        w = tile.w_id - 1
+        if h >= H or w >= W or h < 0 or w < 0:
+            warnings.warn('Out of range coordinates.')
+            continue
+        heat_s_clst[h, w] = 1.0 - 1e-3
+        white_mask[h, w] = 0.0
+    print('checked %d tiles assimilated from sensitive clusters.' % len(slide_assim_tiles_list) )
+    
+    c_panel = cmapy.cmap('coolwarm')
+    heat_clst_cv2_col = col_pal_cv2_10(heat_s_clst).astype("uint8")
+    heat_s_clst = Image.fromarray(heat_clst_cv2_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    heat_s_clst_col = cv2.applyColorMap(np.uint8(heat_s_clst), c_panel)
+    heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
+    
+    print('generate cluster-{} and the assimilated tiles\' spatial map for slide: {}'.format(str(labels_picked), slide_id))
+    return heat_s_clst_col
+
+def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
+    
+    nb_clst = len(load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name).keys())
+    clst_labels = list(range(nb_clst))
+    
+    slide_clst_s_spatmap_dict = {}
+    for slide_id in slide_id_list:
+        tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        
+        label_spatmap_dict = {}
+        for label_picked in clst_labels:
+            if sp_clst is not None and label_picked != sp_clst:
+                continue
+            # TODO:
+            heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
+            label_spatmap_dict[label_picked] = heat_s_clst_col
+        slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
+            
+    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 
+                                                          'clst-s-spat' if sp_clst != None else 'clst-{}-spat'.format(str(sp_clst)))
+    store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
+    print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
 
 
 ''' ----------------------------------------------------------------------------------------------------------- '''

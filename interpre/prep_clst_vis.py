@@ -221,7 +221,7 @@ def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
     print('generate cluster spatial map and keep the original image for slide: {}'.format(slide_id))
     return org_np_img, heat_clst_col
 
-def gen_single_slide_clst_each_spatial(ENV_task, slide_tile_clst_tuples, slide_id, label_picked):
+def gen_single_slide_pick_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id, label_picked):
     '''
     generate the clusters spatial map on single slide
     
@@ -419,7 +419,7 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=
         for label_picked in clst_labels:
             if sp_clst is not None and label_picked != sp_clst:
                 continue
-            heat_s_clst_col = gen_single_slide_clst_each_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
+            heat_s_clst_col = gen_single_slide_pick_clst_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
             label_spatmap_dict[label_picked] = heat_s_clst_col
         slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
             
