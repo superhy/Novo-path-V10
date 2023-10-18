@@ -284,12 +284,12 @@ class AttPool_MIL():
         if test_mode is False:
             self.train_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
                                                                           encoder_net=self.encoder.backbone, for_train=True, 
-                                                                          force_refresh=True, print_info=False)
+                                                                          force_refresh=False, print_info=False)
         else:
             self.train_slidemat_file_sets = []
         self.test_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
                                                                      encoder_net=self.encoder.backbone, for_train=False if not self.ENV_task.DEBUG_MODE else True,
-                                                                     force_refresh=True, print_info=False)   
+                                                                     force_refresh=False, print_info=False)   
         
         print('train slides: %d, test slides: %d, time: %s' % (len(self.train_slidemat_file_sets), 
                                                                len(self.test_slidemat_file_sets), 
@@ -399,7 +399,7 @@ class AttPool_MIL():
                 if len(queue_auc) > self.last_eval_epochs:
                     queue_auc.remove(queue_auc[0])
                 # if epoch in self.record_points or overall_epoch_stop == True:
-                if epoch > int(self.num_epoch * 0.5) and test_auc > checkpoint_auc: # keep the best for validation here
+                if epoch > int(self.num_epoch * 0.8) and test_auc > checkpoint_auc: # keep the best for validation here
                     checkpoint_auc = test_auc
                     self.record(epoch, checkpoint_auc)
                 print('>>> on attpool -> test acc: %.4f, test auc: %.4f' % (test_acc, test_auc))

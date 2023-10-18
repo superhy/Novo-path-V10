@@ -239,7 +239,7 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
   
 def select_top_att_tiles(ENV_task, tile_encoder, 
                          agt_model_filenames, label_dict,
-                         K_ratio=0.3, att_thd=0.25, fill_void=False):
+                         K_ratio=0.3, att_thd=0.25, fill_void=False, pkg_range=None):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -301,7 +301,12 @@ def select_top_att_tiles(ENV_task, tile_encoder,
     
     att_all_tiles_list = []
     slide_k_tiles_atts_dict = {}
-    for slide_id in slides_tileidxs_dict.keys():
+    if pkg_range is not None:
+        # extract a part of slides as a package
+        slide_keys_list = list(slides_tileidxs_dict.keys())[pkg_range[0]: pkg_range[1]]
+    else:
+        slide_keys_list = list(slides_tileidxs_dict.keys())
+    for slide_id in slide_keys_list:
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
         # calculate the attention score (average) from multi-fold
         list_of_attscores = []
@@ -328,13 +333,14 @@ def select_top_att_tiles(ENV_task, tile_encoder,
             k_slide_tiles_list, k_attscores = fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
                                                                     slide_id, tile_key_loc_dict)
         
+        print('all/k selection ratio in this slide: (%d / %d)' % (nb_tiles, len(k_slide_tiles_list)) )
         att_all_tiles_list.extend(k_slide_tiles_list)
         # print(len(k_slide_tiles_list))
         slide_k_tiles_atts_dict[slide_id] = (k_slide_tiles_list, k_attscores)
         
     return att_all_tiles_list, slide_k_tiles_atts_dict
 
-def check_surrounding(state_map, h, w, fill=4):
+def check_surrounding(state_map, h, w, fill=3):
     '''
     check the localised context if have hot spots enough
     
@@ -369,7 +375,7 @@ def check_surrounding(state_map, h, w, fill=4):
     return stat, avg_surd
 
 def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
-                          slide_id, tile_key_loc_dict, fill=4, inc_org_tiles_list=True):
+                          slide_id, tile_key_loc_dict, fill=3, inc_org_tiles_list=True):
     '''
     if a spot is surrounded by attention patches, we are going to fill it as the attention one
     '''
@@ -402,6 +408,7 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
                 if tile_key not in tile_key_loc_dict:
                     print(f'! cannot find tile key: {tile_key}')
                 else:
+                    nb_fill += 1
                     fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
                     fill_k_attscores.append(avg_surd)
     print('fill surrounding tiles: ', nb_fill)
@@ -883,7 +890,7 @@ class Feature_Assimilate():
             t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
             filled_tiles_list = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
                                                       slide_id, tile_key_loc_dict=t_key_tile_dict, 
-                                                      fill=5, inc_org_tiles_list=False)
+                                                      fill=4, inc_org_tiles_list=False)
             slide_filled_tuples = [(t, slide_id) for t in filled_tiles_list]
             filled_tuples.extend(slide_filled_tuples)
         print('> filled void %d tiles' % len(filled_tuples))

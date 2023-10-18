@@ -21,7 +21,7 @@ if __name__ == '__main__':
     if 0 in task_ids:
         pass
     if 1.1 in task_ids:
-        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
+        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool_-0_ballooning_score_bi_[78]2023-10-18.pkl'
         ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
         
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name)

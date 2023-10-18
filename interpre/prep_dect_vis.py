@@ -63,7 +63,7 @@ def load_slide_tiles_att_score(slide_matrix_info_tuple, attpool_net):
 
 def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
                                     for_train, load_attK=0, img_inter_methods='box',
-                                    boost_rate=2.0, grad_col_map=True):
+                                    boost_rate=2.0, grad_col_map=True, cut_left=False):
     """
     Args:
         slide_info_tuple: must contains, 1. slide_id; 2. slide_tiles_len;
@@ -79,6 +79,11 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
         new_heat = np.uint32(np.float64(heat_med) + np.float64(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
+    
+    def keep_right_half(heat):
+        height, width, _ = heat.shape
+        start_col = width // 2
+        return heat[:, start_col:]
     
 #     label_dict = metadata.query_EMT_label_dict_fromcsv()
     slide_id, _, _ = slide_info_tuple
@@ -144,19 +149,30 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
                                                           slide_tileidxs_list=slide_tileidxs_dict[slide_id],
                                                           slide_attscores=att_scores, K=load_attK)
         print('load att {} tile list of this slide.'.format(load_attK))
+        
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        org_np_img = keep_right_half(org_np_img)
+        heat_med_style = keep_right_half(heat_med_style)
+        heat_med_grad = keep_right_half(heat_med_grad)
             
     return org_np_img, heat_np, heat_med_style, heat_med_grad, attK_tiles_list
 
 
 def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscores,
-                                         boost_rate=2.0):
+                                         boost_rate=2.0, cut_left=False):
     """
     """
     
-    def apply_mask(heat_soft, white_mask):
-        new_heat = np.uint32(np.float64(heat_soft) + np.float64(white_mask))
+    def apply_mask(heat, white_mask):
+        new_heat = np.uint32(np.float64(heat) + np.float64(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
+    
+    def keep_right_half(heat):
+        height, width, _ = heat.shape
+        start_col = width // 2
+        return heat[:, start_col:]
     
     slide_np, _ = k_slide_tiles_list[0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
@@ -198,10 +214,16 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
     heat_soft_cv2 = apply_mask(heat_soft_cv2, white_mask)
     print('generate attention score heatmap (both hard and soft) for slide: {}'.format(k_slide_tiles_list[0].query_slideid()) )
     
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        org_np_img = keep_right_half(org_np_img)
+        heat_hard_cv2 = keep_right_half(heat_hard_cv2)
+        heat_soft_cv2 = keep_right_half(heat_soft_cv2)
+        
     return org_np_img, heat_np, heat_hard_cv2, heat_soft_cv2
 
 
-def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_assim_tiles_list, slide_id, labels_picked):
+def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_assim_tiles_list, slide_id, labels_picked, cut_left=False):
     '''
     generate the clusters spatial map on single slide
     
@@ -214,6 +236,11 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
+    
+    def keep_right_half(heat):
+        height, width, _ = heat.shape
+        start_col = width // 2
+        return heat[:, start_col:]
     
     slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
@@ -249,6 +276,9 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
     
     print('generate cluster-{} and the assimilated tiles\' spatial map for slide: {}'.format(str(labels_picked), slide_id))
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        heat_s_clst_col = keep_right_half(heat_s_clst_col)
     return heat_s_clst_col
 
 def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
@@ -357,8 +387,8 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
 
 
 def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
-                                        tile_encoder=None, 
-                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0):
+                                        cut_left=True, tile_encoder=None, 
+                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, pkg_range=None):
     """
     make the top K attention pool visualisation (only 1 round, no milestones), 
     only highlight the picked tiles with the highest attention scores.
@@ -380,7 +410,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     
     _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
                                                       agt_model_filenames, label_dict,
-                                                      K_ratio, att_thd, fill_void=True)
+                                                      K_ratio, att_thd, fill_void=True, pkg_range=pkg_range)
     
     slide_topK_att_heatmap_dict = {}
     for slide_id in slide_k_tiles_atts_dict.keys():
@@ -388,7 +418,8 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
         org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
                                                                                                 k_slide_tiles_list, 
                                                                                                 k_attscores,
-                                                                                                boost_rate=boost_rate)
+                                                                                                boost_rate=boost_rate,
+                                                                                                cut_left=cut_left)
         slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
                                                  'heat_np': heat_np,
                                                  'heat_hard_cv2': heat_hard_cv2,
@@ -402,8 +433,8 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
     
     
-def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames,
-                                                K_ratio=0.3, att_thd=0.25, boost_rate=2.0):
+def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
+                                                K_ratio=0.3, att_thd=0.25, boost_rate=2.0, pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
@@ -412,8 +443,8 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames,
 
     tile_encoder = BasicResNet18(output_dim=2)
     make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
-                                        tile_encoder,
-                                        K_ratio, att_thd, boost_rate)
+                                        cut_left, tile_encoder,
+                                        K_ratio, att_thd, boost_rate, pkg_range)
 
 
 if __name__ == '__main__':

@@ -120,7 +120,10 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
     
     for slide_id in slide_topk_heatmap_dict.keys():
         case_id = parse_caseid_from_slideid(slide_id)
-        slide_label = label_dict[case_id]
+        if case_id in label_dict.keys():
+            slide_label = label_dict[case_id]
+        else:
+            slide_label = 'm'
         
         heatmap_info_dict = slide_topk_heatmap_dict[slide_id]
         org_image = heatmap_info_dict['original']
@@ -138,6 +141,9 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
         if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//0'.format(attention_dir))):
             os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//0'.format(attention_dir)))
             print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//0'.format(attention_dir))))
+        if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//m'.format(attention_dir))):
+            os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//m'.format(attention_dir)))
+            print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//m'.format(attention_dir))))
             
         # slide_troi_contours = None
         draw_attention_heatmap(attention_dir, org_image, None, None, 
