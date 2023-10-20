@@ -40,8 +40,9 @@ if __name__ == '__main__':
                                'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
         
         K_ratio = 0.2
-        att_thd =  0.3
-        fills = [3, 3]
+        att_thd =  0.35
+        fills = [3, 4, 5]
+        manu_n_clusters=5
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
@@ -50,6 +51,7 @@ if __name__ == '__main__':
         clustering_res_pkg = _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, 
                                                                    agt_model_filenames, 
                                                                    K_ratio, att_thd, fills,
+                                                                   manu_n_clusters=manu_n_clusters,
                                                                    tiles_r_tuples_pkl_name)
     if 121.1 in task_ids:
         if clustering_res_pkg is None:
@@ -57,7 +59,7 @@ if __name__ == '__main__':
         else:
             sensitive_labels = []
             assim_thd = 0.1
-            fills=[4]
+            fills=[4, 5]
             _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg, 
                                                   sensitive_labels, assim_thd, fills)
         

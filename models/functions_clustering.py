@@ -408,7 +408,8 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
                 if stat:
                     tile_key = '{}-h{}-w{}'.format(slide_id, i_h, i_w)
                     if tile_key not in tile_key_loc_dict:
-                        print(f'! cannot find tile key: {tile_key}')
+                        # print(f'! cannot find tile key: {tile_key}')
+                        pass
                     else:
                         nb_fill += 1
                         fill_records.append((i_h, i_w, avg_surd) )
@@ -417,7 +418,7 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
         # add the filled nodes into pool
         for (i_h, i_w, avg_surd) in fill_records:
             heat_np[i_h, i_w] = avg_surd
-        print('fill surrounding tiles: %d in round: %d', (nb_fill, r) )
+        print('fill surrounding tiles: %d in round: %d' % (nb_fill, r + 1) )
     
     return fill_k_slide_tiles_list, fill_k_attscores
     
@@ -1083,7 +1084,7 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     print(res_dict)
     
 def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_filenames,
-                                          K_ratio, att_thd, fills,
+                                          K_ratio, att_thd, fills, manu_n_clusters=5,
                                           tiles_r_tuples_pkl_name=None):
     '''
     clustering the tiles with high attention values 
@@ -1107,7 +1108,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
                                      attention_tiles_list=att_all_tiles_list,
-                                     manu_n_clusters=3)
+                                     manu_n_clusters=manu_n_clusters)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers))
