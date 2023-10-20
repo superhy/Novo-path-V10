@@ -239,7 +239,7 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
   
 def select_top_att_tiles(ENV_task, tile_encoder, 
                          agt_model_filenames, label_dict,
-                         K_ratio=0.3, att_thd=0.25, fill_void=False, fill=3, pkg_range=None):
+                         K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -324,14 +324,14 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         k_slide_tiles_list, k_attscores = functions_lcsb.filter_singlesldie_top_thd_attKtiles(tiles_all_list, slide_tileidxs_list,
                                                                                               avg_attscores, K, att_thd)
         
-        if fill_void:
+        if fills is not None:
             # fill the missed voids surrounded by hot spots
             slide_tiles_list = []
             for t_id in slide_tileidxs_list:
                 slide_tiles_list.append(tiles_all_list[t_id])
             tile_key_loc_dict = indicate_slide_tile_loc(slide_tiles_list)
             k_slide_tiles_list, k_attscores = fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
-                                                                    slide_id, tile_key_loc_dict, fill=fill)
+                                                                    slide_id, tile_key_loc_dict, fills=fills)
         
         print('all/k selection ratio in this slide: (%d / %d)' % (nb_tiles, len(k_slide_tiles_list)) )
         att_all_tiles_list.extend(k_slide_tiles_list)
@@ -375,7 +375,7 @@ def check_surrounding(state_map, h, w, fill=3):
     return stat, avg_surd
 
 def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
-                          slide_id, tile_key_loc_dict, fill=3, inc_org_tiles_list=True):
+                          slide_id, tile_key_loc_dict, fills=[3], inc_org_tiles_list=True):
     '''
     if a spot is surrounded by attention patches, we are going to fill it as the attention one
     '''
@@ -399,19 +399,25 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
     else:
         fill_k_slide_tiles_list, fill_k_attscores = [], []
     # fill the voids which surrounded by hot-spots
-    nb_fill = 0
-    for i_h in range(H):
-        for i_w in range(W):
-            stat, avg_surd = check_surrounding(heat_np, i_h, i_w, fill=fill)
-            if stat:
-                tile_key = '{}-h{}-w{}'.format(slide_id, i_h, i_w)
-                if tile_key not in tile_key_loc_dict:
-                    print(f'! cannot find tile key: {tile_key}')
-                else:
-                    nb_fill += 1
-                    fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
-                    fill_k_attscores.append(avg_surd)
-    print('fill surrounding tiles: ', nb_fill)
+    for r, fill_thd in enumerate(fills):
+        fill_records = []
+        nb_fill = 0
+        for i_h in range(H):
+            for i_w in range(W):
+                stat, avg_surd = check_surrounding(heat_np, i_h, i_w, fill=fill_thd)
+                if stat:
+                    tile_key = '{}-h{}-w{}'.format(slide_id, i_h, i_w)
+                    if tile_key not in tile_key_loc_dict:
+                        print(f'! cannot find tile key: {tile_key}')
+                    else:
+                        nb_fill += 1
+                        fill_records.append((i_h, i_w, avg_surd) )
+                        fill_k_slide_tiles_list.append(tile_key_loc_dict[tile_key])
+                        fill_k_attscores.append(avg_surd)
+        # add the filled nodes into pool
+        for (i_h, i_w, avg_surd) in fill_records:
+            heat_np[i_h, i_w] = avg_surd
+        print('fill surrounding tiles: %d in round: %d', (nb_fill, r) )
     
     return fill_k_slide_tiles_list, fill_k_attscores
     
@@ -870,7 +876,7 @@ class Feature_Assimilate():
         print('> assimilated %d tiles with close distance.' % len(assim_tuples))
         return assim_tuples
     
-    def fill_void_4_assim_sensi_tiles(self, assim_tile_tuples):
+    def fill_void_4_assim_sensi_tiles(self, assim_tile_tuples, fills=[4]):
         '''
         '''
         hot_tiles_tuples = self.sensitive_tiles + assim_tile_tuples
@@ -890,7 +896,7 @@ class Feature_Assimilate():
             t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
             filled_tiles_list = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
                                                       slide_id, tile_key_loc_dict=t_key_tile_dict, 
-                                                      fill=4, inc_org_tiles_list=False)
+                                                      fills=fills, inc_org_tiles_list=False)
             slide_filled_tuples = [(t, slide_id) for t in filled_tiles_list]
             filled_tuples.extend(slide_filled_tuples)
         print('> filled void %d tiles' % len(filled_tuples))
@@ -1077,7 +1083,7 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     print(res_dict)
     
 def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_filenames,
-                                          K_ratio, att_thd, fill_void,
+                                          K_ratio, att_thd, fills,
                                           tiles_r_tuples_pkl_name=None):
     '''
     clustering the tiles with high attention values 
@@ -1094,7 +1100,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     
     att_all_tiles_list, _ = select_top_att_tiles(ENV_task, tile_encoder,
                                                  agt_model_filenames, label_dict,
-                                                 K_ratio=K_ratio, att_thd=att_thd, fill_void=fill_void)
+                                                 K_ratio=K_ratio, att_thd=att_thd, fills=fills)
     
     # we set up manu_n_clusters=3 here, only 3 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
@@ -1117,7 +1123,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
 
 def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg,
                                           sensitive_labels, 
-                                          assim_thd=0.1, fill_void=True):
+                                          assim_thd=0.1, fills=[4]):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
@@ -1126,7 +1132,7 @@ def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg,
                                       assimilate_thd=assim_thd, embed_type='encode')
     
     assim_tuples = assimilating.assimilate()
-    filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples) if fill_void else []
+    filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
     assimilating.store(assim_tuples, filled_tuples)
     
     

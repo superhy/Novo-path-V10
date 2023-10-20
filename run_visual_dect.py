@@ -50,10 +50,10 @@ if __name__ == '__main__':
         # pkg_range = [0, 50]
         pkg_range = None
         cut_left = True
-        fill=2
+        fills=[3, 3]
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
-                                                    K_ratio, att_thd, boost_rate, fill, pkg_range)
+                                                    K_ratio, att_thd, boost_rate, fills, pkg_range)
         
         
         

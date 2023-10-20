@@ -150,7 +150,7 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
                                (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-org'), alg_name))
         print('draw original image in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
 
-        draw_attention_heatmap(attention_dir, heat_hard_cv2, org_image, None,
+        draw_attention_heatmap(attention_dir, heat_hard_cv2, None, None,
                                (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-hard'), alg_name))
         print('1. draw hard heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
         

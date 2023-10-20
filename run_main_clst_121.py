@@ -33,20 +33,15 @@ if __name__ == '__main__':
     
     if 121 in task_ids:
         # p62
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool_-0_ballooning_score_bi_[202]2023-10-16.pth',
-                               'checkpoint_GatedAttPool-g_Pool_-1_ballooning_score_bi_[282]2023-10-17.pth',
-                               'checkpoint_GatedAttPool-g_Pool_-2_ballooning_score_bi_[203]2023-10-17.pth',
-                               'checkpoint_GatedAttPool-g_Pool_-3_ballooning_score_bi_[246]2023-10-17.pth',
-                               'checkpoint_GatedAttPool-g_Pool_-4_ballooning_score_bi_[269]2023-10-17.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
         
-        '''
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool_-0_ballooning_score_bi_[126]2023-10-08.pth',
-                               'checkpoint_GatedAttPool-g_Pool_-1_ballooning_score_bi_[13]2023-10-08.pth']
-        '''
-        
-        K_ratio = 0.25
+        K_ratio = 0.2
         att_thd =  0.3
-        fill_void = True
+        fills = [3, 3]
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
@@ -54,7 +49,7 @@ if __name__ == '__main__':
         
         clustering_res_pkg = _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, 
                                                                    agt_model_filenames, 
-                                                                   K_ratio, att_thd, fill_void,
+                                                                   K_ratio, att_thd, fills,
                                                                    tiles_r_tuples_pkl_name)
     if 121.1 in task_ids:
         if clustering_res_pkg is None:
@@ -62,9 +57,9 @@ if __name__ == '__main__':
         else:
             sensitive_labels = []
             assim_thd = 0.1
-            fill_void = True
+            fills=[4]
             _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg, 
-                                                  sensitive_labels, assim_thd, fill_void)
+                                                  sensitive_labels, assim_thd, fills)
         
         
         

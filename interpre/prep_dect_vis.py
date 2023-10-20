@@ -388,7 +388,7 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
 
 def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
                                         cut_left=True, tile_encoder=None, 
-                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fill=3, pkg_range=None):
+                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fills=[3], pkg_range=None):
     """
     make the top K attention pool visualisation (only 1 round, no milestones), 
     only highlight the picked tiles with the highest attention scores.
@@ -410,7 +410,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     
     _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
                                                       agt_model_filenames, label_dict,
-                                                      K_ratio, att_thd, fill_void=True, fill=fill, pkg_range=pkg_range)
+                                                      K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
     
     slide_topK_att_heatmap_dict = {}
     for slide_id in slide_k_tiles_atts_dict.keys():
@@ -434,7 +434,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     
     
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
-                                                K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fill=3, pkg_range=[0, 50]):
+                                                K_ratio=0.3, att_thd=0.3, boost_rate=2.0, fills=[3], pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
@@ -444,7 +444,7 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
     tile_encoder = BasicResNet18(output_dim=2)
     make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
                                         cut_left, tile_encoder,
-                                        K_ratio, att_thd, boost_rate, fill, pkg_range)
+                                        K_ratio, att_thd, boost_rate, fills, pkg_range)
 
 
 if __name__ == '__main__':
