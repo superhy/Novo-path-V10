@@ -34,9 +34,9 @@ if __name__ == '__main__':
     if 1.1 in task_ids:
         agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth']
-                               # 'checkpoint_GatedAttPool-g_Pool_-3_ballooning_score_bi_[246]2023-10-17.pth',
-                               # 'checkpoint_GatedAttPool-g_Pool_-4_ballooning_score_bi_[269]2023-10-17.pth']
+                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
         
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth']
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth']
