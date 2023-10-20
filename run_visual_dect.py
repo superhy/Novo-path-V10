@@ -44,15 +44,16 @@ if __name__ == '__main__':
         
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
         
-        K_ratio=0.3
-        att_thd=0.25
+        K_ratio=0.2
+        att_thd=0.3
         boost_rate=2.0
         # pkg_range = [0, 50]
         pkg_range = None
         cut_left = True
+        fill=2
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
-                                                    K_ratio, att_thd, boost_rate, pkg_range)
+                                                    K_ratio, att_thd, boost_rate, fill, pkg_range)
         
         
         

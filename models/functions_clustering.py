@@ -239,7 +239,7 @@ def get_preload_tiles_rich_tuples(ENV_task, tiles_tuples_pkl_name):
   
 def select_top_att_tiles(ENV_task, tile_encoder, 
                          agt_model_filenames, label_dict,
-                         K_ratio=0.3, att_thd=0.25, fill_void=False, pkg_range=None):
+                         K_ratio=0.3, att_thd=0.25, fill_void=False, fill=3, pkg_range=None):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -331,7 +331,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
                 slide_tiles_list.append(tiles_all_list[t_id])
             tile_key_loc_dict = indicate_slide_tile_loc(slide_tiles_list)
             k_slide_tiles_list, k_attscores = fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores, 
-                                                                    slide_id, tile_key_loc_dict)
+                                                                    slide_id, tile_key_loc_dict, fill=fill)
         
         print('all/k selection ratio in this slide: (%d / %d)' % (nb_tiles, len(k_slide_tiles_list)) )
         att_all_tiles_list.extend(k_slide_tiles_list)
