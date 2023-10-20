@@ -32,18 +32,23 @@ if __name__ == '__main__':
     if 0 in task_ids:
         ''' For sensitive tiles demo visualisation '''
     if 1.1 in task_ids:
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool_-0_ballooning_score_bi_[202]2023-10-16.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool_-1_ballooning_score_bi_[282]2023-10-17.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool_-2_ballooning_score_bi_[203]2023-10-17.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool_-3_ballooning_score_bi_[246]2023-10-17.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool_-4_ballooning_score_bi_[269]2023-10-17.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth']
+                               # 'checkpoint_GatedAttPool-g_Pool_-3_ballooning_score_bi_[246]2023-10-17.pth',
+                               # 'checkpoint_GatedAttPool-g_Pool_-4_ballooning_score_bi_[269]2023-10-17.pth']
         
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool_-0_ballooning_score_bi_[78]2023-10-18.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth']
+        
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
         
         K_ratio=0.3
         att_thd=0.25
         boost_rate=2.0
-        pkg_range = [0, 50]
+        # pkg_range = [0, 50]
+        pkg_range = None
         cut_left = True
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,

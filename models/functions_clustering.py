@@ -314,7 +314,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
             slide_attscores = slide_attscores_dict[slide_id]
             list_of_attscores.append(slide_attscores)
         avg_attscores = average_vectors(list_of_attscores)
-        # normalization after averaging
+        # normalisation after averaging
         avg_attscores = normalization(avg_attscores)
         # print(avg_attscores, len(avg_attscores))
         

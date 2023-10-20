@@ -256,7 +256,7 @@ class AttPool_MIL():
         pt_prefix = 'pt_' if model_filename is not None and model_filename.find('PTAGT') != -1 else ''
         if test_mode is True:
             pt_prefix = 'pt_' if model_filename.find('-pt_') != -1 else ''
-        self.alg_name = '{}{}Pool_{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
+        self.alg_name = '{}{}Pool{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
                                                 self.ENV_task.FOLD_SUFFIX, _env_task_name)
         
         print('![Initial Stage] test mode: {}'.format(test_mode))
@@ -398,8 +398,8 @@ class AttPool_MIL():
                 queue_auc.append(test_auc)
                 if len(queue_auc) > self.last_eval_epochs:
                     queue_auc.remove(queue_auc[0])
-                # if epoch in self.record_points or overall_epoch_stop == True:
-                if epoch > int(self.num_epoch * 0.8) and test_auc > checkpoint_auc: # keep the best for validation here
+                if epoch in self.record_points or overall_epoch_stop == True:
+                # if epoch > int(self.num_epoch * 0.75) and test_auc > checkpoint_auc: # keep the best for validation here
                     checkpoint_auc = test_auc
                     self.record(epoch, checkpoint_auc)
                 print('>>> on attpool -> test acc: %.4f, test auc: %.4f' % (test_acc, test_auc))
