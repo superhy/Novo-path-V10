@@ -726,7 +726,7 @@ class Feature_Assimilate():
     Assimilating the tiles with close distance 
     '''
     def __init__(self, ENV_task, clustering_res_pkg, sensitive_labels,
-                 encoder, attK_clst=True, assimilate_thd=0.1, embed_type='encode', 
+                 encoder, attK_clst=True, assimilate_ratio=0.1, embed_type='encode', 
                  reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
         '''
         TODO: annotations of this function
@@ -739,7 +739,7 @@ class Feature_Assimilate():
         self.for_train = True if self._env_task.DEBUG_MODE else False
         self.model_store_dir = self._env_task.MODEL_FOLDER
         
-        self.assimilate_thd = assimilate_thd
+        self.assimilate_ratio = assimilate_ratio
         self.embed_type = embed_type
         self.encoder = encoder
         self.encoder = self.encoder.cuda()
@@ -864,13 +864,13 @@ class Feature_Assimilate():
         # sort tuples by distance
         sorted_tuples = sorted(distances, key=lambda x: x[0])
         # determine the index for the top 10%
-        assimilate_pct_index = int(len(sorted_tuples) * self.assimilate_thd)
+        assimilate_pct_index = int(len(sorted_tuples) * self.assimilate_ratio)
         # if the list is too small, ensure at least one element is selected
         assimilate_pct_index = max(assimilate_pct_index, 1)
         
         # print the distance threshold
         distance_threshold = sorted_tuples[assimilate_pct_index - 1][0]
-        print(f"--- distance threshold for top {self.assimilate_thd}: {distance_threshold}")
+        print(f"--- distance threshold for top {self.assimilate_ratio}: {distance_threshold}")
         
         # Step 4: Return the top 10% tuples, removing the distance value from each tuple
         assim_tuples = [(tile, slide_id) for _, _, tile, slide_id in sorted_tuples[:assimilate_pct_index]]
@@ -1124,13 +1124,13 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
 
 def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg,
                                           sensitive_labels, 
-                                          assim_thd=0.1, fills=[4]):
+                                          assim_ratio=0.1, fills=[4]):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
     assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
                                       encoder=tile_encoder, attK_clst=True,
-                                      assimilate_thd=assim_thd, embed_type='encode')
+                                      assimilate_ratio=assim_ratio, embed_type='encode')
     
     assim_tuples = assimilating.assimilate()
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []

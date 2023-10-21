@@ -39,8 +39,8 @@ if __name__ == '__main__':
                                'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
         
-        K_ratio = 0.2
-        att_thd =  0.35
+        K_ratio = 0.25
+        att_thd =  0.25
         fills = [3, 4, 5]
         manu_n_clusters=5
         
@@ -58,10 +58,10 @@ if __name__ == '__main__':
             print('! need to load clustering results first')
         else:
             sensitive_labels = []
-            assim_thd = 0.1
+            assim_ratio = 0.1
             fills=[4, 5]
             _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg, 
-                                                  sensitive_labels, assim_thd, fills)
+                                                  sensitive_labels, assim_ratio, fills)
         
         
         

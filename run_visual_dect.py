@@ -32,17 +32,17 @@ if __name__ == '__main__':
     if 0 in task_ids:
         ''' For sensitive tiles demo visualisation '''
     if 1.1 in task_ids:
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
         
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth']
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth']
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth']
-        
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[157]2023-10-21.pth',
+                               'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[200]2023-10-21.pth',
+                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[200]2023-10-21.pth',
+                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[200]2023-10-21.pth',
+                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[200]2023-10-21.pth']
         
         K_ratio=0.25
         att_thd=0.25
