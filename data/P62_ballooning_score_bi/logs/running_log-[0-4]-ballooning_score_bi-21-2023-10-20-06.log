@@ -1,0 +1,1177 @@
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 86, test slides: 37, time: 0:49:13.586181
+On-standby: g_Pool-0_ballooning_score_bi algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_score_bi.csv
+![Training Stage]
+In training...epoch [1/200], batch_loss-> 0.6986, train acc-> 0.6395, time: 0:00:14.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.4038
+In training...epoch [2/200], batch_loss-> 0.6989, train acc-> 0.6395, time: 0:00:11.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5288
+In training...epoch [3/200], batch_loss-> 0.6908, train acc-> 0.6512, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6122, test auc: 0.5801
+In training...epoch [4/200], batch_loss-> 0.6871, train acc-> 0.6628, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5769
+In training...epoch [5/200], batch_loss-> 0.6874, train acc-> 0.6628, time: 0:00:11.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.5801
+In training...epoch [6/200], batch_loss-> 0.6862, train acc-> 0.6512, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4984, test auc: 0.5833
+In training...epoch [7/200], batch_loss-> 0.6806, train acc-> 0.6860, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.6026
+In training...epoch [8/200], batch_loss-> 0.6823, train acc-> 0.6977, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5929
+In training...epoch [9/200], batch_loss-> 0.6772, train acc-> 0.6860, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6026
+In training...epoch [10/200], batch_loss-> 0.6795, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.5994
+In training...epoch [11/200], batch_loss-> 0.6766, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5897
+In training...epoch [12/200], batch_loss-> 0.6728, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5897
+In training...epoch [13/200], batch_loss-> 0.6755, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5897
+In training...epoch [14/200], batch_loss-> 0.6715, train acc-> 0.6860, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5865
+In training...epoch [15/200], batch_loss-> 0.6775, train acc-> 0.7093, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.5897
+In training...epoch [16/200], batch_loss-> 0.6685, train acc-> 0.6860, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6026
+In training...epoch [17/200], batch_loss-> 0.6750, train acc-> 0.6860, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.5994
+In training...epoch [18/200], batch_loss-> 0.6718, train acc-> 0.6977, time: 0:00:11.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6026
+In training...epoch [19/200], batch_loss-> 0.6683, train acc-> 0.7093, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6058
+In training...epoch [20/200], batch_loss-> 0.6724, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.6282
+In training...epoch [21/200], batch_loss-> 0.6658, train acc-> 0.7209, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6154
+In training...epoch [22/200], batch_loss-> 0.6614, train acc-> 0.6977, time: 0:00:11.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6090
+In training...epoch [23/200], batch_loss-> 0.6653, train acc-> 0.6977, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.5929
+In training...epoch [24/200], batch_loss-> 0.6646, train acc-> 0.6977, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6090
+In training...epoch [25/200], batch_loss-> 0.6616, train acc-> 0.6860, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6026
+In training...epoch [26/200], batch_loss-> 0.6633, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6090
+In training...epoch [27/200], batch_loss-> 0.6617, train acc-> 0.6860, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.5994
+In training...epoch [28/200], batch_loss-> 0.6576, train acc-> 0.7093, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6154
+In training...epoch [29/200], batch_loss-> 0.6495, train acc-> 0.6860, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6122
+In training...epoch [30/200], batch_loss-> 0.6553, train acc-> 0.6744, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6346
+In training...epoch [31/200], batch_loss-> 0.6445, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6346
+In training...epoch [32/200], batch_loss-> 0.6471, train acc-> 0.7209, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6378
+In training...epoch [33/200], batch_loss-> 0.6551, train acc-> 0.7093, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6506
+In training...epoch [34/200], batch_loss-> 0.6430, train acc-> 0.7209, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6506
+In training...epoch [35/200], batch_loss-> 0.6307, train acc-> 0.7093, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6314
+In training...epoch [36/200], batch_loss-> 0.6360, train acc-> 0.6977, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6378
+In training...epoch [37/200], batch_loss-> 0.6413, train acc-> 0.6977, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6378
+In training...epoch [38/200], batch_loss-> 0.6358, train acc-> 0.7209, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6346
+In training...epoch [39/200], batch_loss-> 0.6410, train acc-> 0.6977, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6346
+In training...epoch [40/200], batch_loss-> 0.6344, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6378
+In training...epoch [41/200], batch_loss-> 0.6395, train acc-> 0.6860, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6378
+In training...epoch [42/200], batch_loss-> 0.6466, train acc-> 0.6744, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6346
+In training...epoch [43/200], batch_loss-> 0.6352, train acc-> 0.7209, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6186
+In training...epoch [44/200], batch_loss-> 0.6186, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6186
+In training...epoch [45/200], batch_loss-> 0.6237, train acc-> 0.7093, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6218
+In training...epoch [46/200], batch_loss-> 0.6318, train acc-> 0.6977, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6282
+In training...epoch [47/200], batch_loss-> 0.6243, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6314
+In training...epoch [48/200], batch_loss-> 0.6274, train acc-> 0.7209, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6442
+In training...epoch [49/200], batch_loss-> 0.6187, train acc-> 0.7326, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6474
+In training...epoch [50/200], batch_loss-> 0.6182, train acc-> 0.7558, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6474
+In training...epoch [51/200], batch_loss-> 0.6006, train acc-> 0.7209, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6282
+In training...epoch [52/200], batch_loss-> 0.6012, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6314
+In training...epoch [53/200], batch_loss-> 0.6275, train acc-> 0.7442, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6314
+In training...epoch [54/200], batch_loss-> 0.6208, train acc-> 0.7442, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6218
+In training...epoch [55/200], batch_loss-> 0.6155, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6154
+In training...epoch [56/200], batch_loss-> 0.5937, train acc-> 0.7093, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6314
+In training...epoch [57/200], batch_loss-> 0.5979, train acc-> 0.7326, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6154
+In training...epoch [58/200], batch_loss-> 0.5920, train acc-> 0.7442, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6154
+In training...epoch [59/200], batch_loss-> 0.6061, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6154
+In training...epoch [60/200], batch_loss-> 0.6034, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6090
+In training...epoch [61/200], batch_loss-> 0.5826, train acc-> 0.7442, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6122
+In training...epoch [62/200], batch_loss-> 0.6098, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6026
+In training...epoch [63/200], batch_loss-> 0.5965, train acc-> 0.7558, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6058
+In training...epoch [64/200], batch_loss-> 0.5971, train acc-> 0.7442, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6090
+In training...epoch [65/200], batch_loss-> 0.5836, train acc-> 0.7558, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6026
+In training...epoch [66/200], batch_loss-> 0.5752, train acc-> 0.7558, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5849, test auc: 0.5962
+In training...epoch [67/200], batch_loss-> 0.5881, train acc-> 0.7674, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5897
+In training...epoch [68/200], batch_loss-> 0.5632, train acc-> 0.7791, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5962
+In training...epoch [69/200], batch_loss-> 0.5824, train acc-> 0.7558, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5962
+In training...epoch [70/200], batch_loss-> 0.5790, train acc-> 0.7326, time: 0:00:11.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5994
+In training...epoch [71/200], batch_loss-> 0.5811, train acc-> 0.7674, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5962
+In training...epoch [72/200], batch_loss-> 0.5663, train acc-> 0.7674, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5994
+In training...epoch [73/200], batch_loss-> 0.5501, train acc-> 0.7558, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.5833
+In training...epoch [74/200], batch_loss-> 0.5643, train acc-> 0.7558, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6474, test auc: 0.5833
+In training...epoch [75/200], batch_loss-> 0.5527, train acc-> 0.7674, time: 0:00:11.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6474, test auc: 0.5833
+In training...epoch [76/200], batch_loss-> 0.5603, train acc-> 0.7674, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5929
+In training...epoch [77/200], batch_loss-> 0.5556, train acc-> 0.7674, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5929
+In training...epoch [78/200], batch_loss-> 0.5591, train acc-> 0.7674, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5897
+In training...epoch [79/200], batch_loss-> 0.6048, train acc-> 0.7674, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.5865
+In training...epoch [80/200], batch_loss-> 0.5493, train acc-> 0.7674, time: 0:00:11.0 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth>, >>> on attpool -> test acc: 0.6058, test auc: 0.5833
+[0.5833333333333334]
+### final evaluation on attpool -> average test auc: 0.5833
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 86, test slides: 37, time: 0:48:12.079222
+On-standby: g_Pool-1_ballooning_score_bi algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_score_bi.csv
+![Training Stage]
+In training...epoch [1/200], batch_loss-> 0.6889, train acc-> 0.6395, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.7628
+In training...epoch [2/200], batch_loss-> 0.6904, train acc-> 0.6279, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.7660
+In training...epoch [3/200], batch_loss-> 0.6877, train acc-> 0.6512, time: 0:00:08.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6154, test auc: 0.7179
+In training...epoch [4/200], batch_loss-> 0.6815, train acc-> 0.6744, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6715, test auc: 0.7115
+In training...epoch [5/200], batch_loss-> 0.6854, train acc-> 0.7093, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7564
+In training...epoch [6/200], batch_loss-> 0.6804, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7596
+In training...epoch [7/200], batch_loss-> 0.6812, train acc-> 0.7093, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7628
+In training...epoch [8/200], batch_loss-> 0.6804, train acc-> 0.6977, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7308, test auc: 0.7564
+In training...epoch [9/200], batch_loss-> 0.6799, train acc-> 0.6860, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7308, test auc: 0.7628
+In training...epoch [10/200], batch_loss-> 0.6746, train acc-> 0.6977, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7308, test auc: 0.7596
+In training...epoch [11/200], batch_loss-> 0.6777, train acc-> 0.6860, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7628
+In training...epoch [12/200], batch_loss-> 0.6720, train acc-> 0.6977, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7308, test auc: 0.7628
+In training...epoch [13/200], batch_loss-> 0.6697, train acc-> 0.7093, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7821
+In training...epoch [14/200], batch_loss-> 0.6744, train acc-> 0.7093, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6923, test auc: 0.7788
+In training...epoch [15/200], batch_loss-> 0.6687, train acc-> 0.6977, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7099, test auc: 0.7692
+In training...epoch [16/200], batch_loss-> 0.6619, train acc-> 0.6860, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7660
+In training...epoch [17/200], batch_loss-> 0.6582, train acc-> 0.6628, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7596
+In training...epoch [18/200], batch_loss-> 0.6678, train acc-> 0.6628, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [19/200], batch_loss-> 0.6591, train acc-> 0.6628, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [20/200], batch_loss-> 0.6639, train acc-> 0.6744, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [21/200], batch_loss-> 0.6616, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [22/200], batch_loss-> 0.6592, train acc-> 0.6628, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [23/200], batch_loss-> 0.6577, train acc-> 0.6628, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [24/200], batch_loss-> 0.6594, train acc-> 0.6512, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [25/200], batch_loss-> 0.6553, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7500
+In training...epoch [26/200], batch_loss-> 0.6577, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7500
+In training...epoch [27/200], batch_loss-> 0.6415, train acc-> 0.6977, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [28/200], batch_loss-> 0.6502, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7500
+In training...epoch [29/200], batch_loss-> 0.6511, train acc-> 0.6860, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7500
+In training...epoch [30/200], batch_loss-> 0.6556, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [31/200], batch_loss-> 0.6420, train acc-> 0.6744, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [32/200], batch_loss-> 0.6508, train acc-> 0.6977, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [33/200], batch_loss-> 0.6590, train acc-> 0.6628, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7468
+In training...epoch [34/200], batch_loss-> 0.6364, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [35/200], batch_loss-> 0.6472, train acc-> 0.6977, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [36/200], batch_loss-> 0.6326, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7500
+In training...epoch [37/200], batch_loss-> 0.6408, train acc-> 0.6744, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [38/200], batch_loss-> 0.6248, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [39/200], batch_loss-> 0.6346, train acc-> 0.6977, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [40/200], batch_loss-> 0.6227, train acc-> 0.7093, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [41/200], batch_loss-> 0.6295, train acc-> 0.6744, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [42/200], batch_loss-> 0.6269, train acc-> 0.6860, time: 0:00:11.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [43/200], batch_loss-> 0.6285, train acc-> 0.6628, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [44/200], batch_loss-> 0.6349, train acc-> 0.6744, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [45/200], batch_loss-> 0.6370, train acc-> 0.6860, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7532
+In training...epoch [46/200], batch_loss-> 0.6143, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [47/200], batch_loss-> 0.6300, train acc-> 0.6860, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7596
+In training...epoch [48/200], batch_loss-> 0.6296, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7596
+In training...epoch [49/200], batch_loss-> 0.6124, train acc-> 0.6977, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7596
+In training...epoch [50/200], batch_loss-> 0.6195, train acc-> 0.7209, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7564
+In training...epoch [51/200], batch_loss-> 0.6240, train acc-> 0.7326, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7628
+In training...epoch [52/200], batch_loss-> 0.6243, train acc-> 0.7209, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.7564
+In training...epoch [53/200], batch_loss-> 0.5991, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.7596
+In training...epoch [54/200], batch_loss-> 0.6215, train acc-> 0.6860, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.7628
+In training...epoch [55/200], batch_loss-> 0.6017, train acc-> 0.6977, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.7628
+In training...epoch [56/200], batch_loss-> 0.6013, train acc-> 0.6977, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7628
+In training...epoch [57/200], batch_loss-> 0.6145, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7660
+In training...epoch [58/200], batch_loss-> 0.6049, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7692
+In training...epoch [59/200], batch_loss-> 0.6047, train acc-> 0.7209, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7724
+In training...epoch [60/200], batch_loss-> 0.6248, train acc-> 0.6977, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6891, test auc: 0.7724
+In training...epoch [61/200], batch_loss-> 0.6055, train acc-> 0.7209, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.7724
+In training...epoch [62/200], batch_loss-> 0.6228, train acc-> 0.6977, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.7788
+In training...epoch [63/200], batch_loss-> 0.6165, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7853
+In training...epoch [64/200], batch_loss-> 0.5922, train acc-> 0.7093, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7452, test auc: 0.7788
+In training...epoch [65/200], batch_loss-> 0.6177, train acc-> 0.6977, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7821
+In training...epoch [66/200], batch_loss-> 0.6201, train acc-> 0.7209, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.7788
+In training...epoch [67/200], batch_loss-> 0.5924, train acc-> 0.7209, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7821
+In training...epoch [68/200], batch_loss-> 0.6202, train acc-> 0.6977, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7788
+In training...epoch [69/200], batch_loss-> 0.6157, train acc-> 0.6977, time: 0:00:08.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7756
+In training...epoch [70/200], batch_loss-> 0.5998, train acc-> 0.7209, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7452, test auc: 0.7756
+In training...epoch [71/200], batch_loss-> 0.6092, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7452, test auc: 0.7724
+In training...epoch [72/200], batch_loss-> 0.6001, train acc-> 0.7209, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7724
+In training...epoch [73/200], batch_loss-> 0.5840, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7692
+In training...epoch [74/200], batch_loss-> 0.5918, train acc-> 0.6977, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7724
+In training...epoch [75/200], batch_loss-> 0.5932, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7692
+In training...epoch [76/200], batch_loss-> 0.5758, train acc-> 0.7558, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7628
+In training...epoch [77/200], batch_loss-> 0.5909, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7628
+In training...epoch [78/200], batch_loss-> 0.5858, train acc-> 0.6977, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7628
+In training...epoch [79/200], batch_loss-> 0.6020, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7244, test auc: 0.7628
+In training...epoch [80/200], batch_loss-> 0.6125, train acc-> 0.7326, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7660
+In training...epoch [81/200], batch_loss-> 0.6101, train acc-> 0.7326, time: 0:00:11.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7500
+In training...epoch [82/200], batch_loss-> 0.5917, train acc-> 0.7209, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7468
+In training...epoch [83/200], batch_loss-> 0.5910, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7468
+In training...epoch [84/200], batch_loss-> 0.5941, train acc-> 0.7442, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7628
+In training...epoch [85/200], batch_loss-> 0.5984, train acc-> 0.7442, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7532
+In training...epoch [86/200], batch_loss-> 0.6084, train acc-> 0.7209, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7564
+In training...epoch [87/200], batch_loss-> 0.5698, train acc-> 0.7209, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7564
+In training...epoch [88/200], batch_loss-> 0.5861, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7500
+In training...epoch [89/200], batch_loss-> 0.5838, train acc-> 0.7326, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7500
+In training...epoch [90/200], batch_loss-> 0.5672, train acc-> 0.7326, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7468
+In training...epoch [91/200], batch_loss-> 0.5709, train acc-> 0.7326, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7468
+In training...epoch [92/200], batch_loss-> 0.5836, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7468
+In training...epoch [93/200], batch_loss-> 0.5788, train acc-> 0.7209, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7436
+In training...epoch [94/200], batch_loss-> 0.5845, train acc-> 0.7442, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7372
+In training...epoch [95/200], batch_loss-> 0.5946, train acc-> 0.7326, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7436
+In training...epoch [96/200], batch_loss-> 0.5736, train acc-> 0.6977, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7436
+In training...epoch [97/200], batch_loss-> 0.5723, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7340
+In training...epoch [98/200], batch_loss-> 0.5770, train acc-> 0.7442, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7276
+In training...epoch [99/200], batch_loss-> 0.5786, train acc-> 0.7209, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7308
+In training...epoch [100/200], batch_loss-> 0.5712, train acc-> 0.7326, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7244
+In training...epoch [101/200], batch_loss-> 0.5639, train acc-> 0.7442, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7244
+In training...epoch [102/200], batch_loss-> 0.5635, train acc-> 0.7326, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7244
+In training...epoch [103/200], batch_loss-> 0.5826, train acc-> 0.7326, time: 0:00:11.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.7244
+In training...epoch [104/200], batch_loss-> 0.5897, train acc-> 0.7209, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.7244
+In training...epoch [105/200], batch_loss-> 0.5941, train acc-> 0.7558, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7212
+In training...epoch [106/200], batch_loss-> 0.5684, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7115
+In training...epoch [107/200], batch_loss-> 0.5743, train acc-> 0.7326, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7212
+In training...epoch [108/200], batch_loss-> 0.5649, train acc-> 0.7326, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7083
+In training...epoch [109/200], batch_loss-> 0.5634, train acc-> 0.7326, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7051
+In training...epoch [110/200], batch_loss-> 0.5637, train acc-> 0.7326, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7019
+In training...epoch [111/200], batch_loss-> 0.5760, train acc-> 0.7209, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7019
+In training...epoch [112/200], batch_loss-> 0.5723, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.7115
+In training...epoch [113/200], batch_loss-> 0.5552, train acc-> 0.7442, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7019
+In training...epoch [114/200], batch_loss-> 0.5474, train acc-> 0.7558, time: 0:00:09.2 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth>, >>> on attpool -> test acc: 0.6859, test auc: 0.7051
+[0.7051282051282051]
+### final evaluation on attpool -> average test auc: 0.7051
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 86, test slides: 37, time: 0:48:54.163983
+On-standby: g_Pool-2_ballooning_score_bi algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_score_bi.csv
+![Training Stage]
+In training...epoch [1/200], batch_loss-> 0.6952, train acc-> 0.6395, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.2756
+In training...epoch [2/200], batch_loss-> 0.6937, train acc-> 0.6395, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.2949
+In training...epoch [3/200], batch_loss-> 0.6884, train acc-> 0.6395, time: 0:00:11.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.3301
+In training...epoch [4/200], batch_loss-> 0.6915, train acc-> 0.6395, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.4135
+In training...epoch [5/200], batch_loss-> 0.6879, train acc-> 0.6395, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5353, test auc: 0.5897
+In training...epoch [6/200], batch_loss-> 0.6846, train acc-> 0.6395, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.5913, test auc: 0.6699
+In training...epoch [7/200], batch_loss-> 0.6850, train acc-> 0.6512, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6827
+In training...epoch [8/200], batch_loss-> 0.6881, train acc-> 0.6744, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6731
+In training...epoch [9/200], batch_loss-> 0.6836, train acc-> 0.6860, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.6923
+In training...epoch [10/200], batch_loss-> 0.6813, train acc-> 0.6744, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6522, test auc: 0.6955
+In training...epoch [11/200], batch_loss-> 0.6802, train acc-> 0.6628, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.6987
+In training...epoch [12/200], batch_loss-> 0.6795, train acc-> 0.6628, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6346, test auc: 0.7051
+In training...epoch [13/200], batch_loss-> 0.6793, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.6923
+In training...epoch [14/200], batch_loss-> 0.6795, train acc-> 0.6744, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7051
+In training...epoch [15/200], batch_loss-> 0.6764, train acc-> 0.6744, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7083
+In training...epoch [16/200], batch_loss-> 0.6811, train acc-> 0.6395, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7147
+In training...epoch [17/200], batch_loss-> 0.6758, train acc-> 0.6744, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7179
+In training...epoch [18/200], batch_loss-> 0.6727, train acc-> 0.6744, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7147
+In training...epoch [19/200], batch_loss-> 0.6723, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7115
+In training...epoch [20/200], batch_loss-> 0.6719, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7147
+In training...epoch [21/200], batch_loss-> 0.6689, train acc-> 0.6860, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7115
+In training...epoch [22/200], batch_loss-> 0.6738, train acc-> 0.6744, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7115
+In training...epoch [23/200], batch_loss-> 0.6644, train acc-> 0.6628, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7212
+In training...epoch [24/200], batch_loss-> 0.6678, train acc-> 0.6860, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7372
+In training...epoch [25/200], batch_loss-> 0.6645, train acc-> 0.6744, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7372
+In training...epoch [26/200], batch_loss-> 0.6640, train acc-> 0.6744, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7276
+In training...epoch [27/200], batch_loss-> 0.6642, train acc-> 0.6744, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7276
+In training...epoch [28/200], batch_loss-> 0.6647, train acc-> 0.6744, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7212
+In training...epoch [29/200], batch_loss-> 0.6636, train acc-> 0.6860, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7276
+In training...epoch [30/200], batch_loss-> 0.6605, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7276
+In training...epoch [31/200], batch_loss-> 0.6634, train acc-> 0.6744, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7276
+In training...epoch [32/200], batch_loss-> 0.6470, train acc-> 0.6860, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7276
+In training...epoch [33/200], batch_loss-> 0.6558, train acc-> 0.6744, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7372
+In training...epoch [34/200], batch_loss-> 0.6520, train acc-> 0.6744, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7436
+In training...epoch [35/200], batch_loss-> 0.6497, train acc-> 0.6860, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7436
+In training...epoch [36/200], batch_loss-> 0.6482, train acc-> 0.6860, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7468
+In training...epoch [37/200], batch_loss-> 0.6493, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7212, test auc: 0.7436
+In training...epoch [38/200], batch_loss-> 0.6435, train acc-> 0.6977, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7404
+In training...epoch [39/200], batch_loss-> 0.6371, train acc-> 0.6860, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7436
+In training...epoch [40/200], batch_loss-> 0.6534, train acc-> 0.6860, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7468
+In training...epoch [41/200], batch_loss-> 0.6406, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7500
+In training...epoch [42/200], batch_loss-> 0.6315, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7436
+In training...epoch [43/200], batch_loss-> 0.6237, train acc-> 0.6860, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7500
+In training...epoch [44/200], batch_loss-> 0.6358, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7532
+In training...epoch [45/200], batch_loss-> 0.6223, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7532
+In training...epoch [46/200], batch_loss-> 0.6414, train acc-> 0.6860, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7564
+In training...epoch [47/200], batch_loss-> 0.6394, train acc-> 0.6860, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7564
+In training...epoch [48/200], batch_loss-> 0.6481, train acc-> 0.6860, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7660
+In training...epoch [49/200], batch_loss-> 0.6343, train acc-> 0.6744, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7596
+In training...epoch [50/200], batch_loss-> 0.6393, train acc-> 0.7093, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7596
+In training...epoch [51/200], batch_loss-> 0.6399, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7628
+In training...epoch [52/200], batch_loss-> 0.6285, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7692
+In training...epoch [53/200], batch_loss-> 0.6435, train acc-> 0.6977, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7756
+In training...epoch [54/200], batch_loss-> 0.6203, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7003, test auc: 0.7692
+In training...epoch [55/200], batch_loss-> 0.6088, train acc-> 0.7093, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7724
+In training...epoch [56/200], batch_loss-> 0.6341, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7692
+In training...epoch [57/200], batch_loss-> 0.6165, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7724
+In training...epoch [58/200], batch_loss-> 0.6157, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7724
+In training...epoch [59/200], batch_loss-> 0.6210, train acc-> 0.7209, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7724
+In training...epoch [60/200], batch_loss-> 0.6303, train acc-> 0.7093, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7724
+In training...epoch [61/200], batch_loss-> 0.6212, train acc-> 0.7209, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7756
+In training...epoch [62/200], batch_loss-> 0.6252, train acc-> 0.7209, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7788
+In training...epoch [63/200], batch_loss-> 0.6367, train acc-> 0.7093, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7821
+In training...epoch [64/200], batch_loss-> 0.6048, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7821
+In training...epoch [65/200], batch_loss-> 0.6225, train acc-> 0.7209, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7821
+In training...epoch [66/200], batch_loss-> 0.6255, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7821
+In training...epoch [67/200], batch_loss-> 0.6028, train acc-> 0.6977, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6971, test auc: 0.7821
+In training...epoch [68/200], batch_loss-> 0.6018, train acc-> 0.7093, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6763, test auc: 0.7821
+In training...epoch [69/200], batch_loss-> 0.6124, train acc-> 0.7093, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7821
+In training...epoch [70/200], batch_loss-> 0.6239, train acc-> 0.7326, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7853
+In training...epoch [71/200], batch_loss-> 0.5929, train acc-> 0.7209, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7853
+In training...epoch [72/200], batch_loss-> 0.6207, train acc-> 0.7326, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7917
+In training...epoch [73/200], batch_loss-> 0.6156, train acc-> 0.7093, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7885
+In training...epoch [74/200], batch_loss-> 0.6045, train acc-> 0.7326, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7885
+In training...epoch [75/200], batch_loss-> 0.6177, train acc-> 0.7326, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7917
+In training...epoch [76/200], batch_loss-> 0.5995, train acc-> 0.7442, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [77/200], batch_loss-> 0.6108, train acc-> 0.7326, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7147, test auc: 0.7917
+In training...epoch [78/200], batch_loss-> 0.6020, train acc-> 0.7326, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [79/200], batch_loss-> 0.6192, train acc-> 0.7326, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [80/200], batch_loss-> 0.5936, train acc-> 0.7093, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6763, test auc: 0.7981
+In training...epoch [81/200], batch_loss-> 0.5898, train acc-> 0.7326, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [82/200], batch_loss-> 0.5920, train acc-> 0.7326, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7949
+In training...epoch [83/200], batch_loss-> 0.6047, train acc-> 0.7558, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7917
+In training...epoch [84/200], batch_loss-> 0.5860, train acc-> 0.7326, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7885
+In training...epoch [85/200], batch_loss-> 0.6071, train acc-> 0.7326, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7981
+In training...epoch [86/200], batch_loss-> 0.6184, train acc-> 0.7326, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [87/200], batch_loss-> 0.5963, train acc-> 0.7674, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8045
+In training...epoch [88/200], batch_loss-> 0.5641, train acc-> 0.7442, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8045
+In training...epoch [89/200], batch_loss-> 0.6061, train acc-> 0.7209, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7981
+In training...epoch [90/200], batch_loss-> 0.5751, train acc-> 0.7442, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.8013
+In training...epoch [91/200], batch_loss-> 0.5939, train acc-> 0.7209, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7949
+In training...epoch [92/200], batch_loss-> 0.6095, train acc-> 0.7442, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7949
+In training...epoch [93/200], batch_loss-> 0.5893, train acc-> 0.7558, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [94/200], batch_loss-> 0.5881, train acc-> 0.7558, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [95/200], batch_loss-> 0.5916, train acc-> 0.7326, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8045
+In training...epoch [96/200], batch_loss-> 0.5978, train acc-> 0.7558, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [97/200], batch_loss-> 0.6030, train acc-> 0.7326, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [98/200], batch_loss-> 0.5895, train acc-> 0.7442, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [99/200], batch_loss-> 0.6001, train acc-> 0.7326, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [100/200], batch_loss-> 0.5786, train acc-> 0.7326, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7917
+In training...epoch [101/200], batch_loss-> 0.6144, train acc-> 0.7209, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7949
+In training...epoch [102/200], batch_loss-> 0.5837, train acc-> 0.7442, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [103/200], batch_loss-> 0.5717, train acc-> 0.7442, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [104/200], batch_loss-> 0.5706, train acc-> 0.7558, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [105/200], batch_loss-> 0.5878, train acc-> 0.7442, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.8013
+In training...epoch [106/200], batch_loss-> 0.6048, train acc-> 0.7558, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.8013
+In training...epoch [107/200], batch_loss-> 0.6014, train acc-> 0.7558, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [108/200], batch_loss-> 0.5943, train acc-> 0.7791, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [109/200], batch_loss-> 0.5755, train acc-> 0.7326, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [110/200], batch_loss-> 0.5967, train acc-> 0.7442, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.8013
+In training...epoch [111/200], batch_loss-> 0.5841, train acc-> 0.7558, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [112/200], batch_loss-> 0.5765, train acc-> 0.7442, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [113/200], batch_loss-> 0.5841, train acc-> 0.7558, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7981
+In training...epoch [114/200], batch_loss-> 0.5669, train acc-> 0.7674, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7981
+In training...epoch [115/200], batch_loss-> 0.6195, train acc-> 0.7674, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7981
+In training...epoch [116/200], batch_loss-> 0.5738, train acc-> 0.7558, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7981
+In training...epoch [117/200], batch_loss-> 0.5709, train acc-> 0.7093, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.7981
+In training...epoch [118/200], batch_loss-> 0.5834, train acc-> 0.7209, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.7981
+In training...epoch [119/200], batch_loss-> 0.5827, train acc-> 0.7558, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7949
+In training...epoch [120/200], batch_loss-> 0.5757, train acc-> 0.7558, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7949
+In training...epoch [121/200], batch_loss-> 0.5794, train acc-> 0.7558, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7917
+In training...epoch [122/200], batch_loss-> 0.5713, train acc-> 0.7907, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7885
+In training...epoch [123/200], batch_loss-> 0.5530, train acc-> 0.7791, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7885
+In training...epoch [124/200], batch_loss-> 0.5763, train acc-> 0.7674, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7885
+In training...epoch [125/200], batch_loss-> 0.5456, train acc-> 0.7674, time: 0:00:10.2 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth>, >>> on attpool -> test acc: 0.6587, test auc: 0.7885
+[0.7884615384615385]
+### final evaluation on attpool -> average test auc: 0.7885
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 86, test slides: 37, time: 0:49:45.995911
+On-standby: g_Pool-3_ballooning_score_bi algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_score_bi.csv
+![Training Stage]
+In training...epoch [1/200], batch_loss-> 0.7016, train acc-> 0.3605, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.4679
+In training...epoch [2/200], batch_loss-> 0.6973, train acc-> 0.3721, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5417
+In training...epoch [3/200], batch_loss-> 0.6953, train acc-> 0.3605, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5641
+In training...epoch [4/200], batch_loss-> 0.6938, train acc-> 0.3605, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5801
+In training...epoch [5/200], batch_loss-> 0.6969, train acc-> 0.3837, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5994
+In training...epoch [6/200], batch_loss-> 0.6910, train acc-> 0.3605, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5000, test auc: 0.5513
+In training...epoch [7/200], batch_loss-> 0.6882, train acc-> 0.3953, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.4824, test auc: 0.5609
+In training...epoch [8/200], batch_loss-> 0.6869, train acc-> 0.4186, time: 0:00:11.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5032, test auc: 0.5577
+In training...epoch [9/200], batch_loss-> 0.6827, train acc-> 0.4884, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5657, test auc: 0.5801
+In training...epoch [10/200], batch_loss-> 0.6872, train acc-> 0.5233, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.5657, test auc: 0.5705
+In training...epoch [11/200], batch_loss-> 0.6865, train acc-> 0.5233, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6074, test auc: 0.5833
+In training...epoch [12/200], batch_loss-> 0.6789, train acc-> 0.5116, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.5545, test auc: 0.6058
+In training...epoch [13/200], batch_loss-> 0.6792, train acc-> 0.6163, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.4808, test auc: 0.6154
+In training...epoch [14/200], batch_loss-> 0.6775, train acc-> 0.5698, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4599, test auc: 0.6090
+In training...epoch [15/200], batch_loss-> 0.6809, train acc-> 0.5349, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4599, test auc: 0.6058
+In training...epoch [16/200], batch_loss-> 0.6786, train acc-> 0.5698, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.4808, test auc: 0.6058
+In training...epoch [17/200], batch_loss-> 0.6720, train acc-> 0.5814, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.4776, test auc: 0.5962
+In training...epoch [18/200], batch_loss-> 0.6763, train acc-> 0.5814, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.4599, test auc: 0.5962
+In training...epoch [19/200], batch_loss-> 0.6687, train acc-> 0.6279, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.5016, test auc: 0.6090
+In training...epoch [20/200], batch_loss-> 0.6754, train acc-> 0.5814, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.5433, test auc: 0.6122
+In training...epoch [21/200], batch_loss-> 0.6639, train acc-> 0.5930, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.5016, test auc: 0.6026
+In training...epoch [22/200], batch_loss-> 0.6655, train acc-> 0.6163, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5641, test auc: 0.6026
+In training...epoch [23/200], batch_loss-> 0.6685, train acc-> 0.6395, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.5849, test auc: 0.6090
+In training...epoch [24/200], batch_loss-> 0.6613, train acc-> 0.6279, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6186
+In training...epoch [25/200], batch_loss-> 0.6536, train acc-> 0.6279, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6154
+In training...epoch [26/200], batch_loss-> 0.6517, train acc-> 0.6163, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6122
+In training...epoch [27/200], batch_loss-> 0.6604, train acc-> 0.6512, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6122
+In training...epoch [28/200], batch_loss-> 0.6786, train acc-> 0.6279, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6122
+In training...epoch [29/200], batch_loss-> 0.6572, train acc-> 0.6279, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6122
+In training...epoch [30/200], batch_loss-> 0.6472, train acc-> 0.6512, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6154
+In training...epoch [31/200], batch_loss-> 0.6519, train acc-> 0.6395, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6154
+In training...epoch [32/200], batch_loss-> 0.6504, train acc-> 0.6395, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6122
+In training...epoch [33/200], batch_loss-> 0.6455, train acc-> 0.6395, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6122
+In training...epoch [34/200], batch_loss-> 0.6401, train acc-> 0.6628, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6154
+In training...epoch [35/200], batch_loss-> 0.6518, train acc-> 0.6512, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6186
+In training...epoch [36/200], batch_loss-> 0.6459, train acc-> 0.6512, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6186
+In training...epoch [37/200], batch_loss-> 0.6565, train acc-> 0.6628, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6186
+In training...epoch [38/200], batch_loss-> 0.6302, train acc-> 0.6512, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6218
+In training...epoch [39/200], batch_loss-> 0.6361, train acc-> 0.6628, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6218
+In training...epoch [40/200], batch_loss-> 0.6307, train acc-> 0.6628, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6218
+In training...epoch [41/200], batch_loss-> 0.6209, train acc-> 0.6512, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6218
+In training...epoch [42/200], batch_loss-> 0.6330, train acc-> 0.6395, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6186
+In training...epoch [43/200], batch_loss-> 0.6347, train acc-> 0.6395, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6314
+In training...epoch [44/200], batch_loss-> 0.6485, train acc-> 0.6279, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6346
+In training...epoch [45/200], batch_loss-> 0.6333, train acc-> 0.6279, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6346
+In training...epoch [46/200], batch_loss-> 0.6334, train acc-> 0.6512, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6378
+In training...epoch [47/200], batch_loss-> 0.6188, train acc-> 0.6512, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6346
+In training...epoch [48/200], batch_loss-> 0.6375, train acc-> 0.6512, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [49/200], batch_loss-> 0.6248, train acc-> 0.6628, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [50/200], batch_loss-> 0.5999, train acc-> 0.6628, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6378
+In training...epoch [51/200], batch_loss-> 0.6239, train acc-> 0.6512, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6442
+In training...epoch [52/200], batch_loss-> 0.6426, train acc-> 0.6744, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6442
+In training...epoch [53/200], batch_loss-> 0.6248, train acc-> 0.6744, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6474
+In training...epoch [54/200], batch_loss-> 0.6178, train acc-> 0.6628, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6442
+In training...epoch [55/200], batch_loss-> 0.6101, train acc-> 0.6628, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [56/200], batch_loss-> 0.6058, train acc-> 0.6628, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [57/200], batch_loss-> 0.6009, train acc-> 0.6628, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [58/200], batch_loss-> 0.6178, train acc-> 0.6628, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6346
+In training...epoch [59/200], batch_loss-> 0.6060, train acc-> 0.6744, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6378
+In training...epoch [60/200], batch_loss-> 0.6063, train acc-> 0.6628, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6410
+In training...epoch [61/200], batch_loss-> 0.6047, train acc-> 0.6628, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6442
+In training...epoch [62/200], batch_loss-> 0.6043, train acc-> 0.6628, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6442
+In training...epoch [63/200], batch_loss-> 0.6069, train acc-> 0.6628, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6442
+In training...epoch [64/200], batch_loss-> 0.6424, train acc-> 0.6628, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.6474
+In training...epoch [65/200], batch_loss-> 0.6104, train acc-> 0.6628, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6538
+In training...epoch [66/200], batch_loss-> 0.6341, train acc-> 0.6744, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6474
+In training...epoch [67/200], batch_loss-> 0.6110, train acc-> 0.6977, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6474
+In training...epoch [68/200], batch_loss-> 0.6238, train acc-> 0.6744, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6506
+In training...epoch [69/200], batch_loss-> 0.6195, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6538
+In training...epoch [70/200], batch_loss-> 0.6067, train acc-> 0.6628, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.6538
+In training...epoch [71/200], batch_loss-> 0.6039, train acc-> 0.6628, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6538
+In training...epoch [72/200], batch_loss-> 0.6070, train acc-> 0.6628, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6538
+In training...epoch [73/200], batch_loss-> 0.5991, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6538
+In training...epoch [74/200], batch_loss-> 0.5870, train acc-> 0.6744, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6474, test auc: 0.6571
+In training...epoch [75/200], batch_loss-> 0.6277, train acc-> 0.6977, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6474, test auc: 0.6571
+In training...epoch [76/200], batch_loss-> 0.5976, train acc-> 0.6628, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6635
+In training...epoch [77/200], batch_loss-> 0.6103, train acc-> 0.7093, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6603
+In training...epoch [78/200], batch_loss-> 0.5984, train acc-> 0.7209, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6635
+In training...epoch [79/200], batch_loss-> 0.5939, train acc-> 0.6860, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6603
+In training...epoch [80/200], batch_loss-> 0.5959, train acc-> 0.6744, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6538
+In training...epoch [81/200], batch_loss-> 0.6139, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.6571
+In training...epoch [82/200], batch_loss-> 0.5869, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6571
+In training...epoch [83/200], batch_loss-> 0.6121, train acc-> 0.6860, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6635
+In training...epoch [84/200], batch_loss-> 0.6011, train acc-> 0.6860, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6266, test auc: 0.6603
+In training...epoch [85/200], batch_loss-> 0.6060, train acc-> 0.6744, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6474, test auc: 0.6635
+In training...epoch [86/200], batch_loss-> 0.5937, train acc-> 0.7442, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6603
+In training...epoch [87/200], batch_loss-> 0.6160, train acc-> 0.6860, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6603
+In training...epoch [88/200], batch_loss-> 0.6102, train acc-> 0.6860, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6603
+In training...epoch [89/200], batch_loss-> 0.5868, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.6635
+In training...epoch [90/200], batch_loss-> 0.5884, train acc-> 0.6977, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.6667
+In training...epoch [91/200], batch_loss-> 0.6009, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6635
+In training...epoch [92/200], batch_loss-> 0.5984, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6667
+In training...epoch [93/200], batch_loss-> 0.5849, train acc-> 0.6744, time: 0:00:10.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6635
+In training...epoch [94/200], batch_loss-> 0.5916, train acc-> 0.6744, time: 0:00:10.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6635
+In training...epoch [95/200], batch_loss-> 0.5869, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6635
+In training...epoch [96/200], batch_loss-> 0.5949, train acc-> 0.7093, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6635
+In training...epoch [97/200], batch_loss-> 0.5617, train acc-> 0.7209, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6667
+In training...epoch [98/200], batch_loss-> 0.5993, train acc-> 0.7209, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6667
+In training...epoch [99/200], batch_loss-> 0.5962, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6699
+In training...epoch [100/200], batch_loss-> 0.5820, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6827
+In training...epoch [101/200], batch_loss-> 0.5745, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6827
+In training...epoch [102/200], batch_loss-> 0.5875, train acc-> 0.6744, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6827
+In training...epoch [103/200], batch_loss-> 0.5886, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6859
+In training...epoch [104/200], batch_loss-> 0.5970, train acc-> 0.7093, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6891
+In training...epoch [105/200], batch_loss-> 0.5873, train acc-> 0.7326, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6859
+In training...epoch [106/200], batch_loss-> 0.5892, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6827
+In training...epoch [107/200], batch_loss-> 0.5847, train acc-> 0.6977, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6827
+In training...epoch [108/200], batch_loss-> 0.5959, train acc-> 0.7209, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6827
+In training...epoch [109/200], batch_loss-> 0.5923, train acc-> 0.7209, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6859
+In training...epoch [110/200], batch_loss-> 0.5958, train acc-> 0.7093, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6859
+In training...epoch [111/200], batch_loss-> 0.5813, train acc-> 0.7093, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6859
+In training...epoch [112/200], batch_loss-> 0.5908, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.6827
+In training...epoch [113/200], batch_loss-> 0.6012, train acc-> 0.7326, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6859
+In training...epoch [114/200], batch_loss-> 0.5785, train acc-> 0.7442, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6891
+In training...epoch [115/200], batch_loss-> 0.6178, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.6987
+In training...epoch [116/200], batch_loss-> 0.6004, train acc-> 0.6977, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.6987
+In training...epoch [117/200], batch_loss-> 0.5896, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.6955
+In training...epoch [118/200], batch_loss-> 0.5703, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6651, test auc: 0.6859
+In training...epoch [119/200], batch_loss-> 0.5686, train acc-> 0.7442, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.6987
+In training...epoch [120/200], batch_loss-> 0.5809, train acc-> 0.7326, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.6955
+In training...epoch [121/200], batch_loss-> 0.5677, train acc-> 0.6977, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.6891
+In training...epoch [122/200], batch_loss-> 0.5858, train acc-> 0.7442, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6859, test auc: 0.6891
+In training...epoch [123/200], batch_loss-> 0.5889, train acc-> 0.7209, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.6955
+In training...epoch [124/200], batch_loss-> 0.5799, train acc-> 0.7093, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.6955
+In training...epoch [125/200], batch_loss-> 0.5952, train acc-> 0.7326, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6987
+In training...epoch [126/200], batch_loss-> 0.5800, train acc-> 0.7209, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.6987
+In training...epoch [127/200], batch_loss-> 0.5777, train acc-> 0.7209, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6987
+In training...epoch [128/200], batch_loss-> 0.5645, train acc-> 0.6977, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6987
+In training...epoch [129/200], batch_loss-> 0.5542, train acc-> 0.7326, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.6987
+In training...epoch [130/200], batch_loss-> 0.6089, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.7067, test auc: 0.6955
+In training...epoch [131/200], batch_loss-> 0.5866, train acc-> 0.7558, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7051
+In training...epoch [132/200], batch_loss-> 0.5989, train acc-> 0.7093, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7019
+In training...epoch [133/200], batch_loss-> 0.5738, train acc-> 0.7093, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7051
+In training...epoch [134/200], batch_loss-> 0.5848, train acc-> 0.7093, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7083
+In training...epoch [135/200], batch_loss-> 0.5899, train acc-> 0.7093, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7452, test auc: 0.7019
+In training...epoch [136/200], batch_loss-> 0.5655, train acc-> 0.7093, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7083
+In training...epoch [137/200], batch_loss-> 0.5698, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7051
+In training...epoch [138/200], batch_loss-> 0.5688, train acc-> 0.7209, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7051
+In training...epoch [139/200], batch_loss-> 0.5658, train acc-> 0.7442, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7452, test auc: 0.7019
+In training...epoch [140/200], batch_loss-> 0.5812, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7051
+In training...epoch [141/200], batch_loss-> 0.5897, train acc-> 0.7209, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7019
+In training...epoch [142/200], batch_loss-> 0.5752, train acc-> 0.7326, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7660, test auc: 0.7019
+In training...epoch [143/200], batch_loss-> 0.5803, train acc-> 0.7326, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7051
+In training...epoch [144/200], batch_loss-> 0.5684, train acc-> 0.7442, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7660, test auc: 0.7051
+In training...epoch [145/200], batch_loss-> 0.5873, train acc-> 0.7442, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.7147
+In training...epoch [146/200], batch_loss-> 0.5732, train acc-> 0.7326, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7147
+In training...epoch [147/200], batch_loss-> 0.5539, train acc-> 0.7209, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.7147
+In training...epoch [148/200], batch_loss-> 0.5751, train acc-> 0.7209, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.7147
+In training...epoch [149/200], batch_loss-> 0.5606, train acc-> 0.6860, time: 0:00:10.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.7035, test auc: 0.7147
+In training...epoch [150/200], batch_loss-> 0.6063, train acc-> 0.7326, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.7660, test auc: 0.7179
+In training...epoch [151/200], batch_loss-> 0.5737, train acc-> 0.7442, time: 0:00:10.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.7276, test auc: 0.7179
+In training...epoch [152/200], batch_loss-> 0.5716, train acc-> 0.7558, time: 0:00:11.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.7660, test auc: 0.7212
+In training...epoch [153/200], batch_loss-> 0.5484, train acc-> 0.7442, time: 0:00:09.9 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth>, >>> on attpool -> test acc: 0.7660, test auc: 0.7212
+[0.7211538461538461]
+### final evaluation on attpool -> average test auc: 0.7212
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 86, test slides: 37, time: 0:49:51.813912
+On-standby: g_Pool-4_ballooning_score_bi algorithm, Network: GatedAttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_score_bi.csv
+![Training Stage]
+In training...epoch [1/200], batch_loss-> 0.6985, train acc-> 0.3953, time: 0:00:11.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3526, test auc: 0.3782
+In training...epoch [2/200], batch_loss-> 0.6942, train acc-> 0.4186, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.4151, test auc: 0.3974
+In training...epoch [3/200], batch_loss-> 0.6914, train acc-> 0.5116, time: 0:00:10.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3526, test auc: 0.4295
+In training...epoch [4/200], batch_loss-> 0.6923, train acc-> 0.4884, time: 0:00:10.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5192, test auc: 0.4359
+In training...epoch [5/200], batch_loss-> 0.6897, train acc-> 0.5116, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5401, test auc: 0.4808
+In training...epoch [6/200], batch_loss-> 0.6898, train acc-> 0.5698, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5641, test auc: 0.5032
+In training...epoch [7/200], batch_loss-> 0.6859, train acc-> 0.6047, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5994, test auc: 0.5705
+In training...epoch [8/200], batch_loss-> 0.6853, train acc-> 0.5814, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6170, test auc: 0.6346
+In training...epoch [9/200], batch_loss-> 0.6849, train acc-> 0.5698, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6170, test auc: 0.6731
+In training...epoch [10/200], batch_loss-> 0.6819, train acc-> 0.6047, time: 0:00:10.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5609, test auc: 0.6635
+In training...epoch [11/200], batch_loss-> 0.6816, train acc-> 0.6860, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5609, test auc: 0.7019
+In training...epoch [12/200], batch_loss-> 0.6808, train acc-> 0.6279, time: 0:00:10.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5609, test auc: 0.7019
+In training...epoch [13/200], batch_loss-> 0.6794, train acc-> 0.6512, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.6923
+In training...epoch [14/200], batch_loss-> 0.6785, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6603
+In training...epoch [15/200], batch_loss-> 0.6789, train acc-> 0.6628, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.6635
+In training...epoch [16/200], batch_loss-> 0.6784, train acc-> 0.7093, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.6891
+In training...epoch [17/200], batch_loss-> 0.6774, train acc-> 0.6977, time: 0:00:08.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.6891
+In training...epoch [18/200], batch_loss-> 0.6704, train acc-> 0.6977, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.7019
+In training...epoch [19/200], batch_loss-> 0.6696, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.7019
+In training...epoch [20/200], batch_loss-> 0.6744, train acc-> 0.7209, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.7051
+In training...epoch [21/200], batch_loss-> 0.6742, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.6955
+In training...epoch [22/200], batch_loss-> 0.6609, train acc-> 0.7093, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.5817, test auc: 0.6955
+In training...epoch [23/200], batch_loss-> 0.6687, train acc-> 0.7093, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.6955
+In training...epoch [24/200], batch_loss-> 0.6650, train acc-> 0.6744, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.5994, test auc: 0.7051
+In training...epoch [25/200], batch_loss-> 0.6605, train acc-> 0.6860, time: 0:00:08.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.6955
+In training...epoch [26/200], batch_loss-> 0.6510, train acc-> 0.6744, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6859
+In training...epoch [27/200], batch_loss-> 0.6537, train acc-> 0.6977, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6859
+In training...epoch [28/200], batch_loss-> 0.6577, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.6923
+In training...epoch [29/200], batch_loss-> 0.6542, train acc-> 0.6977, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.6955
+In training...epoch [30/200], batch_loss-> 0.6552, train acc-> 0.6512, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6955
+In training...epoch [31/200], batch_loss-> 0.6426, train acc-> 0.6977, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.6955
+In training...epoch [32/200], batch_loss-> 0.6539, train acc-> 0.6744, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7019
+In training...epoch [33/200], batch_loss-> 0.6433, train acc-> 0.6860, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7019
+In training...epoch [34/200], batch_loss-> 0.6431, train acc-> 0.6860, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7051
+In training...epoch [35/200], batch_loss-> 0.6635, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7019
+In training...epoch [36/200], batch_loss-> 0.6384, train acc-> 0.6977, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7051
+In training...epoch [37/200], batch_loss-> 0.6327, train acc-> 0.6744, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6827, test auc: 0.7051
+In training...epoch [38/200], batch_loss-> 0.6380, train acc-> 0.6860, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7019
+In training...epoch [39/200], batch_loss-> 0.6353, train acc-> 0.7093, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7051
+In training...epoch [40/200], batch_loss-> 0.6269, train acc-> 0.6860, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7051
+In training...epoch [41/200], batch_loss-> 0.6350, train acc-> 0.6744, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7019
+In training...epoch [42/200], batch_loss-> 0.6251, train acc-> 0.6860, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7051
+In training...epoch [43/200], batch_loss-> 0.6156, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7083
+In training...epoch [44/200], batch_loss-> 0.6235, train acc-> 0.6744, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7083
+In training...epoch [45/200], batch_loss-> 0.6427, train acc-> 0.6628, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7051
+In training...epoch [46/200], batch_loss-> 0.6297, train acc-> 0.7093, time: 0:00:08.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6026, test auc: 0.7051
+In training...epoch [47/200], batch_loss-> 0.6355, train acc-> 0.7093, time: 0:00:08.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.7083
+In training...epoch [48/200], batch_loss-> 0.6227, train acc-> 0.6860, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7115
+In training...epoch [49/200], batch_loss-> 0.6338, train acc-> 0.6744, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7115
+In training...epoch [50/200], batch_loss-> 0.6199, train acc-> 0.6860, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7179
+In training...epoch [51/200], batch_loss-> 0.6182, train acc-> 0.6744, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7179
+In training...epoch [52/200], batch_loss-> 0.6199, train acc-> 0.7093, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.7115
+In training...epoch [53/200], batch_loss-> 0.6152, train acc-> 0.7209, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.7212
+In training...epoch [54/200], batch_loss-> 0.6307, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6058, test auc: 0.7244
+In training...epoch [55/200], batch_loss-> 0.6300, train acc-> 0.7442, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7276
+In training...epoch [56/200], batch_loss-> 0.6227, train acc-> 0.6860, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7244
+In training...epoch [57/200], batch_loss-> 0.6055, train acc-> 0.6977, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7308
+In training...epoch [58/200], batch_loss-> 0.6220, train acc-> 0.6977, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7276
+In training...epoch [59/200], batch_loss-> 0.5978, train acc-> 0.7209, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7276
+In training...epoch [60/200], batch_loss-> 0.6147, train acc-> 0.7093, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7244
+In training...epoch [61/200], batch_loss-> 0.6197, train acc-> 0.6977, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6202, test auc: 0.7340
+In training...epoch [62/200], batch_loss-> 0.6058, train acc-> 0.6977, time: 0:00:08.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6763, test auc: 0.7372
+In training...epoch [63/200], batch_loss-> 0.6068, train acc-> 0.6744, time: 0:00:08.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7372
+In training...epoch [64/200], batch_loss-> 0.6033, train acc-> 0.6977, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7340
+In training...epoch [65/200], batch_loss-> 0.6219, train acc-> 0.6977, time: 0:00:08.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7340
+In training...epoch [66/200], batch_loss-> 0.6085, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6587, test auc: 0.7340
+In training...epoch [67/200], batch_loss-> 0.6037, train acc-> 0.6860, time: 0:00:09.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7372
+In training...epoch [68/200], batch_loss-> 0.5975, train acc-> 0.7093, time: 0:00:09.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7308
+In training...epoch [69/200], batch_loss-> 0.6206, train acc-> 0.6860, time: 0:00:09.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.7372
+In training...epoch [70/200], batch_loss-> 0.6166, train acc-> 0.7209, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.7372
+In training...epoch [71/200], batch_loss-> 0.5875, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6234, test auc: 0.7372
+In training...epoch [72/200], batch_loss-> 0.6219, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7372
+In training...epoch [73/200], batch_loss-> 0.6093, train acc-> 0.7326, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7372
+In training...epoch [74/200], batch_loss-> 0.5824, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.7372
+In training...epoch [75/200], batch_loss-> 0.5900, train acc-> 0.7209, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.7372
+In training...epoch [76/200], batch_loss-> 0.5900, train acc-> 0.6977, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7340
+In training...epoch [77/200], batch_loss-> 0.5848, train acc-> 0.7093, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7340
+In training...epoch [78/200], batch_loss-> 0.5923, train acc-> 0.6977, time: 0:00:09.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.6795, test auc: 0.7340
+In training...epoch [79/200], batch_loss-> 0.5726, train acc-> 0.6977, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7276
+In training...epoch [80/200], batch_loss-> 0.5793, train acc-> 0.7326, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7276
+In training...epoch [81/200], batch_loss-> 0.6139, train acc-> 0.7326, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6442, test auc: 0.7308
+In training...epoch [82/200], batch_loss-> 0.5926, train acc-> 0.7326, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7340
+In training...epoch [83/200], batch_loss-> 0.5973, train acc-> 0.6977, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6554, test auc: 0.7340
+In training...epoch [84/200], batch_loss-> 0.5928, train acc-> 0.7209, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7308
+In training...epoch [85/200], batch_loss-> 0.5834, train acc-> 0.7209, time: 0:00:08.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7244
+In training...epoch [86/200], batch_loss-> 0.6023, train acc-> 0.7209, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7244
+In training...epoch [87/200], batch_loss-> 0.5793, train acc-> 0.7209, time: 0:00:09.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7244
+In training...epoch [88/200], batch_loss-> 0.5854, train acc-> 0.7093, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7244
+In training...epoch [89/200], batch_loss-> 0.5771, train acc-> 0.7326, time: 0:00:09.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7244
+In training...epoch [90/200], batch_loss-> 0.5694, train acc-> 0.7093, time: 0:00:10.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7212
+In training...epoch [91/200], batch_loss-> 0.5970, train acc-> 0.7093, time: 0:00:09.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7212
+In training...epoch [92/200], batch_loss-> 0.5871, train acc-> 0.7558, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7244
+In training...epoch [93/200], batch_loss-> 0.5928, train acc-> 0.7209, time: 0:00:10.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5994, test auc: 0.7212
+In training...epoch [94/200], batch_loss-> 0.5945, train acc-> 0.7326, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5994, test auc: 0.7212
+In training...epoch [95/200], batch_loss-> 0.5875, train acc-> 0.7093, time: 0:00:11.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.6410, test auc: 0.7212
+In training...epoch [96/200], batch_loss-> 0.6031, train acc-> 0.7093, time: 0:00:09.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.6378, test auc: 0.7212
+In training...epoch [97/200], batch_loss-> 0.5681, train acc-> 0.7093, time: 0:00:09.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.5994, test auc: 0.7212
+In training...epoch [98/200], batch_loss-> 0.5595, train acc-> 0.7209, time: 0:00:09.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.6619, test auc: 0.7212
+In training...epoch [99/200], batch_loss-> 0.5460, train acc-> 0.7326, time: 0:00:09.8 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth>, >>> on attpool -> test acc: 0.6619, test auc: 0.7212
+[0.7211538461538461]
+### final evaluation on attpool -> average test auc: 0.7212
