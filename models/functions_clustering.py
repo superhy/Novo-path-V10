@@ -905,9 +905,9 @@ class Feature_Assimilate():
     
     def store(self, assim_tuples, filled_tuples=[]):
         assim_tuples = assim_tuples + filled_tuples
-        prediction_res_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
-        store_clustering_pkl(self.model_store_dir, assim_tuples, prediction_res_name)
-        print('store the assimilate tiles at: {} / {}'.format(self.model_store_dir, prediction_res_name))
+        assimilate_pkl_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, assim_tuples, assimilate_pkl_name)
+        print('store the assimilate tiles at: {} / {}'.format(self.model_store_dir, assimilate_pkl_name))
         
   
 ''' ------ further split the clustering results into more refined clusters ------ '''

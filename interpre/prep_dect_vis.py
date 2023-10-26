@@ -61,6 +61,24 @@ def load_slide_tiles_att_score(slide_matrix_info_tuple, attpool_net):
     
     return att_scores
 
+def load_assim_res_tiles(model_store_dir, assimilate_pkl_name):
+    '''
+    Return:
+        {slide_id: [tile ...]}
+    '''
+    assimilate_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, assimilate_pkl_name)
+    
+    slide_assim_tiles_dict = {}
+    for i, assim_res_tuple in enumerate(assimilate_res_pkg):
+        tile, slide_id = assim_res_tuple
+        if slide_id not in slide_assim_tiles_dict.keys():
+            slide_assim_tiles_dict[slide_id] = []
+            slide_assim_tiles_dict[slide_id].append(tile)
+        else:
+            slide_assim_tiles_dict[slide_id].append(tile)
+    
+    return slide_assim_tiles_dict
+
 def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
                                     for_train, load_attK=0, img_inter_methods='box',
                                     boost_rate=2.0, grad_col_map=True, cut_left=False):
@@ -264,7 +282,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         if h >= H or w >= W or h < 0 or w < 0:
             warnings.warn('Out of range coordinates.')
             continue
-        heat_s_clst[h, w] = 1.0 - 1e-3
+        heat_s_clst[h, w] = 0.8
         white_mask[h, w] = 0.0
     print('checked %d tiles assimilated from sensitive clusters.' % len(slide_assim_tiles_list) )
     
@@ -281,7 +299,55 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         heat_s_clst_col = keep_right_half(heat_s_clst_col)
     return heat_s_clst_col
 
-def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
+
+def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
+                                        cut_left=True, tile_encoder=None, 
+                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fills=[3], pkg_range=None):
+    """
+    make the top K attention pool visualisation (only 1 round, no milestones), 
+    only highlight the picked tiles with the highest attention scores.
+        include: 
+        1. the attention heatmap for attpool
+    """
+    
+    ''' prepare some parames '''
+    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    _env_model_store_dir = ENV_task.MODEL_FOLDER
+    
+    for_train = False if not ENV_task.DEBUG_MODE else True
+    
+    if tile_encoder is None:
+        tile_encoder = BasicResNet18(output_dim=2)
+        tile_encoder = tile_encoder.cuda()
+    else:
+        tile_encoder = tile_encoder.cuda()
+    
+    _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
+                                                      agt_model_filenames, label_dict,
+                                                      K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
+    
+    slide_topK_att_heatmap_dict = {}
+    for slide_id in slide_k_tiles_atts_dict.keys():
+        k_slide_tiles_list, k_attscores = slide_k_tiles_atts_dict[slide_id]
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
+                                                                                                k_slide_tiles_list, 
+                                                                                                k_attscores,
+                                                                                                boost_rate=boost_rate,
+                                                                                                cut_left=cut_left)
+        slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
+                                                 'heat_np': heat_np,
+                                                 'heat_hard_cv2': heat_hard_cv2,
+                                                 'heat_soft_cv2': heat_soft_cv2
+                                                 }
+        print('added topK attention map numpy info set for slide: {}'.format(slide_id))
+        
+    att_heatmap_pkl_name = agt_model_filenames[0].replace('checkpoint', 'topK_map').replace('.pth', '.pkl')
+    store_nd_dict_pkl(_env_heatmap_store_dir,
+                      slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
+    print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
+    
+
+def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -290,27 +356,29 @@ def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=
     slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
     slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
     print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
-    
-    nb_clst = len(load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name).keys())
-    clst_labels = list(range(nb_clst))
+    if assimilate_pkl_name is not None:
+        slide_assim_tiles_dict = load_assim_res_tiles(model_store_dir, assimilate_pkl_name)
+        print('load the assimilate slide-tiles dictionary, for %d slides...' % len(slide_assim_tiles_dict))
+    else:
+        slide_assim_tiles_dict = None
+        print('assimilate tiles are not available!')
     
     slide_clst_s_spatmap_dict = {}
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        assim_tiles_list = slide_assim_tiles_dict[slide_id] if slide_assim_tiles_dict is not None else []
         
-        label_spatmap_dict = {}
-        for label_picked in clst_labels:
-            if sp_clst is not None and label_picked != sp_clst:
-                continue
-            # TODO:
-            heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, slide_id, label_picked)
-            label_spatmap_dict[label_picked] = heat_s_clst_col
-        slide_clst_s_spatmap_dict[slide_id] = label_spatmap_dict
+        '''
+        2 key inputs:
+            1. tile_clst_tuples: which contains all clusters in this slide, so need to filter further
+            2. assim_tiles_list: which only contain the assimilating results (tiles) for the picked sensitive clusters
+        '''
+        heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, slide_id, labels_picked=sp_clsts, cut_left=cut_left)
+        slide_clst_s_spatmap_dict[slide_id] = heat_s_clst_col
             
-    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 
-                                                          'clst-s-spat' if sp_clst != None else 'clst-{}-spat'.format(str(sp_clst)))
+    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-{}-spat'.format(str(sp_clsts)))
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
-    print('Store slides clusters (for each) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
+    print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
 
 
 ''' ----------------------------------------------------------------------------------------------------------- '''
@@ -384,53 +452,6 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
     store_nd_dict_pkl(_env_heatmap_store_dir,
                       slide_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store attention_heatmap numpy package as: {}'.format(att_heatmap_pkl_name))
-
-
-def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
-                                        cut_left=True, tile_encoder=None, 
-                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fills=[3], pkg_range=None):
-    """
-    make the top K attention pool visualisation (only 1 round, no milestones), 
-    only highlight the picked tiles with the highest attention scores.
-        include: 
-        1. the attention heatmap for attpool
-    """
-    
-    ''' prepare some parames '''
-    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
-    _env_model_store_dir = ENV_task.MODEL_FOLDER
-    
-    for_train = False if not ENV_task.DEBUG_MODE else True
-    
-    if tile_encoder is None:
-        tile_encoder = BasicResNet18(output_dim=2)
-        tile_encoder = tile_encoder.cuda()
-    else:
-        tile_encoder = tile_encoder.cuda()
-    
-    _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
-                                                      agt_model_filenames, label_dict,
-                                                      K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
-    
-    slide_topK_att_heatmap_dict = {}
-    for slide_id in slide_k_tiles_atts_dict.keys():
-        k_slide_tiles_list, k_attscores = slide_k_tiles_atts_dict[slide_id]
-        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
-                                                                                                k_slide_tiles_list, 
-                                                                                                k_attscores,
-                                                                                                boost_rate=boost_rate,
-                                                                                                cut_left=cut_left)
-        slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
-                                                 'heat_np': heat_np,
-                                                 'heat_hard_cv2': heat_hard_cv2,
-                                                 'heat_soft_cv2': heat_soft_cv2
-                                                 }
-        print('added topK attention map numpy info set for slide: {}'.format(slide_id))
-        
-    att_heatmap_pkl_name = agt_model_filenames[0].replace('checkpoint', 'topK_map').replace('.pth', '.pkl')
-    store_nd_dict_pkl(_env_heatmap_store_dir,
-                      slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
-    print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
     
     
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
@@ -445,6 +466,12 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
     make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
                                         cut_left, tile_encoder,
                                         K_ratio, att_thd, boost_rate, fills, pkg_range)
+    
+def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left=True):
+    '''
+    make the spatial map for sensitive clusters (and their assimilated tiles)
+    '''
+    make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left)
 
 
 if __name__ == '__main__':

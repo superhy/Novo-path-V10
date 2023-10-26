@@ -25,7 +25,7 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
     
-    log_name = 'running_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
+    log_name = 'clustering_log{}-{}-{}.log'.format(ENV_task.FOLD_SUFFIX,
                                                 ENV_task.TASK_NAME + task_str,
                                                 str(tools.Time().start)[:13].replace(' ', '-'))
     sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
@@ -33,11 +33,11 @@ if __name__ == '__main__':
     
     if 121 in task_ids:
         # p62
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[80]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth']
+                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
+                               'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
         
         K_ratio = 0.25
         att_thd =  0.25
@@ -52,14 +52,14 @@ if __name__ == '__main__':
                                                                    agt_model_filenames, 
                                                                    K_ratio, att_thd, fills,
                                                                    manu_n_clusters=manu_n_clusters,
-                                                                   tiles_r_tuples_pkl_name)
+                                                                   tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     if 121.1 in task_ids:
         if clustering_res_pkg is None:
             print('! need to load clustering results first')
         else:
             sensitive_labels = []
             assim_ratio = 0.1
-            fills=[4, 5]
+            fills=[3, 4, 5]
             _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg, 
                                                   sensitive_labels, assim_ratio, fills)
         

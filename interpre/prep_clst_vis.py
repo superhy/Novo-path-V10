@@ -68,7 +68,7 @@ def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_points_c
 def load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name):
     '''
     Return:
-        {slide_id: [(tile, clst_label)]}
+        {slide_id: [(tile, clst_label) ...]}
     '''
     clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
     
