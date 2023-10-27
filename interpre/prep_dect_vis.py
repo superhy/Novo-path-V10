@@ -379,6 +379,21 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-{}-spat'.format(str(sp_clsts)))
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
+    
+    
+def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name):
+    '''
+    visualisation of tissue percentage on 
+        1. sensitive clusters; 2. assimilate tiles (based on sensitive clusters); 3. both
+        
+    Args:
+        ENV_task:
+        clustering_pkl_name: the file name of clustering results which includes all clusters
+        sensi_clsts:
+        assimilate_pkl_name: the file name of assimilating results which only based on sensitive clusters
+    '''
+    
+    #TODO:
 
 
 ''' ----------------------------------------------------------------------------------------------------------- '''
