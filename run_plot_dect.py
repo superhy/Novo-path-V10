@@ -25,5 +25,9 @@ if __name__ == '__main__':
         ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
         
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name)
+    if 1.2 in task_ids:
+        ''' TODO: for spatial_sensi_clusters_assims'''
+    if 1.3 in task_ids:
+        ''' TODO: for tis_pct_sensi_clsts_assim_on_slides'''
     
     

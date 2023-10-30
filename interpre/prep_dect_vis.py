@@ -1,7 +1,7 @@
 '''
 Created on 23 Sept 2023
 
-@author: super
+@author: yang hu
 '''
 
 import gc
@@ -376,10 +376,43 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
         heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, slide_id, labels_picked=sp_clsts, cut_left=cut_left)
         slide_clst_s_spatmap_dict[slide_id] = heat_s_clst_col
             
-    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-{}-spat'.format(str(sp_clsts)))
+    new_name = 'clst-{}-a-spat'.format(str(sp_clsts)) if assimilate_pkl_name is not None else 'clst-{}-spat'.format(str(sp_clsts))
+    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
+  
+def tis_pct_sensi_clst_single_slide(slide_tile_clst_tuples, sensi_clsts, nb_tis_this_slide):
+    '''
+    Return:
+        tissue_pct_dict: a dictionary of tissue percentage of each sensitive clusters
+    '''
+    # initial
+    tissue_pct_dict = {}
+    nb_tissue = nb_tis_this_slide
+        
+    for id in range(sensi_clsts):
+        tissue_pct_dict[id] = .0
+        
+    for i, t_l_tuple in enumerate(slide_tile_clst_tuples):
+        _, label = t_l_tuple
+        if label in sensi_clsts:
+            tissue_pct_dict[label] += (1.0/nb_tissue)
+        
+    return tissue_pct_dict
+
+def tis_pct_assim_single_slide(slide_assim_tiles_list, nb_tis_this_slide):
+    '''
+    Return:
+        tissue_pct : the value of tissue percentage of assimilated tiles
+    '''
+    tissue_pct = .0
+    nb_tissue = nb_tis_this_slide
+    
+    for _ in slide_assim_tiles_list:
+        tissue_pct += (1.0/nb_tissue)
+    return tissue_pct
+        
     
 def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name):
     '''
@@ -392,9 +425,39 @@ def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi
         sensi_clsts:
         assimilate_pkl_name: the file name of assimilating results which only based on sensitive clusters
     '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    for_train = False if not ENV_task.DEBUG_MODE else True
+    slide_tiles_dict = datasets.load_slides_tileslist(ENV_task, for_train=for_train)
     
-    #TODO:
-
+    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    ''' 1. calculate the tissue percentage of sensitive clusters first '''
+    slide_id_list = list(slide_tiles_dict.keys())
+    slide_sensi_tis_pct_dict = {}
+    for slide_id in slide_id_list:
+        tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        # count tissue percentage
+        nb_tis_this_slide = slide_tiles_dict[slide_id]
+        tissue_pct_dict = tis_pct_sensi_clst_single_slide(tile_clst_tuples, sensi_clsts, nb_tis_this_slide)
+        slide_sensi_tis_pct_dict[slide_id] = tissue_pct_dict
+        
+    sensi_tis_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'sensi_c-tis-pct')
+    store_nd_dict_pkl(heat_store_dir, slide_sensi_tis_pct_dict, sensi_tis_pct_pkl_name)
+    print('Store sensitive clusters tissue percentage record as: {}'.format(sensi_tis_pct_pkl_name))
+        
+    ''' 2. calculate the tissue percentage of assimilate tiles second '''
+    slide_assim_tiles_dict = load_assim_res_tiles(model_store_dir, assimilate_pkl_name)
+    slide_assim_tis_pct_dict = {}
+    for slide_id in slide_id_list:
+        assim_tiles = slide_assim_tiles_dict[slide_id]
+        nb_tis_this_slide = slide_tiles_dict[slide_id]
+        tissue_pct = tis_pct_assim_single_slide(assim_tiles, nb_tis_this_slide)
+        slide_assim_tis_pct_dict[slide_id] = tissue_pct
+        
+    assim_t_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'assim_t-tis-pct')
+    store_nd_dict_pkl(heat_store_dir, slide_assim_tis_pct_dict, assim_t_pct_pkl_name)
+    print('Store assimilated tiles tissue percentage record as: {}'.format(assim_t_pct_pkl_name))
+    
 
 ''' ----------------------------------------------------------------------------------------------------------- '''
 
@@ -487,7 +550,12 @@ def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assim
     make the spatial map for sensitive clusters (and their assimilated tiles)
     '''
     make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left)
-
+    
+def _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name):
+    '''
+    make the record of tissue percentage for sensitive clusters and assimilated tiles
+    '''
+    cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name)
 
 if __name__ == '__main__':
     pass

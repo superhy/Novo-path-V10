@@ -8,7 +8,8 @@ import os
 import sys
 
 from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, \
-    _run_make_spatial_sensi_clusters_assims
+    _run_make_spatial_sensi_clusters_assims, \
+    _run_cnt_tis_pct_sensi_clsts_assim_on_slides
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -60,10 +61,21 @@ if __name__ == '__main__':
         assimilate_pkl_name = ''
         sp_clsts = []
         cut_left = True
+        # heat_style = 'clst'
+        heat_style = 'both'
         
-        _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
-                                                sp_clsts, cut_left)
+        if heat_style == 'both':
+            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                                    sp_clsts, cut_left)
+        else:
+            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+                                                    sp_clsts, cut_left)
+    if 1.3 in task_ids:
+        clustering_pkl_name = ''
+        assimilate_pkl_name = ''
+        sp_clsts = []
         
+        _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
         
         
         

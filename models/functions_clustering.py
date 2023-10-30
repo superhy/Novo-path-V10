@@ -1122,12 +1122,13 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     
     return clustering_res_pkg
 
-def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_res_pkg,
+def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name,
                                           sensitive_labels, 
                                           assim_ratio=0.1, fills=[4]):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
+    clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
     assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
                                       encoder=tile_encoder, attK_clst=True,
                                       assimilate_ratio=assim_ratio, embed_type='encode')

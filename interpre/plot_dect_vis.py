@@ -157,6 +157,12 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
         draw_attention_heatmap(attention_dir, heat_soft_cv2, org_image, None,
                                (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-soft'), alg_name))
         print('2. draw soft heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
+    
+        
+def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name):
+    '''
+    TODO:
+    '''
         
 
 if __name__ == '__main__':
