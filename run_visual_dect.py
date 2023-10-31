@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [0]
-    task_ids = [1.1]
+    task_ids = [1]
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
     log_name = 'visualisation_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     
     if 0 in task_ids:
         ''' For original attention-based heatmap '''
-    if 1.1 in task_ids:
+    if 1 in task_ids:
         agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
                                'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, pkg_range)
-    if 1.2 in task_ids:
+    if 2 in task_ids:
         clustering_pkl_name = ''
         assimilate_pkl_name = ''
         sp_clsts = []
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         else:
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left)
-    if 1.3 in task_ids:
+    if 3 in task_ids:
         clustering_pkl_name = ''
         assimilate_pkl_name = ''
         sp_clsts = []

@@ -202,6 +202,12 @@ def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_na
         print('draw clst(assim) heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir,'{}//'.format(spat_dir)),
                                                                     slide_id))
         
+def _plot_sensi_clst_assim_avg_box():
+    '''
+    TODO: 
+    '''
+    palette_dict = {'sensitive_clst': 'turquoise'}
+     
 
 if __name__ == '__main__':
     pass
