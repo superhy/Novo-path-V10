@@ -291,13 +291,16 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     heat_s_clst = Image.fromarray(heat_clst_cv2_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     heat_s_clst_col = cv2.applyColorMap(np.uint8(heat_s_clst), c_panel)
+    org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_clst_tuples[0][0].original_slide_filepath,
+                                                                   ENV_task.SCALE_FACTOR, print_opening=False)
+    org_np_img = image_tools.pil_to_np_rgb(org_image)
     heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
     
     print('generate cluster-{} and the assimilated tiles\' spatial map for slide: {}'.format(str(labels_picked), slide_id))
     if cut_left:
         print('--- cut left, only keep right part!')
         heat_s_clst_col = keep_right_half(heat_s_clst_col)
-    return heat_s_clst_col
+    return org_np_img, heat_s_clst_col
 
 
 def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
@@ -373,8 +376,8 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
             1. tile_clst_tuples: which contains all clusters in this slide, so need to filter further
             2. assim_tiles_list: which only contain the assimilating results (tiles) for the picked sensitive clusters
         '''
-        heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, slide_id, labels_picked=sp_clsts, cut_left=cut_left)
-        slide_clst_s_spatmap_dict[slide_id] = heat_s_clst_col
+        org_np_img, heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, slide_id, labels_picked=sp_clsts, cut_left=cut_left)
+        slide_clst_s_spatmap_dict[slide_id] = (org_np_img, heat_s_clst_col)
             
     new_name = 'clst-{}-a-spat'.format(str(sp_clsts)) if assimilate_pkl_name is not None else 'clst-{}-spat'.format(str(sp_clsts))
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)

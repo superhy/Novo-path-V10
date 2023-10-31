@@ -107,7 +107,7 @@ def _plot_attention_heatmaps(ENV_task, ENV_annotation,
 
 def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
     """
-    plot the original heatmap with attention scores for all tiles
+    plot the original heatmap with attention scores for top K tiles
     """
     
     ''' prepare some parames  '''
@@ -161,9 +161,49 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
         
 def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name):
     '''
-    TODO:
+    plot the original image and the spatial map of the sensitive clusters as well as the assimilated tiles (optional)
     '''
+    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    _env_task_name = ENV_task.TASK_NAME
+    
+    slide_topk_heatmap_dict = load_vis_pkg_from_pkl(_env_heatmap_store_dir,
+                                                    spatmap_pkl_name)
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    for slide_id in slide_topk_heatmap_dict.keys():
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id in label_dict.keys():
+            slide_label = label_dict[case_id]
+        else:
+            slide_label = 'm'
+            
+        org_img, heat_s_clst_col = slide_topk_heatmap_dict[slide_id]
+            
+        alg_name = spatmap_pkl_name[spatmap_pkl_name.find('-spat') + 6:-15]
+        if spatmap_pkl_name.find('-a-spat') != -1:
+            single_multi_dir = os.path.join(_env_heatmap_store_dir, 'clst_assim_map')
+            spat_dir = os.path.join(single_multi_dir, 'clst_assim_dx')
+        else:
+            single_multi_dir = os.path.join(_env_heatmap_store_dir, 'clst_map')
+            spat_dir = os.path.join(single_multi_dir, 'clst_dx')
+            
+        if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//1'.format(spat_dir))):
+            os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//1'.format(spat_dir)))
+            print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//1'.format(spat_dir))))
+        if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//0'.format(spat_dir))):
+            os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//0'.format(spat_dir)))
+            print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//0'.format(spat_dir))))
+        if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir))):
+            os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir)))
+            print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir))))
+            
+        draw_attention_heatmap(spat_dir, heat_s_clst_col, org_img, None,
+                               (os.path.join('{}//'.format(spat_dir) + str(slide_label), slide_id + '-hard'), alg_name))
+        print('draw clst(assim) heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir,'{}//'.format(spat_dir)),
+                                                                    slide_id))
         
 
 if __name__ == '__main__':
     pass
+
+
