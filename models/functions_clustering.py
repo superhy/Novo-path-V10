@@ -810,6 +810,7 @@ class Feature_Assimilate():
             encodes_array = np.array(sensitive_encodes)
         except Exception as e:
             raise ValueError('All encodes must have the same dimension!') from e
+        print('have encodes of all sensitive tiles with shape', encodes_array.shape)
         mean_encode = np.mean(encodes_array, axis=0)
         return mean_encode
         
