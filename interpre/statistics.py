@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from support.files import parse_23910_clinicalid_from_slideid
-from support.metadata import parse_flinc_clinical_elsx
+from support.files import parse_23910_clinicalid_from_slideid, \
+    parse_caseid_from_slideid
+from support.metadata import parse_flinc_clinical_elsx, \
+    query_task_label_dict_fromcsv
 
 
 def df_cd45_cg_tis_pct_lob_score_corr(ENV_task, slide_tis_pct_dict):
@@ -218,6 +220,71 @@ def df_plot_cd45_cg_tp_3a_scat(ENV_task, df_tis_pct_alt_elemts, df_tis_pct_ast_e
     print('store the picture in {}'.format(ENV_task.STATISTIC_STORE_DIR))
     plt.close(fig)
     
+''' ----------- data frame for p62 ballooning statistics ----------- '''
+
+def df_p62_s_clst_assim_tis_pct_ball_dist(ENV_task, s_clst_slide_t_p_dict, assim_slide_t_p_dict,
+                                          ball_label_fname):
+    '''
+    '''
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_task, ball_label_fname)
+    
+    tis_pct_ball_tuples = []
+    for slide_id in s_clst_slide_t_p_dict.keys():
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in ball_label_dict.keys() or slide_id == 'avg':
+            continue
+        
+        ball_label = 'ballooning-0' if ball_label_dict[case_id] == 0 else 'ballooning-2'
+        s_clst_t_p_dict = s_clst_slide_t_p_dict[slide_id]
+        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 / len(s_clst_slide_t_p_dict)
+        tis_pct_ball_tuples.append(['sensitive clusters', ball_label, s_clst_avg_t_p])
+        
+        if slide_id in assim_slide_t_p_dict.keys():
+            assim_t_p = assim_slide_t_p_dict[slide_id]
+            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 / (len(s_clst_slide_t_p_dict) + 1)
+            tis_pct_ball_tuples.append(['assimilated patches', ball_label, assim_t_p])
+            tis_pct_ball_tuples.append(['both', ball_label, both_avg_t_p])
+            
+    df_s_clst_assim_t_p_ball_elemts = pd.DataFrame(tis_pct_ball_tuples,
+                                                   columns=['patch_type', 'ballooning_label', 'tissue_percentage'])
+    print(df_s_clst_assim_t_p_ball_elemts)
+    return df_s_clst_assim_t_p_ball_elemts
+
+def df_p62_s_clst_and_assim_t_p_ball_corr(ENV_task, s_clst_slide_t_p_dict, assim_slide_t_p_dict):
+    '''
+    '''
+    cmeta_name = 'FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'
+    xlsx_path_clinical = '{}/{}'.format(ENV_task.META_FOLDER, cmeta_name)
+    ''' clinical_label_dicts['col_label'][clinical_id] = score value / stage rank, etc. '''
+    clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
+    clinical_ball_dict = clinical_label_dicts['ballooning_score']
+    
+    tis_pct_ball_tuples = []
+    for slide_id in s_clst_slide_t_p_dict.keys():
+        clinical_id = parse_23910_clinicalid_from_slideid(slide_id)
+        if clinical_id.find('HV') == -1 and int(clinical_id) not in clinical_ball_dict.keys():
+            warnings.warn('there is no such slide in the record!')
+            continue
+        ball_label = ''
+        if clinical_id.startswith('HV'):
+            ball_label = 'Health volunteers'
+        else:
+            ball_label = 'Ballooning-' + str(clinical_ball_dict[int(clinical_id)])
+        
+        s_clst_t_p_dict = s_clst_slide_t_p_dict[slide_id]
+        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 / len(s_clst_slide_t_p_dict)
+        tis_pct_ball_tuples.append(['sensitive clusters', ball_label, s_clst_avg_t_p])
+        
+        if slide_id in assim_slide_t_p_dict.keys():
+            assim_t_p = assim_slide_t_p_dict[slide_id]
+            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 / (len(s_clst_slide_t_p_dict) + 1)
+            tis_pct_ball_tuples.append(['assimilated patches', ball_label, assim_t_p])
+            tis_pct_ball_tuples.append(['both', ball_label, both_avg_t_p])
+            
+    df_s_clst_assim_t_p_ball_elemts = pd.DataFrame(tis_pct_ball_tuples,
+                                                   columns=['patch_type', 'ballooning_label', 'tissue_percentage'])
+    print(df_s_clst_assim_t_p_ball_elemts)
+    return df_s_clst_assim_t_p_ball_elemts
 
 if __name__ == '__main__':
     pass
