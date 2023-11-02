@@ -17,7 +17,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 
-task_ids = [121]
+task_ids = [121.1]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 
 if __name__ == '__main__':
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
         print('need to re-load clustering results first!')
             
-        sensitive_labels = []
+        sensitive_labels = [1, 2]
         assim_ratio = 0.1
         fills=[3, 4, 5]
         _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, 
