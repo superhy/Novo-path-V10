@@ -806,9 +806,10 @@ class Feature_Assimilate():
             _, encode, _, _ = s_res_tuple
             sensitive_encodes.append(encode)
             
-        encodes_array = np.array(sensitive_encodes)
-        if len(set(encodes_array.shape)) > 1:
-            raise ValueError('All encodes must have the same dimension! ')
+        try:
+            encodes_array = np.array(sensitive_encodes)
+        except Exception as e:
+            raise ValueError('All encodes must have the same dimension!') from e
         mean_encode = np.mean(encodes_array, axis=0)
         return mean_encode
         
