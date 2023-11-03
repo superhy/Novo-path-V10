@@ -3,6 +3,9 @@
 '''
 
 import bisect
+import concurrent
+from concurrent.futures._base import as_completed
+from concurrent.futures.process import ProcessPoolExecutor
 import os
 import pickle
 import warnings
@@ -839,16 +842,31 @@ class Feature_Assimilate():
     def load_remain_tiles_encodes(self, clst_tile_keys_list):
         '''
         load the tiles which are not participate in clustering 
-        
+        (at here, we use multi-threaded execution of tiles checking and loading)
         Return:
             remian_tiles_richencode_tuples, [(encode, tile, slide_id)...] of remain_tiles_list
         '''
-        tiles_all_list, _, _ = datasets.load_richtileslist_fromfile(self._env_task, self.for_train)
-        remain_tiles_list = []
-        for tile in tqdm(tiles_all_list, desc="Finding remains tiles"):
+        def process_tile(tile):
             tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
             if tile_key not in clst_tile_keys_list:
-                remain_tiles_list.append(tile)
+                return tile
+            else:
+                return None
+        
+        tiles_all_list, _, _ = datasets.load_richtileslist_fromfile(self._env_task, self.for_train)
+        
+        # for tile in tqdm(tiles_all_list, desc="Finding remains tiles"):
+        #     tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
+        #     if tile_key not in clst_tile_keys_list:
+        #         remain_tiles_list.append(tile)
+        with ProcessPoolExecutor(max_workers=self._env_task.TILE_DATALOADER_WORKER) as executor:
+            futures = [executor.submit(process_tile, tile) for tile in tiles_all_list]
+            remain_tiles_list = []
+            for future in tqdm(as_completed(futures), total=len(futures),
+                               desc="Finding remains tiles"):
+                load_tile = future.result()
+                if load_tile is not None:
+                    remain_tiles_list.append(load_tile)
         print('need to load the embedding for %d not-yet-attention tiles...' % len(remain_tiles_list) )
                 
         return self.gen_tiles_richencode_tuples(remain_tiles_list)
