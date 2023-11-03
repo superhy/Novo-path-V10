@@ -13,6 +13,7 @@ from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
 import torch
+from tqdm import tqdm
 
 from models import datasets, functions_attpool, functions_lcsb, functions, \
     networks
@@ -776,8 +777,8 @@ class Feature_Assimilate():
         # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
         self.remain_tiles_tuples = self.load_remain_tiles_encodes(tile_keys_list)
-        print('prepare: 1. tiles with sensitive labels as similarity source \
-                        2. tiles not in clustering as candidate tiles')
+        print('prepare: 1. tiles with sensitive labels as similarity source \n\
+                 2. tiles not in clustering as candidate tiles')
         
         # load {slide_id: {tile_loc_key: tile}}, key -> tile dictionary for each slide
         tiles_all_list, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(self._env_task)
@@ -816,21 +817,21 @@ class Feature_Assimilate():
         
     def gen_tiles_richencode_tuples(self, remain_tiles_list):
         if self.embed_type == 'encode':
-            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self._env_task, self.encoder,
                                                                 load_tile_list=remain_tiles_list)
         elif self.embed_type == 'neb_encode':
             tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
                                                                     load_tile_list=remain_tiles_list)
         elif self.embed_type == 'region_ctx':
-            tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
+            tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self._env_task, self.encoder,
                                                                           self.reg_encoder, self.comb_layer, self.ctx_type,
                                                                           load_tile_list=remain_tiles_list)
         elif self.embed_type == 'graph':
-            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder,
+            tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self._env_task, self.encoder,
                                                                       load_tile_list=remain_tiles_list)
         else:
             # default use the 'encode' mode
-            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self._env_task, self.encoder,
                                                                 load_tile_list=remain_tiles_list)
         print('> loaded {} remain tiles and their encodes.'.format(str(len(tiles_richencode_tuples)) ) )
         return tiles_richencode_tuples
@@ -844,10 +845,11 @@ class Feature_Assimilate():
         '''
         tiles_all_list, _, _ = datasets.load_richtileslist_fromfile(self._env_task, self.for_train)
         remain_tiles_list = []
-        for tile in tiles_all_list:
+        for tile in tqdm(tiles_all_list, desc="Finding remains tiles"):
             tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
             if tile_key not in clst_tile_keys_list:
                 remain_tiles_list.append(tile)
+        print('need to load the embedding for %d not-yet-attention tiles...' % len(remain_tiles_list) )
                 
         return self.gen_tiles_richencode_tuples(remain_tiles_list)
     
@@ -887,14 +889,20 @@ class Feature_Assimilate():
         slide_tile_dict = {}
         for i, tile_tuple in enumerate(hot_tiles_tuples):
             tile, slide_id = tile_tuple
+            tile.change_to_pc_root(self._env_task)
+            # print(tile.original_slide_filepath)
             if slide_id not in slide_tile_dict.keys():
                 slide_tile_dict[slide_id] = []
                 slide_tile_dict[slide_id].append(tile)
             else:
                 slide_tile_dict[slide_id].append(tile)
               
+        print('We have %d slides in list which contain hot-spot tiles' % (len(slide_tile_dict) ) )
         filled_tuples = []  
         for slide_id in slide_tile_dict.keys():
+            if slide_id not in self.slide_t_key_tiles_dict.keys():
+                print(f'Warning!!! This slide: {slide_id} is not in the slide list of local folder!')
+                continue
             slide_tiles_list = slide_tile_dict[slide_id]
             t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
             filled_tiles_list = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 

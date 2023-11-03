@@ -7,14 +7,14 @@ import os
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
 from interpre.prep_tools import load_vis_pkg_from_pkl
-from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist
+from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
+    df_p62_s_clst_and_assim_t_p_ball_corr
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 from support.files import parse_slideid_from_filepath, parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 from wsi.slide_tools import slide_to_scaled_np_image
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def draw_scaled_slide_imgs(ENV_task):
@@ -221,33 +221,60 @@ def df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name,
     biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
     s_clst_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, s_clst_t_p_pkl_name)
     assim_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, assim_t_p_pkl_name)
-    df_tis_pct_elemts = df_p62_s_clst_assim_tis_pct_ball_dist(ENV_task, s_clst_slide_t_p_dict,
-                                                              assim_slide_t_p_dict, biom_label_fname)
+    df_tis_pct_dist_elemts = df_p62_s_clst_assim_tis_pct_ball_dist(ENV_task, s_clst_slide_t_p_dict,
+                                                                   assim_slide_t_p_dict, biom_label_fname)
     
     order = ['sensitive clusters', 'assimilated patches', 'both']
-    df_tis_pct_elemts['patch_type'] = pd.Categorical(df_tis_pct_elemts['patch_type'],
-                                                     categories=order, ordered=True)
+    df_tis_pct_dist_elemts['patch_type'] = pd.Categorical(df_tis_pct_dist_elemts['patch_type'],
+                                                          categories=order, ordered=True)
     
     fig = plt.figure(figsize=(6, 3.5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1 = sns.boxplot(x='patch_type', y='tissue_percentage', palette=palette_dict,
-                       data=df_tis_pct_elemts, hue='ballooning_label')
+                       data=df_tis_pct_dist_elemts, hue='ballooning_label')
     ax_1.set_title('tis-pct of sensitive/assimilated patches \n in ballooning low/high slides')
     
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
-                             'sensi_clst_assim_tp-ballooning-box.png') )
+                             'sensi_clst_assim_tp-ballooning-p-box.png') )
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR) )
     plt.close(fig)
     
 def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, 
                                        assim_t_p_pkl_name, biom_label_fname):
     '''
-    TODO:
     plot the tissue percentage of sensitive clusters and assimilated patches
     for different ballooning scores (include health volunteer)
     '''
+    palette_dict = {'sensitive clusters': 'lightcoral',
+                    'assimilated tiles': 'turquoise',
+                    'both': 'dodgerblue'
+                }
+    
+    ''' loading/processing data '''
+    biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
+    s_clst_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, s_clst_t_p_pkl_name)
+    assim_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, assim_t_p_pkl_name)
+    df_tis_pct_corr_elemts = df_p62_s_clst_and_assim_t_p_ball_corr(ENV_task, s_clst_slide_t_p_dict,
+                                                                   assim_slide_t_p_dict, biom_label_fname)
+    
+    order = ['Health volunteers', 'Ballooning-0', 'Ballooning-1', 'Ballooning-2']
+    df_tis_pct_corr_elemts['ballooning_label'] = pd.Categorical(df_tis_pct_corr_elemts['ballooning_label'],
+                                                                categories=order, ordered=True)
+    
+    fig = plt.figure(figsize=(7, 3.5))
+    ax_1 = fig.add_subplot(1, 1, 1)
+    ax_1 = sns.boxplot(x='ballooning_label', y='tissue_percentage', palette=palette_dict,
+                       data=df_tis_pct_corr_elemts, hue='patch_type')
+    ax_1.set_title('tis-pct of sensitive/assimilated patches \n in slides with different ballooning scores')
+    
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
+                             'sensi_clst_assim_tp-ballooning-s-box.png') )
+    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR) )
+    plt.close(fig)
     
 
 if __name__ == '__main__':

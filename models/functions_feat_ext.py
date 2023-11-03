@@ -7,6 +7,7 @@ import warnings
 
 import einops
 import torch
+from tqdm import tqdm
 
 from models import functions
 from models.datasets import Simple_Tile_Dataset
@@ -43,7 +44,7 @@ def access_encodes_imgs(tiles, trained_encoder, batch_size, nb_workers):
         
     tiles_en_nd = None
     with torch.no_grad():
-        for X in tiles_dataloader:
+        for X in tqdm(tiles_dataloader, desc='Generating tiles\' embedding', leave=True):
             X = X.cuda()
             e = trained_encoder.backbone(X)
             e_nd = e.detach().cpu().numpy()

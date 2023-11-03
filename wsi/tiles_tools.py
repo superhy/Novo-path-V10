@@ -225,6 +225,17 @@ class Tile:
         np_img = filter_tools.apply_image_filters_he(np_img, print_info=False)
         return np_img, slide
     
+    def change_to_pc_root(self, ENV_task):
+        '''
+        check if now it's on PC, if YES, change the file_path from server_root to pc_root (or even mac_root. TODO:)
+        used for sometime, apply the model learned from server but would like to be tested on PC
+        '''
+        if ENV.OS_NAME == 'Windows':
+            self.original_slide_filepath = self.original_slide_filepath.replace(ENV_task.SERVER_ROOT, ENV_task.PC_ROOT)
+            # print(f'changed the slide_file_path to new location: {self.original_slide_filepath}')
+        else:
+            pass
+    
     
 def get_num_in_tiles(small_height, small_width, tile_h_size, tile_w_size):
     """
