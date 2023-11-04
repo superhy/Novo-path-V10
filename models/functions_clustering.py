@@ -786,7 +786,7 @@ class Feature_Assimilate():
                     if slide_id not in s_tile_keys_dict.keys():
                         s_tile_keys_dict[slide_id] = []
                     s_tile_keys_dict[slide_id].append(tile_key)
-        print('> Prepared tile_keys list of tiles which have been considered')
+        print('> Prepared tile_keys list of tiles which have been considered for %d slides' % len(s_tile_keys_dict))
                     
         # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
@@ -860,6 +860,8 @@ class Feature_Assimilate():
         def process_tile(tile):
             s_id = tile.query_slideid()
             tile_key = '{}-h{}-w{}'.format(s_id, tile.h_id, tile.w_id)
+            if s_id not in clst_s_tile_keys_dict.keys():
+                return None
             if tile_key not in clst_s_tile_keys_dict[s_id]:
                 return tile
             else:
