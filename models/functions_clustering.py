@@ -846,9 +846,12 @@ class Feature_Assimilate():
         Return:
             remian_tiles_richencode_tuples, [(encode, tile, slide_id)...] of remain_tiles_list
         '''
+        # help to boost the speed of query [clst_tile_keys]
+        clst_tile_keys_set = clst_tile_keys_list
+        
         def process_tile(tile):
             tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
-            if tile_key not in clst_tile_keys_list:
+            if tile_key not in clst_tile_keys_set:
                 return tile
             else:
                 return None
