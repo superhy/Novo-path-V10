@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [0]
-    task_ids = [1]
+    task_ids = [2]
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
     log_name = 'visualisation_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
@@ -57,9 +57,9 @@ if __name__ == '__main__':
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, pkg_range)
     if 2 in task_ids:
-        clustering_pkl_name = ''
-        assimilate_pkl_name = ''
-        sp_clsts = []
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
+        sp_clsts = [1, 2]
         cut_left = True
         # heat_style = 'clst'
         heat_style = 'both'

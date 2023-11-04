@@ -260,6 +260,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         start_col = width // 2
         return heat[:, start_col:]
     
+    slide_tile_clst_tuples[0][0].change_to_pc_root(ENV_task) # in case use server trained model on PC
     slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
     W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
@@ -370,13 +371,16 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         assim_tiles_list = slide_assim_tiles_dict[slide_id] if slide_assim_tiles_dict is not None else []
+        print(type(assim_tiles_list[-2]))
+        print(len(assim_tiles_list[-2]))
         
         '''
         2 key inputs:
             1. tile_clst_tuples: which contains all clusters in this slide, so need to filter further
             2. assim_tiles_list: which only contain the assimilating results (tiles) for the picked sensitive clusters
         '''
-        org_np_img, heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, slide_id, labels_picked=sp_clsts, cut_left=cut_left)
+        org_np_img, heat_s_clst_col = gen_single_slide_sensi_clst_spatial(ENV_task, tile_clst_tuples, assim_tiles_list, 
+                                                                          slide_id, labels_picked=sp_clsts, cut_left=cut_left)
         slide_clst_s_spatmap_dict[slide_id] = (org_np_img, heat_s_clst_col)
             
     new_name = 'clst-{}-a-spat'.format(str(sp_clsts)) if assimilate_pkl_name is not None else 'clst-{}-spat'.format(str(sp_clsts))

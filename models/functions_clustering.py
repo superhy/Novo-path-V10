@@ -932,7 +932,7 @@ class Feature_Assimilate():
         return filled_tuples
     
     def store(self, assim_tuples, filled_tuples=[]):
-        assim_tuples = assim_tuples + filled_tuples
+        assim_tuples.extend(filled_tuples)
         assimilate_pkl_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
         store_clustering_pkl(self.model_store_dir, assim_tuples, assimilate_pkl_name)
         print('store the assimilate tiles at: {} / {}'.format(self.model_store_dir, assimilate_pkl_name))
