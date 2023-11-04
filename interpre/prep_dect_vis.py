@@ -371,9 +371,6 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         assim_tiles_list = slide_assim_tiles_dict[slide_id] if slide_assim_tiles_dict is not None else []
-        print(type(assim_tiles_list[-2]))
-        print(len(assim_tiles_list[-2]))
-        
         '''
         2 key inputs:
             1. tile_clst_tuples: which contains all clusters in this slide, so need to filter further

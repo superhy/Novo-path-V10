@@ -923,15 +923,17 @@ class Feature_Assimilate():
                 continue
             slide_tiles_list = slide_tile_dict[slide_id]
             t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
-            filled_tiles_list = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
-                                                      slide_id, tile_key_loc_dict=t_key_tile_dict, 
-                                                      fills=fills, inc_org_tiles_list=False)
+            filled_tiles_list, _ = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
+                                                         slide_id, tile_key_loc_dict=t_key_tile_dict, 
+                                                         fills=fills, inc_org_tiles_list=False)
             slide_filled_tuples = [(t, slide_id) for t in filled_tiles_list]
             filled_tuples.extend(slide_filled_tuples)
         print('> filled void %d tiles' % len(filled_tuples))
         return filled_tuples
     
     def store(self, assim_tuples, filled_tuples=[]):
+        '''
+        '''
         assim_tuples.extend(filled_tuples)
         assimilate_pkl_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
         store_clustering_pkl(self.model_store_dir, assim_tuples, assimilate_pkl_name)
