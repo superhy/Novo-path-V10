@@ -185,7 +185,7 @@ class Tile:
     
     def mask_percentage(self):
         return 100 - self.tissue_percentage
-        
+    
     def query_slideid(self):
         """
         slideid = caseid + typeid

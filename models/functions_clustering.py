@@ -3,9 +3,6 @@
 '''
 
 import bisect
-import concurrent
-from concurrent.futures._base import as_completed
-from concurrent.futures.process import ProcessPoolExecutor
 import os
 import pickle
 import warnings
@@ -760,7 +757,13 @@ class Feature_Assimilate():
         
         print('![Initial Stage] tiles assimilate')
         # last_clst = 0 # count the last cluster id
-        tile_keys_list = []
+        s_tile_keys_dict = {}
+        '''
+        s_tile_keys_dict: 
+        {
+            slide_id: tile_keys_list([...])
+        }
+        '''
         for clst_item in self.clustering_res:
             res, encode, tile, slide_id = clst_item
             # get the largest cluster no., use +1 indicates the assimilated tiles
@@ -771,15 +774,23 @@ class Feature_Assimilate():
             if res in self.sensitive_labels:
                 sensitive_res.append((res, encode, tile, slide_id))
                 self.sensitive_tiles.append((tile, slide_id))
-            # prepare the 
+                
+            tile_key = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
             if attK_clst:
-                tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
+                # prepare the s_tile_keys_dict which have been considered in clustering
+                if slide_id not in s_tile_keys_dict.keys():
+                    s_tile_keys_dict[slide_id] = []
+                s_tile_keys_dict[slide_id].append(tile_key)
             else:
                 if res in self.sensitive_labels:
-                    tile_keys_list.append('{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id) )
+                    if slide_id not in s_tile_keys_dict.keys():
+                        s_tile_keys_dict[slide_id] = []
+                    s_tile_keys_dict[slide_id].append(tile_key)
+        print('> Prepared tile_keys list of tiles which have been considered')
+                    
         # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
-        self.remain_tiles_tuples = self.load_remain_tiles_encodes(tile_keys_list)
+        self.remain_tiles_tuples = self.load_remain_tiles_encodes(s_tile_keys_dict)
         print('prepare: 1. tiles with sensitive labels as similarity source \n\
                  2. tiles not in clustering as candidate tiles')
         
@@ -839,19 +850,17 @@ class Feature_Assimilate():
         print('> loaded {} remain tiles and their encodes.'.format(str(len(tiles_richencode_tuples)) ) )
         return tiles_richencode_tuples
         
-    def load_remain_tiles_encodes(self, clst_tile_keys_list):
+    def load_remain_tiles_encodes(self, clst_s_tile_keys_dict):
         '''
         load the tiles which are not participate in clustering 
         (at here, we use multi-threaded execution of tiles checking and loading)
         Return:
             remian_tiles_richencode_tuples, [(encode, tile, slide_id)...] of remain_tiles_list
         '''
-        # help to boost the speed of query [clst_tile_keys]
-        clst_tile_keys_set = clst_tile_keys_list
-        
         def process_tile(tile):
-            tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
-            if tile_key not in clst_tile_keys_set:
+            s_id = tile.query_slideid()
+            tile_key = '{}-h{}-w{}'.format(s_id, tile.h_id, tile.w_id)
+            if tile_key not in clst_s_tile_keys_dict[s_id]:
                 return tile
             else:
                 return None
