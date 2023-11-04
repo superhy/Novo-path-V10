@@ -855,18 +855,15 @@ class Feature_Assimilate():
         
         tiles_all_list, _, _ = datasets.load_richtileslist_fromfile(self._env_task, self.for_train)
         
-        # for tile in tqdm(tiles_all_list, desc="Finding remains tiles"):
-        #     tile_key = '{}-h{}-w{}'.format(tile.query_slideid(), tile.h_id, tile.w_id)
-        #     if tile_key not in clst_tile_keys_list:
-        #         remain_tiles_list.append(tile)
-        with ProcessPoolExecutor(max_workers=self._env_task.TILE_DATALOADER_WORKER) as executor:
-            futures = [executor.submit(process_tile, tile) for tile in tiles_all_list]
-            remain_tiles_list = []
-            for future in tqdm(as_completed(futures), total=len(futures),
-                               desc="Finding remains tiles"):
-                load_tile = future.result()
-                if load_tile is not None:
-                    remain_tiles_list.append(load_tile)
+        remain_tiles_list = []
+        for tile in tqdm(tiles_all_list, desc="Finding remains tiles"):
+            load_tile = process_tile(tile)
+            if load_tile is not None:
+                remain_tiles_list.append(tile)
+        # with ProcessPoolExecutor(max_workers=self._env_task.TILE_DATALOADER_WORKER) as executor:
+        #     print('MULTI-PROCESS proceeding assigning...')
+        #     load_tiles = list(tqdm(executor.map(process_tile, tiles_all_list), total=len(tiles_all_list), desc="Finding remains tiles"))
+        #     remain_tiles_list = [tile for tile in load_tiles if tile is not None]
         print('need to load the embedding for %d not-yet-attention tiles...' % len(remain_tiles_list) )
                 
         return self.gen_tiles_richencode_tuples(remain_tiles_list)
