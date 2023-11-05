@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # task_ids = [20, 21, 22, 29.1]
     # task_ids = [29.2]
-    task_ids = [21, 22]
+    task_ids = [22]
     # task_ids = [29.1]
     # task_ids = [61, 62]
     # task_ids = [29.3]

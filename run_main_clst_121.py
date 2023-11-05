@@ -16,8 +16,8 @@ from support import env_flinc_cd45, tools, env_flinc_p62
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
-
-task_ids = [121.1]
+# 2023.11.05 on PC test of 58 slides
+task_ids = [121]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 
 if __name__ == '__main__':
