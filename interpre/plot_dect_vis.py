@@ -218,7 +218,7 @@ def df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name,
                 }
     
     ''' loading/processing data '''
-    biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
+    # biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
     s_clst_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, s_clst_t_p_pkl_name)
     assim_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, assim_t_p_pkl_name)
     df_tis_pct_dist_elemts = df_p62_s_clst_assim_tis_pct_ball_dist(ENV_task, s_clst_slide_t_p_dict,
@@ -241,8 +241,7 @@ def df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name,
     print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR) )
     plt.close(fig)
     
-def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, 
-                                       assim_t_p_pkl_name, biom_label_fname):
+def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name):
     '''
     plot the tissue percentage of sensitive clusters and assimilated patches
     for different ballooning scores (include health volunteer)
@@ -253,11 +252,12 @@ def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name,
                 }
     
     ''' loading/processing data '''
-    biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
+    # biom_label_dict = query_task_label_dict_fromcsv(ENV_task, biom_label_fname)
     s_clst_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, s_clst_t_p_pkl_name)
     assim_slide_t_p_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, assim_t_p_pkl_name)
-    df_tis_pct_corr_elemts = df_p62_s_clst_and_assim_t_p_ball_corr(ENV_task, s_clst_slide_t_p_dict,
-                                                                   assim_slide_t_p_dict, biom_label_fname)
+    df_tis_pct_corr_elemts = df_p62_s_clst_and_assim_t_p_ball_corr(ENV_task, 
+                                                                   s_clst_slide_t_p_dict,
+                                                                   assim_slide_t_p_dict)
     
     order = ['Health volunteers', 'Ballooning-0', 'Ballooning-1', 'Ballooning-2']
     df_tis_pct_corr_elemts['ballooning_label'] = pd.Categorical(df_tis_pct_corr_elemts['ballooning_label'],

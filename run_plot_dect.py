@@ -5,7 +5,8 @@
 import os
 
 from interpre.plot_dect_vis import _plot_topK_attention_heatmaps, \
-    _plot_spatial_sensi_clusters_assims
+    _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
+    df_plot_s_clst_assim_ball_corr_box
 from support import env_flinc_p62
 
 
@@ -20,6 +21,7 @@ if __name__ == '__main__':
 
     # task_ids = [0]
     task_ids = [2]
+    # task_ids = [3.1, 3.2]
     
     if 0 in task_ids:
         pass
@@ -30,6 +32,14 @@ if __name__ == '__main__':
         spatmap_pkl_name = 'clst-[1, 2, 5, 6, 7, 8]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name)
     if 3.1 in task_ids:
-        snesi_clst_toget = True
-    
+        s_clst_t_p_pkl_name = ''
+        assim_t_p_pkl_name = ''
+        biom_label_fname = 'P62_ballooning_score_bi.csv'
+        df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name, 
+                                           biom_label_fname)
+    if 3.2 in task_ids:
+        s_clst_t_p_pkl_name = ''
+        assim_t_p_pkl_name = ''
+        df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name)
+           
     

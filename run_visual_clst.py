@@ -27,8 +27,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    # task_ids = [20, 21, 22, 29]
-    task_ids = [29]
+    task_ids = [20, 21, 22, 29]
+    # task_ids = [29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -65,7 +65,8 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
         
-        _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=False)
+        _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, 
+                                             keep_org_slide=False, cut_left=True)
     if 22 in task_ids:
         ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'

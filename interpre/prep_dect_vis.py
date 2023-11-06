@@ -255,10 +255,10 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
     
-    def keep_right_half(heat):
-        height, width, _ = heat.shape
+    def keep_right_half(img):
+        height, width, _ = img.shape
         start_col = width // 2
-        return heat[:, start_col:]
+        return img[:, start_col:]
     
     slide_tile_clst_tuples[0][0].change_to_pc_root(ENV_task) # in case use server trained model on PC
     slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
@@ -274,7 +274,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
             if h >= H or w >= W or h < 0 or w < 0:
                 warnings.warn('Out of range coordinates.')
                 continue
-            heat_s_clst[h, w] = 1.0 - 1e-3
+            heat_s_clst[h, w] = 1.0 - 1e-6
             white_mask[h, w] = 0.0
     print('checked %d tiles for sensitive clusters' % len(slide_tile_clst_tuples) )
     for tile in slide_assim_tiles_list:
@@ -288,10 +288,10 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     print('checked %d tiles assimilated from sensitive clusters.' % len(slide_assim_tiles_list) )
     
     c_panel = cmapy.cmap('coolwarm')
-    heat_clst_cv2_col = col_pal_cv2_10(heat_s_clst).astype("uint8")
-    heat_s_clst = Image.fromarray(heat_clst_cv2_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    heat_s_clst = image_tools.np_to_pil(heat_s_clst).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
-    heat_s_clst_col = cv2.applyColorMap(np.uint8(heat_s_clst), c_panel)
+    heat_s_clst = np.float64(heat_s_clst) / 255
+    heat_s_clst_col = cv2.applyColorMap(np.uint8(255 * heat_s_clst), c_panel)
     org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_clst_tuples[0][0].original_slide_filepath,
                                                                    ENV_task.SCALE_FACTOR, print_opening=False)
     org_np_img = image_tools.pil_to_np_rgb(org_image)

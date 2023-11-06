@@ -31,8 +31,19 @@ def col_pal_cv2_20(i_nd):
 def col_pal_cv2_10(i_nd):
     return 10.0 + (255.0 / 10) * i_nd
 
+def pick_centrest_encodes(encodes_list, nb_pick):
+    '''
+    '''
+    encodes_array = np.array(encodes_list)
+    feature_center = np.mean(encodes_array, axis=0)
+    
+    distances = np.linalg.norm(encodes_array - feature_center, axis=1)
+    sorted_indices = np.argsort(distances)
+    closest_indices = sorted_indices[:nb_pick]
+    picked_encodes = encodes_array[closest_indices]
+    return picked_encodes
 
-def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_points_clst=None):
+def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, r_pick_from_clst=None):
     '''
     Return:
         {clst_label: [encodes]}, [(clst_label, encode)]
@@ -51,10 +62,14 @@ def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_points_c
             clst_encode_dict[label].append(encode)
         
     pick_clst_encode_dict = {}    
-    if nb_points_clst is not None:
+    if r_pick_from_clst is not None:
         for label in clst_encode_dict.keys():
             label_encodes_list = clst_encode_dict[label]
-            pick_clst_encode_dict[label] = safe_random_sample(label_encodes_list, nb_points_clst)
+            r_pick_from_clst = 0.01 if r_pick_from_clst is None else r_pick_from_clst
+            nb_pick = int(len(label_encodes_list) * r_pick_from_clst)
+            # pick_clst_encode_dict[label] = safe_random_sample(label_encodes_list, r_pick_from_clst)
+            pick_clst_encode_dict[label] = pick_centrest_encodes(label_encodes_list, nb_pick)
+            print(f'pick {nb_pick} embeds from cluster: {label}...')
     else:
         pick_clst_encode_dict = clst_encode_dict
             
@@ -179,7 +194,7 @@ def make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=None):
     print('done the clusters dim-reduction and store as: ', clst_tsne_pkl_name)
     
 
-def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
+def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id, cut_left=False):
     '''
     generate the clusters spatial map on single slide
     
@@ -192,6 +207,11 @@ def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
         new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
+    
+    def keep_right_half(img):
+        height, width, _ = img.shape
+        start_col = width // 2
+        return img[:, start_col:]
     
     slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
@@ -219,9 +239,13 @@ def gen_single_slide_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id):
                                                                    ENV_task.SCALE_FACTOR, print_opening=False)
     org_np_img = image_tools.pil_to_np_rgb(org_image)
     print('generate cluster spatial map and keep the original image for slide: {}'.format(slide_id))
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        heat_clst_col = keep_right_half(heat_clst_col)
+        org_np_img = keep_right_half(org_np_img)
     return org_np_img, heat_clst_col
 
-def gen_single_slide_pick_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id, label_picked):
+def gen_single_slide_pick_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_id, label_picked, cut_left=False):
     '''
     generate the clusters spatial map on single slide
     
@@ -234,6 +258,11 @@ def gen_single_slide_pick_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_i
         new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
         new_heat = np.uint8(np.minimum(new_heat, 255))
         return new_heat
+    
+    def keep_right_half(img):
+        height, width, _ = img.shape
+        start_col = width // 2
+        return img[:, start_col:]
     
     slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
@@ -259,6 +288,9 @@ def gen_single_slide_pick_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_i
     heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
     
     print('generate cluster-{}\'s spatial map for slide: {}'.format(label_picked, slide_id))
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        heat_s_clst_col = keep_right_half(heat_s_clst_col)
     return heat_s_clst_col
 
 def gen_single_slide_iso_gath_spatial(ENV_task, slide_tgt_tiles_dict, slide_id):
@@ -353,7 +385,7 @@ def gen_single_slide_levels_spatial(ENV_task, slide_tgt_tiles_n_dict, bounds, sl
     return heat_s_levels_col
             
 
-def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
+def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True, cut_left=True):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -366,7 +398,8 @@ def make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slid
     slide_clst_spatmap_dict = {}
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
-        org_np_img, heat_clst_col = gen_single_slide_clst_spatial(ENV_task, tile_clst_tuples, slide_id)
+        org_np_img, heat_clst_col = gen_single_slide_clst_spatial(ENV_task, tile_clst_tuples, 
+                                                                  slide_id, cut_left=cut_left)
         
         slide_clst_spatmap_dict[slide_id] = {'original': org_np_img if keep_org_slide else None,
                                              'heat_clst': heat_clst_col}
@@ -733,8 +766,8 @@ def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
 def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=1000):
     make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked)
     
-def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True):
-    make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide)
+def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True, cut_left=True):
+    make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide, cut_left=cut_left)
     
 def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)

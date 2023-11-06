@@ -34,17 +34,13 @@ if __name__ == '__main__':
     if 0 in task_ids:
         ''' For original attention-based heatmap '''
     if 1 in task_ids:
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
         
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[157]2023-10-21.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[200]2023-10-21.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[200]2023-10-21.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[200]2023-10-21.pth',
-        #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[200]2023-10-21.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
         
         K_ratio = 0.25
         att_thd = 0.25
@@ -62,7 +58,7 @@ if __name__ == '__main__':
         ''' on PC '''
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
-        sp_clsts = [1, 2, 5, 6, 7, 8]
+        sp_clsts = []
         cut_left = True
         # heat_style = 'clst'
         heat_style = 'both'

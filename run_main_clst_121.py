@@ -16,8 +16,8 @@ from support import env_flinc_cd45, tools, env_flinc_p62
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
-# 2023.11.05 on PC test of 58 slides
-task_ids = [121.1]
+# 2023.11.06 on PC test of 58 slides
+task_ids = [121]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         K_ratio = 0.25
         att_thd =  0.25
         fills = [3, 4, 5]
-        manu_n_clusters=10
+        manu_n_clusters=4
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
         print('need to re-load clustering results first!')
             
-        sensitive_labels = [1, 2, 5, 6, 7, 8]
+        sensitive_labels = []
         assim_ratio = 0.05
         fills=[4, 5]
         exc_clustered=False
