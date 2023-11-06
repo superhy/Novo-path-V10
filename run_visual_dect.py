@@ -57,9 +57,12 @@ if __name__ == '__main__':
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, pkg_range)
     if 2 in task_ids:
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
-        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
-        sp_clsts = [1, 2]
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
+        # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
+        ''' on PC '''
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
+        sp_clsts = [1, 2, 5, 6, 7, 8]
         cut_left = True
         # heat_style = 'clst'
         heat_style = 'both'

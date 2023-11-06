@@ -477,7 +477,7 @@ def make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius
  
 ''' -------------------------------------------------------------------------------------------- ''' 
     
-def cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
+def cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name, manu_n_clst=None):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -489,7 +489,7 @@ def cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         # count tissue percentage
-        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples, ENV_task.NUM_CLUSTERS)
+        tissue_pct_dict = tissue_pct_clst_single_slide(tile_clst_tuples, ENV_task.NUM_CLUSTERS if manu_n_clst is None else manu_n_clst)
         slide_tis_pct_dict[slide_id] = tissue_pct_dict
         tissue_pct_dict_list.append(tissue_pct_dict)
     
@@ -748,8 +748,8 @@ def _run_make_spatial_iso_gath_on_slides(ENV_task, clustering_pkl_name, sp_clst=
 def _run_make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius):
     make_spatial_levels_on_slides(ENV_task, clustering_pkl_name, sp_clst, radius)
 
-def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name):
-    cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name)
+def _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name, manu_n_clst=None):
+    cnt_tissue_pct_clsts_on_slides(ENV_task, clustering_pkl_name, manu_n_clst)
     
 def _run_count_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd=0.1, radius=5):
     cnt_tis_pct_slides_ref_homo_sp_clst(ENV_task, clustering_pkl_name, sp_clst, iso_thd, radius)

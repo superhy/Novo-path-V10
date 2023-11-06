@@ -17,7 +17,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.05 on PC test of 58 slides
-task_ids = [121]
+task_ids = [121.1]
 task_str = '-' + '-'.join([str(id) for id in task_ids])
 
 if __name__ == '__main__':
@@ -34,16 +34,18 @@ if __name__ == '__main__':
     
     if 121 in task_ids:
         # p62
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
-                               'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
+        
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
         
         K_ratio = 0.25
         att_thd =  0.25
         fills = [3, 4, 5]
-        manu_n_clusters=5
+        manu_n_clusters=10
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
@@ -55,14 +57,16 @@ if __name__ == '__main__':
                                                                    manu_n_clusters=manu_n_clusters,
                                                                    tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
     if 121.1 in task_ids:
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
         print('need to re-load clustering results first!')
             
-        sensitive_labels = [1, 2]
-        assim_ratio = 0.1
-        fills=[3, 4, 5]
+        sensitive_labels = [1, 2, 5, 6, 7, 8]
+        assim_ratio = 0.05
+        fills=[4, 5]
+        exc_clustered=False
         _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, 
-                                              sensitive_labels, assim_ratio, fills)
+                                              sensitive_labels, exc_clustered, assim_ratio, fills)
         
         
         

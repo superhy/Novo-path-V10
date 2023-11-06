@@ -301,6 +301,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     if cut_left:
         print('--- cut left, only keep right part!')
         heat_s_clst_col = keep_right_half(heat_s_clst_col)
+        org_np_img = keep_right_half(org_np_img)
     return org_np_img, heat_s_clst_col
 
 

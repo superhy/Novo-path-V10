@@ -19,7 +19,7 @@ if __name__ == '__main__':
     ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
 
     # task_ids = [0]
-    task_ids = [1]
+    task_ids = [2]
     
     if 0 in task_ids:
         pass
@@ -27,7 +27,7 @@ if __name__ == '__main__':
         heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pkl'
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name)
     if 2 in task_ids:
-        spatmap_pkl_name = ''
+        spatmap_pkl_name = 'clst-[1, 2, 5, 6, 7, 8]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name)
     if 3.1 in task_ids:
         snesi_clst_toget = True

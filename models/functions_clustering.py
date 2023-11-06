@@ -727,14 +727,15 @@ class Feature_Assimilate():
     Assimilating the tiles with close distance 
     '''
     def __init__(self, ENV_task, clustering_res_pkg, sensitive_labels,
-                 encoder, attK_clst=True, assimilate_ratio=0.1, embed_type='encode', 
-                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
+                 encoder, attK_clst=True, exc_clustered=True, assimilate_ratio=0.1, 
+                 embed_type='encode', reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
         '''
         TODO: annotations of this function
                 
         Args:
             clustering_res_pkg = [(res, encodes[i], tiles[i], slide_ids[i])...]
             attK_clst: if the cluster results from attention K clustering?
+            exc_clustered: when assimilating, if exclude the tiles which has been included in any cluster?
         '''
         self._env_task = ENV_task
         self.for_train = True if self._env_task.DEBUG_MODE else False
@@ -776,7 +777,7 @@ class Feature_Assimilate():
                 self.sensitive_tiles.append((tile, slide_id))
                 
             tile_key = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
-            if attK_clst:
+            if attK_clst and exc_clustered:
                 # prepare the s_tile_keys_dict which have been considered in clustering
                 if slide_id not in s_tile_keys_dict.keys():
                     s_tile_keys_dict[slide_id] = []
@@ -1164,14 +1165,14 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     return clustering_res_pkg
 
 def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name,
-                                          sensitive_labels, 
+                                          sensitive_labels, exc_clustered=True,
                                           assim_ratio=0.1, fills=[4]):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
     clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
     assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
-                                      encoder=tile_encoder, attK_clst=True,
+                                      encoder=tile_encoder, attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode')
     
     assim_tuples = assimilating.assimilate()

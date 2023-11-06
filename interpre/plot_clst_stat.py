@@ -83,7 +83,7 @@ def plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, biom_label_fname,
     df_allbiom_t_pct = pd.DataFrame(biom_t_pct_tuples + nonbiom_t_pct_tuples, columns=['clusters', 'tissue_percentage', 
                                                                                     '{}_label'.format(biom_lbl_name)])
     
-    fig = plt.figure(figsize=(5, 5))
+    fig = plt.figure(figsize=(nb_clst, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1.set_ylim(0, 0.5)
     ax_1 = sns.barplot(x='clusters', y='tissue_percentage', palette=palette_dict, data=df_allbiom_t_pct, 
