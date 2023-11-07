@@ -65,10 +65,13 @@ def load_clst_res_encode_label(model_store_dir, clustering_pkl_name, r_pick_from
     if r_pick_from_clst is not None:
         for label in clst_encode_dict.keys():
             label_encodes_list = clst_encode_dict[label]
-            r_pick_from_clst = 0.01 if r_pick_from_clst is None else r_pick_from_clst
+            r_pick_from_clst = 0.1 if r_pick_from_clst is None else r_pick_from_clst
             nb_pick = int(len(label_encodes_list) * r_pick_from_clst)
-            # pick_clst_encode_dict[label] = safe_random_sample(label_encodes_list, r_pick_from_clst)
-            pick_clst_encode_dict[label] = pick_centrest_encodes(label_encodes_list, nb_pick)
+            nb_half = int(len(label_encodes_list) * 0.5)
+            half_pick = pick_centrest_encodes(label_encodes_list, nb_half)
+            # print(type(half_pick))
+            closed_rand_pick = safe_random_sample(list(half_pick), nb_pick)
+            pick_clst_encode_dict[label] = closed_rand_pick
             print(f'pick {nb_pick} embeds from cluster: {label}...')
     else:
         pick_clst_encode_dict = clst_encode_dict
@@ -179,7 +182,7 @@ def clst_encode_redu_tsne(clst_encode_tuples):
         
     return clst_redu_en_dict
 
-def make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=None):
+def make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=None):
     '''
     reduce the clusters points to a feature space
     store the clst - dim_redu space in pkl
@@ -187,9 +190,9 @@ def make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=None):
     model_store_dir = ENV_task.MODEL_FOLDER
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
-    _, clst_encode_list = load_clst_res_encode_label(model_store_dir, clustering_pkl_name, nb_picked)
+    _, clst_encode_list = load_clst_res_encode_label(model_store_dir, clustering_pkl_name, r_picked)
     clst_redu_en_dict = clst_encode_redu_tsne(clst_encode_tuples=clst_encode_list)
-    clst_tsne_pkl_name = 'tsne_{}_{}'.format('all' if nb_picked is None else str(nb_picked), clustering_pkl_name)
+    clst_tsne_pkl_name = 'tsne_{}_{}'.format('all' if r_picked is None else str(r_picked), clustering_pkl_name)
     store_nd_dict_pkl(stat_store_dir, clst_redu_en_dict, clst_tsne_pkl_name)
     print('done the clusters dim-reduction and store as: ', clst_tsne_pkl_name)
     
@@ -763,8 +766,8 @@ def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
     
 ''' ---------------------------------------------------------------------------------- '''
 
-def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=1000):
-    make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked)
+def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=0.01):
+    make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked)
     
 def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True, cut_left=True):
     make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide, cut_left=cut_left)

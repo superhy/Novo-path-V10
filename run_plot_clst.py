@@ -47,9 +47,9 @@ if __name__ == '__main__':
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [20, 21, 22, 29.1]
+    # task_ids = [21, 22, 29.1]
     # task_ids = [29.2]
-    # task_ids = [22]
+    task_ids = [20]
     # task_ids = [29.1]
     # task_ids = [61, 62]
     # task_ids = [29.3]
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
-        clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=10 PC
+        clst_space_pkl_name = 'tsne_0.05_clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
         
         _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
     if 21 in task_ids:
@@ -79,7 +79,7 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
-        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=10 PC
+        clst_spatmaps_pkl_name = 'clst-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
         
         _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name)
     if 22 in task_ids:
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         
         ''' P62 '''
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
-        clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=10 PC
+        clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
         
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 23 in task_ids:
@@ -136,8 +136,8 @@ if __name__ == '__main__':
         elif ENV_task.STAIN_TYPE == 'P62':
             ''' P62 '''
             # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
-            tis_pct_pkl_name = 'clst-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=10 PC
-            nb_clst=10
+            tis_pct_pkl_name = 'clst-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
+            nb_clst=4
             ball_label_fname = 'P62_ballooning_score_bi.csv'
             # query_slide_id = '23910-158_Sl278-C18-CD45'
             plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, ball_label_fname, nb_clst=nb_clst)

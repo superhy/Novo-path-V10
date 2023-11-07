@@ -236,12 +236,14 @@ def df_p62_s_clst_assim_tis_pct_ball_dist(ENV_task, s_clst_slide_t_p_dict, assim
         
         ball_label = 'ballooning-0' if ball_label_dict[case_id] == 0 else 'ballooning-2'
         s_clst_t_p_dict = s_clst_slide_t_p_dict[slide_id]
-        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 / len(s_clst_slide_t_p_dict)
+        # print(s_clst_t_p_dict)
+        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 # / len(s_clst_slide_t_p_dict)
         tis_pct_ball_tuples.append(['sensitive clusters', ball_label, s_clst_avg_t_p])
         
         if slide_id in assim_slide_t_p_dict.keys():
             assim_t_p = assim_slide_t_p_dict[slide_id]
-            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 / (len(s_clst_slide_t_p_dict) + 1)
+            # print(assim_t_p)
+            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 # / (len(s_clst_slide_t_p_dict) + 1)
             tis_pct_ball_tuples.append(['assimilated patches', ball_label, assim_t_p])
             tis_pct_ball_tuples.append(['both', ball_label, both_avg_t_p])
             
@@ -267,17 +269,18 @@ def df_p62_s_clst_and_assim_t_p_ball_corr(ENV_task, s_clst_slide_t_p_dict, assim
             continue
         ball_label = ''
         if clinical_id.startswith('HV'):
+            # print('got a HV!!!!!!!!!')
             ball_label = 'Health volunteers'
         else:
             ball_label = 'Ballooning-' + str(clinical_ball_dict[int(clinical_id)])
         
         s_clst_t_p_dict = s_clst_slide_t_p_dict[slide_id]
-        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 / len(s_clst_slide_t_p_dict)
+        s_clst_avg_t_p = sum(s_clst_t_p_dict.values()) * 1.0 # / len(s_clst_slide_t_p_dict)
         tis_pct_ball_tuples.append(['sensitive clusters', ball_label, s_clst_avg_t_p])
         
         if slide_id in assim_slide_t_p_dict.keys():
             assim_t_p = assim_slide_t_p_dict[slide_id]
-            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 / (len(s_clst_slide_t_p_dict) + 1)
+            both_avg_t_p = (sum(s_clst_t_p_dict.values()) + assim_t_p) * 1.0 # / (len(s_clst_slide_t_p_dict) + 1)
             tis_pct_ball_tuples.append(['assimilated patches', ball_label, assim_t_p])
             tis_pct_ball_tuples.append(['both', ball_label, both_avg_t_p])
             

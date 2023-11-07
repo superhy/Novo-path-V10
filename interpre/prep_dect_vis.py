@@ -386,6 +386,17 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
+def make_tiles_demo_assimilated(ENV_task, assimilate_pkl_name, nb_sample=50):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    assim_tile_slideid_dict = load_assim_res_tiles(model_store_dir, assimilate_pkl_name)
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
+    
+    
   
 def tis_pct_sensi_clst_single_slide(slide_tile_clst_tuples, sensi_clsts, nb_tis_this_slide):
     '''
@@ -396,7 +407,7 @@ def tis_pct_sensi_clst_single_slide(slide_tile_clst_tuples, sensi_clsts, nb_tis_
     tissue_pct_dict = {}
     nb_tissue = nb_tis_this_slide
         
-    for id in range(sensi_clsts):
+    for id in sensi_clsts:
         tissue_pct_dict[id] = .0
         
     for i, t_l_tuple in enumerate(slide_tile_clst_tuples):
@@ -442,7 +453,7 @@ def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi
     for slide_id in slide_id_list:
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         # count tissue percentage
-        nb_tis_this_slide = slide_tiles_dict[slide_id]
+        nb_tis_this_slide = len(slide_tiles_dict[slide_id])
         tissue_pct_dict = tis_pct_sensi_clst_single_slide(tile_clst_tuples, sensi_clsts, nb_tis_this_slide)
         slide_sensi_tis_pct_dict[slide_id] = tissue_pct_dict
         
@@ -455,7 +466,7 @@ def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi
     slide_assim_tis_pct_dict = {}
     for slide_id in slide_id_list:
         assim_tiles = slide_assim_tiles_dict[slide_id]
-        nb_tis_this_slide = slide_tiles_dict[slide_id]
+        nb_tis_this_slide = len(slide_tiles_dict[slide_id])
         tissue_pct = tis_pct_assim_single_slide(assim_tiles, nb_tis_this_slide)
         slide_assim_tis_pct_dict[slide_id] = tissue_pct
         

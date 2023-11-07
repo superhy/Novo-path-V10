@@ -228,7 +228,7 @@ def df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name,
     df_tis_pct_dist_elemts['patch_type'] = pd.Categorical(df_tis_pct_dist_elemts['patch_type'],
                                                           categories=order, ordered=True)
     
-    fig = plt.figure(figsize=(6, 3.5))
+    fig = plt.figure(figsize=(5, 6))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1 = sns.boxplot(x='patch_type', y='tissue_percentage', palette=palette_dict,
                        data=df_tis_pct_dist_elemts, hue='ballooning_label')
@@ -238,7 +238,7 @@ def df_plot_s_clst_assim_ball_dist_box(ENV_task, s_clst_t_p_pkl_name,
     plt.tight_layout()
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'sensi_clst_assim_tp-ballooning-p-box.png') )
-    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 'sensi_clst_assim_tp-ballooning-p-box.png') ) )
     plt.close(fig)
     
 def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name):
@@ -247,7 +247,7 @@ def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_
     for different ballooning scores (include health volunteer)
     '''
     palette_dict = {'sensitive clusters': 'lightcoral',
-                    'assimilated tiles': 'turquoise',
+                    'assimilated patches': 'turquoise',
                     'both': 'dodgerblue'
                 }
     
@@ -263,7 +263,7 @@ def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_
     df_tis_pct_corr_elemts['ballooning_label'] = pd.Categorical(df_tis_pct_corr_elemts['ballooning_label'],
                                                                 categories=order, ordered=True)
     
-    fig = plt.figure(figsize=(7, 3.5))
+    fig = plt.figure(figsize=(10, 5))
     ax_1 = fig.add_subplot(1, 1, 1)
     ax_1 = sns.boxplot(x='ballooning_label', y='tissue_percentage', palette=palette_dict,
                        data=df_tis_pct_corr_elemts, hue='patch_type')
@@ -273,7 +273,7 @@ def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_
     plt.tight_layout()
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR,
                              'sensi_clst_assim_tp-ballooning-s-box.png') )
-    print('store the picture in {}'.format(ENV_task.HEATMAP_STORE_DIR) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 'sensi_clst_assim_tp-ballooning-s-box.png') ) )
     plt.close(fig)
     
 

@@ -27,8 +27,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [20, 21, 22, 29]
-    # task_ids = [29]
+    task_ids = [21, 22, 29]
+    # task_ids = [20]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -51,9 +51,9 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         
-        _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, nb_picked=5000)
+        _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=0.05)
     if 21 in task_ids:
         ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
@@ -63,10 +63,10 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, 
-                                             keep_org_slide=False, cut_left=True)
+                                             keep_org_slide=True, cut_left=True)
     if 22 in task_ids:
         ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         
         nb_sample=1000
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
@@ -108,8 +108,8 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n10
-        manu_n_clst = 10
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        manu_n_clst = 4
         
         _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name, manu_n_clst)
     if 30 in task_ids:

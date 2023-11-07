@@ -15,7 +15,8 @@ from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 from support.env_flinc_he import ENV_FLINC_HE_FIB, ENV_FLINC_HE_BALL_BI, \
     ENV_FLINC_HE_BALL
 from support.env_flinc_he import ENV_FLINC_HE_STEA, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_p62 import ENV_FLINC_P62_U, ENV_FLINC_P62_BALL_BI
+from support.env_flinc_p62 import ENV_FLINC_P62_U, ENV_FLINC_P62_BALL_BI,\
+    ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 
@@ -258,8 +259,9 @@ def count_flinc_stain_amount(ENV_task, xlsx_filepath):
 def _load_clinical_labels():
     
     # TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
-    TASK_ENVS = [ENV_FLINC_HE_BALL]
+    # TASK_ENVS = [ENV_FLINC_HE_BALL]
     # TASK_ENVS = [ENV_FLINC_P62_BALL_BI]
+    TASK_ENVS = [ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI]
     
     xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
@@ -268,7 +270,7 @@ def _load_clinical_labels():
     xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     xlsx_path_slide_2 = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     # xlsx_path_slide_list = [xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_2, xlsx_path_slide_2]
-    xlsx_path_slide_list = [xlsx_path_slide_1]
+    xlsx_path_slide_list = [xlsx_path_slide_2, xlsx_path_slide_2]
     
     for i, task_env in enumerate(TASK_ENVS):
         slide_label_dict_list = make_flinc_slide_label(task_env, clinical_label_dicts,
@@ -474,9 +476,12 @@ if __name__ == '__main__':
     ''' here will be the 2nd step '''
     # pkg_param_fib = (ENV_FLINC_PSR_FIB, {0: [0], 1:[4]}, 'fibrosis_score')
     # pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
-    pkg_param_ball = (ENV_FLINC_HE_BALL_BI, {0: [0], 1:[2]}, 'ballooning_score')
+    # pkg_param_ball = (ENV_FLINC_HE_BALL_BI, {0: [0], 1:[2]}, 'ballooning_score')
+    # pkg_param_stea = (ENV_FLINC_P62_STEA_BI, {0: [0], 1:[3]}, 'steatosis_score')
+    pkg_param_lob = (ENV_FLINC_P62_STEA_BI, {0: [0], 1:[3]}, 'lobular_inflammation_score')
     # _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
     # _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
-    _ = _prod_bi_label_combine_labels(pkg_param_ball[0], pkg_param_ball[1], pkg_param_ball[2])
+    # _ = _prod_bi_label_combine_labels(pkg_param_ball[0], pkg_param_ball[1], pkg_param_ball[2])
+    _ = _prod_bi_label_combine_labels(pkg_param_lob[0], pkg_param_lob[1], pkg_param_lob[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)

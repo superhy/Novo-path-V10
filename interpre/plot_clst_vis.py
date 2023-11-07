@@ -49,7 +49,7 @@ def plot_clst_scatter(clst_redu_en_dict):
             name=node_name,
             marker=dict(
                 color=color,
-                size=2.0,
+                size=8.0,
                 )
             ))
         

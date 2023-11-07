@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [0]
-    task_ids = [2]
+    task_ids = [2, 3]
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
     log_name = 'visualisation_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
@@ -48,7 +48,7 @@ if __name__ == '__main__':
         # pkg_range = [0, 50]
         pkg_range = None
         cut_left = True
-        fills = [3, 4, 5]
+        fills = [4, 5]
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, pkg_range)
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         ''' on PC '''
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
-        sp_clsts = []
+        sp_clsts = [0]
         cut_left = True
         # heat_style = 'clst'
         heat_style = 'both'
@@ -70,9 +70,9 @@ if __name__ == '__main__':
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left)
     if 3 in task_ids:
-        clustering_pkl_name = ''
-        assimilate_pkl_name = ''
-        sp_clsts = []
+        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
+        sp_clsts = [0]
         
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
         

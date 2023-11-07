@@ -16,7 +16,8 @@ import os
 
 from support import env_flinc_psr, env_flinc_he, env_flinc_cd45, env_flinc_p62
 from support.env_flinc_he import ENV_FLINC_HE_BALL_BI
-from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI
+from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI,\
+    ENV_FLINC_P62_LOB_BI
 from support.files import _move_slides_multi_stains
 from wsi import process
 
@@ -38,10 +39,13 @@ task_ids = [2]
 # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
 # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT
 
-ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+# ENV_task = env_flinc_p62.ENV_FLINC_P62_U
 # ENV_task = env_flinc_p62.ENV_FLINC_P62_REG_PT
 # ENV_task = ENV_FLINC_HE_BALL_BI
 # ENV_task = ENV_FLINC_P62_BALL_BI
+
+ENV_task = ENV_FLINC_P62_STEA_BI
+# ENV_task = ENV_FLINC_P62_LOB_BI
 
 
 if __name__ == '__main__':
@@ -53,11 +57,11 @@ if __name__ == '__main__':
         elif ENV_task.TASK_NAME == 'segmentation':
             pass
         else:
-            # fold_suffix_list = ['-0']
+            fold_suffix_list = ['-0']
             # fold_suffix_list = ['-0', '-1', '-2', '-3', '-4',
             #                     '-5', '-6', '-7', '-8', '-9']
             # fold_suffix_list = ['-0', '-1', '-2', '-3', '-4']
-            fold_suffix_list = ['-5', '-6', '-7', '-8', '-9']
+            # fold_suffix_list = ['-5', '-6', '-7', '-8', '-9']
             for i, fold_suffix in enumerate(fold_suffix_list):
                 ENV_fold = copy(ENV_task)
                 ENV_fold.refresh_fold_suffix(fold_suffix)
