@@ -1,0 +1,64 @@
+automatically find CSV file: P62_ballooning_score_bi.csv
+get the tiles encoding matrix for slide: 23910-158_Sl003-C3-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl003-C3-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl004-C4-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl004-C4-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl009-C7-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl009-C7-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl010-C7-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl010-C7-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl014-C10-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl014-C10-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl019-C13-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl019-C13-P62-(tiles_encode).npy
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth
+<-- load the tiles' attention score for 6 slides -->
+originally attention tiles: 1478 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 394 in round: 1
+fill surrounding tiles: 80 in round: 2
+all/k selection ratio in this slide: (4927 / 1952)
+originally attention tiles: 5281 in slide: 23910-158_Sl004-C4-P62
+fill surrounding tiles: 1819 in round: 1
+fill surrounding tiles: 422 in round: 2
+all/k selection ratio in this slide: (17606 / 7522)
+originally attention tiles: 1281 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 329 in round: 1
+fill surrounding tiles: 66 in round: 2
+all/k selection ratio in this slide: (4271 / 1676)
+originally attention tiles: 2271 in slide: 23910-158_Sl010-C7-P62
+fill surrounding tiles: 744 in round: 1
+fill surrounding tiles: 170 in round: 2
+all/k selection ratio in this slide: (7571 / 3185)
+originally attention tiles: 1165 in slide: 23910-158_Sl014-C10-P62
+fill surrounding tiles: 247 in round: 1
+fill surrounding tiles: 46 in round: 2
+all/k selection ratio in this slide: (6602 / 1458)
+originally attention tiles: 499 in slide: 23910-158_Sl019-C13-P62
+fill surrounding tiles: 62 in round: 1
+fill surrounding tiles: 4 in round: 2
+all/k selection ratio in this slide: (1666 / 565)
+final highlighted tiles:  1952
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  7522
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl004-C4-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl004-C4-P62
+final highlighted tiles:  1676
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  3185
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl010-C7-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl010-C7-P62
+final highlighted tiles:  1458
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl014-C10-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl014-C10-P62
+final highlighted tiles:  565
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl019-C13-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl019-C13-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl

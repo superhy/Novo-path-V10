@@ -2,6 +2,7 @@
 @author: Yang Hu
 '''
 import os
+import random
 
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
@@ -140,6 +141,82 @@ class Simple_Tile_Dataset(Dataset):
     def __len__(self):
         return len(self.tiles_list)
 
+
+''' try topk multi-instance learning dataset '''
+class TryK_MIL_Dataset(Dataset):
+
+    def __init__(self, tiles_list, label_dict, transform: transforms, try_mode=False):
+        # objects of all tiles in a list
+        self.tiles_list = tiles_list
+        self.label_dict = label_dict
+        self.tiles_list_train_pool = tiles_list  # default training tile list is set as 'all tiles list'
+        
+        # some hyper-parameters
+        self.transform = transform
+        self.try_mode = try_mode  # default turn off it
+        ''' make slide cache in memory '''
+        self.cache_slide = ('none', None)
+        
+    def switch_mode(self, switch_mode=True):
+        '''
+        switch the try_mode, default to turn on it back
+        '''
+        self.try_mode = switch_mode
+        
+    def refresh_filter_traindata(self, filter_tileidx_dict):
+        '''
+        refresh the tiles list for training
+        '''
+        self.tiles_list_train_pool = []
+        for _, tile_idx_list in filter_tileidx_dict.items():
+            for idx in tile_idx_list:
+                self.tiles_list_train_pool.append(self.tiles_list[idx])
+                
+    def manual_shuffle_traindata(self):
+        '''
+        as name, be safe
+        '''
+        self.tiles_list_train_pool = random.sample(self.tiles_list_train_pool, len(self.tiles_list_train_pool))
+        
+    def __getitem__(self, index):
+        if self.try_mode == True:
+            tile = self.tiles_list[index]
+            case_id = parse_slide_caseid_from_filepath(tile.original_slide_filepath)
+            
+            ''' using slide cache '''
+            loading_slide_id = parse_slideid_from_filepath(tile.original_slide_filepath)
+            if loading_slide_id == self.cache_slide[0]:
+                preload_slide = self.cache_slide[1]
+            else:
+                _, preload_slide = tile.get_pil_scaled_slide()
+                self.cache_slide = (loading_slide_id, preload_slide)
+                
+            image = tile.get_pil_tile(self.cache_slide[1])
+            image = self.transform(image)
+            label = self.label_dict[case_id]
+            return image, label
+        else:
+            tile = self.tiles_list_train_pool[index]
+            case_id = parse_slide_caseid_from_filepath(tile.original_slide_filepath)
+            
+            ''' using slide cache '''
+            loading_slide_id = parse_slideid_from_filepath(tile.original_slide_filepath)
+            if loading_slide_id == self.cache_slide[0]:
+                preload_slide = self.cache_slide[1]
+            else:
+                _, preload_slide = tile.get_pil_scaled_slide()
+                self.cache_slide = (loading_slide_id, preload_slide)
+                
+            image = tile.get_pil_tile(preload_slide)
+            image = self.transform(image)
+            label = self.label_dict[case_id]
+            return image, label
+    
+    def __len__(self):
+        if self.try_mode == True:
+            return len(self.tiles_list)
+        else:
+            return len(self.tiles_list_train_pool)
 
 '''
 ------------ datasets for aggregator training -------------

@@ -423,6 +423,38 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
     
     return fill_k_slide_tiles_list, fill_k_attscores
     
+def filter_neg_att_tiles(slide_tiles_atts_dict, slide_neg_tiles_atts_dict):
+    '''
+    discard the tiles from positive attention tile list which were negatively attention 
+    '''
+    filt_all_tiles_list = []
+    slide_filt_tiles_atts_dict = {}
+    for slide_id in slide_tiles_atts_dict.keys():
+        # load the negative tile keys first
+        slide_neg_tile_keys = []
+        neg_slide_tiles_list, _ = slide_neg_tiles_atts_dict[slide_id]
+        for t in neg_slide_tiles_list:
+            tile_key = '{}-h{}-w{}'.format(slide_id, t.h_id, t.w_id)
+            slide_neg_tile_keys.append(tile_key)
+        # check the original attention tile list and re-generate a new one
+        filt_slide_tiles, filt_slide_atts, nb_filt = [], [], 0
+        org_slide_tiles_list, org_attscores = slide_tiles_atts_dict[slide_id]
+        for i, t in enumerate(org_slide_tiles_list):
+            tile_key = '{}-h{}-w{}'.format(slide_id, t.h_id, t.w_id)
+            if tile_key in slide_neg_tile_keys:
+                nb_filt += 1
+            else:
+                filt_slide_tiles.append(t)
+                filt_slide_atts.append(org_attscores[i])
+        # insert it back to the new slide_tiles_atts_dict
+        slide_filt_tiles_atts_dict[slide_id] = (filt_slide_tiles, filt_slide_atts)
+        print(f'using negative attention, filtered/left: \
+        {nb_filt}/{len(filt_slide_tiles)} for slide: {slide_id}')
+        # insert the filtered tiles to the new all tiles list
+        filt_all_tiles_list.extend(filt_slide_tiles)
+        
+    return filt_all_tiles_list, slide_filt_tiles_atts_dict
+        
 
 class Instance_Clustering():
     '''

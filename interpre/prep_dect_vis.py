@@ -22,12 +22,13 @@ from interpre.prep_clst_vis import load_clst_res_slide_tile_label, \
 from interpre.prep_tools import store_nd_dict_pkl
 from models import datasets, functions_attpool, functions_clustering
 from models.functions_clustering import select_top_att_tiles, \
-    load_clustering_pkg_from_pkl
+    load_clustering_pkg_from_pkl, filter_neg_att_tiles
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
-from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI
+from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
+    ENV_FLINC_P62_LOB_BI
 from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization
 from wsi import image_tools, slide_tools
@@ -178,7 +179,7 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
 
 
 def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscores,
-                                         boost_rate=2.0, cut_left=False):
+                                         boost_rate=2.0, cut_left=False, color_map='bwr'):
     """
     """
     
@@ -215,7 +216,7 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
     print('final highlighted tiles: ', len(k_attscores) )
         
     pil_img_type = PIL.Image.BOX
-    c_panel_1 = cmapy.cmap('bwr')
+    c_panel_1 = cmapy.cmap(color_map)
     
     heat_hard = image_tools.np_to_pil(heat_hard).resize((slide_np.shape[1], slide_np.shape[0]), pil_img_type)
     heat_soft = image_tools.np_to_pil(heat_soft).resize((slide_np.shape[1], slide_np.shape[0]), pil_img_type)
@@ -306,8 +307,8 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
 
 
 def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
-                                        cut_left=True, tile_encoder=None, 
-                                        K_ratio=0.3, att_thd=0.25, boost_rate=2.0, fills=[3], pkg_range=None):
+                                        cut_left=True, tile_encoder=None, K_ratio=0.3, att_thd=0.25, 
+                                        boost_rate=2.0, fills=[3], color_map='bwr', pkg_range=None, only_soft_map=False):
     """
     make the top K attention pool visualisation (only 1 round, no milestones), 
     only highlight the picked tiles with the highest attention scores.
@@ -338,15 +339,82 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
                                                                                                 k_slide_tiles_list, 
                                                                                                 k_attscores,
                                                                                                 boost_rate=boost_rate,
-                                                                                                cut_left=cut_left)
+                                                                                                cut_left=cut_left,
+                                                                                                color_map=color_map)
         slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
                                                  'heat_np': heat_np,
-                                                 'heat_hard_cv2': heat_hard_cv2,
+                                                 'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
                                                  'heat_soft_cv2': heat_soft_cv2
                                                  }
         print('added topK attention map numpy info set for slide: {}'.format(slide_id))
         
     att_heatmap_pkl_name = agt_model_filenames[0].replace('checkpoint', 'topK_map').replace('.pth', '.pkl')
+    store_nd_dict_pkl(_env_heatmap_store_dir,
+                      slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
+    print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
+    
+def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label_dict,
+                                        neg_model_filenames_list, neg_label_dicts,
+                                        cut_left=True, tile_encoder=None, K_ratio=0.3, att_thd=0.25, 
+                                        boost_rate=2.0, fills=[3],
+                                        neg_parames=[(0.2, 0.2), (0.2, 0.2)], 
+                                        color_map='bwr', pkg_range=None, only_soft_map=False):
+    """
+    make the filtered (after discarded negative attention patches) for 
+        attention pool visualisation (only 1 round, no milestones), 
+    only highlight the picked tiles with the highest attention scores.
+        include: 
+        1. the attention heatmap for attpool
+        
+    Args:
+        neg_model_filenames_list: list of list, with different negative attention focused, like for stea or lob-inf
+        neg_label_dicts: for different negative attention labels
+        neg_parames: must be the same length with neg_model_filenames_list and neg_label_dicts
+            contains parames with (K_ratio, att_thd) for negative attention maps
+    """
+    
+    ''' prepare some parames '''
+    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    _env_model_store_dir = ENV_task.MODEL_FOLDER
+    
+    for_train = False if not ENV_task.DEBUG_MODE else True
+    
+    if tile_encoder is None:
+        tile_encoder = BasicResNet18(output_dim=2)
+        tile_encoder = tile_encoder.cuda()
+    else:
+        tile_encoder = tile_encoder.cuda()
+    
+    _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
+                                                      pos_model_filenames, pos_label_dict,
+                                                      K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
+    # filtering the negative attention from original maps
+    for i, neg_model_filenames in enumerate(neg_model_filenames_list):
+        print(f'> filter the negative attention for {neg_model_filenames[0]}...')
+        n_label_dict = neg_label_dicts[i]
+        k_rat, a_thd = neg_parames[i]
+        _, slide_neg_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
+                                                            neg_model_filenames, n_label_dict,
+                                                            k_rat, a_thd, fills=fills, pkg_range=pkg_range)
+        _, slide_k_tiles_atts_dict = filter_neg_att_tiles(slide_k_tiles_atts_dict, slide_neg_tiles_atts_dict)
+    
+    slide_topK_att_heatmap_dict = {}
+    for slide_id in slide_k_tiles_atts_dict.keys():
+        k_slide_tiles_list, k_attscores = slide_k_tiles_atts_dict[slide_id]
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
+                                                                                                k_slide_tiles_list, 
+                                                                                                k_attscores,
+                                                                                                boost_rate=boost_rate,
+                                                                                                cut_left=cut_left,
+                                                                                                color_map=color_map)
+        slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
+                                                 'heat_np': heat_np,
+                                                 'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
+                                                 'heat_soft_cv2': heat_soft_cv2
+                                                 }
+        print('added topK attention map numpy info set for slide: {}'.format(slide_id))
+        
+    att_heatmap_pkl_name = pos_model_filenames[0].replace('checkpoint', 'filt_map').replace('.pth', '.pkl')
     store_nd_dict_pkl(_env_heatmap_store_dir,
                       slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
@@ -548,8 +616,8 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
     print('Store attention_heatmap numpy package as: {}'.format(att_heatmap_pkl_name))
     
     
-def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
-                                                K_ratio=0.3, att_thd=0.3, boost_rate=2.0, fills=[3], pkg_range=[0, 50]):
+def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.3, att_thd=0.3, 
+                                                boost_rate=2.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
@@ -558,8 +626,32 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
 
     tile_encoder = BasicResNet18(output_dim=2)
     make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
-                                        cut_left, tile_encoder,
-                                        K_ratio, att_thd, boost_rate, fills, pkg_range)
+                                        cut_left, tile_encoder, K_ratio, att_thd, boost_rate, 
+                                        fills, color_map, pkg_range)
+
+def _run_make_filt_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, neg_model_filenames_list,
+                                                cut_left, K_ratio=0.3, att_thd=0.3, 
+                                                boost_rate=2.0, fills=[3],
+                                                neg_parames=[(0.2, 0.2), (0.2, 0.2)], 
+                                                color_map='bwr', pkg_range=[0, 50], only_soft_map=True):
+    '''
+    make the final attention map 
+    with discard the tiles which were negatively attention
+    '''
+    ENV_annotation_ball, ENV_annotation_stea, ENV_annotation_lob = ENV_FLINC_P62_BALL_BI, \
+    ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI
+    
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_annotation_ball)
+    stea_label_dict = query_task_label_dict_fromcsv(ENV_annotation_stea)
+    lob_label_dict = query_task_label_dict_fromcsv(ENV_annotation_lob)
+    
+    tile_encoder = BasicResNet18(output_dim=2)
+    make_filt_attention_heatmap_package(ENV_task, agt_model_filenames, ball_label_dict, 
+                                        neg_model_filenames_list, [stea_label_dict, lob_label_dict], 
+                                        cut_left, tile_encoder, K_ratio, att_thd, 
+                                        boost_rate, fills, neg_parames, color_map, 
+                                        pkg_range, only_soft_map)
+    
     
 def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left=True):
     '''

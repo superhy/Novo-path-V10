@@ -110,7 +110,7 @@ def _plot_attention_heatmaps(ENV_task, ENV_annotation,
             print('+ draw med gradient color heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
             
 
-def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
+def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx=''):
     """
     plot the original heatmap with attention scores for top K tiles
     """
@@ -137,7 +137,7 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
         
         alg_name = heatmap_pkl_name[heatmap_pkl_name.find('topK_map_') + 10:-15]
         
-        single_multi_dir = os.path.join(_env_heatmap_store_dir, 'topk_map')
+        single_multi_dir = os.path.join(_env_heatmap_store_dir, f'topk_map_{folder_sfx}')
         attention_dir = os.path.join(single_multi_dir, 'topk_att_dx')
         
         if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//1'.format(attention_dir))):
@@ -155,9 +155,10 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name):
                                (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-org'), alg_name))
         print('draw original image in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
 
-        draw_attention_heatmap(attention_dir, heat_hard_cv2, None, None,
-                               (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-hard'), alg_name))
-        print('1. draw hard heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
+        if heat_hard_cv2 is not None:
+            draw_attention_heatmap(attention_dir, heat_hard_cv2, None, None,
+                                   (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-hard'), alg_name))
+            print('1. draw hard heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
         
         draw_attention_heatmap(attention_dir, heat_soft_cv2, org_image, None,
                                (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-soft'), alg_name))
