@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # task_ids = [0]
     # task_ids = [2]
     # task_ids = [1, 1.1]
-    task_ids = [1.2]
+    task_ids = [1]
     
     if 0 in task_ids:
         pass
@@ -32,9 +32,9 @@ if __name__ == '__main__':
         heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
     if 1.1 in task_ids:
-        stea_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[67]2023-11-08.pkl'
+        stea_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl'
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation_stea, stea_map_pkl_name, folder_sfx='stea')
-        lob_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[159]2023-11-08.pkl'
+        lob_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl'
         _plot_topK_attention_heatmaps(ENV_task, ENV_annotation_lob, lob_map_pkl_name, folder_sfx='lob')
     if 1.2 in task_ids:
         heatmap_pkl_name = 'filt_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'

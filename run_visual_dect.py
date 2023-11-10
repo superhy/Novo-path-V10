@@ -24,7 +24,7 @@ if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
-    task_ids = [1.2]
+    task_ids = [1.1]
     # task_ids = [2, 3]
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
@@ -41,7 +41,7 @@ if __name__ == '__main__':
         #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
         #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
         
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[200]2023-11-09.pth']
         
         K_ratio = 0.2
         att_thd = 0.5
@@ -58,10 +58,10 @@ if __name__ == '__main__':
         visualisation for negative attention map
         (for steatosis_score_bi and lobular_inflammation_score_bi)
         '''    
-        stea_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[67]2023-11-08.pth']
-        lob_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[159]2023-11-08.pth']
-        stea_K_ratio, stea_att_thd = 0.1, 0.6
-        lob_K_ratio, lob_att_thd = 0.1, 0.6
+        stea_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth']
+        lob_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth']
+        stea_K_ratio, stea_att_thd = 0.3, 0.5
+        lob_K_ratio, lob_att_thd = 0.3, 0.3
         stea_cmap = 'PiYG'
         lob_cmap = 'BrBG'
 
@@ -85,8 +85,8 @@ if __name__ == '__main__':
         K_ratio = 0.2
         att_thd = 0.5
         
-        stea_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[67]2023-11-08.pth']
-        lob_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[159]2023-11-08.pth']
+        stea_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth']
+        lob_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth']
         neg_model_filenames_list = [stea_model_filenames, lob_model_filenames]
         stea_K_ratio, stea_att_thd = 0.1, 0.6
         lob_K_ratio, lob_att_thd = 0.1, 0.6

@@ -1,0 +1,29 @@
+automatically find CSV file: P62_ballooning_score_bi.csv
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[200]2023-11-09.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 806 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 55 in round: 1
+fill surrounding tiles: 1 in round: 2
+all/k selection ratio in this slide: (7562 / 862)
+originally attention tiles: 826 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 75 in round: 1
+fill surrounding tiles: 11 in round: 2
+all/k selection ratio in this slide: (10649 / 912)
+originally attention tiles: 405 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 31 in round: 1
+fill surrounding tiles: 3 in round: 2
+all/k selection ratio in this slide: (4927 / 439)
+final highlighted tiles:  862
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  912
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  439
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[200]2023-11-09.pkl

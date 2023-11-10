@@ -1,0 +1,224 @@
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 756 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 72 in round: 1
+fill surrounding tiles: 6 in round: 2
+all/k selection ratio in this slide: (7562 / 834)
+originally attention tiles: 1064 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 111 in round: 1
+fill surrounding tiles: 14 in round: 2
+all/k selection ratio in this slide: (10649 / 1189)
+originally attention tiles: 492 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 48 in round: 1
+fill surrounding tiles: 5 in round: 2
+all/k selection ratio in this slide: (4927 / 545)
+final highlighted tiles:  834
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  1189
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  545
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 30 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (7562 / 30)
+originally attention tiles: 41 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (10649 / 41)
+originally attention tiles: 116 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 6 in round: 1
+fill surrounding tiles: 1 in round: 2
+all/k selection ratio in this slide: (4927 / 123)
+final highlighted tiles:  30
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  41
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  123
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 2268 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 730 in round: 1
+fill surrounding tiles: 160 in round: 2
+all/k selection ratio in this slide: (7562 / 3158)
+originally attention tiles: 2819 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 890 in round: 1
+fill surrounding tiles: 190 in round: 2
+all/k selection ratio in this slide: (10649 / 3899)
+originally attention tiles: 1036 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 212 in round: 1
+fill surrounding tiles: 36 in round: 2
+all/k selection ratio in this slide: (4927 / 1284)
+final highlighted tiles:  3158
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  3899
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  1284
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 98 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (7562 / 98)
+originally attention tiles: 122 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (10649 / 122)
+originally attention tiles: 218 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 31 in round: 1
+fill surrounding tiles: 5 in round: 2
+all/k selection ratio in this slide: (4927 / 254)
+final highlighted tiles:  98
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  122
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  254
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 2268 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 730 in round: 1
+fill surrounding tiles: 160 in round: 2
+all/k selection ratio in this slide: (7562 / 3158)
+originally attention tiles: 2819 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 890 in round: 1
+fill surrounding tiles: 190 in round: 2
+all/k selection ratio in this slide: (10649 / 3899)
+originally attention tiles: 1036 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 212 in round: 1
+fill surrounding tiles: 36 in round: 2
+all/k selection ratio in this slide: (4927 / 1284)
+final highlighted tiles:  3158
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  3899
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  1284
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 1683 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 415 in round: 1
+fill surrounding tiles: 86 in round: 2
+all/k selection ratio in this slide: (7562 / 2184)
+originally attention tiles: 2245 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 631 in round: 1
+fill surrounding tiles: 143 in round: 2
+all/k selection ratio in this slide: (10649 / 3019)
+originally attention tiles: 1367 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 425 in round: 1
+fill surrounding tiles: 98 in round: 2
+all/k selection ratio in this slide: (4927 / 1890)
+final highlighted tiles:  2184
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  3019
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  1890
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 2268 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 730 in round: 1
+fill surrounding tiles: 160 in round: 2
+all/k selection ratio in this slide: (7562 / 3158)
+originally attention tiles: 2819 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 890 in round: 1
+fill surrounding tiles: 190 in round: 2
+all/k selection ratio in this slide: (10649 / 3899)
+originally attention tiles: 1036 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 212 in round: 1
+fill surrounding tiles: 36 in round: 2
+all/k selection ratio in this slide: (4927 / 1284)
+final highlighted tiles:  3158
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  3899
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  1284
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl
+automatically find CSV file: P62_ballooning_score_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pth
+<-- load the tiles' attention score for 3 slides -->
+originally attention tiles: 1683 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 415 in round: 1
+fill surrounding tiles: 86 in round: 2
+all/k selection ratio in this slide: (7562 / 2184)
+originally attention tiles: 2245 in slide: 23910-158_Sl002-C2-P62
+fill surrounding tiles: 631 in round: 1
+fill surrounding tiles: 143 in round: 2
+all/k selection ratio in this slide: (10649 / 3019)
+originally attention tiles: 1367 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 425 in round: 1
+fill surrounding tiles: 98 in round: 2
+all/k selection ratio in this slide: (4927 / 1890)
+final highlighted tiles:  2184
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  3019
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl002-C2-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl002-C2-P62
+final highlighted tiles:  1890
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+--- cut left, only keep right part!
+added topK attention map numpy info set for slide: 23910-158_Sl003-C3-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl

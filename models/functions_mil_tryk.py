@@ -20,12 +20,12 @@ from support.metadata import query_task_label_dict_fromcsv
 from support.tools import Time
 
 
-def filter_topKtiles_4eachslide(prediction_scores, tileidx_slideid_dict, K=1):
+def filter_topKtiles_4eachslide(prediction_scores, tileidx_slideid_dict, label_dict, K_0=1, K_1=1):
     """
     Args:
         prediction_scores: numpy array of trying prediction results, with [EMT, Differentiated] classification
         tileidx_slideid_dict: {tile_idx (Int): slide_idx (String)}
-        K: hyper-parameter of extract top K tiles with highest EMT score.
+        K_0: hyper-parameter of extract top K_0 tiles with highest EMT score.
     """
     
     ''' tileidx <-> prediction_scores: (0, 1, 2, ...) <-> (float, float, float, ...) '''
@@ -38,9 +38,11 @@ def filter_topKtiles_4eachslide(prediction_scores, tileidx_slideid_dict, K=1):
     for tileidx in tileidx_sort_array:
         # query get slide_id then check&creat slide_id key in filter dict
         slide_id = tileidx_slideid_dict[tileidx]
+        case_id = parse_caseid_from_slideid(slide_id)
         if slide_id not in filter_slide_tileidx_dict.keys():
             filter_slide_tileidx_dict[slide_id] = []
             
+        K = K_0 if label_dict[case_id] == 0 else K_1
         if len(filter_slide_tileidx_dict[slide_id]) >= K:
             continue
         else:
@@ -64,9 +66,8 @@ class TryK_MIL():
         ''' prepare some parames '''
         _env_task_name = self.ENV_task.TASK_NAME
         _env_loss_package = self.ENV_task.LOSS_PACKAGE
-        self.apply_tumor_roi = self.ENV_task.APPLY_TUMOR_ROI
         
-        self.model_store_dir = self.ENV_task.MODEL_STORE_DIR
+        self.model_store_dir = self.ENV_task.MODEL_FOLDER
         pt_prefix = ''
         if net_filename is not None and net_filename.find('PT-') != -1:
             pt_prefix = 'pt_'
@@ -75,8 +76,7 @@ class TryK_MIL():
         elif net_filename is not None and net_filename.find('ROI-STK') != -1:
             pt_prefix = 'stk_'
             
-        self.alg_name = '{}TK_MIL_{}{}_{}'.format(pt_prefix, self.ENV_task.SLIDE_TYPE,
-                                                  self.ENV_task.FOLD_SUFFIX, _env_task_name)
+        self.alg_name = '{}TK_MIL{}_{}'.format(pt_prefix, self.ENV_task.FOLD_SUFFIX, _env_task_name)
         
         print('![Initial Stage] test mode: {}'.format(test_mode))
         print('Initializing the training/testing datasets...')
@@ -86,7 +86,8 @@ class TryK_MIL():
         # self.batch_size_onslides = self.ENV_task.MINI_BATCH_SLIDEMAT
         self.tile_loader_num_workers = self.ENV_task.TILE_DATALOADER_WORKER
         self.slidemat_loader_num_workers = self.ENV_task.SLIDEMAT_DATALOADER_WORKER
-        self.try_K = ENV_task.TRY_K
+        self.try_K_0 = ENV_task.TRY_K_0
+        self.try_K_1 = ENV_task.TRY_K_1
         
         self.net = net
         if net_filename is not None:
@@ -98,14 +99,17 @@ class TryK_MIL():
         # make tiles data
         self.train_tiles_list, self.train_tileidx_slideid_dict, _ = load_richtileslist_fromfile(ENV_task, 
                                                                                                 for_train=True)
-        self.test_tiles_list, self.test_tileidx_slideid_dict, _ = load_richtileslist_fromfile(ENV_task, 
-                                                                                              for_train=False)
+        if self.ENV_task.TEST_PART_PROP <= 0.0:
+            self.test_tiles_list, self.test_tileidx_slideid_dict = [], {}
+        else:
+            self.test_tiles_list, self.test_tileidx_slideid_dict, _ = load_richtileslist_fromfile(ENV_task, 
+                                                                                                  for_train=False)
 
         # make label
         self.label_dict = query_task_label_dict_fromcsv(self.ENV_task)
         
         if _env_loss_package[0] == 'wce':
-            self.criterion = functions.weighted_cel_loss(_env_loss_package[1][0])
+            self.criterion = functions.weighted_cel_loss(_env_loss_package[1])
         else:
             self.criterion = functions.cel_loss()
         self.optimizer = functions.optimizer_adam_basic(self.net, lr=ENV_task.LR_TILE)
@@ -118,7 +122,7 @@ class TryK_MIL():
                                          label_dict=self.label_dict,
                                          transform=self.transform, try_mode=True)
     
-    def optimize(self):
+    def optimize(self, not_eval=False):
         train_loader = functions.get_data_loader(self.train_set, self.batch_size_ontiles, 
                                                  num_workers=self.tile_loader_num_workers, sf=False)
         test_loader = functions.get_data_loader(self.test_set, self.batch_size_ontiles, 
@@ -129,11 +133,12 @@ class TryK_MIL():
             print('In training...', end='')
             
             self.train_set.switch_mode(True)
-    #         try_emt_scores = np.load('test_emt_score.npz')['arr_0'] # this is only for debug
-            try_emt_scores, _ = self.try_predict(train_loader, epoch_info=(epoch, self.num_epoch))
-            topK_slide_tileidx_dict = filter_topKtiles_4eachslide(try_emt_scores, 
+    #         try_scores = np.load('test_emt_score.npz')['arr_0'] # this is only for debug
+            try_scores, _ = self.try_predict(train_loader, epoch_info=(epoch, self.num_epoch))
+            topK_slide_tileidx_dict = filter_topKtiles_4eachslide(try_scores, 
                                                                   self.train_tileidx_slideid_dict, 
-                                                                  K=self.try_K)
+                                                                  label_dict=self.label_dict,
+                                                                  K_0=self.try_K_0, K_1=self.try_K_1)
             
             ''' ! Switch to Training Mode ''' 
             self.train_set.refresh_filter_traindata(topK_slide_tileidx_dict)
@@ -146,11 +151,13 @@ class TryK_MIL():
             print(train_log)
             
             # evaluation
-            if (epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1:
+            if not_eval is False and ((epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1):
                 print('>>> In testing...', end='')
                 test_time = Time()
                 test_cls_scores, test_loss = self.try_predict(test_loader, epoch_info=(epoch, self.num_epoch))
-                max_slide_tileidx_dict = filter_topKtiles_4eachslide(test_cls_scores, self.test_tileidx_slideid_dict, K=1)  # as default, K=1
+                max_slide_tileidx_dict = filter_topKtiles_4eachslide(self.ENV_task, test_cls_scores, self.test_tileidx_slideid_dict,
+                                                                     label_dict=self.label_dict, 
+                                                                     K_0=1, K_1=1)  # as default, K=1
                 test_acc, _, _, test_auc = self.tk_evaluation(max_slide_tileidx_dict,
                                                               test_cls_scores, self.label_dict)
                 checkpoint_auc = test_auc
@@ -167,7 +174,7 @@ class TryK_MIL():
         alg_store_name = self.alg_name + '_[{}]'.format(epoch + 1)
         init_obj_dict = {'epoch': epoch + 1,
                          'auc': checkpoint_auc}
-        store_filepath = store_net(self.apply_tumor_roi, self.model_store_dir, self.net, 
+        store_filepath = store_net(self.model_store_dir, self.net, 
                                    alg_store_name, self.optimizer, init_obj_dict)
         print('store the milestone point<{}>, '.format(store_filepath), end='')    
     
@@ -218,11 +225,11 @@ class TryK_MIL():
     
 ''' ---------------- running functions can be directly called ---------------- '''   
     
-def _run_train_tkmil_resnet18(ENV_task, prep_model_name):
+def _run_train_tkmil_resnet18(ENV_task, prep_model_name=None):
     net = BasicResNet18(output_dim=2)
         
     method = TryK_MIL(ENV_task, net, net_filename=prep_model_name)
-    method.optimize()
+    method.optimize(not_eval=True)
     
 if __name__ == '__main__':
     pass

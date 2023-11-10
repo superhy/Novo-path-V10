@@ -32,8 +32,8 @@ class parames_basic():
         
         ''' some default dirs '''
         if self.OS_NAME == 'Windows':
-            # self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
-            self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
+            self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
+            # self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
         elif self.OS_NAME == 'Darwin':
             self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
         else:
@@ -111,7 +111,10 @@ class parames_task(parames_basic):
                  stain_type='HE',
                  seg_batch_size=2,
                  seg_num_worker=2,
-                 seg_num_epoch=20):
+                 seg_num_epoch=20,
+                 try_k_0=200,
+                 try_k_1=50,
+                 num_tk_epoch=20):
         """
         Args:
             seg_train_folder_name:
@@ -235,6 +238,9 @@ class parames_task(parames_basic):
         self.SEG_MINI_BATCH = seg_batch_size
         self.SEG_NUM_WORKER = seg_num_worker
         self.SEG_NUM_EPOCH = seg_num_epoch
+        self.TRY_K_0 = try_k_0 # for imbalance label-0
+        self.TRY_K_1 = try_k_1 # for imbalance label-1
+        self.NUM_TK_EPOCH = num_tk_epoch
     
     def refresh_fold_suffix(self, new_fold_suffix):
         '''

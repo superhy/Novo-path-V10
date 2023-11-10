@@ -143,7 +143,7 @@ def extract_slideid_subid_for_stain(xlsx_filepath, stain_type='HE'):
     return slideid_subid_dict
             
 
-def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath, spec_aim_label=None):
+def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath, spec_aim_label=None, show_hv=False):
     '''
     filter the specific stain type, map the slide_id to specific label_name
     '''
@@ -186,13 +186,13 @@ def make_flinc_slide_label(ENV_task, label_dicts, xlsx_filepath, spec_aim_label=
                 slide_label_dict_list.append({'slide_id': slide_idstr, aim_label_name: slide_aim_label})
                 print('loaded subject_id: {} with label: {}'.format(row[subject_id_column].value, slide_aim_label) )
             elif type(row[subject_id_column].value) == str and row[subject_id_column].value.startswith('HV'):
-                slide_label_dict_list.append({'slide_id': slide_idstr, aim_label_name: 0})
-                print('loaded subject_id: {} with label: {}'.format(row[subject_id_column].value, 0) )
+                slide_label_dict_list.append({'slide_id': slide_idstr, aim_label_name: -1 if show_hv else 0})
+                print('loaded subject_id: {} with label: {}'.format(row[subject_id_column].value, -1 if show_hv else 0) )
                 
     print('<Get slide:{}_label:{}_dict>, length:{}\n like: \n'.format(stain_type, aim_label_name, len(slide_label_dict_list)), slide_label_dict_list)
     
 #     csv_test_path = 'D:/workspace/Liver-path-V10/data/FLINC/meta/HE_steatosis_score.csv'
-    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label_name)
+    csv_test_path = '{}/{}_{}{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label_name, '-hv' if show_hv else '')
     csv_to_df = pd.DataFrame(slide_label_dict_list)
     csv_to_df.to_csv(csv_test_path, index=False)
     print('<Make csv annotations file at: {}>'.format(csv_test_path))
@@ -256,12 +256,12 @@ def count_flinc_stain_amount(ENV_task, xlsx_filepath):
     return nb_stain_slides
     
     
-def _load_clinical_labels():
+def _load_clinical_labels(show_hv):
     
     # TASK_ENVS = [ENV_FLINC_HE_STEA, ENV_FLINC_HE_FIB, ENV_FLINC_PSR_FIB]
     # TASK_ENVS = [ENV_FLINC_HE_BALL]
     # TASK_ENVS = [ENV_FLINC_P62_BALL_BI]
-    TASK_ENVS = [ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI]
+    TASK_ENVS = [ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI]
     
     xlsx_path_clinical = '{}/FLINC_clinical_data_DBI_2022-0715_EDG.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     clinical_label_dicts = parse_flinc_clinical_elsx(xlsx_path_clinical)
@@ -270,11 +270,12 @@ def _load_clinical_labels():
     xlsx_path_slide_1 = '{}/FLINC_23910-157_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     xlsx_path_slide_2 = '{}/FLINC_23910-158_withSubjectID.xlsx'.format(TASK_ENVS[0].META_FOLDER)
     # xlsx_path_slide_list = [xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_1, xlsx_path_slide_2, xlsx_path_slide_2]
-    xlsx_path_slide_list = [xlsx_path_slide_2, xlsx_path_slide_2]
+    xlsx_path_slide_list = [xlsx_path_slide_2, xlsx_path_slide_2, xlsx_path_slide_2]
     
     for i, task_env in enumerate(TASK_ENVS):
         slide_label_dict_list = make_flinc_slide_label(task_env, clinical_label_dicts,
-                                                       xlsx_filepath=xlsx_path_slide_list[i])
+                                                       xlsx_filepath=xlsx_path_slide_list[i],
+                                                       show_hv=show_hv)
         count_flinc_stain_labels(slide_label_dict_list, task_env.STAIN_TYPE, task_env.TASK_NAME)
         
 def _load_lobular_clinical_labels():
@@ -341,7 +342,9 @@ def _prod_bi_label_combine_labels(ENV_task, groups, aim_label):
                                                                task_csv_filename='{}_{}.csv'.format(ENV_task.STAIN_TYPE, aim_label))
     new_slide_label_dict_list = combine_slide_labels_group_cx(slide_label_dict_list, groups)
     # 'bi' same with 'c2'
-    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_label+'_bi')
+    show_hv = True if groups[0][0] == -1 else False
+    aim_name = aim_label.replace('-hv', '_hv') if show_hv else aim_label + '_bi'
+    csv_test_path = '{}/{}_{}.csv'.format(ENV_task.META_FOLDER, ENV_task.STAIN_TYPE, aim_name)
     csv_to_df = pd.DataFrame(new_slide_label_dict_list)
     csv_to_df.to_csv(csv_test_path, index=False)
     print('<Make combined csv annotations file at: {}>'.format(csv_test_path))
@@ -463,7 +466,8 @@ def trans_slide_label_dict_to_subid(slideid_label_dict, slideid_subid_dict):
 
 if __name__ == '__main__':
     ''' label preparing steps '''
-    # _load_clinical_labels() # this will be the 1st step
+    # _load_clinical_labels(show_hv=False) # this will be the 1st step
+    # _load_clinical_labels(show_hv=True)
     # _count_stain_amount()
     # _prod_combine_labels()
     
@@ -478,10 +482,17 @@ if __name__ == '__main__':
     # pkg_param_stea = (ENV_FLINC_HE_STEA, {0: [0], 1:[3]}, 'steatosis_score')
     # pkg_param_ball = (ENV_FLINC_HE_BALL_BI, {0: [0], 1:[2]}, 'ballooning_score')
     # pkg_param_stea = (ENV_FLINC_P62_STEA_BI, {0: [0], 1:[3]}, 'steatosis_score')
-    pkg_param_lob = (ENV_FLINC_P62_STEA_BI, {0: [0], 1:[3]}, 'lobular_inflammation_score')
+    # pkg_param_lob = (ENV_FLINC_P62_LOB_BI, {0: [0], 1:[3]}, 'lobular_inflammation_score')
     # _ = _prod_bi_label_combine_labels(pkg_param_fib[0], pkg_param_fib[1], pkg_param_fib[2])
     # _ = _prod_bi_label_combine_labels(pkg_param_stea[0], pkg_param_stea[1], pkg_param_stea[2])
     # _ = _prod_bi_label_combine_labels(pkg_param_ball[0], pkg_param_ball[1], pkg_param_ball[2])
-    _ = _prod_bi_label_combine_labels(pkg_param_lob[0], pkg_param_lob[1], pkg_param_lob[2])
+    # _ = _prod_bi_label_combine_labels(pkg_param_lob[0], pkg_param_lob[1], pkg_param_lob[2])
+    
+    # pkg_param_ball_hv = (ENV_FLINC_P62_BALL_BI, {0: [-1], 1:[2]}, 'ballooning_score-hv')
+    # pkg_param_stea_hv = (ENV_FLINC_P62_STEA_BI, {0: [-1], 1:[3]}, 'steatosis_score-hv')
+    pkg_param_lob_hv = (ENV_FLINC_P62_LOB_BI, {0: [-1], 1:[3]}, 'lobular_inflammation_score-hv')
+    # _ = _prod_bi_label_combine_labels(pkg_param_ball_hv[0], pkg_param_ball_hv[1], pkg_param_ball_hv[2])
+    # _ = _prod_bi_label_combine_labels(pkg_param_stea_hv[0], pkg_param_stea_hv[1], pkg_param_stea_hv[2])
+    _ = _prod_bi_label_combine_labels(pkg_param_lob_hv[0], pkg_param_lob_hv[1], pkg_param_lob_hv[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)

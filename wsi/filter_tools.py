@@ -221,6 +221,26 @@ def filter_l_r_half(rgb, direction='right', output_type="bool"):
         
     return result
 
+def filter_leftmost_piece(rgb):
+    """
+    filtering left most piece from the image (usually it will be the control tissue)
+    """
+    gray = cv2.cvtColor(rgb, cv2.COLOR_BGR2GRAY)
+    _, binary = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY_INV)
+    
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary, connectivity=8, ltype=cv2.CV_32S)
+    
+    result = np.ones_like(gray, dtype=bool)
+    
+    if num_labels <= 2:
+        return result
+    
+    leftmost_x = min(stats[1:, cv2.CC_STAT_LEFT])
+    width_of_leftmost = max(stats[1:, cv2.CC_STAT_WIDTH])
+    
+    result[:, leftmost_x:leftmost_x + width_of_leftmost] = False
+    return result
+
 def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8"):
     """
     Dilate a binary object (bool, float, or uint8).
@@ -543,7 +563,8 @@ def apply_image_filters_cd45(np_img, tumor_region_jsonpath=None, tumor_or_backgr
         
     mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
     mask_not_gray = filter_grays(np_rgb, tolerance=8)
-    mask_right = filter_l_r_half(np_rgb, direction='right')
+    # mask_right = filter_l_r_half(np_rgb, direction='right')
+    mask_right = filter_leftmost_piece(np_rgb)
     
     mask_no_red_pen = filter_red_pen(np_rgb)
     
@@ -601,7 +622,8 @@ def apply_image_filters_p62(np_img, tumor_region_jsonpath=None, tumor_or_backgro
         
     mask_not_green = filter_green_channel(np_rgb, print_over_info=print_info)
     mask_not_gray = filter_grays(np_rgb, tolerance=14)
-    mask_right = filter_l_r_half(np_rgb, direction='right')
+    # mask_right = filter_l_r_half(np_rgb, direction='right')
+    mask_right = filter_leftmost_piece(np_rgb)
     
     mask_no_red_pen = filter_red_pen(np_rgb)
     

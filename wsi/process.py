@@ -97,7 +97,7 @@ def slide_tiles_split_keep_object_u(ENV_task):
             pickle.dump(tiles_list, f_pkl)
         
     
-def slide_tiles_split_keep_object_cls(ENV_task):
+def slide_tiles_split_keep_object_cls(ENV_task, all_train=False):
     '''
     conduct the whole pipeline of slide's tiles split, by Sequential process
     store the tiles Object [.pkl] on disk
@@ -148,7 +148,10 @@ def slide_tiles_split_keep_object_cls(ENV_task):
     print('<---------- store the train tiles list ---------->')
     train_allcls_path_list = []
     for label_item in cls_test_num_dict.keys():
-        train_allcls_path_list.extend(cls_path_dict[label_item][:-cls_test_num_dict[label_item]] )
+        if all_train:
+            train_allcls_path_list.extend(cls_path_dict[label_item][:] )
+        else:
+            train_allcls_path_list.extend(cls_path_dict[label_item][:-cls_test_num_dict[label_item]] )
     for train_slide_path in train_allcls_path_list:
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(train_slide_path)
         if ENV_task.STAIN_TYPE == 'PSR':
@@ -175,7 +178,10 @@ def slide_tiles_split_keep_object_cls(ENV_task):
     print('<---------- store the test tiles list ---------->') 
     test_allcls_path_list = []
     for label_item in cls_test_num_dict.keys():
-        test_allcls_path_list.extend(cls_path_dict[label_item][-cls_test_num_dict[label_item]:] )
+        if all_train:
+            test_allcls_path_list.extend(cls_path_dict[label_item][:0] )
+        else:
+            test_allcls_path_list.extend(cls_path_dict[label_item][-cls_test_num_dict[label_item]:] )
     for test_slide_path in test_allcls_path_list:
         np_small_img, large_w, large_h, small_w, small_h = slide_tools.slide_to_scaled_np_image(test_slide_path)
         if ENV_task.STAIN_TYPE == 'PSR':
