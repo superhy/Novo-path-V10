@@ -151,21 +151,25 @@ class TryK_MIL():
             print(train_log)
             
             # evaluation
-            if not_eval is False and ((epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1):
-                print('>>> In testing...', end='')
-                test_time = Time()
-                test_cls_scores, test_loss = self.try_predict(test_loader, epoch_info=(epoch, self.num_epoch))
-                max_slide_tileidx_dict = filter_topKtiles_4eachslide(self.ENV_task, test_cls_scores, self.test_tileidx_slideid_dict,
-                                                                     label_dict=self.label_dict, 
-                                                                     K_0=1, K_1=1)  # as default, K=1
-                test_acc, _, _, test_auc = self.tk_evaluation(max_slide_tileidx_dict,
-                                                              test_cls_scores, self.label_dict)
-                checkpoint_auc = test_auc
-                if epoch >= self.num_epoch - 1:
-                    self.record(epoch, checkpoint_auc)
-                
-                print('test_loss-> %.4f, test acc-> %.4f, test auc-> %.4f, time: %s sec' % (test_loss, test_acc, test_auc, 
-                                                                                            str(test_time.elapsed())))
+            if ((epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1):
+                if not_eval is False:
+                    print('>>> Just record.')
+                    self.record(epoch, None)
+                else:
+                    print('>>> In testing...', end='')
+                    test_time = Time()
+                    test_cls_scores, test_loss = self.try_predict(test_loader, epoch_info=(epoch, self.num_epoch))
+                    max_slide_tileidx_dict = filter_topKtiles_4eachslide(self.ENV_task, test_cls_scores, self.test_tileidx_slideid_dict,
+                                                                         label_dict=self.label_dict, 
+                                                                         K_0=1, K_1=1)  # as default, K=1
+                    test_acc, _, _, test_auc = self.tk_evaluation(max_slide_tileidx_dict,
+                                                                  test_cls_scores, self.label_dict)
+                    checkpoint_auc = test_auc
+                    if epoch >= self.num_epoch - 1:
+                        self.record(epoch, checkpoint_auc)
+                    
+                    print('test_loss-> %.4f, test acc-> %.4f, test auc-> %.4f, time: %s sec' % (test_loss, test_acc, test_auc, 
+                                                                                                str(test_time.elapsed())))
                 
     def record(self, epoch, checkpoint_auc):
         '''
