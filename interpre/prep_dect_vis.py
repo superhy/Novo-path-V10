@@ -20,15 +20,16 @@ from torch.nn.functional import softmax
 from interpre.prep_clst_vis import load_clst_res_slide_tile_label, \
     load_clst_res_label_tile_slide, col_pal_cv2_10
 from interpre.prep_tools import store_nd_dict_pkl
-from models import datasets, functions_attpool, functions_clustering
-from models.functions_clustering import select_top_att_tiles, \
-    load_clustering_pkg_from_pkl, filter_neg_att_tiles
+from models import datasets, functions_attpool
+from models.functions_clustering import load_clustering_pkg_from_pkl
+from models.functions_feat_ext import filter_neg_att_tiles, select_top_att_tiles, \
+    select_top_active_tiles
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
-    ENV_FLINC_P62_LOB_BI
+    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV
 from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization
 from wsi import image_tools, slide_tools
@@ -178,8 +179,8 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
     return org_np_img, heat_np, heat_med_style, heat_med_grad, attK_tiles_list
 
 
-def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscores,
-                                         boost_rate=2.0, cut_left=False, color_map='bwr'):
+def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_scores,
+                                         boost_rate=1.0, cut_left=False, color_map='bwr'):
     """
     """
     
@@ -203,17 +204,17 @@ def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_attscor
     # the heatmap original tensor with numpy format
     heat_np = np.zeros((H, W), dtype=np.float64)
     
-    for i, att_score in enumerate(k_attscores):
+    for i, t_score in enumerate(k_scores):
         h = k_slide_tiles_list[i].h_id - 1 
         w = k_slide_tiles_list[i].w_id - 1
         if h >= H or w >= W or h < 0 or w < 0:
             warnings.warn('Out of range coordinates.')
             continue
         heat_hard[h, w] = 1.0 - 1e-6
-        heat_soft[h, w] = att_score * boost_rate if att_score * boost_rate < 1.0 else 1.0 - 1e-6
+        heat_soft[h, w] = t_score * boost_rate if t_score * boost_rate < 1.0 else 1.0 - 1e-6
         white_mask[h, w] = 0.0
-        heat_np[h, w] = att_score
-    print('final highlighted tiles: ', len(k_attscores) )
+        heat_np[h, w] = t_score
+    print('final highlighted tiles: ', len(k_scores) )
         
     pil_img_type = PIL.Image.BOX
     c_panel_1 = cmapy.cmap(color_map)
@@ -320,7 +321,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
     _env_model_store_dir = ENV_task.MODEL_FOLDER
     
-    for_train = False if not ENV_task.DEBUG_MODE else True
+    # for_train = False if not ENV_task.DEBUG_MODE else True
     
     if tile_encoder is None:
         tile_encoder = BasicResNet18(output_dim=2)
@@ -352,6 +353,50 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     store_nd_dict_pkl(_env_heatmap_store_dir,
                       slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
+    
+def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames, label_dict,
+                                         cut_left=True, K_ratio=0.5, act_thd=0.5, 
+                                         boost_rate=1.0, fills=[3], color_map='bwr', 
+                                         pkg_range=None, only_soft_map=False):
+    """
+    make the top K activation pool visualisation (only for tryk-mil method), 
+    only highlight the picked tiles with the highest activation scores.
+        include: 
+        1. the activation heatmap for attpool
+    """
+    
+    ''' prepare some parames '''
+    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    _env_model_store_dir = ENV_task.MODEL_FOLDER
+    
+    # for_train = False if not ENV_task.DEBUG_MODE else True
+    
+    tile_net = tile_net.cuda()
+    
+    _, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_net, tile_net_filenames, 
+                                                         label_dict, K_ratio, act_thd, fills, pkg_range)
+    
+    slide_topK_act_heatmap_dict = {}
+    for slide_id in slide_k_tiles_acts_dict.keys():
+        k_slide_tiles_list, k_acts = slide_k_tiles_acts_dict[slide_id]
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
+                                                                                                k_slide_tiles_list, 
+                                                                                                k_acts,
+                                                                                                boost_rate=boost_rate,
+                                                                                                cut_left=cut_left,
+                                                                                                color_map=color_map)
+        slide_topK_act_heatmap_dict[slide_id] = {'original': org_image,
+                                                 'heat_np': heat_np,
+                                                 'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
+                                                 'heat_soft_cv2': heat_soft_cv2
+                                                 }
+        print('added topK activation map numpy info set for slide: {}'.format(slide_id))
+        
+    activation_map_pkl_name = tile_net_filenames[0].replace('checkpoint', 'actK_map').replace('.pth', '.pkl')
+    store_nd_dict_pkl(_env_heatmap_store_dir,
+                      slide_topK_act_heatmap_dict, activation_map_pkl_name)
+    print('Store topK activation map numpy package as: {}'.format(activation_map_pkl_name))    
+
     
 def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label_dict,
                                         neg_model_filenames_list, neg_label_dicts,
@@ -616,8 +661,8 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
     print('Store attention_heatmap numpy package as: {}'.format(att_heatmap_pkl_name))
     
     
-def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.3, att_thd=0.3, 
-                                                boost_rate=2.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
+def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
+                                                boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
@@ -628,6 +673,19 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
     make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
                                         cut_left, tile_encoder, K_ratio, att_thd, boost_rate, 
                                         fills, color_map, pkg_range)
+    
+def _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, cut_left, K_ratio=0.5, act_thd=0.5, 
+                                                boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
+    '''
+    load the label_dict then call the <make_topK_attention_heatmap_package>
+    '''
+    ENV_annotation = ENV_FLINC_P62_BALL_HV
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+
+    tile_net = BasicResNet18(output_dim=2)
+    make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames, label_dict, 
+                                         cut_left, K_ratio, act_thd, boost_rate, 
+                                         fills, color_map, pkg_range)
 
 def _run_make_filt_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, neg_model_filenames_list,
                                                 cut_left, K_ratio=0.3, att_thd=0.3, 

@@ -12,12 +12,13 @@ import torch
 from torch.nn.functional import softmax
 
 from models import functions
-from models.datasets import load_richtileslist_fromfile, TryK_MIL_Dataset
+from models.datasets import load_richtileslist_fromfile, TryK_MIL_Dataset, \
+    Simple_Tile_Dataset
 from models.networks import reload_net, store_net, BasicResNet18
 import numpy as np
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
-from support.tools import Time
+from support.tools import Time, normalization
 
 
 def filter_topKtiles_4eachslide(prediction_scores, tileidx_slideid_dict, label_dict, K_0=1, K_1=1):
@@ -50,6 +51,78 @@ def filter_topKtiles_4eachslide(prediction_scores, tileidx_slideid_dict, label_d
     
     return filter_slide_tileidx_dict
 
+def query_slides_activation(slide_tiles_dict, trained_net, 
+                            batch_size_ontiles, tile_loader_num_workers, 
+                            norm=False):
+    """
+    query and load the classification result (activation states) for each tile in the slides
+    
+    Args:
+        trained_net: here the network is for tile-level classification (already on cuda)
+    """
+    trained_net.eval()
+    
+    slide_activation_dict = {}
+    for slide_id in slide_tiles_dict.keys():
+        # make the dataloader of the tiles in this slide
+        s_tile_list = slide_tiles_dict[slide_id]
+        transform = functions.get_transform()
+        sample_tiles_set = Simple_Tile_Dataset(s_tile_list, transform)
+        s_tiles_loader = functions.get_data_loader(sample_tiles_set, batch_size_ontiles, 
+                                                   num_workers=tile_loader_num_workers, sf=False)
+        # initial the score for all instance in one slide
+        scores = torch.FloatTensor(len(s_tiles_loader.dataset)).zero_()
+        
+        # force to set the shuffle in try prediction stage with False
+        #     data_loader.shuffle = False # WARNINGl: this is not work!
+        batch_size = s_tiles_loader.batch_size
+        with torch.no_grad():
+            
+            time = Time()
+            for i, try_x in enumerate(s_tiles_loader):
+                try_X = try_x.cuda()
+                y_pred = trained_net(try_X)
+                # the positive dim of output
+                output_pos = softmax(y_pred, dim=1)
+                scores[i * batch_size: i * batch_size + try_X.size(0)] = output_pos.detach()[:, 1].clone()
+            print('with time: {} sec'.format(str(time.elapsed())[:-5]), end='; ')
+        slide_activation = scores.cpu().numpy()
+        if norm:
+            slide_activation = normalization(slide_activation)
+        # please note that the sizes of slides (number of tiles) don't have to be the same
+        slide_activation_dict[slide_id] = slide_activation
+        
+    return slide_activation_dict
+
+def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, thd=0.5, reverse=False):
+    '''
+    '''
+    slide_tileidx_array = np.array(range(len(slide_tiles_list) ) )
+    order = np.argsort(slide_acts)
+    if reverse is False:
+        # from max to min
+        slide_tileidx_sort_array = np.flipud(slide_tileidx_array[order])
+        sort_attscores = np.flipud(slide_acts[order])
+    else:
+        # from min to max
+        slide_tileidx_sort_array = slide_tileidx_array[order]
+        sort_attscores = slide_acts[order]
+    # print('sorted: ', slide_acts)
+    
+    if thd is not None:
+        thd_idx = np.where(slide_acts < thd)[0][0] if reverse is False else np.where(slide_acts > thd)[0][0]
+        thd_K = thd_idx if thd_idx < K else K
+    else:
+        thd_K = K
+    slide_K_tileidxs = slide_tileidx_sort_array.tolist()[:thd_K]
+    # print(np.where(sort_attscores > thd)[0][0])
+    
+    actK_slide_tiles_list = []
+    for idx in slide_K_tileidxs:
+        actK_slide_tiles_list.append(slide_tiles_list[idx])
+        
+    return actK_slide_tiles_list, slide_acts[:thd_K]
+    
 
 class TryK_MIL():
     '''
@@ -122,7 +195,7 @@ class TryK_MIL():
                                          label_dict=self.label_dict,
                                          transform=self.transform, try_mode=True)
     
-    def optimize(self, not_eval=False):
+    def optimize(self, no_eval=False):
         train_loader = functions.get_data_loader(self.train_set, self.batch_size_ontiles, 
                                                  num_workers=self.tile_loader_num_workers, sf=False)
         test_loader = functions.get_data_loader(self.test_set, self.batch_size_ontiles, 
@@ -152,7 +225,7 @@ class TryK_MIL():
             
             # evaluation
             if ((epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1):
-                if not_eval is False:
+                if no_eval:
                     print('>>> Just record.')
                     self.record(epoch, None)
                 else:
@@ -180,7 +253,7 @@ class TryK_MIL():
                          'auc': checkpoint_auc}
         store_filepath = store_net(self.model_store_dir, self.net, 
                                    alg_store_name, self.optimizer, init_obj_dict)
-        print('store the milestone point<{}>, '.format(store_filepath), end='')    
+        print('store the milestone point<{}>, '.format(store_filepath) )    
     
     def try_predict(self, data_loader, epoch_info: tuple=(-2, -2)):
         """
@@ -233,7 +306,7 @@ def _run_train_tkmil_resnet18(ENV_task, prep_model_name=None):
     net = BasicResNet18(output_dim=2)
         
     method = TryK_MIL(ENV_task, net, net_filename=prep_model_name)
-    method.optimize(not_eval=True)
+    method.optimize(no_eval=True)
     
 if __name__ == '__main__':
     pass

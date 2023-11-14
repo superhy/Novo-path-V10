@@ -10,7 +10,8 @@ import sys
 from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, \
     _run_make_spatial_sensi_clusters_assims, \
     _run_cnt_tis_pct_sensi_clsts_assim_on_slides, \
-    _run_make_filt_attention_heatmap_resnet_P62
+    _run_make_filt_attention_heatmap_resnet_P62, \
+    _run_make_topK_activation_heatmap_resnet_P62
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
         boost_rate = 1.0
         # pkg_range = [0, 50]
         pkg_range = None
-        cut_left = True
+        cut_left = False
         fills = [4, 5]
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
@@ -127,6 +128,43 @@ if __name__ == '__main__':
         sp_clsts = [0]
         
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
+        
+    if 11 in task_ids:
+        tile_net_filenames = ['']
+        
+        K_ratio = 0.5
+        act_thd = 0.75
+        boost_rate = 1.0
+        # pkg_range = [0, 50]
+        pkg_range = None
+        cut_left = False
+        fills = [4, 5]
+        
+        _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, cut_left, 
+                                                     K_ratio, act_thd, boost_rate, fills, pkg_range)
+    if 11.1 in task_ids:
+        '''
+        visualisation for negative activation map
+        (for steatosis_score_hv and lobular_inflammation_score_hv)
+        '''    
+        stea_t_net_filenames = ['']
+        lob_t_net_filenames = ['']
+        stea_K_ratio, stea_act_thd = 0.5, 0.75
+        lob_K_ratio, lob_act_thd = 0.5, 0.75
+        stea_cmap = 'PiYG'
+        lob_cmap = 'BrBG'
+
+        boost_rate = 1.0
+        pkg_range = None
+        cut_left = False
+        fills = [4, 5]
+        
+        _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
+                                                     stea_K_ratio, stea_act_thd, boost_rate, 
+                                                     fills, pkg_range)
+        _run_make_topK_activation_heatmap_resnet_P62(ENV_task, lob_t_net_filenames, cut_left, 
+                                                     lob_K_ratio, lob_act_thd, boost_rate, 
+                                                     fills, pkg_range)
         
         
         
