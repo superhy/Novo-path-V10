@@ -179,7 +179,7 @@ def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
     return org_np_img, heat_np, heat_med_style, heat_med_grad, attK_tiles_list
 
 
-def topK_att_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_scores,
+def topK_score_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_scores,
                                          boost_rate=1.0, cut_left=False, color_map='bwr'):
     """
     """
@@ -336,12 +336,12 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     slide_topK_att_heatmap_dict = {}
     for slide_id in slide_k_tiles_atts_dict.keys():
         k_slide_tiles_list, k_attscores = slide_k_tiles_atts_dict[slide_id]
-        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
-                                                                                                k_slide_tiles_list, 
-                                                                                                k_attscores,
-                                                                                                boost_rate=boost_rate,
-                                                                                                cut_left=cut_left,
-                                                                                                color_map=color_map)
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_score_heatmap_single_scaled_slide(ENV_task,
+                                                                                                  k_slide_tiles_list, 
+                                                                                                  k_attscores,
+                                                                                                  boost_rate=boost_rate,
+                                                                                                  cut_left=cut_left,
+                                                                                                  color_map=color_map)
         slide_topK_att_heatmap_dict[slide_id] = {'original': org_image,
                                                  'heat_np': heat_np,
                                                  'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
@@ -379,12 +379,12 @@ def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames,
     slide_topK_act_heatmap_dict = {}
     for slide_id in slide_k_tiles_acts_dict.keys():
         k_slide_tiles_list, k_acts = slide_k_tiles_acts_dict[slide_id]
-        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
-                                                                                                k_slide_tiles_list, 
-                                                                                                k_acts,
-                                                                                                boost_rate=boost_rate,
-                                                                                                cut_left=cut_left,
-                                                                                                color_map=color_map)
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_score_heatmap_single_scaled_slide(ENV_task,
+                                                                                                  k_slide_tiles_list, 
+                                                                                                  k_acts,
+                                                                                                  boost_rate=boost_rate,
+                                                                                                  cut_left=cut_left,
+                                                                                                  color_map=color_map)
         slide_topK_act_heatmap_dict[slide_id] = {'original': org_image,
                                                  'heat_np': heat_np,
                                                  'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
@@ -446,7 +446,7 @@ def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label
     slide_topK_att_heatmap_dict = {}
     for slide_id in slide_k_tiles_atts_dict.keys():
         k_slide_tiles_list, k_attscores = slide_k_tiles_atts_dict[slide_id]
-        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_att_heatmap_single_scaled_slide(ENV_task,
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_score_heatmap_single_scaled_slide(ENV_task,
                                                                                                 k_slide_tiles_list, 
                                                                                                 k_attscores,
                                                                                                 boost_rate=boost_rate,
@@ -589,6 +589,7 @@ def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi
     
 
 ''' ----------------------------------------------------------------------------------------------------------- '''
+    
 
 def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=None,
                                         batch_size=16, nb_workers=4, att_top_K=0,
@@ -660,6 +661,17 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
                       slide_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store attention_heatmap numpy package as: {}'.format(att_heatmap_pkl_name))
     
+
+def _load_activation_score_resnet_P62(ENV_task, tile_net_filename):
+    '''
+    '''
+    tile_encoder = BasicResNet18(output_dim=2)
+    if tile_net_filename is not None:
+        tile_encoder, _ = reload_net(tile_encoder, tile_net_filename)
+        
+    batch_size_ontiles = ENV_task.MINI_BATCH_TILE
+    tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
+    # TODO:
     
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):

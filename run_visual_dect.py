@@ -130,7 +130,7 @@ if __name__ == '__main__':
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
         
     if 11 in task_ids:
-        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth']
+        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-14.pth']
         
         K_ratio = 0.5
         act_thd = 0.4

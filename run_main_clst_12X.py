@@ -60,8 +60,8 @@ if __name__ == '__main__':
         tile_net_filenames = ['']
         
         K_ratio = 0.5
-        act_thd =  0.75
-        fills = [4, 5]
+        act_thd =  0.5
+        fills = [3, 4, 5]
         manu_n_clusters=6
         
         # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
