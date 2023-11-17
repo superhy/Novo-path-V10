@@ -19,7 +19,7 @@ from models import datasets, functions_attpool, functions_lcsb, functions, \
     networks, functions_feat_ext, seg_datasets, functions_mil_tryk
 from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords, fill_surrounding_void, \
-    select_top_att_tiles
+    select_top_att_tiles, select_top_active_tiles
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
     check_reuse_net, GatedAttentionPool, AttentionPool, BasicResNet18
 import numpy as np
@@ -242,7 +242,7 @@ class Instance_Clustering():
     '''
 
     def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode',
-                 tiles_r_tuples_pkl_name=None, attention_tiles_list=None, exist_clustering=None,
+                 tiles_r_tuples_pkl_name=None, key_tiles_list=None, exist_clustering=None,
                  reg_encoder=None, comb_layer=None, ctx_type='reg_ass', manu_n_clusters=None):
         '''
         Args:
@@ -271,7 +271,7 @@ class Instance_Clustering():
         self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, self.encoder.name,
                                              self.embed_type, _env_task_name)
         self.n_clusters = ENV_task.NUM_CLUSTERS if manu_n_clusters is None else manu_n_clusters
-        self.attention_tiles_list = attention_tiles_list
+        self.key_tiles_list = key_tiles_list
         
         self.reg_encoder, self.comb_layer = None, None
         if self.embed_type in ['region_ctx']:
@@ -300,17 +300,17 @@ class Instance_Clustering():
     def gen_tiles_richencode_tuples(self):
         if self.embed_type == 'encode':
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                load_tile_list=self.attention_tiles_list)
+                                                                load_tile_list=self.key_tiles_list)
         elif self.embed_type == 'neb_encode':
             tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                    load_tile_list=self.attention_tiles_list)
+                                                                    load_tile_list=self.key_tiles_list)
         elif self.embed_type == 'region_ctx':
             tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
                                                                           self.reg_encoder, self.comb_layer, self.ctx_type,
-                                                                          load_tile_list=self.attention_tiles_list)
+                                                                          load_tile_list=self.key_tiles_list)
         elif self.embed_type == 'graph':
             tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                      load_tile_list=self.attention_tiles_list)
+                                                                      load_tile_list=self.key_tiles_list)
         else:
             # default use the 'encode' mode
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
@@ -539,8 +539,9 @@ class Feature_Assimilate():
     Assimilating the tiles with close distance 
     '''
     def __init__(self, ENV_task, clustering_res_pkg, sensitive_labels,
-                 encoder, attK_clst=True, exc_clustered=True, assimilate_ratio=0.1, 
-                 embed_type='encode', reg_encoder=None, comb_layer=None, ctx_type='reg_ass'):
+                 encoder, tile_en_filename=None, attK_clst=True, exc_clustered=True, 
+                 assimilate_ratio=0.1, embed_type='encode', reg_encoder=None, 
+                 comb_layer=None, ctx_type='reg_ass'):
         '''
         TODO: annotations of this function
                 
@@ -556,6 +557,8 @@ class Feature_Assimilate():
         self.assimilate_ratio = assimilate_ratio
         self.embed_type = embed_type
         self.encoder = encoder
+        if tile_en_filename is not None:
+            self.encoder, _ = reload_net(self.encoder, tile_en_filename)
         self.encoder = self.encoder.cuda()
         self.reg_encoder = reg_encoder
         self.comb_layer = comb_layer
@@ -976,15 +979,55 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     
     return clustering_res_pkg
 
-def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name,
-                                          sensitive_labels, exc_clustered=True,
+def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_filenames,
+                                            K_ratio, act_thd, fills, manu_n_clusters=5,
+                                            tiles_r_tuples_pkl_name=None):
+    '''
+    clustering the tiles with high attention values 
+    by classification trained on H&E reports annotations
+    
+    Args:
+        K_ratio: top % samples with attention value
+        att_thd: the minimum acceptable attention value
+        fill_void: whether to complete tiles surrounded by hot spots? (Yes/No)
+    '''
+    tile_encoder = networks.BasicResNet18(output_dim=2)
+    tile_encoder = tile_encoder.cuda()
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    act_all_tiles_list, _ = select_top_active_tiles(ENV_task, tile_encoder,
+                                                    tile_net_filenames, label_dict,
+                                                    K_ratio=K_ratio, act_thd=act_thd, fills=fills)
+    
+    # we set up manu_n_clusters=3 here, only 3 clusters
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
+                                     cluster_name='Kmeans', embed_type='encode',
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
+                                     attention_tiles_list=act_all_tiles_list,
+                                     manu_n_clusters=manu_n_clusters)
+    
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers))
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+    return clustering_res_pkg
+
+def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
+                                          tile_net_filename=None, exc_clustered=True,
                                           assim_ratio=0.1, fills=[4]):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
     clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
     assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
-                                      encoder=tile_encoder, attK_clst=True, exc_clustered=exc_clustered,
+                                      encoder=tile_encoder, tile_en_filename=tile_net_filename,
+                                      attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode')
     
     assim_tuples = assimilating.assimilate()

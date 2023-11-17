@@ -1,0 +1,96 @@
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-14.pth
+with time: 0:04:28.8 sec, load 6 slides' activation
+originally attention tiles: 124 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (4927 / 124)
+originally attention tiles: 1150 in slide: 23910-158_Sl004-C4-P62
+fill surrounding tiles: 43 in round: 1
+fill surrounding tiles: 4 in round: 2
+all/k selection ratio in this slide: (17606 / 1197)
+originally attention tiles: 225 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 8 in round: 1
+fill surrounding tiles: 0 in round: 2
+all/k selection ratio in this slide: (4271 / 233)
+originally attention tiles: 446 in slide: 23910-158_Sl010-C7-P62
+fill surrounding tiles: 25 in round: 1
+fill surrounding tiles: 3 in round: 2
+all/k selection ratio in this slide: (7571 / 474)
+originally attention tiles: 508 in slide: 23910-158_Sl014-C10-P62
+fill surrounding tiles: 16 in round: 1
+fill surrounding tiles: 1 in round: 2
+all/k selection ratio in this slide: (6602 / 525)
+originally attention tiles: 139 in slide: 23910-158_Sl019-C13-P62
+fill surrounding tiles: 5 in round: 1
+fill surrounding tiles: 1 in round: 2
+all/k selection ratio in this slide: (1666 / 145)
+final highlighted tiles:  124
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  1197
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl004-C4-P62
+added topK activation map numpy info set for slide: 23910-158_Sl004-C4-P62
+final highlighted tiles:  233
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  474
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl010-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl010-C7-P62
+final highlighted tiles:  525
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl014-C10-P62
+added topK activation map numpy info set for slide: 23910-158_Sl014-C10-P62
+final highlighted tiles:  145
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl019-C13-P62
+added topK activation map numpy info set for slide: 23910-158_Sl019-C13-P62
+Store topK activation map numpy package as: actK_map_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-14.pkl
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth
+with time: 0:04:45.1 sec, load 6 slides' activation
+originally attention tiles: 7 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4927 / 7)
+originally attention tiles: 199 in slide: 23910-158_Sl004-C4-P62
+fill surrounding tiles: 7 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (17606 / 206)
+originally attention tiles: 30 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4271 / 30)
+originally attention tiles: 70 in slide: 23910-158_Sl010-C7-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (7571 / 70)
+originally attention tiles: 67 in slide: 23910-158_Sl014-C10-P62
+fill surrounding tiles: 6 in round: 1
+fill surrounding tiles: 1 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (6602 / 74)
+originally attention tiles: 22 in slide: 23910-158_Sl019-C13-P62
+fill surrounding tiles: 1 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (1666 / 23)
+final highlighted tiles:  7
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  206
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl004-C4-P62
+added topK activation map numpy info set for slide: 23910-158_Sl004-C4-P62
+final highlighted tiles:  30
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  70
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl010-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl010-C7-P62
+final highlighted tiles:  74
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl014-C10-P62
+added topK activation map numpy info set for slide: 23910-158_Sl014-C10-P62
+final highlighted tiles:  23
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl019-C13-P62
+added topK activation map numpy info set for slide: 23910-158_Sl019-C13-P62
+Store topK activation map numpy package as: actK_map_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pkl

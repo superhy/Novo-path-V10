@@ -25,8 +25,8 @@ if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
-    task_ids = [1.1]
-    # task_ids = [2, 3]
+    # task_ids = [1.1]
+    task_ids = [11]
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
     log_name = 'visualisation_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
@@ -130,18 +130,19 @@ if __name__ == '__main__':
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
         
     if 11 in task_ids:
-        tile_net_filenames = ['']
+        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth']
         
         K_ratio = 0.5
-        act_thd = 0.75
-        boost_rate = 1.0
+        act_thd = 0.4
+        boost_rate = 2.0
         # pkg_range = [0, 50]
+        color_map='bwr'
         pkg_range = None
         cut_left = False
-        fills = [4, 5]
+        fills = [3, 4, 5]
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, cut_left, 
-                                                     K_ratio, act_thd, boost_rate, fills, pkg_range)
+                                                     K_ratio, act_thd, boost_rate, fills, color_map, pkg_range)
     if 11.1 in task_ids:
         '''
         visualisation for negative activation map
@@ -161,10 +162,10 @@ if __name__ == '__main__':
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
                                                      stea_K_ratio, stea_act_thd, boost_rate, 
-                                                     fills, pkg_range)
+                                                     fills, stea_cmap, pkg_range)
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, lob_t_net_filenames, cut_left, 
                                                      lob_K_ratio, lob_act_thd, boost_rate, 
-                                                     fills, pkg_range)
+                                                     fills, lob_cmap, pkg_range)
         
         
         

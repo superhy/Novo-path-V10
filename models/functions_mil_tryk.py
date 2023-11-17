@@ -63,6 +63,7 @@ def query_slides_activation(slide_tiles_dict, trained_net,
     trained_net.eval()
     
     slide_activation_dict = {}
+    time = Time()
     for slide_id in slide_tiles_dict.keys():
         # make the dataloader of the tiles in this slide
         s_tile_list = slide_tiles_dict[slide_id]
@@ -77,24 +78,23 @@ def query_slides_activation(slide_tiles_dict, trained_net,
         #     data_loader.shuffle = False # WARNINGl: this is not work!
         batch_size = s_tiles_loader.batch_size
         with torch.no_grad():
-            
-            time = Time()
             for i, try_x in enumerate(s_tiles_loader):
                 try_X = try_x.cuda()
                 y_pred = trained_net(try_X)
                 # the positive dim of output
                 output_pos = softmax(y_pred, dim=1)
                 scores[i * batch_size: i * batch_size + try_X.size(0)] = output_pos.detach()[:, 1].clone()
-            print('with time: {} sec'.format(str(time.elapsed())[:-5]), end='; ')
         slide_activation = scores.cpu().numpy()
         if norm:
             slide_activation = normalization(slide_activation)
         # please note that the sizes of slides (number of tiles) don't have to be the same
         slide_activation_dict[slide_id] = slide_activation
+    print('with time: {} sec, load {} slides\' activation'.format(str(time.elapsed())[:-5], 
+                                                                  str(len(slide_activation_dict) )))
         
     return slide_activation_dict
 
-def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, thd=0.5, reverse=False):
+def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, thd=0.2, reverse=False):
     '''
     '''
     slide_tileidx_array = np.array(range(len(slide_tiles_list) ) )
@@ -102,11 +102,11 @@ def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, t
     if reverse is False:
         # from max to min
         slide_tileidx_sort_array = np.flipud(slide_tileidx_array[order])
-        sort_attscores = np.flipud(slide_acts[order])
+        slide_acts = np.flipud(slide_acts[order])
     else:
         # from min to max
         slide_tileidx_sort_array = slide_tileidx_array[order]
-        sort_attscores = slide_acts[order]
+        slide_acts = slide_acts[order]
     # print('sorted: ', slide_acts)
     
     if thd is not None:

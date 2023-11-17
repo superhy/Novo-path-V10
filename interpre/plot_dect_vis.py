@@ -135,10 +135,11 @@ def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, fo
         heat_hard_cv2 = heatmap_info_dict['heat_hard_cv2']
         heat_soft_cv2 = heatmap_info_dict['heat_soft_cv2']
         
-        alg_name = heatmap_pkl_name[heatmap_pkl_name.find('topK_map_') + 10:-15]
+        alg_name = heatmap_pkl_name[heatmap_pkl_name.find('K_map_') + 7:-15]
         
-        single_multi_dir = os.path.join(_env_heatmap_store_dir, f'topk_map_{folder_sfx}')
-        attention_dir = os.path.join(single_multi_dir, 'topk_att_dx')
+        folder_prefix = heatmap_pkl_name.split('_')[0]
+        single_multi_dir = os.path.join(_env_heatmap_store_dir, f'{folder_prefix}_map_{folder_sfx}')
+        attention_dir = os.path.join(single_multi_dir, f'{folder_prefix}_dx')
         
         if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//1'.format(attention_dir))):
             os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//1'.format(attention_dir)))

@@ -11,7 +11,9 @@ from models.functions_mil_tryk import _run_train_tkmil_resnet18
 from run_main import Logger
 from support import tools
 from support.env_flinc_he import ENV_FLINC_HE_BALL_BI, ENV_FLINC_HE_STEA_C2
-from support.env_flinc_p62 import ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_STEA_HV
+from support.env_flinc_p62 import ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_STEA_HV, \
+    ENV_FLINC_P62_LOB_HV, ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
+    ENV_FLINC_P62_LOB_BI
 from support.env_flinc_psr import ENV_FLINC_PSR_FIB_C3
 
 
@@ -34,11 +36,11 @@ if __name__ == '__main__':
     # ENV_task = ENV_FLINC_HE_STEA_C2
     # ENV_task = ENV_FLINC_PSR_FIB_C3
     
-    # ENV_task = ENV_FLINC_P62_BALL_BI
+    ENV_task = ENV_FLINC_P62_BALL_BI
     # ENV_task = ENV_FLINC_P62_STEA_BI
     # ENV_task = ENV_FLINC_P62_LOB_BI
 
-    ENV_task = ENV_FLINC_P62_BALL_HV
+    # ENV_task = ENV_FLINC_P62_BALL_HV
     # ENV_task = ENV_FLINC_P62_STEA_HV
     # ENV_task = ENV_FLINC_P62_LOB_HV
 

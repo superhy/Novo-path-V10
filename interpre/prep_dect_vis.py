@@ -354,7 +354,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
                       slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
     
-def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames, label_dict,
+def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames,
                                          cut_left=True, K_ratio=0.5, act_thd=0.5, 
                                          boost_rate=1.0, fills=[3], color_map='bwr', 
                                          pkg_range=None, only_soft_map=False):
@@ -374,7 +374,7 @@ def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames,
     tile_net = tile_net.cuda()
     
     _, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_net, tile_net_filenames, 
-                                                         label_dict, K_ratio, act_thd, fills, pkg_range)
+                                                         K_ratio, act_thd, fills, pkg_range)
     
     slide_topK_act_heatmap_dict = {}
     for slide_id in slide_k_tiles_acts_dict.keys():
@@ -680,10 +680,9 @@ def _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, c
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
     ENV_annotation = ENV_FLINC_P62_BALL_HV
-    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
 
     tile_net = BasicResNet18(output_dim=2)
-    make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames, label_dict, 
+    make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames, 
                                          cut_left, K_ratio, act_thd, boost_rate, 
                                          fills, color_map, pkg_range)
 

@@ -1,0 +1,13 @@
+automatically find CSV file: P62_ballooning_score_hv.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth
+with time: 0:00:49.7 sec; with time: 0:00:53.3 sec; with time: 0:00:40.5 sec; with time: 0:00:46.1 sec; with time: 0:00:51.8 sec; with time: 0:00:48.0 sec; load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth
+with time: 0:00:45.4 sec; with time: 0:00:51.5 sec; with time: 0:00:37.7 sec; with time: 0:00:43.2 sec; with time: 0:00:50.6 sec; with time: 0:00:45.7 sec; []
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pth
+with time: 0:00:44.6 sec
+with time: 0:00:50.4 sec
+with time: 0:00:37.0 sec
+with time: 0:00:42.9 sec
+with time: 0:00:49.8 sec
+with time: 0:00:45.7 sec
+[0.13468859 0.17352119 0.25695115 ... 0.08315695 0.05266566 0.02631797] 4927
+0

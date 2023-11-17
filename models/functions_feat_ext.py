@@ -124,8 +124,8 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         
     return att_all_tiles_list, slide_k_tiles_atts_dict
 
-def select_top_active_tiles(ENV_task, tile_net, tile_net_filenames, label_dict,
-                            K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None):
+def select_top_active_tiles(ENV_task, tile_net, tile_net_filenames,
+                            K_ratio=0.3, act_thd=0.25, fills=[3], pkg_range=None):
     '''
     select the top activation-score tiles by the tile-level classifier
     using for some other tile-based analysis, like clustering.
@@ -167,16 +167,17 @@ def select_top_active_tiles(ENV_task, tile_net, tile_net_filenames, label_dict,
             slide_acts = slide_acts_dict[slide_id]
             list_of_acts.append(slide_acts)
         avg_acts = average_vectors(list_of_acts)
-        # normalisation after averaging
-        avg_acts = normalization(avg_acts)
-        # print(avg_acts, len(avg_acts))
+        # normalisation after averaging (not need to normalisation for activations)
+        # avg_acts = normalization(avg_acts)
+        # print(max(avg_acts), avg_acts, len(avg_acts))
         
         nb_tiles = len(s_tiles_list)
         # print(nb_tiles)
         K = int(nb_tiles * K_ratio)
         k_slide_tiles_list, k_acts = functions_mil_tryk.filter_singleslide_top_thd_active_K_tiles(s_tiles_list, 
                                                                                                   avg_acts, 
-                                                                                                  K, att_thd)
+                                                                                                  K, act_thd)
+        # print(len(k_slide_tiles_list))
         if fills is not None:
             # fill the missed voids surrounded by hot spots
             slide_tiles_list = []
@@ -232,6 +233,9 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
     '''
     if a spot is surrounded by attention patches, we are going to fill it as the attention one
     '''
+    if len(k_slide_tiles_list) == 0:
+        return [], []
+    
     slide_np, _ = k_slide_tiles_list[0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
     W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
