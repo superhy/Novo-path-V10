@@ -25,6 +25,7 @@ from models.functions_clustering import load_clustering_pkg_from_pkl
 from models.functions_feat_ext import filter_neg_att_tiles, select_top_att_tiles, \
     select_top_active_tiles
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
+from models.functions_mil_tryk import query_slides_activation
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
@@ -667,11 +668,23 @@ def _load_activation_score_resnet_P62(ENV_task, tile_net_filename):
     '''
     tile_encoder = BasicResNet18(output_dim=2)
     if tile_net_filename is not None:
-        tile_encoder, _ = reload_net(tile_encoder, tile_net_filename)
+        tile_encoder_ft, _ = reload_net(tile_encoder, tile_net_filename)
+        
+    slide_tiles_dict = datasets.load_slides_tileslist(ENV_task)
         
     batch_size_ontiles = ENV_task.MINI_BATCH_TILE
     tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
-    # TODO:
+    slide_activation_dict_ft = query_slides_activation(slide_tiles_dict, tile_encoder_ft, 
+                                                       batch_size_ontiles, tile_loader_num_workers, 
+                                                       norm=False)
+    slide_activation_dict_org = query_slides_activation(slide_tiles_dict, tile_encoder, 
+                                                        batch_size_ontiles, tile_loader_num_workers, 
+                                                        norm=False)
+    model_name = tile_net_filename.replace('checkpoint_', '').replace('pth', 'pkl')
+    store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, 
+                      (slide_activation_dict_ft, slide_activation_dict_org), 
+                      'act_score-{}'.format(model_name))
+    print('store the activation scores (org & ft) for all tiles at {}'.format('act_score-{}'.format(model_name)))
     
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):

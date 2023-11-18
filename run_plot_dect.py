@@ -4,9 +4,9 @@
 
 import os
 
-from interpre.plot_dect_vis import _plot_topK_attention_heatmaps, \
+from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
-    df_plot_s_clst_assim_ball_corr_box
+    df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist
 from support import env_flinc_p62
 
 
@@ -32,15 +32,15 @@ if __name__ == '__main__':
         # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
         heatmap_pkl_name = 'actK_map_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pkl'
         print(heatmap_pkl_name)
-        _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
+        _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
     if 1.1 in task_ids:
         stea_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_steatosis_score_bi_[43]2023-11-08.pkl'
-        _plot_topK_attention_heatmaps(ENV_task, ENV_annotation_stea, stea_map_pkl_name, folder_sfx='stea')
+        _plot_topK_scores_heatmaps(ENV_task, ENV_annotation_stea, stea_map_pkl_name, folder_sfx='stea')
         lob_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl'
-        _plot_topK_attention_heatmaps(ENV_task, ENV_annotation_lob, lob_map_pkl_name, folder_sfx='lob')
+        _plot_topK_scores_heatmaps(ENV_task, ENV_annotation_lob, lob_map_pkl_name, folder_sfx='lob')
     if 1.2 in task_ids:
         heatmap_pkl_name = 'filt_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
-        _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='filt-ball')
+        _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='filt-ball')
     if 2 in task_ids:
         spatmap_pkl_name = 'clst-[1, 3]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name)
@@ -54,4 +54,9 @@ if __name__ == '__main__':
         s_clst_t_p_pkl_name = 'sensi_c-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assim_t_p_pkl_name = 'assim_t-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name)
+    if 10 in task_ids:
+        act_scores_pkl_name = ''
+        ENV_label_hv = env_flinc_p62.ENV_FLINC_P62_BALL_HV
+        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0) # ft
+        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=1) # org
         

@@ -42,9 +42,49 @@ def _plot_draw_scaled_slide_imgs(ENV_task):
     draw_scaled_slide_imgs(ENV_task)
     
     
-def _plot_attention_heatmaps(ENV_task, ENV_annotation,
-                             heatmap_pkl_name,
-                             _env_data_tumor_mask_dir=None):
+def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
+                              act_scores_pkl_name, act_type=0):
+    '''
+    plot the activation scores' distribution, with different tag of group, like HV, 0, X
+    
+    Args:
+        act_type: can only be 0 or 1, 0: tryk-mil fine-turned activation, 1: original
+    '''
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    label_dict = query_task_label_dict_fromcsv(ENV_label_hv)
+    act_score_dict = load_vis_pkg_from_pkl(heat_store_dir, act_scores_pkl_name)[act_type]
+    
+    name_dict = {'P62': 'Ballooning'}
+    activations = {'HV': [], 'Mid': [], 'High': []}
+    for slide_id, act_scores in act_score_dict.items():
+        case_id = parse_caseid_from_slideid(slide_id)
+        if case_id not in label_dict.keys():
+            slide_tag = 'Mid'
+        else:
+            if label_dict[case_id] == 1: slide_tag = 'High'
+            else: slide_tag = 'HV'
+        
+        activations[slide_tag].extend(act_scores)
+        
+    sns.set(style="whitegrid")
+    
+    plt.figure(figsize=(10, 6))
+    for tag, activation in activations.items():
+        sns.kdeplot(activation, shade=True, label=f'{name_dict[ENV_task.STAIN_TYPE]} {tag}')
+    
+    plt.title('Act-score dist for diff-groups')
+    plt.xlabel('Act-score')
+    plt.ylabel('Density')
+    plt.legend()
+    plt.savefig(os.path.join(heat_store_dir, 'groups_activation_distribution-kde-{}\
+        .png'.format('ft' if act_type == 0 else 'org') ) )
+    print('store the picture in {}'.format(os.path.join(heat_store_dir, 
+                                                        'groups_activation_distribution-kde-?.png')) )
+    plt.clf()
+       
+    
+def _plot_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name,
+                          _env_data_tumor_mask_dir=None):
     """
     plot the original heatmap with attention scores for all tiles
     """
@@ -110,7 +150,7 @@ def _plot_attention_heatmaps(ENV_task, ENV_annotation,
             print('+ draw med gradient color heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
             
 
-def _plot_topK_attention_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx=''):
+def _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx=''):
     """
     plot the original heatmap with attention scores for top K tiles
     """

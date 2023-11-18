@@ -11,7 +11,8 @@ from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, 
     _run_make_spatial_sensi_clusters_assims, \
     _run_cnt_tis_pct_sensi_clsts_assim_on_slides, \
     _run_make_filt_attention_heatmap_resnet_P62, \
-    _run_make_topK_activation_heatmap_resnet_P62
+    _run_make_topK_activation_heatmap_resnet_P62, \
+    _load_activation_score_resnet_P62
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -128,7 +129,10 @@ if __name__ == '__main__':
         sp_clsts = [0]
         
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
-        
+    
+    if 10 in task_ids:
+        tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-14.pth'
+        _load_activation_score_resnet_P62(ENV_task, tile_net_filename)    
     if 11 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-14.pth']
         
