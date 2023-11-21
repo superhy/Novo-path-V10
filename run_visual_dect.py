@@ -27,8 +27,8 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [1.1]
-    task_ids = [11]
-    # task_ids = [10, 10.5]
+    # task_ids = [11]
+    task_ids = [10, 10.5]
     # task_ids = [10.5]
     
     task_str = '-' + '-'.join([str(id) for id in task_ids])
@@ -134,12 +134,8 @@ if __name__ == '__main__':
         _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
     
     if 10 in task_ids:
-        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-19.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-19.pth'
-                              ]
-        # tile_net_filenames = [# 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pth',
+        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
+        # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pth',
         #                      'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth',
         #                      'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-19.pth',
         #                      'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-19.pth'
@@ -147,11 +143,7 @@ if __name__ == '__main__':
         for t_net_name in tile_net_filenames:
             _load_activation_score_resnet_P62(ENV_task, t_net_name)   
     if 10.5 in task_ids:
-        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-19.pth',
-                              'checkpoint_ResNet18-TK_MIL-0_ballooning_score_hv_[5]2023-11-19.pth'
-                              ]
+        tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         K=50
         for t_net_name in tile_net_filenames:
             _run_get_top_act_tiles_embeds_allslides(ENV_task, t_net_name, K)
@@ -159,7 +151,7 @@ if __name__ == '__main__':
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         
         K_ratio = 0.75
-        act_thd = 0.3
+        act_thd = 0.4
         boost_rate = 2.0
         # pkg_range = [0, 50]
         color_map='bwr'
@@ -176,15 +168,15 @@ if __name__ == '__main__':
         '''    
         stea_t_net_filenames = ['']
         lob_t_net_filenames = ['']
-        stea_K_ratio, stea_act_thd = 0.75, 0.3
-        lob_K_ratio, lob_act_thd = 0.75, 0.3
+        stea_K_ratio, stea_act_thd = 0.75, 0.4
+        lob_K_ratio, lob_act_thd = 0.75, 0.4
         stea_cmap = 'PiYG'
         lob_cmap = 'BrBG'
 
         boost_rate = 2.0
         pkg_range = None
         cut_left = False
-        fills = [3, 4, 4]
+        fills = [3, 3, 4]
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
                                                      stea_K_ratio, stea_act_thd, boost_rate, 

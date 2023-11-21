@@ -190,7 +190,7 @@ ENV_FLINC_P62_BALL_BI = parames_task(
     seg_num_epoch=20000,
     try_k_0=50,
     try_k_1=50,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )
 
 ENV_FLINC_P62_STEA_BI = parames_task(
@@ -253,7 +253,7 @@ ENV_FLINC_P62_STEA_BI = parames_task(
     seg_num_epoch=20000,
     try_k_0=50,
     try_k_1=50,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )
 
 ENV_FLINC_P62_LOB_BI = parames_task(
@@ -316,7 +316,7 @@ ENV_FLINC_P62_LOB_BI = parames_task(
     seg_num_epoch=20000,
     try_k_0=50,
     try_k_1=50,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )
 
 
@@ -380,7 +380,7 @@ ENV_FLINC_P62_BALL_HV = parames_task(
     seg_num_epoch=20000,
     try_k_0=80,
     try_k_1=20,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )
 
 ENV_FLINC_P62_STEA_HV = parames_task(
@@ -443,7 +443,7 @@ ENV_FLINC_P62_STEA_HV = parames_task(
     seg_num_epoch=20000,
     try_k_0=80,
     try_k_1=40,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )
 
 ENV_FLINC_P62_LOB_HV = parames_task(
@@ -506,5 +506,5 @@ ENV_FLINC_P62_LOB_HV = parames_task(
     seg_num_epoch=20000,
     try_k_0=80,
     try_k_1=20,
-    num_tk_epoch=10
+    num_tk_epoch=5
     )

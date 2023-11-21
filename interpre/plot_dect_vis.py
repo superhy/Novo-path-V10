@@ -77,7 +77,7 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
         
     sns.set(style="whitegrid")
     
-    plt.figure(figsize=(5, 3.5))
+    plt.figure(figsize=(5, 5))
     for tag, activation in activations.items():
         print(tag, np.sum(activation > 0.5), 
               np.min(activation), np.max(activation),

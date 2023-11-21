@@ -731,11 +731,11 @@ def _load_activation_score_resnet_P62(ENV_task, tile_net_filename):
                                                         batch_size_ontiles, tile_loader_num_workers, 
                                                         norm=False)
     model_name = tile_net_filename.replace('checkpoint_', '').replace('pth', 'pkl')
-    nb_act_info = 1 if slide_activation_dict_ft is None else 2
+    nb_act_info = 'org' if slide_activation_dict_ft is None else 'ft-org'
     store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, 
                       (slide_activation_dict_ft, slide_activation_dict_org), 
-                      'act_score()-{}'.format(str(nb_act_info), model_name))
-    print('store the activation scores (org & ft) for all tiles at {}'.format('act_score(2)-{}'.format(model_name)))
+                      f'act_score_{nb_act_info}_{model_name}')
+    print('store the activation scores (org & ft) for all tiles at {}'.format(ENV_task.HEATMAP_STORE_DIR) )
     
 def _run_get_top_act_tiles_embeds_allslides(ENV_task, tile_net_filename, K=100):
     '''

@@ -40,7 +40,7 @@ task_ids = [2]
 # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
 # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_REG_PT
 
-# ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+ENV_task = env_flinc_p62.ENV_FLINC_P62_U
 # ENV_task = env_flinc_p62.ENV_FLINC_P62_REG_PT
 # ENV_task = ENV_FLINC_HE_BALL_BI
 
@@ -48,7 +48,7 @@ task_ids = [2]
 # ENV_task = ENV_FLINC_P62_STEA_BI
 # ENV_task = ENV_FLINC_P62_LOB_BI
 
-ENV_task = ENV_FLINC_P62_BALL_HV
+# ENV_task = ENV_FLINC_P62_BALL_HV
 # ENV_task = ENV_FLINC_P62_STEA_HV
 # ENV_task = ENV_FLINC_P62_LOB_HV
 all_train = True
