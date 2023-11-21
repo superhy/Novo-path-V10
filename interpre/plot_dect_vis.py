@@ -4,6 +4,7 @@ Created on 25 Nov 2022
 @author: Yang Hu
 '''
 import os
+import numpy as np
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
 from interpre.prep_tools import load_vis_pkg_from_pkl
@@ -43,41 +44,55 @@ def _plot_draw_scaled_slide_imgs(ENV_task):
     
     
 def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
-                              act_scores_pkl_name, act_type=0):
+                              act_scores_pkl_name, act_type=0, cut_top=None):
     '''
     plot the activation scores' distribution, with different tag of group, like HV, 0, X
     
     Args:
         act_type: can only be 0 or 1, 0: tryk-mil fine-turned activation, 1: original
+        cut_top: always cut the highest [cut_top] values from the act_scores of each slide
     '''
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR
     label_dict = query_task_label_dict_fromcsv(ENV_label_hv)
     act_score_dict = load_vis_pkg_from_pkl(heat_store_dir, act_scores_pkl_name)[act_type]
     
     name_dict = {'P62': 'Ballooning'}
-    activations = {'HV': [], 'Mid': [], 'High': []}
+    name_activations_dict = {'P62': {'HV': [], '0-1': [], '2': []}
+                             }
+    
+    activations = name_activations_dict[ENV_task.STAIN_TYPE]
     for slide_id, act_scores in act_score_dict.items():
         case_id = parse_caseid_from_slideid(slide_id)
         if case_id not in label_dict.keys():
-            slide_tag = 'Mid'
+            slide_tag = '0-1'
         else:
-            if label_dict[case_id] == 1: slide_tag = 'High'
+            if label_dict[case_id] == 1: slide_tag = '2'
             else: slide_tag = 'HV'
-        
-        activations[slide_tag].extend(act_scores)
+        if cut_top is not None and cut_top > 0:
+            activations[slide_tag].extend(np.partition(act_scores, -cut_top)[-cut_top:])
+        else:
+            activations[slide_tag].extend(act_scores)
+    for tag in activations.keys():
+        activations[tag] = np.asarray(activations[tag])
         
     sns.set(style="whitegrid")
     
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(5, 3.5))
     for tag, activation in activations.items():
-        sns.kdeplot(activation, shade=True, label=f'{name_dict[ENV_task.STAIN_TYPE]} {tag}')
+        print(tag, np.sum(activation > 0.5), 
+              np.min(activation), np.max(activation),
+              np.average(activation), np.median(activation) )
+        label_name = f'{name_dict[ENV_task.STAIN_TYPE]} {tag}' if tag != 'HV' else 'Healthy volunteers'
+        sns.kdeplot(activation, fill=True, clip=(0, np.max(activation)),
+                    label=label_name)
     
-    plt.title('Act-score dist for diff-groups')
-    plt.xlabel('Act-score')
+    plt.xlim(0, 1.0)
+    plt.title('Activation dist for diff-groups')
+    plt.xlabel('Activation')
     plt.ylabel('Density')
     plt.legend()
-    plt.savefig(os.path.join(heat_store_dir, 'groups_activation_distribution-kde-{}\
-        .png'.format('ft' if act_type == 0 else 'org') ) )
+    plt.tight_layout()
+    plt.savefig(os.path.join(heat_store_dir, 'groups_activation_distribution-kde-{}.png'.format('ft' if act_type == 0 else 'org') ) )
     print('store the picture in {}'.format(os.path.join(heat_store_dir, 
                                                         'groups_activation_distribution-kde-?.png')) )
     plt.clf()
@@ -197,7 +212,7 @@ def _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folde
         print('draw original image in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
 
         if heat_hard_cv2 is not None:
-            draw_attention_heatmap(attention_dir, heat_hard_cv2, None, None,
+            draw_attention_heatmap(attention_dir, heat_hard_cv2, org_image, None,
                                    (os.path.join('{}//'.format(attention_dir) + str(slide_label), slide_id + '-hard'), alg_name))
             print('1. draw hard heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
         

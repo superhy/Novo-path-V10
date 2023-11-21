@@ -20,12 +20,14 @@ from torch.nn.functional import softmax
 from interpre.prep_clst_vis import load_clst_res_slide_tile_label, \
     load_clst_res_label_tile_slide, col_pal_cv2_10
 from interpre.prep_tools import store_nd_dict_pkl
-from models import datasets, functions_attpool
+from models import datasets, functions_attpool, functions
+from models.datasets import Simple_Tile_Dataset
 from models.functions_clustering import load_clustering_pkg_from_pkl
 from models.functions_feat_ext import filter_neg_att_tiles, select_top_att_tiles, \
     select_top_active_tiles
 from models.functions_lcsb import filter_singlesldie_top_attKtiles
-from models.functions_mil_tryk import query_slides_activation
+from models.functions_mil_tryk import query_slides_activation, \
+    filter_singleslide_top_thd_active_K_tiles
 from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
@@ -34,6 +36,7 @@ from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, 
 from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization
 from wsi import image_tools, slide_tools
+import copy
 
 
 # include the reusable function from prep_clst_vis, only from prep_dect_vis -> prep_clst_vis
@@ -397,6 +400,41 @@ def make_topK_activation_heatmap_package(ENV_task, tile_net, tile_net_filenames,
     store_nd_dict_pkl(_env_heatmap_store_dir,
                       slide_topK_act_heatmap_dict, activation_map_pkl_name)
     print('Store topK activation map numpy package as: {}'.format(activation_map_pkl_name))    
+    
+
+def load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K):
+    '''
+    load the embedding (fine-turned & original encoders) for top activation tiles
+    '''
+    batch_size_ontiles = ENV_task.MINI_BATCH_TILE
+    tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
+    
+    # load tiles in slides and their activation score
+    slide_tiles_dict = datasets.load_slides_tileslist(ENV_task)
+    slide_activation_dict = query_slides_activation(slide_tiles_dict, tile_net_ft,
+                                                    batch_size_ontiles, tile_loader_num_workers, 
+                                                    norm=False)
+    transform_augs = functions.get_transform()
+    
+    slide_K_t_embeds_dict = {}
+    for slide_id in slide_tiles_dict.keys():
+        s_tiles_list = slide_tiles_dict[slide_id]
+        slide_acts = slide_activation_dict[slide_id]
+        K_slide_tiles_list, _  = filter_singleslide_top_thd_active_K_tiles(s_tiles_list, slide_acts, 
+                                                                           K, thd=0.0)
+        K_tile_set = Simple_Tile_Dataset(tiles_list=K_slide_tiles_list, transform=transform_augs)
+        K_tile_loader = functions.get_data_loader(K_tile_set, batch_size=batch_size_ontiles,
+                                                  num_workers=tile_loader_num_workers, 
+                                                  sf=False, p_mem=False)
+        K_s_t_embeds_ft = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_ft, 
+                                                                 slide_id, print_info=False)
+        K_s_t_embeds_org = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_org, 
+                                                                  slide_id, print_info=False)
+        slide_K_t_embeds_dict[slide_id] = (K_s_t_embeds_ft, K_s_t_embeds_org)
+        print(f'get the embedding of top K tiles for slide: {slide_id}', end=',')
+        print('with ft: ', np.shape(K_s_t_embeds_ft), 'org: ', np.shape(K_s_t_embeds_org))
+        
+    return slide_K_t_embeds_dict
 
     
 def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label_dict,
@@ -666,26 +704,57 @@ def _run_make_attention_heatmap_package(ENV_task, model_filename, tile_encoder=N
 def _load_activation_score_resnet_P62(ENV_task, tile_net_filename):
     '''
     '''
-    tile_encoder = BasicResNet18(output_dim=2)
+    # for resnet without fine-turning
+    tile_encoder_org = BasicResNet18(output_dim=2)
+    tile_encoder_org = tile_encoder_org.cuda()
+    # for resnet with fine-turning
+    tile_encoder_ft = BasicResNet18(output_dim=2)
+    model_dir = ENV_task.MODEL_FOLDER
     if tile_net_filename is not None:
-        tile_encoder_ft, _ = reload_net(tile_encoder, tile_net_filename)
+        tile_encoder_ft, _ = reload_net(tile_encoder_ft, os.path.join(model_dir, tile_net_filename) )
+        tile_encoder_ft = tile_encoder_ft.cuda()
+    else:
+        tile_encoder_ft = None
+    
         
     slide_tiles_dict = datasets.load_slides_tileslist(ENV_task)
         
     batch_size_ontiles = ENV_task.MINI_BATCH_TILE
     tile_loader_num_workers = ENV_task.TILE_DATALOADER_WORKER
-    slide_activation_dict_ft = query_slides_activation(slide_tiles_dict, tile_encoder_ft, 
-                                                       batch_size_ontiles, tile_loader_num_workers, 
-                                                       norm=False)
-    slide_activation_dict_org = query_slides_activation(slide_tiles_dict, tile_encoder, 
+    if tile_encoder_ft is not None:
+        slide_activation_dict_ft = query_slides_activation(slide_tiles_dict, tile_encoder_ft, 
+                                                           batch_size_ontiles, tile_loader_num_workers, 
+                                                           norm=False)
+    else:
+        slide_activation_dict_ft = None
+    slide_activation_dict_org = query_slides_activation(slide_tiles_dict, tile_encoder_org, 
                                                         batch_size_ontiles, tile_loader_num_workers, 
                                                         norm=False)
     model_name = tile_net_filename.replace('checkpoint_', '').replace('pth', 'pkl')
+    nb_act_info = 1 if slide_activation_dict_ft is None else 2
     store_nd_dict_pkl(ENV_task.HEATMAP_STORE_DIR, 
                       (slide_activation_dict_ft, slide_activation_dict_org), 
-                      'act_score-{}'.format(model_name))
-    print('store the activation scores (org & ft) for all tiles at {}'.format('act_score-{}'.format(model_name)))
+                      'act_score()-{}'.format(str(nb_act_info), model_name))
+    print('store the activation scores (org & ft) for all tiles at {}'.format('act_score(2)-{}'.format(model_name)))
     
+def _run_get_top_act_tiles_embeds_allslides(ENV_task, tile_net_filename, K=100):
+    '''
+    load the embedding (fine-turned & original encoders) for top activation tiles
+    and store it in the statistic folder
+    '''
+    model_dir = ENV_task.MODEL_FOLDER
+    tile_net_ft = BasicResNet18(output_dim=2)
+    tile_net_ft, _ = reload_net(tile_net_ft, os.path.join(model_dir, tile_net_filename))
+    tile_net_org = BasicResNet18(output_dim=2)
+    tile_net_ft = tile_net_ft.cuda()
+    tile_net_org = tile_net_org.cuda()
+    
+    slide_K_t_embeds_dict = load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K)
+    K_t_embeds_pkl_name = tile_net_filename.replace('checkpoint_', 'K_t_embeds').replace('pth', 'pkl')
+    store_nd_dict_pkl(ENV_task.STATISTIC_STORE_DIR, slide_K_t_embeds_dict, K_t_embeds_pkl_name)
+    print('store the embedding (org & ft) for top tiles at {}'.format(os.path.join(ENV_task.STATISTIC_STORE_DIR,
+                                                                                   K_t_embeds_pkl_name)) )
+
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
     '''

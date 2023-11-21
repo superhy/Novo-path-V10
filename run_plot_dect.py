@@ -23,14 +23,14 @@ if __name__ == '__main__':
 
     # task_ids = [0]
     # task_ids = [2]
-    # task_ids = [1, 1.1]
     task_ids = [1]
+    # task_ids = [10]
     
     if 0 in task_ids:
         pass
     if 1 in task_ids:
         # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
-        heatmap_pkl_name = 'actK_map_ResNet18-TK_MIL-0_ballooning_score_hv_[10]2023-11-14.pkl'
+        heatmap_pkl_name = 'actK_map_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl'
         print(heatmap_pkl_name)
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
     if 1.1 in task_ids:
@@ -55,8 +55,9 @@ if __name__ == '__main__':
         assim_t_p_pkl_name = 'assim_t-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_pkl_name)
     if 10 in task_ids:
-        act_scores_pkl_name = ''
+        act_scores_pkl_name = 'act_score(2)-ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pkl'
         ENV_label_hv = env_flinc_p62.ENV_FLINC_P62_BALL_HV
-        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0) # ft
-        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=1) # org
+        cut_top=50
+        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0, cut_top=cut_top) # ft
+        # _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=1, cut_top=cut_top) # org
         

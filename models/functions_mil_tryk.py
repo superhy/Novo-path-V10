@@ -110,6 +110,8 @@ def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, t
     # print('sorted: ', slide_acts)
     
     if thd is not None:
+        if (np.min(slide_acts) >= thd and reverse == False) or (np.max(slide_acts) <= thd and reverse == True):
+            thd_idx = len(slide_acts) - 1
         thd_idx = np.where(slide_acts < thd)[0][0] if reverse is False else np.where(slide_acts > thd)[0][0]
         thd_K = thd_idx if thd_idx < K else K
     else:
@@ -187,6 +189,7 @@ class TryK_MIL():
             self.criterion = functions.cel_loss()
         self.optimizer = functions.optimizer_adam_basic(self.net, lr=ENV_task.LR_TILE)
         
+        # TODO: functions.get_zoom_transform()
         self.transform = functions.get_transform()
         self.train_set = TryK_MIL_Dataset(tiles_list=self.train_tiles_list,
                                           label_dict=self.label_dict,
