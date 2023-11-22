@@ -43,8 +43,8 @@ def _plot_draw_scaled_slide_imgs(ENV_task):
     draw_scaled_slide_imgs(ENV_task)
     
     
-def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
-                              act_scores_pkl_name, act_type=0, cut_top=None):
+def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, 
+                              act_type=0, cut_top=None, legend_loc='best'):
     '''
     plot the activation scores' distribution, with different tag of group, like HV, 0, X
     
@@ -77,7 +77,7 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
         
     sns.set(style="whitegrid")
     
-    plt.figure(figsize=(5, 5))
+    plt.figure(figsize=(5, 4))
     for tag, activation in activations.items():
         print(tag, np.sum(activation > 0.5), 
               np.min(activation), np.max(activation),
@@ -90,7 +90,7 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv,
     plt.title('Activation dist for diff-groups')
     plt.xlabel('Activation')
     plt.ylabel('Density')
-    plt.legend()
+    plt.legend(loc=legend_loc)
     plt.tight_layout()
     plt.savefig(os.path.join(heat_store_dir, 'groups_activation_distribution-kde-{}.png'.format('ft' if act_type == 0 else 'org') ) )
     print('store the picture in {}'.format(os.path.join(heat_store_dir, 

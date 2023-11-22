@@ -22,7 +22,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 
-task_ids = [10]
+# task_ids = [10]
+task_ids = [10.1]
 fold_suffix = '-0'
 # fold_suffix = '-[5-9]'
 # fold_suffix = ENV_task.FOLD_SUFFIX
@@ -44,6 +45,10 @@ if __name__ == '__main__':
     # ENV_task = ENV_FLINC_P62_STEA_HV
     # ENV_task = ENV_FLINC_P62_LOB_HV
 
+    ENV_task_list = [ENV_FLINC_P62_BALL_BI,
+                     ENV_FLINC_P62_STEA_BI,
+                     ENV_FLINC_P62_LOB_BI]
+    
     log_name = 'running_log{}-{}-{}.log'.format(fold_suffix,
                                                 ENV_task.TASK_NAME + task_str,
                                                 str(tools.Time().start)[:13].replace(' ', '-'))
@@ -56,6 +61,15 @@ if __name__ == '__main__':
         for f in folds:
             ENV_task.refresh_fold_suffix(f)
             _run_train_tkmil_resnet18(ENV_task)
+    
+    if 10.1 in task_ids:
+        # batch running all tasks
+        folds = ['-0']
+        for _env_task in ENV_task_list:
+            for f in folds:
+                _env_task.refresh_fold_suffix(f)
+                _run_train_tkmil_resnet18(_env_task)
+        
         
         
         

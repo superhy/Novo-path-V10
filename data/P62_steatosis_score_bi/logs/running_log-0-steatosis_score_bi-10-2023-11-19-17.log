@@ -1,0 +1,17 @@
+![Initial Stage] test mode: False
+Initializing the training/testing datasets...
+automatically find CSV file: P62_steatosis_score_bi.csv
+In training...Perform a trying prediction in Epoch: [1/10], with time: 0:25:38.3 sec; epoch [1/10], batch_loss-> 0.7502, train acc (on tiles)-> 0.4543, time: 2:37:23.3 sec
+In training...Perform a trying prediction in Epoch: [2/10], with time: 0:25:40.0 sec; epoch [2/10], batch_loss-> 0.6582, train acc (on tiles)-> 0.5157, time: 2:40:30.1 sec
+In training...Perform a trying prediction in Epoch: [3/10], with time: 0:25:33.5 sec; epoch [3/10], batch_loss-> 0.5213, train acc (on tiles)-> 0.6364, time: 2:30:56.0 sec
+In training...Perform a trying prediction in Epoch: [4/10], with time: 0:25:37.9 sec; epoch [4/10], batch_loss-> 0.3812, train acc (on tiles)-> 0.7704, time: 2:36:30.2 sec
+In training...Perform a trying prediction in Epoch: [5/10], with time: 0:25:45.9 sec; epoch [5/10], batch_loss-> 0.2688, train acc (on tiles)-> 0.8729, time: 2:37:38.9 sec
+>>> Just record.
+store the milestone point</data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth>, 
+In training...Perform a trying prediction in Epoch: [6/10], with time: 0:25:29.7 sec; epoch [6/10], batch_loss-> 0.1965, train acc (on tiles)-> 0.9243, time: 2:35:10.1 sec
+In training...Perform a trying prediction in Epoch: [7/10], with time: 0:25:44.6 sec; epoch [7/10], batch_loss-> 0.1466, train acc (on tiles)-> 0.9682, time: 2:30:37.0 sec
+In training...Perform a trying prediction in Epoch: [8/10], with time: 0:30:12.3 sec; epoch [8/10], batch_loss-> 0.1124, train acc (on tiles)-> 0.9864, time: 3:12:42.8 sec
+In training...Perform a trying prediction in Epoch: [9/10], with time: 0:32:18.5 sec; epoch [9/10], batch_loss-> 0.0845, train acc (on tiles)-> 0.9993, time: 3:19:21.9 sec
+In training...Perform a trying prediction in Epoch: [10/10], with time: 0:32:10.6 sec; epoch [10/10], batch_loss-> 0.0657, train acc (on tiles)-> 1.0000, time: 3:12:40.2 sec
+>>> Just record.
+store the milestone point</data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[10]2023-11-21.pth>, 

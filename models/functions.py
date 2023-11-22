@@ -245,7 +245,7 @@ def mae_epoch(learner, train_loader, optimizer, epoch_info: tuple=(-2, -2)):
 
 
 ''' --------------- functions of classification training --------------- '''  
-def train_enc_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -2)):
+def train_enc_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -2), load_t_acc=False):
     """
     trainer for tile-level encoder 
     
@@ -274,12 +274,16 @@ def train_enc_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -
         epoch_acc_sum += (y_pred.argmax(dim=1) == y).sum().cpu().item()
         batch_count += 1
     
+    train_avg_acc = epoch_acc_sum / len(train_loader.dataset)
 #     train_log = 'batch_loss-> %.6f, train acc-> %.4f, time: %s sec' % (epoch_loss_sum / batch_count, epoch_acc_sum / len(train_loader.dataset), str(time.elapsed()))
     train_log = 'epoch [%d/%d], batch_loss-> %.4f, train acc (on tiles)-> %.4f, time: %s sec' % (epoch_info[0] + 1, epoch_info[1],
                                                                                                  epoch_loss_sum / batch_count,
-                                                                                                 epoch_acc_sum / len(train_loader.dataset),
+                                                                                                 train_avg_acc,
                                                                                                  str(time.elapsed())[:-5])
-    return train_log
+    if load_t_acc is False:
+        return train_log
+    else:
+        return train_log, train_avg_acc
 
 def train_rev_epoch(net, train_neg_loader, loss, optimizer,
                          revg_grad_a=1e-4, epoch_info: tuple=(-2, -2)):

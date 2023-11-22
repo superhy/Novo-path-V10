@@ -1,0 +1,17 @@
+![Initial Stage] test mode: False
+Initializing the training/testing datasets...
+automatically find CSV file: P62_ballooning_score_bi.csv
+In training...Perform a trying prediction in Epoch: [1/10], with time: 0:32:39.4 sec; epoch [1/10], batch_loss-> 0.8063, train acc (on tiles)-> 0.6205, time: 3:26:06.6 sec
+In training...Perform a trying prediction in Epoch: [2/10], with time: 0:35:38.2 sec; epoch [2/10], batch_loss-> 0.7354, train acc (on tiles)-> 0.6321, time: 3:20:35.0 sec
+In training...Perform a trying prediction in Epoch: [3/10], with time: 0:35:36.7 sec; epoch [3/10], batch_loss-> 0.6650, train acc (on tiles)-> 0.6514, time: 3:19:58.7 sec
+In training...Perform a trying prediction in Epoch: [4/10], with time: 0:31:55.8 sec; epoch [4/10], batch_loss-> 0.5957, train acc (on tiles)-> 0.7088, time: 2:53:04.9 sec
+In training...Perform a trying prediction in Epoch: [5/10], with time: 0:30:51.1 sec; epoch [5/10], batch_loss-> 0.5364, train acc (on tiles)-> 0.7674, time: 2:52:02.7 sec
+>>> Just record.
+store the milestone point</data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth>, 
+In training...Perform a trying prediction in Epoch: [6/10], with time: 0:30:53.9 sec; epoch [6/10], batch_loss-> 0.4821, train acc (on tiles)-> 0.8086, time: 2:52:52.5 sec
+In training...Perform a trying prediction in Epoch: [7/10], with time: 0:31:11.7 sec; epoch [7/10], batch_loss-> 0.4389, train acc (on tiles)-> 0.8435, time: 2:54:21.2 sec
+In training...Perform a trying prediction in Epoch: [8/10], with time: 0:30:53.0 sec; epoch [8/10], batch_loss-> 0.3938, train acc (on tiles)-> 0.8770, time: 2:55:47.7 sec
+In training...Perform a trying prediction in Epoch: [9/10], with time: 0:32:51.9 sec; epoch [9/10], batch_loss-> 0.3625, train acc (on tiles)-> 0.8884, time: 3:02:16.8 sec
+In training...Perform a trying prediction in Epoch: [10/10], with time: 0:32:44.7 sec; epoch [10/10], batch_loss-> 0.3175, train acc (on tiles)-> 0.9070, time: 3:00:44.4 sec
+>>> Just record.
+store the milestone point</data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[10]2023-11-18.pth>, 

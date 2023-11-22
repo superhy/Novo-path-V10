@@ -1,0 +1,10 @@
+![Initial Stage] test mode: False
+Initializing the training/testing datasets...
+automatically find CSV file: P62_lobular_inflammation_score_bi.csv
+In training...Perform a trying prediction in Epoch: [1/5], with time: 0:22:22.4 sec; epoch [1/5], batch_loss-> 0.8762, train acc (on tiles)-> 0.6292, time: 2:43:23.3 sec
+In training...Perform a trying prediction in Epoch: [2/5], with time: 0:23:30.6 sec; epoch [2/5], batch_loss-> 0.8017, train acc (on tiles)-> 0.6500, time: 2:33:57.9 sec
+In training...Perform a trying prediction in Epoch: [3/5], with time: 0:22:48.9 sec; epoch [3/5], batch_loss-> 0.7488, train acc (on tiles)-> 0.6708, time: 2:09:10.7 sec
+In training...Perform a trying prediction in Epoch: [4/5], with time: 0:17:41.4 sec; epoch [4/5], batch_loss-> 0.6836, train acc (on tiles)-> 0.7133, time: 1:56:20.3 sec
+In training...Perform a trying prediction in Epoch: [5/5], with time: 0:17:32.8 sec; epoch [5/5], batch_loss-> 0.6086, train acc (on tiles)-> 0.7500, time: 1:52:16.8 sec
+>>> Just record.
+store the milestone point</data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pth>, 

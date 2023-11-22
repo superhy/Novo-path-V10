@@ -158,6 +158,7 @@ class TryK_MIL():
         print('Initializing the training/testing datasets...')
         
         self.num_epoch = self.ENV_task.NUM_TK_EPOCH
+        self.early_stop_acc = self.ENV_task.STOP_TK_ACC
         self.batch_size_ontiles = self.ENV_task.MINI_BATCH_TILE
         # self.batch_size_onslides = self.ENV_task.MINI_BATCH_SLIDEMAT
         self.tile_loader_num_workers = self.ENV_task.TILE_DATALOADER_WORKER
@@ -223,9 +224,16 @@ class TryK_MIL():
             self.train_set.switch_mode(False)
             
             ''' begin to train the EMT MIL network '''
-            train_log = functions.train_enc_epoch(self.net, train_loader, self.criterion,
-                                                  self.optimizer, epoch_info=(epoch, self.num_epoch))
+            train_log, train_acc = functions.train_enc_epoch(self.net, train_loader, self.criterion,
+                                                             self.optimizer, epoch_info=(epoch, self.num_epoch),
+                                                             load_t_acc=True)
             print(train_log)
+            
+            # directly stop & record model
+            if train_acc > self.early_stop_acc:
+                print('>>> Early stop, just record.')
+                self.record(epoch, None)
+                break
             
             # evaluation
             if ((epoch + 1) % 5 == 0 or epoch >= self.num_epoch - 1):

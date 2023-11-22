@@ -27,7 +27,7 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [1.1]
-    task_ids = [11]
+    task_ids = [11.1]
     # task_ids = [10, 10.5]
     # task_ids = [10.5]
     
@@ -157,7 +157,7 @@ if __name__ == '__main__':
         color_map='bwr'
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 4]
+        fills = [3, 3, 3]
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, cut_left, 
                                                      K_ratio, act_thd, boost_rate, fills, color_map, pkg_range)
@@ -166,17 +166,17 @@ if __name__ == '__main__':
         visualisation for negative activation map
         (for steatosis_score_hv and lobular_inflammation_score_hv)
         '''    
-        stea_t_net_filenames = ['']
-        lob_t_net_filenames = ['']
-        stea_K_ratio, stea_act_thd = 0.75, 0.4
-        lob_K_ratio, lob_act_thd = 0.75, 0.4
+        stea_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth']
+        lob_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pth']
+        stea_K_ratio, stea_act_thd = 0.75, 0.3
+        lob_K_ratio, lob_act_thd = 0.75, 0.3
         stea_cmap = 'PiYG'
         lob_cmap = 'BrBG'
 
         boost_rate = 2.0
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 4]
+        fills = [3, 3, 3]
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
                                                      stea_K_ratio, stea_act_thd, boost_rate, 

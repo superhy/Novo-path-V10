@@ -1,0 +1,322 @@
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth
+with time: 0:03:07.6 sec, load 4 slides' activation
+originally attention tiles: 103 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 16 in round: 1
+fill surrounding tiles: 26 in round: 2
+fill surrounding tiles: 31 in round: 3
+all/k selection ratio in this slide: (7562 / 176)
+originally attention tiles: 9 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4927 / 9)
+originally attention tiles: 9 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4271 / 9)
+all/k selection ratio in this slide: (18442 / 0)
+final highlighted tiles:  176
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+added topK activation map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  9
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  9
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth
+with time: 0:03:18.5 sec, load 4 slides' activation
+originally attention tiles: 103 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 16 in round: 1
+fill surrounding tiles: 26 in round: 2
+fill surrounding tiles: 31 in round: 3
+all/k selection ratio in this slide: (7562 / 176)
+originally attention tiles: 9 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4927 / 9)
+originally attention tiles: 9 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4271 / 9)
+all/k selection ratio in this slide: (18442 / 0)
+[
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #130, Column #777, Small shape: (1032->1040, 6208->6216), Large shape: (16512->16640, 99328->99456), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #182, Column #860, Small shape: (1448->1456, 6872->6880), Large shape: (23168->23296, 109952->110080), Tissue 60.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #738, Small shape: (408->416, 5896->5904), Large shape: (6528->6656, 94336->94464), Tissue 70.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #135, Column #775, Small shape: (1072->1080, 6192->6200), Large shape: (17152->17280, 99072->99200), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #737, Small shape: (408->416, 5888->5896), Large shape: (6528->6656, 94208->94336), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #191, Column #766, Small shape: (1520->1528, 6120->6128), Large shape: (24320->24448, 97920->98048), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #80, Column #756, Small shape: (632->640, 6040->6048), Large shape: (10112->10240, 96640->96768), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #208, Column #767, Small shape: (1656->1664, 6128->6136), Large shape: (26496->26624, 98048->98176), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #91, Column #840, Small shape: (720->728, 6712->6720), Large shape: (11520->11648, 107392->107520), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #79, Column #756, Small shape: (624->632, 6040->6048), Large shape: (9984->10112, 96640->96768), Tissue 46.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #131, Column #775, Small shape: (1040->1048, 6192->6200), Large shape: (16640->16768, 99072->99200), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #183, Column #851, Small shape: (1456->1464, 6800->6808), Large shape: (23296->23424, 108800->108928), Tissue 60.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #146, Column #791, Small shape: (1160->1168, 6320->6328), Large shape: (18560->18688, 101120->101248), Tissue 73.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #835, Small shape: (512->520, 6672->6680), Large shape: (8192->8320, 106752->106880), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #75, Column #751, Small shape: (592->600, 6000->6008), Large shape: (9472->9600, 96000->96128), Tissue 70.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #133, Column #778, Small shape: (1056->1064, 6216->6224), Large shape: (16896->17024, 99456->99584), Tissue 46.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #867, Small shape: (1528->1536, 6928->6936), Large shape: (24448->24576, 110848->110976), Tissue 68.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #130, Column #776, Small shape: (1032->1040, 6200->6208), Large shape: (16512->16640, 99200->99328), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #53, Column #739, Small shape: (416->424, 5904->5912), Large shape: (6656->6784, 94464->94592), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #207, Column #767, Small shape: (1648->1656, 6128->6136), Large shape: (26368->26496, 98048->98176), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #177, Column #782, Small shape: (1408->1416, 6248->6256), Large shape: (22528->22656, 99968->100096), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #69, Column #834, Small shape: (544->552, 6664->6672), Large shape: (8704->8832, 106624->106752), Tissue 54.69%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #80, Column #749, Small shape: (632->640, 5984->5992), Large shape: (10112->10240, 95744->95872), Tissue 40.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #788, Small shape: (1184->1192, 6296->6304), Large shape: (18944->19072, 100736->100864), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #85, Column #838, Small shape: (672->680, 6696->6704), Large shape: (10752->10880, 107136->107264), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #112, Column #785, Small shape: (888->896, 6272->6280), Large shape: (14208->14336, 100352->100480), Tissue 42.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #101, Column #766, Small shape: (800->808, 6120->6128), Large shape: (12800->12928, 97920->98048), Tissue 26.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #145, Column #773, Small shape: (1152->1160, 6176->6184), Large shape: (18432->18560, 98816->98944), Tissue 25.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #863, Small shape: (1528->1536, 6896->6904), Large shape: (24448->24576, 110336->110464), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #81, Column #751, Small shape: (640->648, 6000->6008), Large shape: (10240->10368, 96000->96128), Tissue 78.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #766, Small shape: (1512->1520, 6120->6128), Large shape: (24192->24320, 97920->98048), Tissue 31.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #867, Small shape: (1512->1520, 6928->6936), Large shape: (24192->24320, 110848->110976), Tissue 25.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #84, Column #753, Small shape: (664->672, 6016->6024), Large shape: (10624->10752, 96256->96384), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #79, Column #764, Small shape: (624->632, 6104->6112), Large shape: (9984->10112, 97664->97792), Tissue 84.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #766, Small shape: (1528->1536, 6120->6128), Large shape: (24448->24576, 97920->98048), Tissue 76.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #70, Column #748, Small shape: (552->560, 5976->5984), Large shape: (8832->8960, 95616->95744), Tissue 78.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #74, Column #831, Small shape: (584->592, 6640->6648), Large shape: (9344->9472, 106240->106368), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #41, Column #715, Small shape: (320->328, 5712->5720), Large shape: (5120->5248, 91392->91520), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #80, Column #755, Small shape: (632->640, 6032->6040), Large shape: (10112->10240, 96512->96640), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #85, Column #750, Small shape: (672->680, 5992->6000), Large shape: (10752->10880, 95872->96000), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #108, Column #775, Small shape: (856->864, 6192->6200), Large shape: (13696->13824, 99072->99200), Tissue 25.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #108, Column #776, Small shape: (856->864, 6200->6208), Large shape: (13696->13824, 99200->99328), Tissue 92.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #108, Column #772, Small shape: (856->864, 6168->6176), Large shape: (13696->13824, 98688->98816), Tissue 59.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #166, Column #852, Small shape: (1320->1328, 6808->6816), Large shape: (21120->21248, 108928->109056), Tissue 75.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #198, Column #862, Small shape: (1576->1584, 6888->6896), Large shape: (25216->25344, 110208->110336), Tissue 50.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #102, Column #769, Small shape: (808->816, 6144->6152), Large shape: (12928->13056, 98304->98432), Tissue 67.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #135, Column #776, Small shape: (1072->1080, 6200->6208), Large shape: (17152->17280, 99200->99328), Tissue 40.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #831, Small shape: (512->520, 6640->6648), Large shape: (8192->8320, 106240->106368), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #76, Column #751, Small shape: (600->608, 6000->6008), Large shape: (9600->9728, 96000->96128), Tissue 93.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #207, Column #768, Small shape: (1648->1656, 6136->6144), Large shape: (26368->26496, 98176->98304), Tissue 68.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #100, Column #766, Small shape: (792->800, 6120->6128), Large shape: (12672->12800, 97920->98048), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #174, Column #868, Small shape: (1384->1392, 6936->6944), Large shape: (22144->22272, 110976->111104), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #72, Column #751, Small shape: (568->576, 6000->6008), Large shape: (9088->9216, 96000->96128), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #869, Small shape: (1496->1504, 6944->6952), Large shape: (23936->24064, 111104->111232), Tissue 78.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #139, Column #779, Small shape: (1104->1112, 6224->6232), Large shape: (17664->17792, 99584->99712), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #862, Small shape: (1528->1536, 6888->6896), Large shape: (24448->24576, 110208->110336), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #100, Column #773, Small shape: (792->800, 6176->6184), Large shape: (12672->12800, 98816->98944), Tissue 57.81%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #66, Column #830, Small shape: (520->528, 6632->6640), Large shape: (8320->8448, 106112->106240), Tissue 65.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #104, Column #775, Small shape: (824->832, 6192->6200), Large shape: (13184->13312, 99072->99200), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #76, Column #754, Small shape: (600->608, 6024->6032), Large shape: (9600->9728, 96384->96512), Tissue 37.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #755, Small shape: (1496->1504, 6032->6040), Large shape: (23936->24064, 96512->96640), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #40, Column #713, Small shape: (312->320, 5696->5704), Large shape: (4992->5120, 91136->91264), Tissue 43.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #68, Column #753, Small shape: (536->544, 6016->6024), Large shape: (8576->8704, 96256->96384), Tissue 87.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #193, Column #766, Small shape: (1536->1544, 6120->6128), Large shape: (24576->24704, 97920->98048), Tissue 87.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #100, Column #769, Small shape: (792->800, 6144->6152), Large shape: (12672->12800, 98304->98432), Tissue 68.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #104, Column #772, Small shape: (824->832, 6168->6176), Large shape: (13184->13312, 98688->98816), Tissue 54.69%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #101, Column #774, Small shape: (800->808, 6184->6192), Large shape: (12800->12928, 98944->99072), Tissue 67.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #832, Small shape: (512->520, 6648->6656), Large shape: (8192->8320, 106368->106496), Tissue 59.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #84, Column #841, Small shape: (664->672, 6720->6728), Large shape: (10624->10752, 107520->107648), Tissue 65.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #99, Column #767, Small shape: (784->792, 6128->6136), Large shape: (12544->12672, 98048->98176), Tissue 50.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #54, Column #736, Small shape: (424->432, 5880->5888), Large shape: (6784->6912, 94080->94208), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #207, Column #852, Small shape: (1648->1656, 6808->6816), Large shape: (26368->26496, 108928->109056), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #200, Column #863, Small shape: (1592->1600, 6896->6904), Large shape: (25472->25600, 110336->110464), Tissue 59.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #278, Column #826, Small shape: (2216->2224, 6600->6608), Large shape: (35456->35584, 105600->105728), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #151, Column #788, Small shape: (1200->1208, 6296->6304), Large shape: (19200->19328, 100736->100864), Tissue 75.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #219, Column #756, Small shape: (1744->1752, 6040->6048), Large shape: (27904->28032, 96640->96768), Tissue 79.69%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #152, Column #784, Small shape: (1208->1216, 6264->6272), Large shape: (19328->19456, 100224->100352), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #194, Column #753, Small shape: (1544->1552, 6016->6024), Large shape: (24704->24832, 96256->96384), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #74, Column #752, Small shape: (584->592, 6008->6016), Large shape: (9344->9472, 96128->96256), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #767, Small shape: (1512->1520, 6128->6136), Large shape: (24192->24320, 98048->98176), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #92, Column #768, Small shape: (728->736, 6136->6144), Large shape: (11648->11776, 98176->98304), Tissue 28.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #80, Column #748, Small shape: (632->640, 5976->5984), Large shape: (10112->10240, 95616->95744), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #85, Column #836, Small shape: (672->680, 6680->6688), Large shape: (10752->10880, 106880->107008), Tissue 75.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #69, Column #753, Small shape: (544->552, 6016->6024), Large shape: (8704->8832, 96256->96384), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #830, Small shape: (512->520, 6632->6640), Large shape: (8192->8320, 106112->106240), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #150, Column #774, Small shape: (1192->1200, 6184->6192), Large shape: (19072->19200, 98944->99072), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #80, Column #763, Small shape: (632->640, 6096->6104), Large shape: (10112->10240, 97536->97664), Tissue 84.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #83, Column #754, Small shape: (656->664, 6024->6032), Large shape: (10496->10624, 96384->96512), Tissue 25.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #211, Column #767, Small shape: (1680->1688, 6128->6136), Large shape: (26880->27008, 98048->98176), Tissue 26.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #86, Column #752, Small shape: (680->688, 6008->6016), Large shape: (10880->11008, 96128->96256), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #779, Small shape: (1496->1504, 6224->6232), Large shape: (23936->24064, 99584->99712), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #787, Small shape: (1184->1192, 6288->6296), Large shape: (18944->19072, 100608->100736), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #55, Column #740, Small shape: (432->440, 5912->5920), Large shape: (6912->7040, 94592->94720), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #171, Column #860, Small shape: (1360->1368, 6872->6880), Large shape: (21760->21888, 109952->110080), Tissue 50.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #836, Small shape: (512->520, 6680->6688), Large shape: (8192->8320, 106880->107008), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #101, Column #777, Small shape: (800->808, 6208->6216), Large shape: (12800->12928, 99328->99456), Tissue 82.81%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #64, Column #832, Small shape: (504->512, 6648->6656), Large shape: (8064->8192, 106368->106496), Tissue 60.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #132, Column #775, Small shape: (1048->1056, 6192->6200), Large shape: (16768->16896, 99072->99200), Tissue 68.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #163, Column #876, Small shape: (1296->1304, 7000->7008), Large shape: (20736->20864, 112000->112128), Tissue 34.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #227, Column #855, Small shape: (1808->1816, 6832->6840), Large shape: (28928->29056, 109312->109440), Tissue 31.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #103, Column #769, Small shape: (816->824, 6144->6152), Large shape: (13056->13184, 98304->98432), Tissue 43.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #768, Small shape: (1512->1520, 6136->6144), Large shape: (24192->24320, 98176->98304), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #180, Column #868, Small shape: (1432->1440, 6936->6944), Large shape: (22912->23040, 110976->111104), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #736, Small shape: (408->416, 5880->5888), Large shape: (6528->6656, 94080->94208), Tissue 75.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #737, Small shape: (408->416, 5888->5896), Large shape: (6528->6656, 94208->94336), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #63, Column #830, Small shape: (496->504, 6632->6640), Large shape: (7936->8064, 106112->106240), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #830, Small shape: (512->520, 6632->6640), Large shape: (8192->8320, 106112->106240), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #74, Column #751, Small shape: (584->592, 6000->6008), Large shape: (9344->9472, 96000->96128), Tissue 84.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #78, Column #754, Small shape: (616->624, 6024->6032), Large shape: (9856->9984, 96384->96512), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #99, Column #766, Small shape: (784->792, 6120->6128), Large shape: (12544->12672, 97920->98048), Tissue 92.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #130, Column #775, Small shape: (1032->1040, 6192->6200), Large shape: (16512->16640, 99072->99200), Tissue 73.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #786, Small shape: (1184->1192, 6280->6288), Large shape: (18944->19072, 100480->100608), Tissue 98.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #787, Small shape: (1184->1192, 6288->6296), Large shape: (18944->19072, 100608->100736), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #766, Small shape: (1496->1504, 6120->6128), Large shape: (23936->24064, 97920->98048), Tissue 84.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #764, Small shape: (1512->1520, 6104->6112), Large shape: (24192->24320, 97664->97792), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #766, Small shape: (1512->1520, 6120->6128), Large shape: (24192->24320, 97920->98048), Tissue 31.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #191, Column #764, Small shape: (1520->1528, 6104->6112), Large shape: (24320->24448, 97664->97792), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #191, Column #766, Small shape: (1520->1528, 6120->6128), Large shape: (24320->24448, 97920->98048), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #207, Column #767, Small shape: (1648->1656, 6128->6136), Large shape: (26368->26496, 98048->98176), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #51, Column #738, Small shape: (400->408, 5896->5904), Large shape: (6400->6528, 94336->94464), Tissue 92.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #735, Small shape: (408->416, 5872->5880), Large shape: (6528->6656, 93952->94080), Tissue 95.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #53, Column #736, Small shape: (416->424, 5880->5888), Large shape: (6656->6784, 94080->94208), Tissue 84.38%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #53, Column #737, Small shape: (416->424, 5888->5896), Large shape: (6656->6784, 94208->94336), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #53, Column #738, Small shape: (416->424, 5896->5904), Large shape: (6656->6784, 94336->94464), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #63, Column #829, Small shape: (496->504, 6624->6632), Large shape: (7936->8064, 105984->106112), Tissue 68.75%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #65, Column #831, Small shape: (512->520, 6640->6648), Large shape: (8192->8320, 106240->106368), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #73, Column #750, Small shape: (576->584, 5992->6000), Large shape: (9216->9344, 95872->96000), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #74, Column #752, Small shape: (584->592, 6008->6016), Large shape: (9344->9472, 96128->96256), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #75, Column #751, Small shape: (592->600, 6000->6008), Large shape: (9472->9600, 96000->96128), Tissue 70.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #98, Column #765, Small shape: (776->784, 6112->6120), Large shape: (12416->12544, 97792->97920), Tissue 75.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #98, Column #767, Small shape: (776->784, 6128->6136), Large shape: (12416->12544, 98048->98176), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #99, Column #767, Small shape: (784->792, 6128->6136), Large shape: (12544->12672, 98048->98176), Tissue 50.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #100, Column #766, Small shape: (792->800, 6120->6128), Large shape: (12672->12800, 97920->98048), Tissue 48.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #100, Column #767, Small shape: (792->800, 6128->6136), Large shape: (12672->12800, 98048->98176), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #129, Column #774, Small shape: (1024->1032, 6184->6192), Large shape: (16384->16512, 98944->99072), Tissue 35.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #130, Column #776, Small shape: (1032->1040, 6200->6208), Large shape: (16512->16640, 99200->99328), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #131, Column #775, Small shape: (1040->1048, 6192->6200), Large shape: (16640->16768, 99072->99200), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #788, Small shape: (1184->1192, 6296->6304), Large shape: (18944->19072, 100736->100864), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #150, Column #786, Small shape: (1192->1200, 6280->6288), Large shape: (19072->19200, 100480->100608), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #765, Small shape: (1496->1504, 6112->6120), Large shape: (23936->24064, 97792->97920), Tissue 95.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #767, Small shape: (1496->1504, 6128->6136), Large shape: (23936->24064, 98048->98176), Tissue 100.00%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #189, Column #764, Small shape: (1504->1512, 6104->6112), Large shape: (24064->24192, 97664->97792), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #767, Small shape: (1512->1520, 6128->6136), Large shape: (24192->24320, 98048->98176), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #764, Small shape: (1528->1536, 6104->6112), Large shape: (24448->24576, 97664->97792), Tissue 98.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #192, Column #766, Small shape: (1528->1536, 6120->6128), Large shape: (24448->24576, 97920->98048), Tissue 76.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #50, Column #737, Small shape: (392->400, 5888->5896), Large shape: (6272->6400, 94208->94336), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #51, Column #735, Small shape: (400->408, 5872->5880), Large shape: (6400->6528, 93952->94080), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #52, Column #739, Small shape: (408->416, 5904->5912), Large shape: (6528->6656, 94464->94592), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #53, Column #739, Small shape: (416->424, 5904->5912), Large shape: (6656->6784, 94464->94592), Tissue 45.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #54, Column #736, Small shape: (424->432, 5880->5888), Large shape: (6784->6912, 94080->94208), Tissue 64.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #54, Column #737, Small shape: (424->432, 5888->5896), Large shape: (6784->6912, 94208->94336), Tissue 79.69%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #54, Column #738, Small shape: (424->432, 5896->5904), Large shape: (6784->6912, 94336->94464), Tissue 65.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #62, Column #830, Small shape: (488->496, 6632->6640), Large shape: (7808->7936, 106112->106240), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #64, Column #832, Small shape: (504->512, 6648->6656), Large shape: (8064->8192, 106368->106496), Tissue 60.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #66, Column #830, Small shape: (520->528, 6632->6640), Large shape: (8320->8448, 106112->106240), Tissue 65.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #72, Column #750, Small shape: (568->576, 5992->6000), Large shape: (9088->9216, 95872->96000), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #72, Column #751, Small shape: (568->576, 6000->6008), Large shape: (9088->9216, 96000->96128), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #73, Column #752, Small shape: (576->584, 6008->6016), Large shape: (9216->9344, 96128->96256), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #75, Column #752, Small shape: (592->600, 6008->6016), Large shape: (9472->9600, 96128->96256), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #97, Column #766, Small shape: (768->776, 6120->6128), Large shape: (12288->12416, 97920->98048), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #98, Column #768, Small shape: (776->784, 6136->6144), Large shape: (12416->12544, 98176->98304), Tissue 87.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #99, Column #764, Small shape: (784->792, 6104->6112), Large shape: (12544->12672, 97664->97792), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #101, Column #766, Small shape: (800->808, 6120->6128), Large shape: (12800->12928, 97920->98048), Tissue 26.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #101, Column #767, Small shape: (800->808, 6128->6136), Large shape: (12800->12928, 98048->98176), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #128, Column #775, Small shape: (1016->1024, 6192->6200), Large shape: (16256->16384, 99072->99200), Tissue 62.50%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #131, Column #776, Small shape: (1040->1048, 6200->6208), Large shape: (16640->16768, 99200->99328), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #148, Column #788, Small shape: (1176->1184, 6296->6304), Large shape: (18816->18944, 100736->100864), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #149, Column #785, Small shape: (1184->1192, 6272->6280), Large shape: (18944->19072, 100352->100480), Tissue 96.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #150, Column #788, Small shape: (1192->1200, 6296->6304), Large shape: (19072->19200, 100736->100864), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #187, Column #766, Small shape: (1488->1496, 6120->6128), Large shape: (23808->23936, 97920->98048), Tissue 92.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #188, Column #764, Small shape: (1496->1504, 6104->6112), Large shape: (23936->24064, 97664->97792), Tissue 95.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #189, Column #768, Small shape: (1504->1512, 6136->6144), Large shape: (24064->24192, 98176->98304), Tissue 73.44%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #190, Column #763, Small shape: (1512->1520, 6096->6104), Large shape: (24192->24320, 97536->97664), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #191, Column #763, Small shape: (1520->1528, 6096->6104), Large shape: (24320->24448, 97536->97664), Tissue 54.69%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #191, Column #767, Small shape: (1520->1528, 6128->6136), Large shape: (24320->24448, 98048->98176), Tissue 51.56%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl001-C2-P62.ndpi, Row #193, Column #765, Small shape: (1536->1544, 6112->6120), Large shape: (24576->24704, 97792->97920), Tissue 92.19%]]
+final highlighted tiles:  176
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+added topK activation map numpy info set for slide: 23910-158_Sl001-C2-P62
+[
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #75, Column #827, Small shape: (592->600, 6608->6616), Large shape: (9472->9600, 105728->105856), Tissue 82.81%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #158, Column #862, Small shape: (1256->1264, 6888->6896), Large shape: (20096->20224, 110208->110336), Tissue 71.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #171, Column #856, Small shape: (1360->1368, 6840->6848), Large shape: (21760->21888, 109440->109568), Tissue 70.31%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #74, Column #827, Small shape: (584->592, 6608->6616), Large shape: (9344->9472, 105728->105856), Tissue 67.19%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #181, Column #885, Small shape: (1440->1448, 7072->7080), Large shape: (23040->23168, 113152->113280), Tissue 85.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #257, Column #894, Small shape: (2048->2056, 7144->7152), Large shape: (32768->32896, 114304->114432), Tissue 81.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #189, Column #888, Small shape: (1504->1512, 7096->7104), Large shape: (24064->24192, 113536->113664), Tissue 85.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #168, Column #855, Small shape: (1336->1344, 6832->6840), Large shape: (21376->21504, 109312->109440), Tissue 46.88%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl003-C3-P62.ndpi, Row #173, Column #874, Small shape: (1376->1384, 6984->6992), Large shape: (22016->22144, 111744->111872), Tissue 89.06%]]
+final highlighted tiles:  9
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+[
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #116, Column #776, Small shape: (920->928, 6200->6208), Large shape: (14720->14848, 99200->99328), Tissue 90.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #193, Column #788, Small shape: (1536->1544, 6296->6304), Large shape: (24576->24704, 100736->100864), Tissue 39.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #149, Column #813, Small shape: (1184->1192, 6496->6504), Large shape: (18944->19072, 103936->104064), Tissue 32.81%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #196, Column #758, Small shape: (1560->1568, 6056->6064), Large shape: (24960->25088, 96896->97024), Tissue 53.12%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #107, Column #738, Small shape: (848->856, 5896->5904), Large shape: (13568->13696, 94336->94464), Tissue 60.94%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #103, Column #744, Small shape: (816->824, 5944->5952), Large shape: (13056->13184, 95104->95232), Tissue 40.62%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #200, Column #748, Small shape: (1592->1600, 5976->5984), Large shape: (25472->25600, 95616->95744), Tissue 89.06%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #238, Column #760, Small shape: (1896->1904, 6072->6080), Large shape: (30336->30464, 97152->97280), Tissue 56.25%], 
+[Tile #D:/FLINC_dataset/slides/yang_p62\tissues\23910-158_Sl009-C7-P62.ndpi, Row #104, Column #742, Small shape: (824->832, 5928->5936), Large shape: (13184->13312, 94848->94976), Tissue 76.56%]]
+final highlighted tiles:  9
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+[]
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth
+with time: 0:03:16.6 sec, load 4 slides' activation
+originally attention tiles: 171 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 54 in round: 1
+fill surrounding tiles: 70 in round: 2
+fill surrounding tiles: 91 in round: 3
+all/k selection ratio in this slide: (7562 / 386)
+originally attention tiles: 11 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4927 / 11)
+originally attention tiles: 18 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (4271 / 18)
+originally attention tiles: 1 in slide: 23910-158_Sl241-CHV-40-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (18442 / 1)
+final highlighted tiles:  386
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+added topK activation map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  11
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  18
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  1
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl241-CHV-40-P62
+added topK activation map numpy info set for slide: 23910-158_Sl241-CHV-40-P62
+Store topK activation map numpy package as: actK_map_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pkl
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pth
+with time: 0:03:09.0 sec, load 4 slides' activation
+originally attention tiles: 464 in slide: 23910-158_Sl001-C2-P62
+fill surrounding tiles: 138 in round: 1
+fill surrounding tiles: 189 in round: 2
+fill surrounding tiles: 233 in round: 3
+all/k selection ratio in this slide: (7562 / 1024)
+originally attention tiles: 179 in slide: 23910-158_Sl003-C3-P62
+fill surrounding tiles: 41 in round: 1
+fill surrounding tiles: 54 in round: 2
+fill surrounding tiles: 63 in round: 3
+all/k selection ratio in this slide: (4927 / 337)
+originally attention tiles: 154 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 10 in round: 1
+fill surrounding tiles: 17 in round: 2
+fill surrounding tiles: 26 in round: 3
+all/k selection ratio in this slide: (4271 / 207)
+originally attention tiles: 5 in slide: 23910-158_Sl241-CHV-40-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+all/k selection ratio in this slide: (18442 / 5)
+final highlighted tiles:  1024
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl001-C2-P62
+added topK activation map numpy info set for slide: 23910-158_Sl001-C2-P62
+final highlighted tiles:  337
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl003-C3-P62
+added topK activation map numpy info set for slide: 23910-158_Sl003-C3-P62
+final highlighted tiles:  207
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK activation map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  5
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl241-CHV-40-P62
+added topK activation map numpy info set for slide: 23910-158_Sl241-CHV-40-P62
+Store topK activation map numpy package as: actK_map_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pkl
