@@ -27,8 +27,8 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [1.1]
-    # task_ids = [11]
-    task_ids = [10, 10.5]
+    task_ids = [11]
+    # task_ids = [10, 10.5]
     # task_ids = [10.5]
     
     task_str = '-' + '-'.join([str(id) for id in task_ids])
@@ -151,7 +151,7 @@ if __name__ == '__main__':
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         
         K_ratio = 0.75
-        act_thd = 0.4
+        act_thd = 0.3
         boost_rate = 2.0
         # pkg_range = [0, 50]
         color_map='bwr'

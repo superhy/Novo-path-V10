@@ -8,7 +8,8 @@ import sys
 
 from models.functions_clustering import _run_keamns_region_ctx_encode_vit_6_8, \
     _run_kmeans_attKtiles_encode_resnet18, _run_tiles_assimilate_encode_resnet18, \
-    load_clustering_pkg_from_pkl, _run_kmeans_act_K_tiles_encode_resnet18
+    load_clustering_pkg_from_pkl, _run_kmeans_act_K_tiles_encode_resnet18, \
+    _run_hierarchical_kmeans_encode_same
 from run_main import Logger
 from support import env_flinc_cd45, tools, env_flinc_p62
 
@@ -73,6 +74,14 @@ if __name__ == '__main__':
                                                                      K_ratio, act_thd, fills,
                                                                      manu_n_clusters=manu_n_clusters,
                                                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
+    if 123 in task_ids:
+        init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        silhouette_thd = 0.5
+        max_rounds = 2
+        
+        hierarchical_res_pkg = _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
+                                                                    silhouette_thd, max_rounds)
+    
     if 125 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4

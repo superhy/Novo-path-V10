@@ -12,6 +12,7 @@ from sklearn.cluster._dbscan import DBSCAN
 from sklearn.cluster._kmeans import KMeans, MiniBatchKMeans
 from sklearn.cluster._mean_shift import MeanShift, estimate_bandwidth
 from sklearn.cluster._spectral import SpectralClustering
+from sklearn.metrics.cluster._unsupervised import silhouette_score
 import torch
 from tqdm import tqdm
 
@@ -241,7 +242,7 @@ class Instance_Clustering():
     Clustering for tile instances from all (multiple) slides
     '''
 
-    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode',
+    def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode', encoder_filename=None,
                  tiles_r_tuples_pkl_name=None, key_tiles_list=None, exist_clustering=None,
                  reg_encoder=None, comb_layer=None, ctx_type='reg_ass', manu_n_clusters=None):
         '''
@@ -267,6 +268,8 @@ class Instance_Clustering():
         self.cluster_name = cluster_name
         self.embed_type = embed_type
         self.encoder = encoder
+        if encoder_filename is not None:
+            self.encoder, _ = reload_net(self.encoder, os.path.join(self.model_store_dir, encoder_filename))
         self.encoder = self.encoder.cuda()
         self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, self.encoder.name,
                                              self.embed_type, _env_task_name)
@@ -440,7 +443,68 @@ class Instance_Clustering():
         print('store the prediction results at: {} / {}'.format(self.model_store_dir, prediction_res_name))
         
         return prediction_res_pkg
+    
+    def calculate_cluster_silhouette(self, clustering_res_pkg, check_clst):
+        '''
+        check the silhouette for current clustering results
+        '''
+        # get the cluster id which we need to check
+        cluster_encodes = [encode for res, encode, tile, slide_id in clustering_res_pkg if res == check_clst]
+    
+        if len(cluster_encodes) < 2:
+            # at least need 2 samples in cluster
+            return 1
+    
+        cluster_encodes = np.array(cluster_encodes)
+        # calculate the inner-cluster silhouette score
+        silhouette = silhouette_score(cluster_encodes, [check_clst]*len(cluster_encodes))
+        return silhouette
+    
+    def hierarchical_clustering(self, init_clst_res_pkg, silhouette_thd=0.5, max_rounds=3):
+        '''
+        conduct hierarchical clustering, using recursive style
         
+        Args:
+            silhouette_thd:
+            max_rounds:
+        '''
+        
+        hierarchical_clst_result = []
+        current_clst_pkg = init_clst_res_pkg
+    
+        for round in range(max_rounds):
+            updated_clst_pkg = []
+            split_occurred = False
+    
+            unique_clusters = set([res for res, _, _, _ in current_clst_pkg])
+            for cluster_id in unique_clusters:
+                cluster_subset = [item for item in current_clst_pkg if item[0] == cluster_id]
+                cluster_encodes = [encode for res, encode, tile, slide_id in cluster_subset]
+    
+                cluster_silhouette = self.calculate_cluster_silhouette(current_clst_pkg, cluster_id)
+
+                if cluster_silhouette < silhouette_thd:
+                    split_occurred = True
+                    # only apply Kmeans for hierarchical clustering
+                    kmeans = KMeans(n_clusters=2, random_state=0).fit(np.array(cluster_encodes))
+                    sub_cluster_labels = kmeans.labels_
+
+                    for i, label in enumerate(sub_cluster_labels):
+                        new_res = f"{cluster_id}_{label}"
+                        updated_clst_pkg.append((new_res, *cluster_subset[i][1:]))
+                else:
+                    # the clusters without any more split, put in the final clustering results
+                    hierarchical_clst_result.extend(cluster_subset)
+    
+            current_clst_pkg = updated_clst_pkg
+    
+            if not split_occurred:  # no more split
+                break
+    
+        # put the last round of results to final results
+        hierarchical_clst_result.extend(current_clst_pkg)
+        return hierarchical_clst_result
+    
     def load_K_means(self):
         '''
         load the model of k-means clustering algorithm
@@ -964,7 +1028,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
-                                     attention_tiles_list=att_all_tiles_list,
+                                     key_tiles_list=att_all_tiles_list,
                                      manu_n_clusters=manu_n_clusters)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
@@ -1002,8 +1066,9 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
     # we set up manu_n_clusters=3 here, only 3 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
+                                     encoder_filename=tile_net_filenames[0],
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
-                                     attention_tiles_list=act_all_tiles_list,
+                                     key_tiles_list=act_all_tiles_list,
                                      manu_n_clusters=manu_n_clusters)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
@@ -1017,6 +1082,33 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
     print(res_dict)
     
     return clustering_res_pkg
+
+def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name, 
+                                         silhouette_thd=0.5, max_rounds=3):
+    '''
+    TODO:
+    '''
+    init_clst_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, init_clst_pkl_name)
+    # this clustering object is not runnable, only used for hierarchical clustering
+    sec_clustering = Instance_Clustering(ENV_task=ENV_task, encoder=None,
+                                         cluster_name='Kmeans', embed_type='encode')
+    
+    hierarchical_res_pkg = sec_clustering.hierarchical_clustering(init_clst_res_pkg, 
+                                                                  silhouette_thd, max_rounds)
+    hierarchical_name = init_clst_pkl_name.replace('clst-res', 'hiera-res')
+    
+    store_clustering_pkl(ENV_task.MODEL_FOLDER, hierarchical_res_pkg, hierarchical_name)
+    print(f'load and storage clustering results as {hierarchical_name}: ')
+    res_dict = {}
+    for res_tuple in hierarchical_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+    return hierarchical_res_pkg
+    
 
 def _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                           tile_net_filename=None, exc_clustered=True,

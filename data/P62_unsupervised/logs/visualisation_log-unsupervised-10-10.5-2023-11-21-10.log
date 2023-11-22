@@ -1,0 +1,16 @@
+load model from: /data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth
+with time: 2:30:39.7 sec, load 246 slides' activation
+with time: 2:27:04.5 sec, load 246 slides' activation
+store the activation scores (org & ft) for all tiles at /data/slides/yang_p62/visualization/heatmap
+load model from: /data/slides/yang_p62/models/checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth
+with time: 2:14:44.5 sec, load 246 slides' activation
+Traceback (most recent call last):
+  File "run_visual_dect.py", line 149, in <module>
+    _run_get_top_act_tiles_embeds_allslides(ENV_task, t_net_name, K)
+  File "/home/cqj236/workspace/Novo-path-V10/interpre/prep_dect_vis.py", line 752, in _run_get_top_act_tiles_embeds_allslides
+    slide_K_t_embeds_dict = load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K)
+  File "/home/cqj236/workspace/Novo-path-V10/interpre/prep_dect_vis.py", line 424, in load_embeds_top_act_tiles_inslides
+    K, thd=0.0)
+  File "/home/cqj236/workspace/Novo-path-V10/models/functions_mil_tryk.py", line 115, in filter_singleslide_top_thd_active_K_tiles
+    thd_idx = np.where(slide_acts < thd)[0][0] if reverse is False else np.where(slide_acts > thd)[0][0]
+IndexError: index 0 is out of bounds for axis 0 with size 0

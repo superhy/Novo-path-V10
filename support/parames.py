@@ -32,8 +32,8 @@ class parames_basic():
         
         ''' some default dirs '''
         if self.OS_NAME == 'Windows':
-            self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
-            # self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
+            # self.PROJECT_DIR = os.path.join('D:/eclipse-workspace', self.PROJECT_NAME)
+            self.PROJECT_DIR = os.path.join('D:/workspace', self.PROJECT_NAME)
         elif self.OS_NAME == 'Darwin':
             self.PROJECT_DIR = os.path.join('/Users/superhy/Documents/workspace/', self.PROJECT_NAME)
         else:
