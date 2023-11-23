@@ -74,6 +74,10 @@ if __name__ == '__main__':
                                                                      K_ratio, act_thd, fills,
                                                                      manu_n_clusters=manu_n_clusters,
                                                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
+    if 121.1 in task_ids:
+        '''
+        TODO: _run_means_filt_act_tiles_encode_resnet18
+        '''
     if 123 in task_ids:
         init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         silhouette_thd = 0.5
@@ -82,7 +86,7 @@ if __name__ == '__main__':
         hierarchical_res_pkg = _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
                                                                     silhouette_thd, max_rounds)
     
-    if 125 in task_ids:
+    if 129 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         print('need to re-load clustering results first!')

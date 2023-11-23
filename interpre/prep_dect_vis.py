@@ -198,6 +198,7 @@ def topK_score_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_score
         start_col = width // 2
         return heat[:, start_col:]
     
+    # TODO: debug if k_slide_tiles_list == []
     slide_np, _ = k_slide_tiles_list[0].get_np_scaled_slide()
     H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
     W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)

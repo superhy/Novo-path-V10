@@ -1,0 +1,11 @@
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth
+with time: 0:03:12.6 sec, load 4 slides' activation
+0.01108105 0.0 7561
+get the embedding of top K tiles for slide: 23910-158_Sl001-C2-P62,with ft:  (50, 2) org:  (50, 2)
+0.003359026 0.0 4926
+get the embedding of top K tiles for slide: 23910-158_Sl003-C3-P62,with ft:  (50, 2) org:  (50, 2)
+0.012767817 0.0 4270
+get the embedding of top K tiles for slide: 23910-158_Sl009-C7-P62,with ft:  (50, 2) org:  (50, 2)
+0.001934655 0.0 18441
+get the embedding of top K tiles for slide: 23910-158_Sl241-CHV-40-P62,with ft:  (50, 2) org:  (50, 2)
+store the embedding (org & ft) for top tiles at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\K_t_embedsResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl

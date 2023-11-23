@@ -114,6 +114,7 @@ def filter_singleslide_top_thd_active_K_tiles(slide_tiles_list, slide_acts, K, t
             thd_idx = len(slide_acts) - 1
         else:
             thd_idx = np.where(slide_acts < thd)[0][0] if reverse is False else np.where(slide_acts > thd)[0][0]
+        print(np.min(slide_acts), thd, thd_idx)
         thd_K = thd_idx if thd_idx < K else K
     else:
         thd_K = K

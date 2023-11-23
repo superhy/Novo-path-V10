@@ -27,9 +27,9 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [1.1]
-    task_ids = [11.1]
+    # task_ids = [11.1]
     # task_ids = [10, 10.5]
-    # task_ids = [10.5]
+    task_ids = [10.5]
     
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
@@ -184,6 +184,10 @@ if __name__ == '__main__':
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, lob_t_net_filenames, cut_left, 
                                                      lob_K_ratio, lob_act_thd, boost_rate, 
                                                      fills, lob_cmap, pkg_range)
+    if 11. in task_ids:
+        '''
+        TODO: _run_make_filt_activation_heatmap_resnet_P62
+        '''
     
         
         
