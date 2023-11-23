@@ -593,7 +593,7 @@ class AttentionPool(nn.Module):
         att = self.attention(X_e)
         att = att.transpose(-2, -1)
         ''' record the attention value (before softmax) '''
-        att_r = torch.squeeze(att, dim=1)
+        # att_r = torch.squeeze(att, dim=1)
         att = F.softmax(att, dim=-1)
 #         att = torch.sigmoid(att)
         mask = (torch.arange(att.shape[-1], device=att.device).expand(att.shape) < bag_lens.unsqueeze(1).unsqueeze(1)).byte()
@@ -603,7 +603,7 @@ class AttentionPool(nn.Module):
         output = self.fc_out(att_H).squeeze(1)
         
         ''' record the attention value (after softmax) '''
-        # att_r = torch.squeeze(att, dim=1)
+        att_r = torch.squeeze(att, dim=1)
 #         output_label = F.softmax(output, dim=1).argmax(dim=1)
 
         return output, att_r, att_H
@@ -660,7 +660,7 @@ class GatedAttentionPool(nn.Module):
         att = self.attention(att_V * att_U)
         att = att.transpose(-2, -1)
         ''' record the attention value (before softmax) '''
-        att_r = torch.squeeze(att, dim=1)
+        # att_r = torch.squeeze(att, dim=1)
         att = F.softmax(att, dim=-1)
         
         mask = (torch.arange(att.shape[-1], device=att.device).expand(att.shape) < bag_lens.unsqueeze(1).unsqueeze(1)).byte()
@@ -670,7 +670,7 @@ class GatedAttentionPool(nn.Module):
         output = self.fc_out(att_H).squeeze(1)
         
         ''' record the attention value (after softmax) '''
-        # att_r = torch.squeeze(att, dim=1)
+        att_r = torch.squeeze(att, dim=1)
 #         output_label = F.softmax(output, dim=1).argmax(dim=1)
 
         return output, att_r, att_H

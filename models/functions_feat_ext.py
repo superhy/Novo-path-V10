@@ -281,7 +281,8 @@ def fill_surrounding_void(ENV_task, k_slide_tiles_list, k_attscores,
 
 def filter_neg_att_tiles(slide_tiles_atts_dict, slide_neg_tiles_atts_dict):
     '''
-    discard the tiles from positive attention tile list which were negatively attention 
+    discard the tiles from positive attention tile list which were negatively attention
+    PS: this function can be used for filter activation score as well!
     '''
     filt_all_tiles_list = []
     slide_filt_tiles_atts_dict = {}

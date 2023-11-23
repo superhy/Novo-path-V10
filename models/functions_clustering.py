@@ -20,7 +20,7 @@ from models import datasets, functions_attpool, functions_lcsb, functions, \
     networks, functions_feat_ext, seg_datasets, functions_mil_tryk
 from models.functions_feat_ext import access_encodes_imgs, avg_neigb_encodes, \
     comput_region_ctx_comb_encodes, make_neighb_coords, fill_surrounding_void, \
-    select_top_att_tiles, select_top_active_tiles
+    select_top_att_tiles, select_top_active_tiles, filter_neg_att_tiles
 from models.networks import ViT_D6_H8, reload_net, ViT_Region_4_6, CombLayers, \
     check_reuse_net, GatedAttentionPool, AttentionPool, BasicResNet18
 import numpy as np
@@ -1014,7 +1014,6 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     Args:
         K_ratio: top % samples with attention value
         att_thd: the minimum acceptable attention value
-        fill_void: whether to complete tiles surrounded by hot spots? (Yes/No)
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
     tile_encoder = tile_encoder.cuda()
@@ -1024,7 +1023,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
                                                  agt_model_filenames, label_dict,
                                                  K_ratio=K_ratio, att_thd=att_thd, fills=fills)
     
-    # we set up manu_n_clusters=3 here, only 3 clusters
+    # if we set up manu_n_clusters=3 here, only 3 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
@@ -1047,23 +1046,21 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
                                             K_ratio, act_thd, fills, manu_n_clusters=5,
                                             tiles_r_tuples_pkl_name=None):
     '''
-    clustering the tiles with high attention values 
+    clustering the tiles with high activation values 
     by classification trained on H&E reports annotations
     
     Args:
-        K_ratio: top % samples with attention value
-        att_thd: the minimum acceptable attention value
-        fill_void: whether to complete tiles surrounded by hot spots? (Yes/No)
+        K_ratio: top % samples with activation score
+        act_thd: the minimum acceptable activation value
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
-    tile_encoder = tile_encoder.cuda()
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
     
     act_all_tiles_list, _ = select_top_active_tiles(ENV_task, tile_encoder,
                                                     tile_net_filenames, label_dict,
                                                     K_ratio=K_ratio, act_thd=act_thd, fills=fills)
     
-    # we set up manu_n_clusters=3 here, only 3 clusters
+    # if we set up manu_n_clusters=4 here, only 4 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
                                      encoder_filename=tile_net_filenames[0],
@@ -1082,6 +1079,53 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
     print(res_dict)
     
     return clustering_res_pkg
+
+def _run_kmeans_filter_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, ENV_neg_annotations,
+                                                   tile_net_filenames, neg_t_filenames_list,
+                                                   K_ratio, act_thd, fills, neg_parames,
+                                                   manu_n_clusters=5, tiles_r_tuples_pkl_name=None):
+    '''
+    '''
+    tile_encoder = networks.BasicResNet18(output_dim=2)
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    stea_label_dict = query_task_label_dict_fromcsv(ENV_neg_annotations[0])
+    lob_label_dict = query_task_label_dict_fromcsv(ENV_neg_annotations[1])
+    neg_label_dicts = [stea_label_dict, lob_label_dict]
+    
+    act_all_tiles_list, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder,
+                                                                          tile_net_filenames, ball_label_dict,
+                                                                          K_ratio=K_ratio, act_thd=act_thd, fills=fills)
+    # filtering the negative activation from original maps
+    for i, neg_model_filenames in enumerate(neg_t_filenames_list):
+        print(f'> filter the negative activation for {neg_model_filenames[0]}...')
+        n_label_dict = neg_label_dicts[i]
+        k_rat, a_thd = neg_parames[i]
+        _, slide_neg_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
+                                                               neg_model_filenames, n_label_dict,
+                                                               k_rat, a_thd, fills=fills)
+        act_all_tiles_list, slide_k_tiles_acts_dict = filter_neg_att_tiles(slide_k_tiles_acts_dict, 
+                                                                           slide_neg_tiles_acts_dict)
+    
+    # if we set up manu_n_clusters=4 here, only 4 clusters
+    clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
+                                     cluster_name='Kmeans', embed_type='encode',
+                                     encoder_filename=tile_net_filenames[0],
+                                     tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
+                                     key_tiles_list=act_all_tiles_list,
+                                     manu_n_clusters=manu_n_clusters)
+    
+    clustering_res_pkg, cluster_centers = clustering.fit_predict()
+    print('clustering number of centres:', len(cluster_centers))
+    res_dict = {}
+    for res_tuple in clustering_res_pkg:
+        if res_tuple[0] not in res_dict.keys():
+            res_dict[res_tuple[0]] = 0
+        else:
+            res_dict[res_tuple[0]] += 1
+    print(res_dict)
+    
+    return clustering_res_pkg
+    
 
 def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name, 
                                          silhouette_thd=0.5, max_rounds=3):

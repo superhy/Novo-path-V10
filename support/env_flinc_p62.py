@@ -191,7 +191,7 @@ ENV_FLINC_P62_BALL_BI = parames_task(
     try_k_0=50,
     try_k_1=50,
     num_tk_epoch=5,
-    stop_tk_acc=0.7
+    stop_tk_acc=0.75
     )
 
 ENV_FLINC_P62_STEA_BI = parames_task(
@@ -384,7 +384,7 @@ ENV_FLINC_P62_BALL_HV = parames_task(
     try_k_0=80,
     try_k_1=20,
     num_tk_epoch=5,
-    stop_tk_acc=0.7
+    stop_tk_acc=0.75
     )
 
 ENV_FLINC_P62_STEA_HV = parames_task(

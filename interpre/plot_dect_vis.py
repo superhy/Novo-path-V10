@@ -4,13 +4,15 @@ Created on 25 Nov 2022
 @author: Yang Hu
 '''
 import os
-import numpy as np
+
+from scipy.stats.kde import gaussian_kde
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
 from interpre.prep_tools import load_vis_pkg_from_pkl
 from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
     df_p62_s_clst_and_assim_t_p_ball_corr
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from support.files import parse_slideid_from_filepath, parse_caseid_from_slideid
@@ -75,7 +77,7 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name,
     for tag in activations.keys():
         activations[tag] = np.asarray(activations[tag])
         
-    sns.set(style="whitegrid")
+    sns.set(style="ticks")
     
     plt.figure(figsize=(5, 4))
     for tag, activation in activations.items():
@@ -85,11 +87,34 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name,
         label_name = f'{name_dict[ENV_task.STAIN_TYPE]} {tag}' if tag != 'HV' else 'Healthy volunteers'
         sns.kdeplot(activation, fill=True, clip=(0, np.max(activation)),
                     label=label_name)
+        
+    # calculate the conjunction point of 'HV' and '2'
+    kde_HV = gaussian_kde(np.array(activations['HV']))
+    kde_2 = gaussian_kde(np.array(activations['2']))
+    x = np.linspace(0.2, 0.5, 1000) # set a searching points scope
+    kde_vals_HV = kde_HV(x)
+    kde_vals_2 = kde_2(x)
+    # the conjunction is the lowest points with the difference of 'HV' and '2'
+    index = np.argmin(np.abs(kde_vals_HV - kde_vals_2))
+    cross_point = x[index]
+    
+    # draw
+    plt.axvline(x=cross_point, color='gray', linestyle='--')
+    plt.text(cross_point, 0, f'{cross_point:.2f}', color='black', ha='center')
+    
     
     plt.xlim(0, 1.0)
     plt.title('Activation dist for diff-groups')
     plt.xlabel('Activation')
     plt.ylabel('Density')
+    
+    current_ticks = plt.xticks()[0]
+    if 0.5 not in current_ticks:
+        new_ticks = np.sort(np.append(current_ticks, 0.5))
+    else:
+        new_ticks = current_ticks
+    plt.xticks(new_ticks)
+    
     plt.legend(loc=legend_loc)
     plt.tight_layout()
     plt.savefig(os.path.join(heat_store_dir, 'groups_activation_distribution-kde-{}.png'.format('ft' if act_type == 0 else 'org') ) )

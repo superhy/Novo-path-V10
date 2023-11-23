@@ -504,6 +504,67 @@ def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label
                       slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
     
+def make_filt_activation_heatmap_package(ENV_task, pos_model_filenames, pos_label_dict,
+                                         neg_model_filenames_list, neg_label_dicts,
+                                         cut_left=True, tile_encoder=None, K_ratio=0.5, act_thd=0.4, 
+                                         boost_rate=2.0, fills=[3],
+                                         neg_parames=[(0.2, 0.2), (0.2, 0.2)], 
+                                         color_map='bwr', pkg_range=None, only_soft_map=False):
+    """
+    make the filtered (after discarded negative activation patches) for 
+        tryk mil visualisation (only 1 round, no milestones), 
+    only highlight the picked tiles with the highest activation scores.
+        
+    Args:
+        neg_model_filenames_list: list of list, with different negative activation focused, like for stea or lob-inf
+        neg_label_dicts: for different negative activation labels
+        neg_parames: must be the same length with neg_model_filenames_list and neg_label_dicts
+            contains parames with (K_ratio, act_thd) for negative activation maps
+    """
+    
+    ''' prepare some parames '''
+    _env_heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    _env_model_store_dir = ENV_task.MODEL_FOLDER
+    
+    for_train = False if not ENV_task.DEBUG_MODE else True
+    
+    if tile_encoder is None:
+        tile_encoder = BasicResNet18(output_dim=2)
+    
+    _, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
+                                                         pos_model_filenames, pos_label_dict,
+                                                         K_ratio, act_thd, fills=fills, pkg_range=pkg_range)
+    # filtering the negative activation from original maps
+    for i, neg_model_filenames in enumerate(neg_model_filenames_list):
+        print(f'> filter the negative activation for {neg_model_filenames[0]}...')
+        n_label_dict = neg_label_dicts[i]
+        k_rat, a_thd = neg_parames[i]
+        _, slide_neg_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
+                                                               neg_model_filenames, n_label_dict,
+                                                               k_rat, a_thd, fills=fills, pkg_range=pkg_range)
+        _, slide_k_tiles_acts_dict = filter_neg_att_tiles(slide_k_tiles_acts_dict, slide_neg_tiles_acts_dict)
+    
+    slide_topK_act_heatmap_dict = {}
+    for slide_id in slide_k_tiles_acts_dict.keys():
+        k_slide_tiles_list, k_actscores = slide_k_tiles_acts_dict[slide_id]
+        org_image, heat_np, heat_hard_cv2, heat_soft_cv2 = topK_score_heatmap_single_scaled_slide(ENV_task,
+                                                                                                k_slide_tiles_list, 
+                                                                                                k_actscores,
+                                                                                                boost_rate=boost_rate,
+                                                                                                cut_left=cut_left,
+                                                                                                color_map=color_map)
+        slide_topK_act_heatmap_dict[slide_id] = {'original': org_image,
+                                                 'heat_np': heat_np,
+                                                 'heat_hard_cv2': heat_hard_cv2 if only_soft_map is False else None,
+                                                 'heat_soft_cv2': heat_soft_cv2
+                                                 }
+        print('added topK activation map numpy info set for slide: {}'.format(slide_id))
+        
+    act_heatmap_pkl_name = pos_model_filenames[0].replace('checkpoint', 'filt_map').replace('.pth', '.pkl')
+    store_nd_dict_pkl(_env_heatmap_store_dir,
+                      slide_topK_act_heatmap_dict, act_heatmap_pkl_name)
+    print('Store topK activation map numpy package as: {}'.format(act_heatmap_pkl_name))
+
 
 def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left):
     '''
@@ -803,6 +864,29 @@ def _run_make_filt_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, n
                                         cut_left, tile_encoder, K_ratio, att_thd, 
                                         boost_rate, fills, neg_parames, color_map, 
                                         pkg_range, only_soft_map)
+    
+def _run_make_filt_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, neg_t_net_filenames_list,
+                                                 cut_left, K_ratio=0.5, act_thd=0.4, 
+                                                 boost_rate=2.0, fills=[3],
+                                                 neg_parames=[(0.5, 0.5), (0.5, 0.5)], 
+                                                 color_map='bwr', pkg_range=[0, 50], only_soft_map=True):
+    '''
+    make the final activation map 
+    with discard the tiles which were negatively activation
+    '''
+    ENV_annotation_ball, ENV_annotation_stea, ENV_annotation_lob = ENV_FLINC_P62_BALL_BI, \
+    ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI
+    
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_annotation_ball)
+    stea_label_dict = query_task_label_dict_fromcsv(ENV_annotation_stea)
+    lob_label_dict = query_task_label_dict_fromcsv(ENV_annotation_lob)
+    
+    tile_encoder = BasicResNet18(output_dim=2)
+    make_filt_activation_heatmap_package(ENV_task, tile_net_filenames, ball_label_dict,
+                                         neg_t_net_filenames_list, [stea_label_dict, lob_label_dict],
+                                         cut_left, tile_encoder, K_ratio, act_thd, 
+                                         boost_rate, fills, neg_parames, color_map, 
+                                         pkg_range, only_soft_map)
     
     
 def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left=True):
