@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     # task_ids = [0]
     # task_ids = [2]
-    task_ids = [1]
+    task_ids = [1.1]
     # task_ids = [10]
     
     if 0 in task_ids:
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         stea_map_pkl_name = 'actK_map_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pkl'
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation_stea, stea_map_pkl_name, folder_sfx='stea')
         # lob_map_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_lobular_inflammation_score_bi_[190]2023-11-08.pkl'
-        lob_map_pkl_name = 'actK_map_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pkl'
+        lob_map_pkl_name = 'actK_map_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-24.pkl'
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation_lob, lob_map_pkl_name, folder_sfx='lob')
     if 1.2 in task_ids:
         heatmap_pkl_name = 'filt_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         act_scores_pkl_name = 'act_score_ft-org_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl'
         ENV_label_hv = env_flinc_p62.ENV_FLINC_P62_BALL_HV
         cut_top=500
-        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0, cut_top=cut_top) # ft
-        # _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, 
-        #                           act_type=1, cut_top=cut_top, legend_loc='upper left') # org
+        # _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0, cut_top=cut_top, conj_s_range=(0.2, 0.5)) # ft
+        _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, 
+                                  act_type=1, cut_top=cut_top, legend_loc='upper left') # org
         

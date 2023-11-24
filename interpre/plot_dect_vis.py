@@ -46,7 +46,7 @@ def _plot_draw_scaled_slide_imgs(ENV_task):
     
     
 def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, 
-                              act_type=0, cut_top=None, legend_loc='best'):
+                              act_type=0, cut_top=None, legend_loc='best', conj_s_range=None):
     '''
     plot the activation scores' distribution, with different tag of group, like HV, 0, X
     
@@ -87,21 +87,20 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name,
         label_name = f'{name_dict[ENV_task.STAIN_TYPE]} {tag}' if tag != 'HV' else 'Healthy volunteers'
         sns.kdeplot(activation, fill=True, clip=(0, np.max(activation)),
                     label=label_name)
-        
-    # calculate the conjunction point of 'HV' and '2'
-    kde_HV = gaussian_kde(np.array(activations['HV']))
-    kde_2 = gaussian_kde(np.array(activations['2']))
-    x = np.linspace(0.2, 0.5, 1000) # set a searching points scope
-    kde_vals_HV = kde_HV(x)
-    kde_vals_2 = kde_2(x)
-    # the conjunction is the lowest points with the difference of 'HV' and '2'
-    index = np.argmin(np.abs(kde_vals_HV - kde_vals_2))
-    cross_point = x[index]
-    
-    # draw
-    plt.axvline(x=cross_point, color='gray', linestyle='--')
-    plt.text(cross_point, 0, f'{cross_point:.2f}', color='black', ha='center')
-    
+       
+    if conj_s_range is not None: 
+        # calculate the conjunction point of 'HV' and '2'
+        kde_HV = gaussian_kde(np.array(activations['HV']))
+        kde_2 = gaussian_kde(np.array(activations['2']))
+        x = np.linspace(conj_s_range[0], conj_s_range[1], 1000) # set a searching points scope
+        kde_vals_HV = kde_HV(x)
+        kde_vals_2 = kde_2(x)
+        # the conjunction is the lowest points with the difference of 'HV' and '2'
+        index = np.argmin(np.abs(kde_vals_HV - kde_vals_2))
+        cross_point = x[index]
+        # draw
+        plt.axvline(x=cross_point, color='gray', linestyle='--')
+        plt.text(cross_point, 0, f'{cross_point:.2f}', color='black', ha='center')
     
     plt.xlim(0, 1.0)
     plt.title('Activation dist for diff-groups')

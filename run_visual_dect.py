@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # task_ids = [1.1]
     # task_ids = [11.1]
     # task_ids = [10, 10.5]
-    task_ids = [11]
+    task_ids = [11.1]
     
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
@@ -166,9 +166,9 @@ if __name__ == '__main__':
         (for steatosis_score_hv and lobular_inflammation_score_hv)
         '''    
         stea_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth']
-        lob_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pth']
-        stea_K_ratio, stea_act_thd = 0.75, 0.4
-        lob_K_ratio, lob_act_thd = 0.75, 0.4
+        lob_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-24.pth']
+        stea_K_ratio, stea_act_thd = 0.75, 0.3
+        lob_K_ratio, lob_act_thd = 0.75, 0.3
         stea_cmap = 'PiYG'
         lob_cmap = 'BrBG'
 
@@ -192,11 +192,11 @@ if __name__ == '__main__':
         K_ratio = 0.75
         att_thd = 0.36
         
-        stea_model_filenames = ['']
-        lob_model_filenames = ['']
+        stea_model_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth']
+        lob_model_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-24.pth']
         neg_model_filenames_list = [stea_model_filenames, lob_model_filenames]
-        stea_K_ratio, stea_att_thd = 0.75, 0.4
-        lob_K_ratio, lob_att_thd = 0.75, 0.4
+        stea_K_ratio, stea_att_thd = 0.75, 0.3
+        lob_K_ratio, lob_att_thd = 0.75, 0.3
         neg_parames = [(stea_K_ratio, stea_att_thd), (lob_K_ratio, lob_att_thd)]
         
         boost_rate = 2.0
