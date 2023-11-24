@@ -427,9 +427,9 @@ def load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K):
         K_tile_loader = functions.get_data_loader(K_tile_set, batch_size=batch_size_ontiles,
                                                   num_workers=tile_loader_num_workers, 
                                                   sf=False, p_mem=False)
-        K_s_t_embeds_ft = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_ft, 
+        K_s_t_embeds_ft = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_ft.backbone, 
                                                                  slide_id, print_info=False)
-        K_s_t_embeds_org = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_org, 
+        K_s_t_embeds_org = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_org.backbone, 
                                                                   slide_id, print_info=False)
         slide_K_t_embeds_dict[slide_id] = (K_s_t_embeds_ft, K_s_t_embeds_org)
         print(f'get the embedding of top K tiles for slide: {slide_id}', end=',')
