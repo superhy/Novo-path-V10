@@ -428,7 +428,7 @@ def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
         for tile, slide_id in picked_tile_slideids:
             tile_img = tile.get_np_tile()
             clst_tile_img_dict[label].append((slide_id, tile, tile_img))
-        print('sampled %d tile demos for cluster-%d' % (nb_sample, label) )
+        print(f'sampled {nb_sample} tile demos for cluster-{label}' )
             
     clst_tiledemo_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tiledemo')
     store_nd_dict_pkl(heat_store_dir, clst_tile_img_dict, clst_tiledemo_pkl_name)
