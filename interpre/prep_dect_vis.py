@@ -504,8 +504,7 @@ def make_filt_attention_heatmap_package(ENV_task, pos_model_filenames, pos_label
                       slide_topK_att_heatmap_dict, att_heatmap_pkl_name)
     print('Store topK attention map numpy package as: {}'.format(att_heatmap_pkl_name))
     
-def make_filt_activation_heatmap_package(ENV_task, pos_model_filenames, pos_label_dict,
-                                         neg_model_filenames_list, neg_label_dicts,
+def make_filt_activation_heatmap_package(ENV_task, pos_model_filenames, neg_model_filenames_list,
                                          cut_left=True, tile_encoder=None, K_ratio=0.5, act_thd=0.4, 
                                          boost_rate=2.0, fills=[3],
                                          neg_parames=[(0.2, 0.2), (0.2, 0.2)], 
@@ -532,15 +531,14 @@ def make_filt_activation_heatmap_package(ENV_task, pos_model_filenames, pos_labe
         tile_encoder = BasicResNet18(output_dim=2)
     
     _, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
-                                                         pos_model_filenames, pos_label_dict,
+                                                         pos_model_filenames,
                                                          K_ratio, act_thd, fills=fills, pkg_range=pkg_range)
     # filtering the negative activation from original maps
     for i, neg_model_filenames in enumerate(neg_model_filenames_list):
         print(f'> filter the negative activation for {neg_model_filenames[0]}...')
-        n_label_dict = neg_label_dicts[i]
         k_rat, a_thd = neg_parames[i]
         _, slide_neg_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
-                                                               neg_model_filenames, n_label_dict,
+                                                               neg_model_filenames,
                                                                k_rat, a_thd, fills=fills, pkg_range=pkg_range)
         _, slide_k_tiles_acts_dict = filter_neg_att_tiles(slide_k_tiles_acts_dict, slide_neg_tiles_acts_dict)
     
@@ -877,13 +875,8 @@ def _run_make_filt_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, n
     ENV_annotation_ball, ENV_annotation_stea, ENV_annotation_lob = ENV_FLINC_P62_BALL_BI, \
     ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI
     
-    ball_label_dict = query_task_label_dict_fromcsv(ENV_annotation_ball)
-    stea_label_dict = query_task_label_dict_fromcsv(ENV_annotation_stea)
-    lob_label_dict = query_task_label_dict_fromcsv(ENV_annotation_lob)
-    
     tile_encoder = BasicResNet18(output_dim=2)
-    make_filt_activation_heatmap_package(ENV_task, tile_net_filenames, ball_label_dict,
-                                         neg_t_net_filenames_list, [stea_label_dict, lob_label_dict],
+    make_filt_activation_heatmap_package(ENV_task, tile_net_filenames, neg_t_net_filenames_list,
                                          cut_left, tile_encoder, K_ratio, act_thd, 
                                          boost_rate, fills, neg_parames, color_map, 
                                          pkg_range, only_soft_map)

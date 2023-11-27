@@ -27,8 +27,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [21, 22, 29]
-    # task_ids = [20]
+    # task_ids = [21, 22, 29]
+    task_ids = [22]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -76,9 +76,10 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
         
-        nb_sample=1000
+        nb_sample=100
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     if 23 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'

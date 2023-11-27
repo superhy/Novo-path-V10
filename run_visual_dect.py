@@ -27,10 +27,10 @@ if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
-    # task_ids = [1.1]
+    task_ids = [1]
     # task_ids = [11.1]
     # task_ids = [10, 10.5]
-    task_ids = [11.1]
+    # task_ids = [11.1]
     
     task_str = '-' + '-'.join([str(id) for id in task_ids])
     
@@ -49,13 +49,13 @@ if __name__ == '__main__':
         
         agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
         
-        K_ratio = 0.25
+        K_ratio = 0.3
         att_thd = 0.3
         boost_rate = 2.0
         # pkg_range = [0, 50]
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 3]
+        fills = [3, 3, 3, 3]
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, 'bwr', pkg_range)
@@ -137,17 +137,20 @@ if __name__ == '__main__':
     if 10 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[4]2023-11-23.pth']
+        # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[7]2023-11-25.pth']
         for t_net_name in tile_net_filenames:
             _load_activation_score_resnet_P62(ENV_task, t_net_name)   
     if 10.5 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[4]2023-11-23.pth']
+        # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[7]2023-11-25.pth']
         K=50
         for t_net_name in tile_net_filenames:
             _run_get_top_act_tiles_embeds_allslides(ENV_task, t_net_name, K)
     if 11 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[4]2023-11-23.pth']
+        # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-25.pth']
         
         K_ratio = 0.75
         act_thd = 0.36
@@ -156,7 +159,7 @@ if __name__ == '__main__':
         color_map='bwr'
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 3, 4]
+        fills = [3, 3, 3, 3, 3]
         
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, cut_left, 
                                                      K_ratio, act_thd, boost_rate, fills, color_map, pkg_range)
@@ -165,21 +168,21 @@ if __name__ == '__main__':
         visualisation for negative activation map
         (for steatosis_score_hv and lobular_inflammation_score_hv)
         '''    
-        stea_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth']
-        lob_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-24.pth']
-        stea_K_ratio, stea_act_thd = 0.75, 0.3
-        lob_K_ratio, lob_act_thd = 0.75, 0.3
+        stea_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[3]2023-11-24.pth']
+        lob_t_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[7]2023-11-26.pth']
+        stea_K_ratio, stea_act_thd = 0.75, 0.4
+        lob_K_ratio, lob_act_thd = 0.75, 0.4
         stea_cmap = 'PiYG'
         lob_cmap = 'BrBG'
 
         boost_rate = 2.0
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 3, 4]
+        fills = [3, 3, 3, 3, 3]
         
-        _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
-                                                     stea_K_ratio, stea_act_thd, boost_rate, 
-                                                     fills, stea_cmap, pkg_range)
+        # _run_make_topK_activation_heatmap_resnet_P62(ENV_task, stea_t_net_filenames, cut_left, 
+        #                                              stea_K_ratio, stea_act_thd, boost_rate, 
+        #                                              fills, stea_cmap, pkg_range)
         _run_make_topK_activation_heatmap_resnet_P62(ENV_task, lob_t_net_filenames, cut_left, 
                                                      lob_K_ratio, lob_act_thd, boost_rate, 
                                                      fills, lob_cmap, pkg_range)
@@ -190,10 +193,10 @@ if __name__ == '__main__':
         '''
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         K_ratio = 0.75
-        att_thd = 0.36
+        act_thd = 0.36
         
         stea_model_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[5]2023-11-20.pth']
-        lob_model_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-24.pth']
+        lob_model_filenames = ['checkpoint_ResNet18-TK_MIL-0_lobular_inflammation_score_bi_[5]2023-11-21.pth']
         neg_model_filenames_list = [stea_model_filenames, lob_model_filenames]
         stea_K_ratio, stea_att_thd = 0.75, 0.3
         lob_K_ratio, lob_att_thd = 0.75, 0.3
@@ -202,7 +205,7 @@ if __name__ == '__main__':
         boost_rate = 2.0
         pkg_range = [0, 100]
         cut_left = True
-        fills = [3, 3, 3, 4]
+        fills = [3, 3, 3, 3, 3]
         only_soft_map=False
         
         _run_make_filt_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, neg_model_filenames_list,

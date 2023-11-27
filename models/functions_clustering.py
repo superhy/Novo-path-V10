@@ -270,8 +270,9 @@ class Instance_Clustering():
         self.encoder = encoder
         if encoder_filename is not None:
             self.encoder, _ = reload_net(self.encoder, os.path.join(self.model_store_dir, encoder_filename))
-        self.encoder = self.encoder.cuda()
-        self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, self.encoder.name,
+            self.encoder = self.encoder.cuda()
+        self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, 
+                                             'none' if self.encoder is None else self.encoder.name,
                                              self.embed_type, _env_task_name)
         self.n_clusters = ENV_task.NUM_CLUSTERS if manu_n_clusters is None else manu_n_clusters
         self.key_tiles_list = key_tiles_list
@@ -295,12 +296,18 @@ class Instance_Clustering():
             # generate encode rich tuples
             self.tiles_richencode_tuples = self.gen_tiles_richencode_tuples()
             # store the encode rich tuples pkl
-            tiles_tuples_pkl_name = '{}-{}_{}.pkl'.format(self.encoder.name, self.embed_type, Time().date)
-            save_load_tiles_rich_tuples(self.ENV_task, self.tiles_richencode_tuples, tiles_tuples_pkl_name)
+            tiles_tuples_pkl_name = '{}-{}_{}.pkl'.format('none' if self.encoder is None else self.encoder.name,
+                                                          self.embed_type, Time().date)
+            if self.tiles_richencode_tuples is not None:
+                save_load_tiles_rich_tuples(self.ENV_task, 
+                                            self.tiles_richencode_tuples, tiles_tuples_pkl_name)
             
         self.clustering_model = exist_clustering  # if the clustering model here is None, means the clustering has not been trained
         
     def gen_tiles_richencode_tuples(self):
+        if self.encoder is None:
+            return None
+        
         if self.embed_type == 'encode':
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
                                                                 load_tile_list=self.key_tiles_list)
@@ -444,7 +451,7 @@ class Instance_Clustering():
         
         return prediction_res_pkg
     
-    def calculate_cluster_silhouette(self, clustering_res_pkg, check_clst):
+    def check_subclst_silhouette(self, clustering_res_pkg, check_clst, random_state=42):
         '''
         check the silhouette for current clustering results
         '''
@@ -454,10 +461,17 @@ class Instance_Clustering():
         if len(cluster_encodes) < 2:
             # at least need 2 samples in cluster
             return 1
-    
+        
         cluster_encodes = np.array(cluster_encodes)
+        
+        # try a kmeans, test if the current cluster can be separated more 
+        test_kmeans = KMeans(n_clusters=2, random_state=random_state)
+        test_labels = test_kmeans.fit_predict(cluster_encodes)
+        print('test (sub-)clustering...', end='')
+    
         # calculate the inner-cluster silhouette score
-        silhouette = silhouette_score(cluster_encodes, [check_clst]*len(cluster_encodes))
+        silhouette = silhouette_score(cluster_encodes, test_labels)
+        print(f'checked cluster: {check_clst} -> silhouette: {silhouette}')
         return silhouette
     
     def hierarchical_clustering(self, init_clst_res_pkg, silhouette_thd=0.5, max_rounds=3):
@@ -473,6 +487,7 @@ class Instance_Clustering():
         current_clst_pkg = init_clst_res_pkg
     
         for round in range(max_rounds):
+            print(f'round: {round}')
             updated_clst_pkg = []
             split_occurred = False
     
@@ -481,9 +496,9 @@ class Instance_Clustering():
                 cluster_subset = [item for item in current_clst_pkg if item[0] == cluster_id]
                 cluster_encodes = [encode for res, encode, tile, slide_id in cluster_subset]
     
-                cluster_silhouette = self.calculate_cluster_silhouette(current_clst_pkg, cluster_id)
+                cluster_silhouette = self.check_subclst_silhouette(current_clst_pkg, cluster_id)
 
-                if cluster_silhouette < silhouette_thd:
+                if cluster_silhouette > silhouette_thd: # test sub-clustering is nice, can be separate
                     split_occurred = True
                     # only apply Kmeans for hierarchical clustering
                     kmeans = KMeans(n_clusters=2, random_state=0).fit(np.array(cluster_encodes))
@@ -622,7 +637,7 @@ class Feature_Assimilate():
         self.embed_type = embed_type
         self.encoder = encoder
         if tile_en_filename is not None:
-            self.encoder, _ = reload_net(self.encoder, tile_en_filename)
+            self.encoder, _ = reload_net(self.encoder, os.path.join(self.model_store_dir, tile_en_filename) )
         self.encoder = self.encoder.cuda()
         self.reg_encoder = reg_encoder
         self.comb_layer = comb_layer
@@ -672,7 +687,7 @@ class Feature_Assimilate():
         self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
         self.remain_tiles_tuples = self.load_remain_tiles_encodes(s_tile_keys_dict)
         print('prepare: 1. tiles with sensitive labels as similarity source \n\
-                 2. tiles not in clustering as candidate tiles')
+        2. tiles not in clustering as candidate tiles')
         
         # load {slide_id: {tile_loc_key: tile}}, key -> tile dictionary for each slide
         tiles_all_list, _, slides_tileidxs_dict = datasets.load_richtileslist_fromfile(self._env_task)
@@ -782,6 +797,7 @@ class Feature_Assimilate():
         assimilate_pct_index = max(assimilate_pct_index, 1)
         
         # print the distance threshold
+        # print(assimilate_pct_index)
         distance_threshold = sorted_tuples[assimilate_pct_index - 1][0]
         print(f"--- distance threshold for top {self.assimilate_ratio}: {distance_threshold}")
         
@@ -1054,10 +1070,8 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
         act_thd: the minimum acceptable activation value
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
-    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
     
-    act_all_tiles_list, _ = select_top_active_tiles(ENV_task, tile_encoder,
-                                                    tile_net_filenames, label_dict,
+    act_all_tiles_list, _ = select_top_active_tiles(ENV_task, tile_encoder, tile_net_filenames,
                                                     K_ratio=K_ratio, act_thd=act_thd, fills=fills)
     
     # if we set up manu_n_clusters=4 here, only 4 clusters
@@ -1080,28 +1094,23 @@ def _run_kmeans_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, tile_net_f
     
     return clustering_res_pkg
 
-def _run_kmeans_filter_act_K_tiles_encode_resnet18(ENV_task, ENV_annotation, ENV_neg_annotations,
+def _run_kmeans_filter_act_K_tiles_encode_resnet18(ENV_task,
                                                    tile_net_filenames, neg_t_filenames_list,
                                                    K_ratio, act_thd, fills, neg_parames,
                                                    manu_n_clusters=5, tiles_r_tuples_pkl_name=None):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
-    ball_label_dict = query_task_label_dict_fromcsv(ENV_annotation)
-    stea_label_dict = query_task_label_dict_fromcsv(ENV_neg_annotations[0])
-    lob_label_dict = query_task_label_dict_fromcsv(ENV_neg_annotations[1])
-    neg_label_dicts = [stea_label_dict, lob_label_dict]
     
     act_all_tiles_list, slide_k_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder,
-                                                                          tile_net_filenames, ball_label_dict,
+                                                                          tile_net_filenames,
                                                                           K_ratio=K_ratio, act_thd=act_thd, fills=fills)
     # filtering the negative activation from original maps
     for i, neg_model_filenames in enumerate(neg_t_filenames_list):
         print(f'> filter the negative activation for {neg_model_filenames[0]}...')
-        n_label_dict = neg_label_dicts[i]
         k_rat, a_thd = neg_parames[i]
         _, slide_neg_tiles_acts_dict = select_top_active_tiles(ENV_task, tile_encoder, 
-                                                               neg_model_filenames, n_label_dict,
+                                                               neg_model_filenames,
                                                                k_rat, a_thd, fills=fills)
         act_all_tiles_list, slide_k_tiles_acts_dict = filter_neg_att_tiles(slide_k_tiles_acts_dict, 
                                                                            slide_neg_tiles_acts_dict)
