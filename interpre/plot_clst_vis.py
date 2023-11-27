@@ -117,9 +117,9 @@ def plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
         os.makedirs(clst_tiledemo_dir)
         print('create file dir {}'.format(clst_tiledemo_dir) )
         
-    for label in range(len(clst_tile_slideid_dict.keys()) ):
+    for label in clst_tile_slideid_dict.keys():
         tiledemo_slideid_tuple = clst_tile_slideid_dict[label]
-        clst_dir_name = 'cluster-{}'.format(str(label))
+        clst_dir_name = f'cluster-{label}'
         clst_tiledeme_label_dir = os.path.join(clst_tiledemo_dir, clst_dir_name)
         if not os.path.exists(clst_tiledeme_label_dir):
             os.makedirs(clst_tiledeme_label_dir)
@@ -128,7 +128,7 @@ def plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
         for slide_id, tile, tile_img in tiledemo_slideid_tuple:
             tiledemo_str = '{}-tile_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
             draw_original_image(clst_tiledeme_label_dir, tile_img, (tiledemo_str, '') )
-        print('draw %d tile demos for cluster %d, at: %s' % (len(tiledemo_slideid_tuple), label, clst_tiledeme_label_dir) )
+        print(f'draw {len(tiledemo_slideid_tuple)} tile demos for cluster {label}, at: {clst_tiledeme_label_dir}' )
         
 def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     '''

@@ -63,8 +63,9 @@ if __name__ == '__main__':
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_steatosis_score_bi_[3]2023-11-24.pth']
         
-        K_ratio = 0.75
+        K_ratio = 0.5
         act_thd =  0.36
+        act_thd =  0.4
         fills = [3, 3, 3, 3, 3]
         manu_n_clusters=4
         
