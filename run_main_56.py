@@ -15,7 +15,7 @@ from support.env_flinc_psr import ENV_FLINC_PSR_FIB, ENV_FLINC_PSR_FIB_C3
 
 
 task_ids = [56]
-task_str = '-' + '-'.join([str(id) for id in task_ids])
+task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
     

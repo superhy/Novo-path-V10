@@ -6,7 +6,8 @@ import os
 
 from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
-    df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist
+    df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist, \
+    _plot_groups_K_embeds_scatter
 from support import env_flinc_p62
 
 
@@ -20,11 +21,15 @@ if __name__ == '__main__':
     ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
     ENV_annotation_stea = env_flinc_p62.ENV_FLINC_P62_STEA_BI
     ENV_annotation_lob = env_flinc_p62.ENV_FLINC_P62_LOB_BI
+    
+    ENV_annotation_hv = env_flinc_p62.ENV_FLINC_P62_BALL_HV
+    ENV_annotation_hv_stea = env_flinc_p62.ENV_FLINC_P62_STEA_HV
+    ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
     # task_ids = [2]
-    task_ids = [1]
-    # task_ids = [10]
+    # task_ids = [1]
+    task_ids = [10.5]
     
     if 0 in task_ids:
         pass
@@ -65,4 +70,24 @@ if __name__ == '__main__':
         # _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, act_type=0, cut_top=cut_top, conj_s_range=(0.2, 0.5)) # ft
         _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name, 
                                   act_type=1, cut_top=cut_top, legend_loc='upper left') # org
+    if 10.5 in task_ids:
+        # K_t_embeds_pkl_name = 'K_t_org-embedsResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl'
+        K_t_embeds_pkl_name = 'K_t_ft-embedsResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl'
+        group_names = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        legend_loc = 'best'
+        
+        _plot_groups_K_embeds_scatter(ENV_task, ENV_annotation_hv, K_t_embeds_pkl_name, group_names, legend_loc)
+        
+    if 29.1 in task_ids:
+        '''
+        plot the hierarchical clustering tissue percentage / absolute number  
+        with specific prefix for a family branch
+        on distribution of different label, like: Healthy volunteers, Ballooning 0-1, and Ballooning 2
+        '''
+        tis_pct = True # if False, use absolute number
+        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        
+        
+        
+        
         

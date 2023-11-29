@@ -4,6 +4,7 @@ Created on 23 Sept 2023
 @author: yang hu
 '''
 
+import copy
 import gc
 import math
 import os
@@ -14,6 +15,7 @@ from PIL import Image
 import PIL
 import cmapy
 import cv2
+from sklearn.manifold._t_sne import TSNE
 import torch
 from torch.nn.functional import softmax
 
@@ -33,10 +35,10 @@ from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
     ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV
+from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
-from support.tools import normalization
+from support.tools import normalization, Time
 from wsi import image_tools, slide_tools
-import copy
 
 
 # include the reusable function from prep_clst_vis, only from prep_dect_vis -> prep_clst_vis
@@ -427,13 +429,14 @@ def load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K):
         K_tile_loader = functions.get_data_loader(K_tile_set, batch_size=batch_size_ontiles,
                                                   num_workers=tile_loader_num_workers, 
                                                   sf=False, p_mem=False)
-        K_s_t_embeds_ft = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_ft.backbone, 
-                                                                 slide_id, print_info=False)
         K_s_t_embeds_org = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_org.backbone, 
                                                                   slide_id, print_info=False)
+        K_s_t_embeds_ft = functions_attpool.encode_tiles_4slides(K_tile_loader, tile_net_ft.backbone, 
+                                                                 slide_id, print_info=False)
         slide_K_t_embeds_dict[slide_id] = (K_s_t_embeds_ft, K_s_t_embeds_org)
         print(f'get the embedding of top K tiles for slide: {slide_id}', end=',')
         print('with ft: ', np.shape(K_s_t_embeds_ft), 'org: ', np.shape(K_s_t_embeds_org))
+        print('storage: {}'.format('K-embeds'))
         
     return slide_K_t_embeds_dict
 
@@ -619,8 +622,8 @@ def tis_pct_sensi_clst_single_slide(slide_tile_clst_tuples, sensi_clsts, nb_tis_
     tissue_pct_dict = {}
     nb_tissue = nb_tis_this_slide
         
-    for id in sensi_clsts:
-        tissue_pct_dict[id] = .0
+    for lbl in sensi_clsts:
+        tissue_pct_dict[lbl] = .0
         
     for i, t_l_tuple in enumerate(slide_tile_clst_tuples):
         _, label = t_l_tuple
@@ -685,6 +688,45 @@ def cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi
     assim_t_pct_pkl_name = clustering_pkl_name.replace('clst-res', 'assim_t-tis-pct')
     store_nd_dict_pkl(heat_store_dir, slide_assim_tis_pct_dict, assim_t_pct_pkl_name)
     print('Store assimilated tiles tissue percentage record as: {}'.format(assim_t_pct_pkl_name))
+    
+    
+def redu_K_embeds_distribution(ENV_label_hv, slide_K_t_embeds_dict):
+    '''
+    '''
+    # print(slide_K_t_embeds_dict)
+    label_dict = query_task_label_dict_fromcsv(ENV_label_hv)
+    sorted_slide_ids = sorted(slide_K_t_embeds_dict.keys())
+    all_features = np.concatenate([slide_K_t_embeds_dict[slide_id] for slide_id in sorted_slide_ids], axis=0)
+    
+    time = Time()
+    tsne = TSNE(n_components=2, random_state=42)
+    tsne_features = tsne.fit_transform(all_features)
+    print('finished TSNE with time: {}'.format(str(time.elapsed())[:-5]))
+    
+    low_features = []
+    mid_features = []
+    high_features = []
+
+    feature_index = 0
+    for slide_id in sorted_slide_ids:
+        embeds = slide_K_t_embeds_dict[slide_id]
+        case_id = parse_caseid_from_slideid(slide_id)
+        label = label_dict.get(case_id, None)  # get label，if not in the dictionary, set as None
+        for _ in range(embeds.shape[0]):
+            if label == 0:
+                low_features.append(tsne_features[feature_index])
+            elif label == 1:
+                high_features.append(tsne_features[feature_index])
+            else:
+                mid_features.append(tsne_features[feature_index])
+            feature_index += 1
+
+    # to numpy
+    low_features = np.array(low_features) # HV
+    mid_features = np.array(mid_features) # ballooning 0-1
+    high_features = np.array(high_features) # ballooning 2
+    
+    return low_features, mid_features, high_features
     
 
 ''' ----------------------------------------------------------------------------------------------------------- '''
@@ -810,10 +852,9 @@ def _run_get_top_act_tiles_embeds_allslides(ENV_task, tile_net_filename, K=100):
     tile_net_org = tile_net_org.cuda()
     
     slide_K_t_embeds_dict = load_embeds_top_act_tiles_inslides(ENV_task, tile_net_ft, tile_net_org, K)
-    K_t_embeds_pkl_name = tile_net_filename.replace('checkpoint_', 'K_t_embeds').replace('pth', 'pkl')
+    K_t_embeds_pkl_name = tile_net_filename.replace('checkpoint_', f'K_t_embeds').replace('pth', 'pkl')
     store_nd_dict_pkl(ENV_task.STATISTIC_STORE_DIR, slide_K_t_embeds_dict, K_t_embeds_pkl_name)
-    print('store the embedding (org & ft) for top tiles at {}'.format(os.path.join(ENV_task.STATISTIC_STORE_DIR,
-                                                                                   K_t_embeds_pkl_name)) )
+    print(f'store the embedding (ft & org) for top tiles at {os.path.join(ENV_task.STATISTIC_STORE_DIR, K_t_embeds_pkl_name)}')
 
 def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):

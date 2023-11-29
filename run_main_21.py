@@ -23,7 +23,7 @@ task_ids = [21]
 fold_suffix = '-0'
 # fold_suffix = '-[5-9]'
 # fold_suffix = ENV_task.FOLD_SUFFIX
-task_str = '-' + '-'.join([str(id) for id in task_ids])
+task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
     

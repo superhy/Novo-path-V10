@@ -14,7 +14,7 @@ from support.env_flinc_cd45 import ENV_FLINC_CD45_U
 
 
 task_ids = [82]
-task_str = '-' + '-'.join([str(id) for id in task_ids])
+task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
     

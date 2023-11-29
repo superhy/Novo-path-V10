@@ -3,12 +3,11 @@
 '''
 
 import os
-os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
     _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters, \
     _run_make_spatial_each_clusters_on_slides, \
-    _run_count_tis_pct_clsts_on_slides, _run_make_spatial_iso_gath_on_slides, \
+    _run_cnt_tis_pct_abs_num_clsts_on_slides, _run_make_spatial_iso_gath_on_slides, \
     _run_make_spatial_levels_on_slides, \
     _run_count_tis_pct_slides_ref_homo_sp_clst
 from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
@@ -16,7 +15,11 @@ from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_vit_d6_h8_heads_map_slides, _run_vit_d6_h8_cls_heads_map_slides, \
     _run_reg_ass_sp_clst_homotiles_slides
+from models.datasets import load_slides_tileslist
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr, env_flinc_p62
+
+os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
+
 
 
 
@@ -28,7 +31,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22, 29]
-    task_ids = [22]
+    task_ids = [29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -109,12 +112,15 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
-        manu_n_clst = 4
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         
-        _run_count_tis_pct_clsts_on_slides(ENV_task, clustering_pkl_name, manu_n_clst)
+        # for clst only for key tiles, must load slides_tiles_dict to count the nb_tiss in each slide
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # on server n4 p62
+        slides_tiles_dict = load_slides_tileslist(ENV_task)
+        
+        _run_cnt_tis_pct_abs_num_clsts_on_slides(ENV_task, clustering_pkl_name, slides_tiles_dict)
     if 30 in task_ids:
-        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg
+        clustering_pkl_name = 'clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl' # clst-6 reg cd45
         sp_clst=5
         iso_thd=0.1
         radius=3

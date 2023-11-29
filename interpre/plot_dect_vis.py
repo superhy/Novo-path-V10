@@ -8,6 +8,7 @@ import os
 from scipy.stats.kde import gaussian_kde
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
+from interpre.prep_dect_vis import redu_K_embeds_distribution
 from interpre.prep_tools import load_vis_pkg_from_pkl
 from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
     df_p62_s_clst_and_assim_t_p_ball_corr
@@ -120,6 +121,63 @@ def _plot_activation_kde_dist(ENV_task, ENV_label_hv, act_scores_pkl_name,
     print('store the picture in {}'.format(os.path.join(heat_store_dir, 
                                                         'groups_activation_distribution-kde-?.png')) )
     plt.clf()
+    
+def plot_K_embeds_scatter(ENV_task, l_m_h_tuples, group_names, legend_loc='best', act_type=0):
+    '''
+    
+    Args:
+        l_m_h_tuples: low_features, mid_features, high_features
+        group_names: mapping to l_m_h_tuples, 
+            which are Healthy volunteers, Ballooning 0-1, Ballooning 2
+        legend_loc:
+        act_type: just for mapping the name
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
+    if len(group_names) != 3:
+        raise ValueError("tuples or groups\' number is not right")
+    
+    low_features, mid_features, high_features = l_m_h_tuples
+    
+    # make DataFrame
+    df_low = pd.DataFrame(low_features, columns=['x', 'y'])
+    df_low['group'] = group_names[0]
+
+    df_mid = pd.DataFrame(mid_features, columns=['x', 'y'])
+    df_mid['group'] = group_names[1]
+
+    df_high = pd.DataFrame(high_features, columns=['x', 'y'])
+    df_high['group'] = group_names[2]
+    
+    # merge the DataFrame
+    df = pd.concat([df_low, df_mid, df_high])
+    
+    # plot the scatter 
+    sns.scatterplot(data=df, x='x', y='y', hue='group', s=2.5)
+    plt.title("Representative tiles feature scatter")
+    plt.legend(loc=legend_loc)
+    plt.tight_layout()
+    plt.savefig(os.path.join(stat_store_dir, 'K_l-m-h_scatter-{}.png'.format('org' if act_type == 0 else 'ft') ) )
+    print('store the picture in {}'.format(os.path.join(stat_store_dir, 
+                                                        'K_l-m-h_scatter-?.png')) )
+    plt.clf()
+    
+def _plot_groups_K_embeds_scatter(ENV_task, ENV_label_hv, K_t_embeds_pkl_name,
+                                  group_names = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
+                                  legend_loc='best'):
+    '''
+    '''
+    if K_t_embeds_pkl_name.startswith('K_t_org'):
+        act_type = 0
+    else:
+        act_type = 1
+    
+    slide_K_t_embeds_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR,
+                                                  K_t_embeds_pkl_name)
+    low_features, mid_features, high_features = redu_K_embeds_distribution(ENV_label_hv, 
+                                                                           slide_K_t_embeds_dict)
+    plot_K_embeds_scatter(ENV_task, (low_features, mid_features, high_features), 
+                          group_names, legend_loc, act_type)
        
     
 def _plot_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name,

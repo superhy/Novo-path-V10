@@ -15,7 +15,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 task_ids = [102]
-task_str = '-' + '-'.join([str(id) for id in task_ids])
+task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
     

@@ -27,12 +27,12 @@ if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
-    task_ids = [1]
+    # task_ids = [1]
     # task_ids = [11.1]
-    # task_ids = [10, 10.5]
+    task_ids = [10.5]
     # task_ids = [11.1]
     
-    task_str = '-' + '-'.join([str(id) for id in task_ids])
+    task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
     
     log_name = 'visualisation_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
                                                     str(tools.Time().start)[:13].replace(' ', '-'))
@@ -144,9 +144,9 @@ if __name__ == '__main__':
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[4]2023-11-23.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[7]2023-11-25.pth']
-        K=50
+        K=10
         for t_net_name in tile_net_filenames:
-            _run_get_top_act_tiles_embeds_allslides(ENV_task, t_net_name, K)
+            _run_get_top_act_tiles_embeds_allslides(ENV_task, t_net_name, K, embed_type=0)
     if 11 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
         # tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[4]2023-11-23.pth']
