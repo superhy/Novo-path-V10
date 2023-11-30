@@ -7,7 +7,8 @@ import os
 from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
     df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist, \
-    _plot_groups_K_embeds_scatter
+    _plot_groups_K_embeds_scatter, plot_clsts_tis_pct_abs_nb_box, \
+    plot_clst_gp_tis_pct_abs_nb_box
 from support import env_flinc_p62
 
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
     # task_ids = [0]
     # task_ids = [2]
     # task_ids = [1]
-    task_ids = [10.5]
+    # task_ids = [10.5]
+    task_ids = [29.2]
     
     if 0 in task_ids:
         pass
@@ -84,9 +86,33 @@ if __name__ == '__main__':
         with specific prefix for a family branch
         on distribution of different label, like: Healthy volunteers, Ballooning 0-1, and Ballooning 2
         '''
-        tis_pct = True # if False, use absolute number
-        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         
+        branch_prefix_list = ['0', '1', '2', '3']
+        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        tis_pct = False # if False, use absolute number
+        ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
+        
+        for branch_prefix in branch_prefix_list:
+            for _env_annotation in ENV_annotation_list:
+                plot_clsts_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
+                                              branch_prefix, avail_labels, tis_pct)
+    if 29.2 in task_ids:
+        '''
+        same with above, calculate the distribution 
+        '''
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        
+        gp_prefixs_list = [['0', '1', '2', '3'],
+                           ['0_0', '0_1', '1_0', '1_1', '2_0', '2_1', '3_1', '3_0']]
+        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        tis_pct = True # if False, use absolute number
+        ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
+        
+        for gp_prefixs in gp_prefixs_list:
+            for _env_annotation in ENV_annotation_list:
+                plot_clst_gp_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
+                                                gp_prefixs, avail_labels, tis_pct)
         
         
         

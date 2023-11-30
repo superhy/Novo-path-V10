@@ -415,6 +415,150 @@ def df_plot_s_clst_assim_ball_corr_box(ENV_task, s_clst_t_p_pkl_name, assim_t_p_
     print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 'sensi_clst_assim_tp-ballooning-s-box.png') ) )
     plt.close(fig)
     
+    
+''' --------- clustering distribution visualise for hierarchical clustering results --------- '''
+    
+def plot_clsts_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, branch_prefix, 
+                                  avail_labels=['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
+                                  tis_pct=True):
+    '''
+    
+    Args:
+        ENV_task:
+        ENV_annotation: could be env_flinc_p62.ENV_FLINC_P62_BALL_HV
+        tis_pct_pkl_name: the distribution of tissue percentage or absolute number, pkl file name
+        branch_prefix: indicate the clusters' family
+        avail_labels: label names shown on figure
+        tis_pct: if Ture, showing tissue percentage; if False, showing absolute number
+    '''
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    if len(avail_labels) < 3:
+        raise ValueError("avail_labels must has at least 3 values!")
+    
+    data = []
+    for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+        # get case_id and load the label
+        case_id = parse_caseid_from_slideid(slide_id)
+        # label = label_dict.get(case_id, 'mid')  # 如果label不存在，设为'mid'
+        # label = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else avail_labels[2]
+        if case_id not in label_dict.keys():
+            label_name = avail_labels[1]
+        elif label_dict[case_id] == 0:
+            label_name = avail_labels[0]
+        else:
+            label_name = avail_labels[2]
+
+        # via branch_prefix, select the target clusters
+        for cluster_name, value in (tissue_pct_dict if tis_pct else abs_num_dict).items():
+            if cluster_name.startswith(branch_prefix):
+                data.append({'cluster_name': cluster_name, 'value': value, 'label': label_name})
+
+    # create the dataframe
+    df_clst_label = pd.DataFrame(data)
+    df_clst_label['label'] = pd.Categorical(df_clst_label['label'], categories=avail_labels, ordered=True)
+    print(df_clst_label)
+    # setup the width on x-axis
+    unique_clusters = df_clst_label['cluster_name'].nunique()
+    chart_width = max(5, unique_clusters * 1)
+    
+    colors = ['dodgerblue', 'turquoise', 'lightcoral']
+    palette = {label: color for label, color in zip(avail_labels, colors)}
+    
+    dist_target = ENV_annotation.TASK_NAME
+    # boxplot
+    plt.figure(figsize=(chart_width, 6))
+    sns.boxplot(x='cluster_name', y='value', hue='label', data=df_clst_label, palette=palette)
+    plt.title(f"Cluster distribution to {dist_target} for cluster family '{branch_prefix}'")
+    if tis_pct:
+        plt.ylim(bottom=-0.0005, top=0.025)
+    else:
+        plt.ylim(bottom=-5, top=250)
+    plt.xlabel('Cluster Name')
+    plt.ylabel('Tissue Percentage' if tis_pct else 'Absolute Number')
+    plt.legend(title='Label')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    # plt.show()
+    fig_name = f'tissue_percenatge_clsts-{dist_target}_family-{branch_prefix}.png' if tis_pct \
+        else f'absolute_number_clsts-{dist_target}_family-{branch_prefix}.png'
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name ) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
+                                                        f'tissue_percenatge(absolute_number)_clsts_family-{branch_prefix}')) )
+    plt.clf()
+    
+def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, gp_prefixs, 
+                                    avail_labels=['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
+                                    tis_pct=True):
+    '''
+    
+    Args:
+        ENV_task:
+        ENV_annotation: could be env_flinc_p62.ENV_FLINC_P62_BALL_HV
+        tis_pct_pkl_name: the distribution of tissue percentage or absolute number, pkl file name
+        gp_prefixs: indicate the cluster groups' families
+        avail_labels: label names shown on figure
+        tis_pct: if Ture, showing tissue percentage; if False, showing absolute number
+    '''
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    if len(avail_labels) < 3:
+        raise ValueError("avail_labels must has at least 3 values!")
+    
+    data = []
+    for gp_prefix in gp_prefixs:
+        for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+            # get case_id and load the label
+            case_id = parse_caseid_from_slideid(slide_id)
+            # label = label_dict.get(case_id, 'mid')  # 如果label不存在，设为'mid'
+            # label = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else avail_labels[2]
+            if case_id not in label_dict.keys():
+                label_name = avail_labels[1]
+            elif label_dict[case_id] == 0:
+                label_name = avail_labels[0]
+            else:
+                label_name = avail_labels[2]
+
+            # calculate the sum of cluster distribution in each group
+            total_value = sum(value for cluster_name, value in (tissue_pct_dict if tis_pct else abs_num_dict).items() \
+                                if cluster_name.startswith(gp_prefix))
+            data.append({'group_prefix': gp_prefix, 'value': total_value, 'label': label_name})
+
+    # create the dataframe
+    df_clst_label = pd.DataFrame(data)
+    df_clst_label['label'] = pd.Categorical(df_clst_label['label'], categories=avail_labels, ordered=True)
+    print(df_clst_label)
+    # setup the width on x-axis
+    chart_width = max(5, len(gp_prefixs) * 1.5)
+    
+    colors = ['dodgerblue', 'turquoise', 'lightcoral']
+    palette = {label: color for label, color in zip(avail_labels, colors)}
+    
+    dist_target = ENV_annotation.TASK_NAME
+    # boxplot
+    plt.figure(figsize=(chart_width, 6))
+    sns.boxplot(x='group_prefix', y='value', hue='label', data=df_clst_label, palette=palette)
+    plt.title(f"Cluster group distribution to {dist_target} for groups '{gp_prefixs}'")
+    if tis_pct:
+        plt.ylim(bottom=-0.005, top=0.25 * (8 / len(gp_prefixs) ))
+    else:
+        plt.ylim(bottom=-50, top=2500 * (8 / len(gp_prefixs) ))
+    plt.xlabel('Cluster Name')
+    plt.ylabel('Tissue Percentage' if tis_pct else 'Absolute Number')
+    plt.legend(title='Label')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    # plt.show()
+    gp_name = f'{len(gp_prefixs)}_groups'
+    fig_name = f'tissue_percenatge_c-groups-{dist_target}_{gp_name}.png' if tis_pct \
+        else f'absolute_number_c-groups-{dist_target}_{gp_name}.png'
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name ) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
+                                                        f'tissue_percenatge(absolute_number)_c-groups-{gp_name}')) )
+    plt.clf()
+
 
 if __name__ == '__main__':
     pass
