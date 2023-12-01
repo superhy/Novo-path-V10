@@ -558,6 +558,69 @@ def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, 
     print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, 
                                                         f'tissue_percenatge(absolute_number)_c-groups-{gp_name}')) )
     plt.clf()
+    
+    
+def visualize_avg_cluster_difference_barplot(ENV_task, ENV_annotation, label_dict_neg, 
+                                             tis_pct_pkl_name, gp_prefixs, 
+                                             avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
+                                             tis_pct=True):
+    '''
+    '''
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    
+    data = []
+    for gp_prefix in gp_prefixs:
+        total_values_pos = {label: 0 for label in avail_labels}
+        total_values_neg = {label: 0 for label in avail_labels}
+        count_values_pos = {label: 0 for label in avail_labels}
+        count_values_neg = {label: 0 for label in avail_labels}
+
+        for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+            # 获取对应的case_id和label
+            case_id = parse_caseid_from_slideid(slide_id)
+            label = label_dict.get(case_id, 'mid')
+            label_neg = label_dict_neg.get(case_id, 'mid')
+
+            # 转换为对应的标签名
+            label_name = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else 'mid'
+            label_neg_name = avail_labels[0] if label_neg == 0 else avail_labels[1] if label_neg == 1 else 'mid'
+
+            # 累计每个gp_prefix下的clusters总和和计数
+            for cluster_name, value in (tissue_pct_dict if tis_pct else abs_num_dict).items():
+                if cluster_name.startswith(gp_prefix):
+                    total_values_pos[label_name] += value
+                    count_values_pos[label_name] += 1
+                    total_values_neg[label_neg_name] += value
+                    count_values_neg[label_neg_name] += 1
+
+        # 计算平均值差异并添加到数据集
+        for label in avail_labels:
+            if count_values_pos[label] > 0 and count_values_neg[label] > 0:
+                avg_value_pos = total_values_pos[label] / count_values_pos[label]
+                avg_value_neg = total_values_neg[label] / count_values_neg[label]
+                difference = avg_value_pos - avg_value_neg
+                data.append({'group_prefix': gp_prefix, 'value': difference, 'label': label})
+
+    # create dataframe
+    df = pd.DataFrame(data)
+    
+    # make color
+    colors = ['dodgerblue', 'turquoise', 'lightcoral']
+    palette = {label: color for label, color in zip(avail_labels, colors)}
+
+    # setup the width on x-axis
+    chart_width = max(5, len(gp_prefixs) * 1.5)
+
+    # plot
+    plt.figure(figsize=(chart_width, 6))
+    sns.barplot(x='value', y='group_prefix', hue='label', data=df, palette=palette, orient='h')
+    plt.title("Average Cluster Difference Distribution")
+    plt.xlabel('Average Difference in Tissue Percentage' if tis_pct else 'Average Difference in Absolute Number')
+    plt.ylabel('Group Prefix')
+    plt.legend(title='Label')
+
+    plt.show()
 
 
 if __name__ == '__main__':
