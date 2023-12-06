@@ -8,7 +8,8 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
     df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist, \
     _plot_groups_K_embeds_scatter, plot_clsts_tis_pct_abs_nb_box, \
-    plot_clst_gp_tis_pct_abs_nb_box
+    plot_clst_gp_tis_pct_abs_nb_box, plot_cross_labels_parcats,\
+    plot_cross_labels_parcats_lmh
 from support import env_flinc_p62
 
 
@@ -31,7 +32,8 @@ if __name__ == '__main__':
     # task_ids = [2]
     # task_ids = [1]
     # task_ids = [10.5]
-    task_ids = [29.2]
+    # task_ids = [29.2]
+    task_ids = [201]
     
     if 0 in task_ids:
         pass
@@ -113,7 +115,23 @@ if __name__ == '__main__':
             for _env_annotation in ENV_annotation_list:
                 plot_clst_gp_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
                                                 gp_prefixs, avail_labels, tis_pct)
-        
+    if 201 in task_ids:
+        '''
+        plot parcats to visualise the correlation across different labels
+        '''
+        plot_cross_labels_parcats(ENV_task, 
+                                  ball_s_csv_filename='P62_ballooning_score.csv',
+                                  stea_s_csv_filename='P62_steatosis_score.csv',
+                                  lob_s_csv_filename='P62_lobular_inflammation_score.csv')
+    if 201.1 in task_ids:
+        '''
+        plot parcats to visualise the correlation across different labels
+        just with labels of: low, mid, high
+        '''
+        plot_cross_labels_parcats_lmh(ENV_task, 
+                                      ball_s_csv_filename='P62_ballooning_score.csv',
+                                      stea_s_csv_filename='P62_steatosis_score.csv',
+                                      lob_s_csv_filename='P62_lobular_inflammation_score.csv')
         
         
         

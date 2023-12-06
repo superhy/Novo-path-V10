@@ -20,6 +20,8 @@ from support.files import parse_slideid_from_filepath, parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 from wsi.slide_tools import slide_to_scaled_np_image
 
+import plotly.graph_objects as go
+
 
 def draw_scaled_slide_imgs(ENV_task):
     '''
@@ -441,7 +443,7 @@ def plot_clsts_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, br
     for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
         # get case_id and load the label
         case_id = parse_caseid_from_slideid(slide_id)
-        # label = label_dict.get(case_id, 'mid')  # 如果label不存在，设为'mid'
+        # label = label_dict.get(case_id, 'mid')  # if label not exist, set as 'mid'
         # label = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else avail_labels[2]
         if case_id not in label_dict.keys():
             label_name = avail_labels[1]
@@ -512,7 +514,7 @@ def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, 
         for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
             # get case_id and load the label
             case_id = parse_caseid_from_slideid(slide_id)
-            # label = label_dict.get(case_id, 'mid')  # 如果label不存在，设为'mid'
+            # label = label_dict.get(case_id, 'mid')  # if label not exist, set as 'mid'
             # label = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else avail_labels[2]
             if case_id not in label_dict.keys():
                 label_name = avail_labels[1]
@@ -560,68 +562,199 @@ def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, 
     plt.clf()
     
     
-def visualize_avg_cluster_difference_barplot(ENV_task, ENV_annotation, label_dict_neg, 
-                                             tis_pct_pkl_name, gp_prefixs, 
-                                             avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
-                                             tis_pct=True):
+# def visualize_avg_cluster_difference_barplot(ENV_task, ENV_annotation, label_dict_neg, 
+#                                              tis_pct_pkl_name, gp_prefixs, 
+#                                              avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'], 
+#                                              tis_pct=True):
+#     '''
+# TODO:
+#     '''
+#     slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+#     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+#
+#     data = []
+#     for gp_prefix in gp_prefixs:
+#         total_values_pos = {label: 0 for label in avail_labels}
+#         total_values_neg = {label: 0 for label in avail_labels}
+#         count_values_pos = {label: 0 for label in avail_labels}
+#         count_values_neg = {label: 0 for label in avail_labels}
+#
+#         for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+#             # 获取对应的case_id和label
+#             case_id = parse_caseid_from_slideid(slide_id)
+#             label = label_dict.get(case_id, 'mid')
+#             label_neg = label_dict_neg.get(case_id, 'mid')
+#
+#             # 转换为对应的标签名
+#             label_name = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else 'mid'
+#             label_neg_name = avail_labels[0] if label_neg == 0 else avail_labels[1] if label_neg == 1 else 'mid'
+#
+#             # 累计每个gp_prefix下的clusters总和和计数
+#             for cluster_name, value in (tissue_pct_dict if tis_pct else abs_num_dict).items():
+#                 if cluster_name.startswith(gp_prefix):
+#                     total_values_pos[label_name] += value
+#                     count_values_pos[label_name] += 1
+#                     total_values_neg[label_neg_name] += value
+#                     count_values_neg[label_neg_name] += 1
+#
+#         # 计算平均值差异并添加到数据集
+#         for label in avail_labels:
+#             if count_values_pos[label] > 0 and count_values_neg[label] > 0:
+#                 avg_value_pos = total_values_pos[label] / count_values_pos[label]
+#                 avg_value_neg = total_values_neg[label] / count_values_neg[label]
+#                 difference = avg_value_pos - avg_value_neg
+#                 data.append({'group_prefix': gp_prefix, 'value': difference, 'label': label})
+#
+#     # create dataframe
+#     df = pd.DataFrame(data)
+#
+#     # make color
+#     colors = ['dodgerblue', 'turquoise', 'lightcoral']
+#     palette = {label: color for label, color in zip(avail_labels, colors)}
+#
+#     # setup the width on x-axis
+#     chart_width = max(5, len(gp_prefixs) * 1.5)
+#
+#     # plot
+#     plt.figure(figsize=(chart_width, 6))
+#     sns.barplot(x='value', y='group_prefix', hue='label', data=df, palette=palette, orient='h')
+#     plt.title("Average Cluster Difference Distribution")
+#     plt.xlabel('Average Difference in Tissue Percentage' if tis_pct else 'Average Difference in Absolute Number')
+#     plt.ylabel('Group Prefix')
+#     plt.legend(title='Label')
+#
+#     plt.show()
+
+
+
+def plot_cross_labels_parcats(ENV_task, 
+                              ball_s_csv_filename, stea_s_csv_filename, lob_s_csv_filename):
     '''
+    plot the parcat to show the transformation of labels in cases
     '''
-    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
-    label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_task, ball_s_csv_filename)
+    stea_label_dict = query_task_label_dict_fromcsv(ENV_task, stea_s_csv_filename)
+    lob_label_dict = query_task_label_dict_fromcsv(ENV_task, lob_s_csv_filename)
+    case_ids = sorted(ball_label_dict.keys(), key=ball_label_dict.get )
+    ball_s_list, stea_s_list, lob_s_list = [], [], []
+    for id in case_ids:
+        if (id not in ball_label_dict.keys()) or (id not in stea_label_dict.keys()) or (id not in lob_label_dict.keys()):
+            continue
+        ball_s_list.append(ball_label_dict[id])
+        stea_s_list.append(stea_label_dict[id])
+        lob_s_list.append(lob_label_dict[id])
     
-    data = []
-    for gp_prefix in gp_prefixs:
-        total_values_pos = {label: 0 for label in avail_labels}
-        total_values_neg = {label: 0 for label in avail_labels}
-        count_values_pos = {label: 0 for label in avail_labels}
-        count_values_neg = {label: 0 for label in avail_labels}
-
-        for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
-            # 获取对应的case_id和label
-            case_id = parse_caseid_from_slideid(slide_id)
-            label = label_dict.get(case_id, 'mid')
-            label_neg = label_dict_neg.get(case_id, 'mid')
-
-            # 转换为对应的标签名
-            label_name = avail_labels[0] if label == 0 else avail_labels[1] if label == 1 else 'mid'
-            label_neg_name = avail_labels[0] if label_neg == 0 else avail_labels[1] if label_neg == 1 else 'mid'
-
-            # 累计每个gp_prefix下的clusters总和和计数
-            for cluster_name, value in (tissue_pct_dict if tis_pct else abs_num_dict).items():
-                if cluster_name.startswith(gp_prefix):
-                    total_values_pos[label_name] += value
-                    count_values_pos[label_name] += 1
-                    total_values_neg[label_neg_name] += value
-                    count_values_neg[label_neg_name] += 1
-
-        # 计算平均值差异并添加到数据集
-        for label in avail_labels:
-            if count_values_pos[label] > 0 and count_values_neg[label] > 0:
-                avg_value_pos = total_values_pos[label] / count_values_pos[label]
-                avg_value_neg = total_values_neg[label] / count_values_neg[label]
-                difference = avg_value_pos - avg_value_neg
-                data.append({'group_prefix': gp_prefix, 'value': difference, 'label': label})
-
-    # create dataframe
-    df = pd.DataFrame(data)
+    # load labels data
+    df = pd.DataFrame({
+        'Steatosis': stea_s_list,
+        'Ballooning': ball_s_list,
+        'Inflammation': lob_s_list
+    })
     
-    # make color
-    colors = ['dodgerblue', 'turquoise', 'lightcoral']
-    palette = {label: color for label, color in zip(avail_labels, colors)}
-
-    # setup the width on x-axis
-    chart_width = max(5, len(gp_prefixs) * 1.5)
-
-    # plot
-    plt.figure(figsize=(chart_width, 6))
-    sns.barplot(x='value', y='group_prefix', hue='label', data=df, palette=palette, orient='h')
-    plt.title("Average Cluster Difference Distribution")
-    plt.xlabel('Average Difference in Tissue Percentage' if tis_pct else 'Average Difference in Absolute Number')
-    plt.ylabel('Group Prefix')
-    plt.legend(title='Label')
-
-    plt.show()
-
+    # plot the parcats
+    fig = go.Figure(data=[go.Parcats(
+        dimensions=[
+            {'label': 'Ballooning', 'values': df['Ballooning']},
+            {'label': 'Steatosis', 'values': df['Steatosis']},
+            {'label': 'Inflammation', 'values': df['Inflammation']}
+        ],
+        line=dict(
+            color=df['Ballooning'],  # use this label to change the color
+            colorscale=[[0, 'dodgerblue'], [0.5, 'lightcoral'], [1, 'turquoise']],  # setup the color scale
+            shape='hspline'  # smooth line
+        )
+    )])
+    
+    fig.update_layout(
+        margin=dict(l=18, b=75, r=20, t=20, pad=0),
+        title_text="Transformation of case distribution",
+        title_font_size=25,
+        font_size=20,
+        autosize=False,
+        width=1200, 
+        height=900,
+        title_x=0.5, 
+        title_y=0.05
+        )
+    # fig.show()
+    fig.write_html('fig_label_trans.html', auto_open=True)
+    
+def plot_cross_labels_parcats_lmh(ENV_task, 
+                                  ball_s_csv_filename, stea_s_csv_filename, lob_s_csv_filename):
+    '''
+    plot the parcat to show the transformation of labels in cases
+    but just with labels of low, middle, high
+    '''
+    ball_label_dict = query_task_label_dict_fromcsv(ENV_task, ball_s_csv_filename)
+    stea_label_dict = query_task_label_dict_fromcsv(ENV_task, stea_s_csv_filename)
+    lob_label_dict = query_task_label_dict_fromcsv(ENV_task, lob_s_csv_filename)
+    case_ids = sorted(ball_label_dict.keys(), key=ball_label_dict.get )
+    ball_s_list, stea_s_list, lob_s_list = [], [], []
+    high_ball_s, high_stea_s, high_lob_s = 2, 3, 3
+    for id in case_ids:
+        if (id not in ball_label_dict.keys()) or (id not in stea_label_dict.keys()) or (id not in lob_label_dict.keys()):
+            continue
+        if ball_label_dict[id] == 0:
+            ball_l = 'low'
+        elif ball_label_dict[id] == high_ball_s:
+            ball_l = 'high'
+        else:
+            ball_l = 'mid'
+        if stea_label_dict[id] == 0:
+            stea_l = 'low'
+        elif stea_label_dict[id] == high_stea_s:
+            stea_l = 'high'
+        else:
+            stea_l = 'mid'
+        if lob_label_dict[id] == 0:
+            lob_l = 'low'
+        elif lob_label_dict[id] == high_lob_s:
+            lob_l = 'high'
+        else:
+            lob_l = 'mid'
+        ball_s_list.append(ball_l)
+        stea_s_list.append(stea_l)
+        lob_s_list.append(lob_l)
+        
+    # setup a color dict
+    label_to_num = {'low': 0, 'mid': 1, 'high': 2}
+    ball_s_numeric = [label_to_num[label] for label in ball_s_list]
+    
+    # load labels data
+    df = pd.DataFrame({
+        'Steatosis': stea_s_list,
+        'Ballooning': ball_s_list,
+        'Inflammation': lob_s_list,
+        'Color': ball_s_numeric
+    })
+    
+    # plot the parcats
+    fig = go.Figure(data=[go.Parcats(
+        dimensions=[
+            {'label': 'Ballooning', 'values': df['Ballooning']},
+            {'label': 'Steatosis', 'values': df['Steatosis']},
+            {'label': 'Inflammation', 'values': df['Inflammation']}
+        ],
+        line=dict(
+            color=df['Color'],  # use this label to change the color
+            colorscale=[[0, 'dodgerblue'], [0.5, 'lightcoral'], [1, 'turquoise']],  # setup the color scale
+            shape='hspline'  # smooth line
+        )
+    )])
+    
+    fig.update_layout(
+        margin=dict(l=18, b=75, r=20, t=20, pad=0),
+        title_text="Transformation of case distribution",
+        title_font_size=25,
+        font_size=20,
+        autosize=False,
+        width=1200, 
+        height=900,
+        title_x=0.5, 
+        title_y=0.05
+        )
+    # fig.show()
+    fig.write_html('fig_label_trans_lmh.html', auto_open=True)
 
 if __name__ == '__main__':
     pass
