@@ -15,12 +15,11 @@ from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import seaborn as sns
 from support.files import parse_slideid_from_filepath, parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 from wsi.slide_tools import slide_to_scaled_np_image
-
-import plotly.graph_objects as go
 
 
 def draw_scaled_slide_imgs(ENV_task):
@@ -478,7 +477,7 @@ def plot_clsts_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, br
     else:
         plt.ylim(bottom=-5, top=250)
     plt.xlabel('Cluster Name')
-    plt.ylabel('Tissue Percentage' if tis_pct else 'Absolute Number')
+    plt.ylabel('Tissue Percentage' if tis_pct else 'Number of tiles')
     plt.legend(title='Label')
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -542,18 +541,20 @@ def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, 
     # boxplot
     plt.figure(figsize=(chart_width, 6))
     sns.boxplot(x='group_prefix', y='value', hue='label', data=df_clst_label, palette=palette)
-    plt.title(f"Cluster group distribution to {dist_target} for groups '{gp_prefixs}'")
+    plt.title(f"Cluster group distribution for groups '{gp_prefixs[0]} ~ {gp_prefixs[-1]}'")
     if tis_pct:
-        plt.ylim(bottom=-0.005, top=0.25 * (8 / len(gp_prefixs) ))
+        # plt.ylim(bottom=-0.005, top=0.25 * (8 / len(gp_prefixs) ))
+        plt.ylim(bottom=-0.005, top=0.25 )
     else:
-        plt.ylim(bottom=-50, top=2500 * (8 / len(gp_prefixs) ))
+        # plt.ylim(bottom=-50, top=2500 * (8 / len(gp_prefixs) ))
+        plt.ylim(bottom=-50, top=2500 )
     plt.xlabel('Cluster Name')
-    plt.ylabel('Tissue Percentage' if tis_pct else 'Absolute Number')
+    plt.ylabel('Tissue Percentage' if tis_pct else 'Number of tiles')
     plt.legend(title='Label')
     plt.xticks(rotation=45)
     plt.tight_layout()
     # plt.show()
-    gp_name = f'{len(gp_prefixs)}_groups'
+    gp_name = f'{gp_prefixs[0]}~{gp_prefixs[-1]}_groups'
     fig_name = f'tissue_percenatge_c-groups-{dist_target}_{gp_name}.png' if tis_pct \
         else f'absolute_number_c-groups-{dist_target}_{gp_name}.png'
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name ) )
@@ -625,6 +626,141 @@ def plot_clst_gp_tis_pct_abs_nb_box(ENV_task, ENV_annotation, tis_pct_pkl_name, 
 #
 #     plt.show()
 
+def plot_clst_gp_tis_pct_abs_nb_ball_df_stea(ENV_task, ENV_ball_ant, 
+                                             stea_csv_filename, tis_pct_pkl_name,
+                                             gp_prefixs, hl_prefixs=None, tis_pct=True, def_color='skyblue'):
+    '''
+    '''
+    
+    def custom_lineplot(x, y, **kwargs):
+        data = kwargs.pop('data')
+        kwargs.pop('color', None)
+        if hl_prefixs is None:
+            color = def_color
+        else:
+            hl_clst_gp_names = [f'clsts_group {hl_pf}' for hl_pf in hl_prefixs]
+            color = 'lightsalmon' if data['Cluster Group'].iloc[0] in hl_clst_gp_names else def_color
+        sns.lineplot(x=x, y=y, data=data, color=color, **kwargs)
+    
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    ballooning_label_dict = query_task_label_dict_fromcsv(ENV_ball_ant) 
+    steatosis_label_full_dict = query_task_label_dict_fromcsv(ENV_task, stea_csv_filename) 
+    
+    # # initialize the data structure
+    # cluster_group_totals  = {prefix: {'b-high & s-3': [], 'b-high & s-2': [], 
+    #                                'b-high & s-1': [], 'b-high & s-0': []} for prefix in gp_prefixs}
+
+    data = []
+    for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+        case_id = parse_caseid_from_slideid(slide_id)
+        clst_value_dict = tissue_pct_dict if tis_pct else abs_num_dict
+
+        if ballooning_label_dict.get(case_id) == 1:  # Ballooning high
+            stea_score = steatosis_label_full_dict.get(case_id)
+            if stea_score is not None:
+                for gp_prefix in gp_prefixs:
+                    total_value = sum(value for cluster_name, value in clst_value_dict.items() if cluster_name.startswith(gp_prefix))
+                    data.append({
+                        'Cluster Group': f'clsts_group {gp_prefix}', 
+                        'Steatosis': f'b-high & s-{stea_score}', 
+                        'Value': total_value,
+                        'Slide ID': slide_id
+                    })
+    df = pd.DataFrame(data)
+    steatosis_order = ['b-high & s-3', 'b-high & s-2', 'b-high & s-1', 'b-high & s-0']
+    df['Steatosis'] = pd.Categorical(df['Steatosis'], categories=steatosis_order, ordered=True)
+    print(df)
+
+    # use FacetGrid to generate sub-plots
+    g = sns.FacetGrid(df, col='Cluster Group', col_wrap=len(gp_prefixs), 
+                      height=4, aspect=0.5, sharey=True)
+    # g.map(sns.lineplot, 'Steatosis', 'Value', marker='o')
+    g.map_dataframe(custom_lineplot, 'Steatosis', 'Value', marker='o')
+
+    # setup title and label
+    g.set_titles(col_template="{col_name}")
+    g.set_ylabels("Tissue Percentage" if tis_pct else "Number of tiles")
+    for ax in g.axes:
+        ax.set_xlabel('')
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    # plt.suptitle('Tissue Percentage by Ballooning and Steatosis Score', fontsize=16)
+    plt.subplots_adjust(top=0.85)
+    plt.tight_layout()
+    
+    gp_name = f'{gp_prefixs[0]}~{gp_prefixs[-1]}_groups'
+    fig_name = f'tis-pct_df-ball-stea_{gp_name}.png' if tis_pct \
+        else f'abs-nb_df-ball-stea_{gp_name}.png'
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name)) )
+    plt.clf()
+    
+def plot_clst_gp_tis_pct_abs_nb_ball_df_lob(ENV_task, ENV_ball_ant,
+                                            lob_csv_filename, tis_pct_pkl_name,
+                                            gp_prefixs, hl_prefixs=None, tis_pct=True, def_color='skyblue'):
+    '''
+    '''
+    
+    def custom_lineplot(x, y, **kwargs):
+        data = kwargs.pop('data')
+        kwargs.pop('color', None)
+        if hl_prefixs is None:
+            color = def_color
+        else:
+            hl_clst_gp_names = [f'clsts_group {hl_pf}' for hl_pf in hl_prefixs]
+            color = 'lightsalmon' if data['Cluster Group'].iloc[0] in hl_clst_gp_names else def_color
+        sns.lineplot(x=x, y=y, data=data, color=color, **kwargs)
+    
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(ENV_task.HEATMAP_STORE_DIR, tis_pct_pkl_name)
+    ballooning_label_dict = query_task_label_dict_fromcsv(ENV_ball_ant) 
+    lob_inf_label_full_dict = query_task_label_dict_fromcsv(ENV_task, lob_csv_filename) 
+    
+    # # initialize the data structure
+    # cluster_group_totals  = {prefix: {'b-high & s-3': [], 'b-high & s-2': [], 
+    #                                'b-high & s-1': [], 'b-high & s-0': []} for prefix in gp_prefixs}
+
+    data = []
+    for slide_id, (tissue_pct_dict, abs_num_dict) in slide_tis_pct_dict.items():
+        case_id = parse_caseid_from_slideid(slide_id)
+        clst_value_dict = tissue_pct_dict if tis_pct else abs_num_dict
+
+        if ballooning_label_dict.get(case_id) == 1:  # Ballooning high
+            lob_score = lob_inf_label_full_dict.get(case_id)
+            if lob_score is not None:
+                for gp_prefix in gp_prefixs:
+                    total_value = sum(value for cluster_name, value in clst_value_dict.items() if cluster_name.startswith(gp_prefix))
+                    data.append({
+                        'Cluster Group': f'clsts_group {gp_prefix}', 
+                        'Lob-inf': f'b-high & i-{lob_score}', 
+                        'Value': total_value,
+                        'Slide ID': slide_id
+                    })
+    df = pd.DataFrame(data)
+    steatosis_order = ['b-high & i-3', 'b-high & i-2', 'b-high & i-1', 'b-high & i-0']
+    df['Lob-inf'] = pd.Categorical(df['Lob-inf'], categories=steatosis_order, ordered=True)
+    print(df)
+
+    # use FacetGrid to generate sub-plots
+    g = sns.FacetGrid(df, col='Cluster Group', col_wrap=len(gp_prefixs), 
+                      height=4, aspect=0.5, sharey=True)
+    # g.map(sns.lineplot, 'Lob-inf', 'Value', marker='o')
+    g.map_dataframe(custom_lineplot, 'Lob-inf', 'Value', marker='o')
+
+    # setup title and label
+    g.set_titles(col_template="{col_name}")
+    g.set_ylabels("Tissue Percentage" if tis_pct else "Number of tiles")
+    for ax in g.axes:
+        ax.set_xlabel('')
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    # plt.suptitle('Tissue Percentage by Ballooning and Steatosis Score', fontsize=16)
+    plt.subplots_adjust(top=0.85)
+    plt.tight_layout()
+    
+    gp_name = f'{gp_prefixs[0]}~{gp_prefixs[-1]}_groups'
+    fig_name = f'tis-pct_df-ball-lob_{gp_name}.png' if tis_pct \
+        else f'abs-nb_df-ball-lob_{gp_name}.png'
+    plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name ) )
+    print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name)) )
+    plt.clf()
 
 
 def plot_cross_labels_parcats(ENV_task, 
@@ -654,9 +790,12 @@ def plot_cross_labels_parcats(ENV_task,
     # plot the parcats
     fig = go.Figure(data=[go.Parcats(
         dimensions=[
-            {'label': 'Ballooning', 'values': df['Ballooning']},
-            {'label': 'Steatosis', 'values': df['Steatosis']},
-            {'label': 'Inflammation', 'values': df['Inflammation']}
+            {'label': 'Ballooning', 'values': df['Ballooning'], 
+             'categoryorder': 'array', 'categoryarray': [0, 1, 2]},
+            {'label': 'Steatosis', 'values': df['Steatosis'], 
+             'categoryorder': 'array', 'categoryarray': [0, 1, 2, 3]},
+            {'label': 'Inflammation', 'values': df['Inflammation'], 
+             'categoryorder': 'array', 'categoryarray': [0, 1, 2, 3]}
         ],
         line=dict(
             color=df['Ballooning'],  # use this label to change the color
@@ -731,9 +870,12 @@ def plot_cross_labels_parcats_lmh(ENV_task,
     # plot the parcats
     fig = go.Figure(data=[go.Parcats(
         dimensions=[
-            {'label': 'Ballooning', 'values': df['Ballooning']},
-            {'label': 'Steatosis', 'values': df['Steatosis']},
-            {'label': 'Inflammation', 'values': df['Inflammation']}
+            {'label': 'Ballooning', 'values': df['Ballooning'], 
+             'categoryorder': 'array', 'categoryarray': ['low', 'mid', 'high']},
+            {'label': 'Steatosis', 'values': df['Steatosis'], 
+             'categoryorder': 'array', 'categoryarray': ['low', 'mid', 'high']},
+            {'label': 'Inflammation', 'values': df['Inflammation'], 
+             'categoryorder': 'array', 'categoryarray': ['low', 'mid', 'high']}
         ],
         line=dict(
             color=df['Color'],  # use this label to change the color

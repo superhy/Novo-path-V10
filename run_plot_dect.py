@@ -8,8 +8,9 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_spatial_sensi_clusters_assims, df_plot_s_clst_assim_ball_dist_box, \
     df_plot_s_clst_assim_ball_corr_box, _plot_activation_kde_dist, \
     _plot_groups_K_embeds_scatter, plot_clsts_tis_pct_abs_nb_box, \
-    plot_clst_gp_tis_pct_abs_nb_box, plot_cross_labels_parcats,\
-    plot_cross_labels_parcats_lmh
+    plot_clst_gp_tis_pct_abs_nb_box, plot_cross_labels_parcats, \
+    plot_cross_labels_parcats_lmh, plot_clst_gp_tis_pct_abs_nb_ball_df_stea, \
+    plot_clst_gp_tis_pct_abs_nb_ball_df_lob
 from support import env_flinc_p62
 
 
@@ -32,8 +33,8 @@ if __name__ == '__main__':
     # task_ids = [2]
     # task_ids = [1]
     # task_ids = [10.5]
-    # task_ids = [29.2]
-    task_ids = [201]
+    task_ids = [29.3, 29.4]
+    # task_ids = [201, 201.1]
     
     if 0 in task_ids:
         pass
@@ -91,30 +92,126 @@ if __name__ == '__main__':
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         
         branch_prefix_list = ['0', '1', '2', '3']
-        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        avail_labels_list = [['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'],
+                             ['Healthy volunteers', 'Steatosis 0-2', 'Ballooning 3'],
+                             ['Healthy volunteers', 'Lob-inflammation 0-2', 'Ballooning 3']]
         tis_pct = False # if False, use absolute number
         ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
         
         for branch_prefix in branch_prefix_list:
-            for _env_annotation in ENV_annotation_list:
+            for i, _env_annotation in enumerate(ENV_annotation_list):
                 plot_clsts_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
-                                              branch_prefix, avail_labels, tis_pct)
+                                              branch_prefix, avail_labels_list[i], tis_pct)
     if 29.2 in task_ids:
         '''
         same with above, calculate the distribution 
         '''
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         
-        gp_prefixs_list = [['0', '1', '2', '3'],
-                           ['0_0', '0_1', '1_0', '1_1', '2_0', '2_1', '3_1', '3_0']]
-        avail_labels = ['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']
+        # gp_prefixs_list = [['0', '1', '2', '3'],
+        #                    ['0_0', '0_1', '1_0', '1_1', '2_0', '2_1', '3_1', '3_0']]
+        
+        gp_prefixs_list = [['0_0_0', '0_0_1', '0_1_0', '0_1_1'],
+                           ['1_0', '1_1_0', '1_1_1'],
+                           ['2_0_0', '2_0_1', '2_1_0', '2_1_1'],
+                           ['3_0_0', '3_0_1', '3_1_0', '3_1_1']]
+        # gp_prefixs_list = [['1_0', '1_1_0', '1_1_1']]
+        # gp_prefixs_list = [['2_0_0', '2_0_1', '2_1_0', '2_1_1']]
+        # gp_prefixs_list = [['3_0_0', '3_0_1', '3_1_0', '3_1_1']]
+        avail_labels_list = [['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2']]
+        # avail_labels_list = [['Healthy volunteers', 'Ballooning 0-1', 'Ballooning 2'],
+        #                      ['Healthy volunteers', 'Steatosis 0-2', 'Ballooning 3'],
+        #                      ['Healthy volunteers', 'Lob-inflammation 0-2', 'Ballooning 3']]
         tis_pct = True # if False, use absolute number
-        ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
+        ENV_annotation_list = [ENV_annotation_hv]
+        # ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
         
         for gp_prefixs in gp_prefixs_list:
-            for _env_annotation in ENV_annotation_list:
+            for i, _env_annotation in enumerate(ENV_annotation_list):
                 plot_clst_gp_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
-                                                gp_prefixs, avail_labels, tis_pct)
+                                                gp_prefixs, avail_labels_list[i], tis_pct)
+    if 29.3 in task_ids:
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        stea_csv_filename = 'P62_steatosis_score.csv'
+        
+        gp_prefixs_list = [['0', '1', '2', '3'],
+                           ['0_0', '0_1', '1_0', '1_1', '2_0', '2_1', '3_1', '3_0']]
+        hl_prefixs_list = [None] * 2
+
+        # gp_prefixs_list = [['0_0_0', '0_0_1', '0_1_0', '0_1_1']]
+        # gp_prefixs_list = [['1_0', '1_1_0', '1_1_1']]
+        # gp_prefixs_list = [['2_0_0', '2_0_1', '2_1_0', '2_1_1']]
+        # gp_prefixs_list = [['3_0_0', '3_0_1', '3_1_0', '3_1_1']]
+        
+        # gp_prefixs_list = [['0_1_0_0_0', '0_1_0_0_1', '0_1_0_1_0', '0_1_0_1_1']]
+        # hl_prefixs_list = [['0_1_0_0_0']]
+        # gp_prefixs_list = [['1_1_0_0_0', '1_1_0_0_1', '1_1_0_1']]
+        # hl_prefixs_list = [['1_1_0_0_0', '1_1_0_0_1']]
+        # gp_prefixs_list = [['1_1_1_0_0', '1_1_1_0_1', '1_1_1_1_0', '1_1_1_1_1']]
+        # hl_prefixs_list = [['1_1_1_0_1']]
+        # gp_prefixs_list = [['2_1_0_0_0', '2_1_0_0_1', '2_1_0_1_0', '2_1_0_1_1']]
+        # hl_prefixs_list = [['2_1_0_0_0', '2_1_0_0_1']]
+        # gp_prefixs_list = [['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0', '2_1_1_1_1']]
+        # hl_prefixs_list = [['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0']]
+        # gp_prefixs_list = [['3_1_0_0_0', '3_1_0_0_1', '3_1_0_1']]
+        # hl_prefixs_list = [None]
+        
+        # gp_prefixs_list = [['0_1_0_0_0'],
+        #                    ['1_1_0_0_0', '1_1_0_0_1'],
+        #                    ['1_1_1_0_1'],
+        #                    ['2_1_0_0_0', '2_1_0_0_1'],
+        #                    ['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0']]
+        # hl_prefixs_list = [None] * 5
+        set_color = 'skyblue'
+        # set_color = 'lightsalmon'
+        
+        tis_pct = False # if False, use absolute number
+        ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
+        
+        for i, gp_prefixs in enumerate(gp_prefixs_list):
+            plot_clst_gp_tis_pct_abs_nb_ball_df_stea(ENV_task, ENV_annotation_hv, stea_csv_filename, 
+                                                     tis_pct_pkl_name, gp_prefixs, hl_prefixs_list[i], 
+                                                     tis_pct, set_color)
+    if 29.4 in task_ids:
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        lob_csv_filename = 'P62_lobular_inflammation_score.csv'
+        
+        # gp_prefixs_list = [['0', '1', '2', '3'],
+        #                    ['0_0', '0_1', '1_0', '1_1', '2_0', '2_1', '3_1', '3_0']]
+
+        # gp_prefixs_list = [['0_0_0', '0_0_1', '0_1_0', '0_1_1']]
+        # gp_prefixs_list = [['1_0', '1_1_0', '1_1_1']]
+        # gp_prefixs_list = [['2_0_0', '2_0_1', '2_1_0', '2_1_1']]
+        # gp_prefixs_list = [['3_0_0', '3_0_1', '3_1_0', '3_1_1']]
+        
+        # gp_prefixs_list = [['0_1_0_0_0', '0_1_0_0_1', '0_1_0_1_0', '0_1_0_1_1']]
+        # hl_prefixs_list = [['0_1_0_0_0']]
+        # gp_prefixs_list = [['1_1_0_0_0', '1_1_0_0_1', '1_1_0_1']]
+        # hl_prefixs_list = [['1_1_0_0_0', '1_1_0_0_1']]
+        # gp_prefixs_list = [['1_1_1_0_0', '1_1_1_0_1', '1_1_1_1_0', '1_1_1_1_1']]
+        # hl_prefixs_list = [['1_1_1_0_1']]
+        # gp_prefixs_list = [['2_1_0_0_0', '2_1_0_0_1', '2_1_0_1_0', '2_1_0_1_1']]
+        # hl_prefixs_list = [['2_1_0_0_0', '2_1_0_0_1']]
+        # gp_prefixs_list = [['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0', '2_1_1_1_1']]
+        # hl_prefixs_list = [['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0']]
+        # gp_prefixs_list = [['3_1_0_0_0', '3_1_0_0_1', '3_1_0_1']]
+        # hl_prefixs_list = [None]
+        
+        gp_prefixs_list = [['0_1_0_0_0'],
+                           ['1_1_0_0_0', '1_1_0_0_1'],
+                           ['1_1_1_0_1'],
+                           ['2_1_0_0_0', '2_1_0_0_1'],
+                           ['2_1_1_0_0', '2_1_1_0_1', '2_1_1_1_0']]
+        hl_prefixs_list = [None] * 5
+        
+        tis_pct = False # if False, use absolute number
+        ENV_annotation_list = [ENV_annotation_hv, ENV_annotation_hv_stea, ENV_annotation_hv_lob]
+        
+        for i, gp_prefixs in enumerate(gp_prefixs_list):
+            plot_clst_gp_tis_pct_abs_nb_ball_df_lob(ENV_task, ENV_annotation_hv, lob_csv_filename, 
+                                                    tis_pct_pkl_name, gp_prefixs, hl_prefixs_list[i],
+                                                    tis_pct, 'lightsalmon')         
+    
     if 201 in task_ids:
         '''
         plot parcats to visualise the correlation across different labels

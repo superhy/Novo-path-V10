@@ -82,7 +82,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
         
-        nb_sample=100
+        nb_sample=300
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     if 23 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'
