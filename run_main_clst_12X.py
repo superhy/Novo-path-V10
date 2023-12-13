@@ -6,6 +6,7 @@ Created on 17 Nov 2022
 import os
 import sys
 
+from interpre.prep_clst_vis import pick_clusters_by_prefix
 from models.functions_clustering import _run_keamns_region_ctx_encode_vit_6_8, \
     _run_kmeans_attKtiles_encode_resnet18, _run_tiles_assimilate_encode_resnet18, \
     load_clustering_pkg_from_pkl, _run_kmeans_act_K_tiles_encode_resnet18, \
@@ -112,17 +113,19 @@ if __name__ == '__main__':
     if 129 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-25.pkl'
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth'
         print('need to re-load clustering results first!')
             
-        sensitive_labels = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
                             '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
                             '2_1_1_1_0']
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        
         assim_ratio = 0.01
         fills=[3, 3, 3]
         exc_clustered=False
-        _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
+        _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
                                               tile_net_filename=tile_net_filename,
                                               exc_clustered=exc_clustered, 
                                               assim_ratio=assim_ratio, fills=fills)
