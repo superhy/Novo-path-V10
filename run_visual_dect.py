@@ -7,6 +7,7 @@ Created on 3 Oct 2023
 import os
 import sys
 
+from interpre.prep_clst_vis import pick_clusters_by_prefix
 from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, \
     _run_make_spatial_sensi_clusters_assims, \
     _run_cnt_tis_pct_sensi_clsts_assim_on_slides, \
@@ -28,8 +29,9 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     
     # task_ids = [1]
+    task_ids = [2.1]
     # task_ids = [11.1]
-    task_ids = [10.5]
+    # task_ids = [10.5]
     # task_ids = [11.1]
     
     task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
@@ -116,10 +118,12 @@ if __name__ == '__main__':
         ''' on PC '''
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
-        sp_clsts = [0]
+        sp_clsts = [0] # should be changed one-by-one
         cut_left = True
         # heat_style = 'clst'
         heat_style = 'both'
+        if assimilate_pkl_name is None:
+            heat_style = 'clst'
         
         if heat_style == 'both':
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
@@ -127,6 +131,30 @@ if __name__ == '__main__':
         else:
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left)
+    if 2.1 in task_ids:
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
+        # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
+        ''' on PC '''
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        assimilate_pkl_name = None
+        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+                          '2_1_1_1_0']
+        
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        cut_left = True
+        # heat_style = 'clst'
+        heat_style = 'both'
+        if assimilate_pkl_name is None:
+            heat_style = 'clst'
+        
+        if heat_style == 'both':
+            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                                    sp_clsts, cut_left)
+        else:
+            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+                                                    sp_clsts, cut_left)
+    
     if 3 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'

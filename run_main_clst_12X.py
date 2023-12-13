@@ -20,7 +20,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
-task_ids = [123]
+task_ids = [129]
 task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
@@ -116,8 +116,10 @@ if __name__ == '__main__':
         tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth'
         print('need to re-load clustering results first!')
             
-        sensitive_labels = ['3_1_0']
-        assim_ratio = 0.02
+        sensitive_labels = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+                            '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+                            '2_1_1_1_0']
+        assim_ratio = 0.01
         fills=[3, 3, 3]
         exc_clustered=False
         _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 

@@ -20,7 +20,8 @@ import torch
 from torch.nn.functional import softmax
 
 from interpre.prep_clst_vis import load_clst_res_slide_tile_label, \
-    load_clst_res_label_tile_slide, col_pal_cv2_10
+    load_clst_res_label_tile_slide, col_pal_cv2_10, \
+    load_select_clst_res_slide_tile_label
 from interpre.prep_tools import store_nd_dict_pkl
 from models import datasets, functions_attpool, functions
 from models.datasets import Simple_Tile_Dataset
@@ -598,8 +599,10 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
             
     new_name = 'clst-{}-a-spat'.format(str(sp_clsts)) if assimilate_pkl_name is not None else 'clst-{}-spat'.format(str(sp_clsts))
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)
+    clst_s_spatmap_pkl_name = clst_s_spatmap_pkl_name.replace('hiera-res', new_name)
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
+    
     
 def make_tiles_demo_assimilated(ENV_task, assimilate_pkl_name, nb_sample=50):
     '''

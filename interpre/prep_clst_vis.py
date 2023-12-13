@@ -102,6 +102,47 @@ def load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name):
     
     return slide_tile_clst_dict
 
+def load_select_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name,
+                                          select_labels):
+    '''
+    @deprecated: not used now
+    
+    Same with above function, just exclude the not-selected labels
+    only left selected cluster labels
+    
+    Return:
+        {slide_id: [(tile, clst_label) ...]}
+    '''
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    select_s_tile_clst_dict = {}
+    for i, clst_res_tuple in enumerate(clustering_res_pkg):
+        label, _, tile, slide_id = clst_res_tuple
+        if label not in select_labels:
+            continue
+        if slide_id not in select_s_tile_clst_dict.keys():
+            select_s_tile_clst_dict[slide_id] = []
+            select_s_tile_clst_dict[slide_id].append((tile, label))
+        else:
+            select_s_tile_clst_dict[slide_id].append((tile, label))
+    
+    return select_s_tile_clst_dict
+
+def pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups):
+    '''
+    from clustering results pick the selected cluster names
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    clustering_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name)
+    
+    selected_labels = []
+    # enumerate all labels in clustering results
+    for label, _, _, _ in clustering_res_pkg:
+        if any(label.startswith(prefix) for prefix in cluster_groups):
+            selected_labels.append(label)
+
+    return selected_labels
+
 def load_ref_group_slide_tile_sp_clst(model_store_dir, clustering_pkl_name, sp_clst, iso_thd=0.25, radius=5):
     '''
     Return:
@@ -432,6 +473,7 @@ def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
         print(f'sampled {nb_sample} tile demos for cluster-{label}' )
             
     clst_tiledemo_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-tiledemo')
+    clst_tiledemo_pkl_name = clst_tiledemo_pkl_name.replace('hiera-res', 'hiera-tiledemo')
     store_nd_dict_pkl(heat_store_dir, clst_tile_img_dict, clst_tiledemo_pkl_name)
     print('Store clusters tile demo image numpy package as: {}'.format(clst_tiledemo_pkl_name))
     
