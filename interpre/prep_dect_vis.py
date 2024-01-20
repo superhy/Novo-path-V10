@@ -307,7 +307,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     org_np_img = image_tools.pil_to_np_rgb(org_image)
     heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
     
-    print('generate cluster-{} and the assimilated tiles\' spatial map for slide: {}'.format(str(labels_picked), slide_id))
+    print(f'generate picked {len(labels_picked)} clusters and the assimilated tiles\' spatial map for slide: {slide_id}')
     if cut_left:
         print('--- cut left, only keep right part!')
         heat_s_clst_col = keep_right_half(heat_s_clst_col)
@@ -568,7 +568,8 @@ def make_filt_activation_heatmap_package(ENV_task, pos_model_filenames, neg_mode
     print('Store topK activation map numpy package as: {}'.format(act_heatmap_pkl_name))
 
 
-def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left):
+def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                                sp_clsts, cut_left, part_vis=None):
     '''
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
@@ -585,7 +586,12 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
         print('assimilate tiles are not available!')
     
     slide_clst_s_spatmap_dict = {}
+    if part_vis is not None:
+        slide_id_list = slide_id_list[part_vis[0]: part_vis[1]]
     for slide_id in slide_id_list:
+        if (slide_id not in slide_assim_tiles_dict.keys()) or (slide_id not in slide_tile_clst_dict.keys()):
+            print(f'skip slide id: {slide_id}')
+            continue
         tile_clst_tuples = slide_tile_clst_dict[slide_id]
         assim_tiles_list = slide_assim_tiles_dict[slide_id] if slide_assim_tiles_dict is not None else []
         '''
@@ -597,7 +603,7 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
                                                                           slide_id, labels_picked=sp_clsts, cut_left=cut_left)
         slide_clst_s_spatmap_dict[slide_id] = (org_np_img, heat_s_clst_col)
             
-    new_name = 'clst-{}-a-spat'.format(str(sp_clsts)) if assimilate_pkl_name is not None else 'clst-{}-spat'.format(str(sp_clsts))
+    new_name = f'{len(sp_clsts)}-clst-a-spat' if assimilate_pkl_name is not None else f'{len(sp_clsts)}-clst-spat'
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)
     clst_s_spatmap_pkl_name = clst_s_spatmap_pkl_name.replace('hiera-res', new_name)
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
@@ -926,11 +932,13 @@ def _run_make_filt_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, n
                                          pkg_range, only_soft_map)
     
     
-def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left=True):
+def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, 
+                                            cut_left=True, part_vis=None):
     '''
     make the spatial map for sensitive clusters (and their assimilated tiles)
     '''
-    make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, cut_left)
+    make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                                sp_clsts, cut_left, part_vis=part_vis)
     
 def _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name):
     '''

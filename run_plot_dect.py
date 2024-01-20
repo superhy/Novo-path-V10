@@ -30,10 +30,10 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
-    # task_ids = [2]
+    task_ids = [2]
     # task_ids = [1]
     # task_ids = [10.5]
-    task_ids = [29.3, 29.4]
+    # task_ids = [29.3, 29.4]
     # task_ids = [201, 201.1]
     
     if 0 in task_ids:
@@ -56,8 +56,11 @@ if __name__ == '__main__':
         heatmap_pkl_name = 'filt_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='filt-ball')
     if 2 in task_ids:
-        spatmap_pkl_name = 'clst-[1, 3]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
-        _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name)
+        # spatmap_pkl_name = 'clst-[1, 3]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
+        spatmap_pkl_name = '17-clst-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-26-[0-50].pkl' # [0, 50] pick test at home 2024.1
+        
+        draw_org = True
+        _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)
     if 3.1 in task_ids:
         s_clst_t_p_pkl_name = 'sensi_c-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assim_t_p_pkl_name = 'assim_t-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'

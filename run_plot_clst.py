@@ -89,7 +89,8 @@ if __name__ == '__main__':
         ''' P62 '''
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
-        clst_tiledemo_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        # clst_tiledemo_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 23 in task_ids:

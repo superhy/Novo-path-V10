@@ -304,7 +304,7 @@ def _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folde
         print('2. draw soft heatmap in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(attention_dir)), slide_id))
     
         
-def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name):
+def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=False):
     '''
     plot the original image and the spatial map of the sensitive clusters as well as the assimilated tiles (optional)
     '''
@@ -314,6 +314,8 @@ def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_na
     slide_topk_heatmap_dict = load_vis_pkg_from_pkl(_env_heatmap_store_dir,
                                                     spatmap_pkl_name)
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
+    # print(len(slide_topk_heatmap_dict.keys()))
+    # print(slide_topk_heatmap_dict.keys())
     
     for slide_id in slide_topk_heatmap_dict.keys():
         case_id = parse_caseid_from_slideid(slide_id)
@@ -341,6 +343,13 @@ def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_na
         if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir))):
             os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir)))
             print('create file dir {}'.format(os.path.join(_env_heatmap_store_dir, '{}//m'.format(spat_dir))))
+        
+        if draw_org is True:
+            # if draw the original image
+            draw_attention_heatmap(spat_dir, org_img, None, None, 
+                                   (os.path.join('{}//'.format(spat_dir) + str(slide_label), slide_id + '-org'), alg_name))
+            print('draw original image in: {} for slide:{}'.format(os.path.join(_env_heatmap_store_dir, '{}//'.format(spat_dir)), 
+                                                               slide_id))
             
         draw_attention_heatmap(spat_dir, heat_s_clst_col, org_img, None,
                                (os.path.join('{}//'.format(spat_dir) + str(slide_label), slide_id + '-hard'), alg_name))

@@ -140,6 +140,9 @@ def pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups):
     for label, _, _, _ in clustering_res_pkg:
         if any(label.startswith(prefix) for prefix in cluster_groups):
             selected_labels.append(label)
+            
+    # filter the repeat labels
+    selected_labels = list(set(selected_labels))
 
     return selected_labels
 
