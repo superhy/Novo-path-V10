@@ -770,6 +770,14 @@ def plot_clst_gp_tis_pct_abs_nb_ball_df_lob(ENV_task, ENV_ball_ant,
     plt.savefig(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name ) )
     print('store the picture in {}'.format(os.path.join(ENV_task.HEATMAP_STORE_DIR, fig_name)) )
     plt.clf()
+    
+def plot_clst_gp_tis_pct_abs_nb_ball_df_fib(ENV_task, ENV_ball_ant,
+                                            fib_csv_filename, tis_pct_pkl_name,
+                                            gp_prefixs, hl_prefixs=None, tis_pct=True, def_color='skyblue'):
+    '''
+    TODO:
+    '''
+    pass
 
 
 def plot_cross_labels_parcats(ENV_task, 

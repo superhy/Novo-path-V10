@@ -144,7 +144,7 @@ if __name__ == '__main__':
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         cut_left = True
         # heat_style = 'clst'
-        part_vis = [0, 50]
+        part_vis = [0, 50 - 1]
         heat_style = 'both'
         if assimilate_pkl_name is None:
             heat_style = 'clst'
@@ -155,6 +155,35 @@ if __name__ == '__main__':
         else:
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left, part_vis=part_vis)
+    if 2.19 in task_ids:
+        ''' on NN-Cluster '''
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
+        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+                          '2_1_1_1_0']
+        
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        cut_left = True
+        aprx_list_len = 260 # approximate maximum list length
+        step_len = 50
+        heat_style = 'both'
+        if assimilate_pkl_name is None:
+            heat_style = 'clst'
+            
+        start = 0
+        end = start + step_len - 1
+        while end < aprx_list_len:
+            part_vis = [start, end]
+            if heat_style == 'both':
+                _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                                        sp_clsts, cut_left, part_vis=part_vis)
+            else:
+                _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+                                                        sp_clsts, cut_left, part_vis=part_vis)
+            start += step_len
+            end = start + step_len - 1
+                
     
     if 3 in task_ids:
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'

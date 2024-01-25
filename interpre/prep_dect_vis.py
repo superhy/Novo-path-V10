@@ -604,6 +604,8 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
         slide_clst_s_spatmap_dict[slide_id] = (org_np_img, heat_s_clst_col)
             
     new_name = f'{len(sp_clsts)}-clst-a-spat' if assimilate_pkl_name is not None else f'{len(sp_clsts)}-clst-spat'
+    suf_name = f'[{part_vis[0]}-{part_vis[1]}]' if part_vis is not None else f'[all]'
+    new_name += suf_name
     clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)
     clst_s_spatmap_pkl_name = clst_s_spatmap_pkl_name.replace('hiera-res', new_name)
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
