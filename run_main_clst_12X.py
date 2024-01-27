@@ -122,9 +122,14 @@ if __name__ == '__main__':
                             '2_1_1_1_0']
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
+        ''' rough '''
         # assim_ratio = 0.01
         # fills=[3, 3, 3, 3]
-        assim_ratio = 0.002
+        ''' mid '''
+        # assim_ratio = 0.002
+        # fills=[3, 3, 3, 3, 3]
+        ''' closest '''
+        assim_ratio = 0.001
         fills=[3, 3, 3, 3, 3]
         exc_clustered=False
         _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 

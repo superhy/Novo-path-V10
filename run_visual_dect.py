@@ -10,11 +10,12 @@ import sys
 from interpre.prep_clst_vis import pick_clusters_by_prefix
 from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, \
     _run_make_spatial_sensi_clusters_assims, \
-    _run_cnt_tis_pct_sensi_clsts_assim_on_slides, \
+    _run_cnt_tis_pct_sensi_c_assim_t_on_slides, \
     _run_make_filt_attention_heatmap_resnet_P62, \
     _run_make_topK_activation_heatmap_resnet_P62, \
     _load_activation_score_resnet_P62, _run_get_top_act_tiles_embeds_allslides, \
-    _run_make_filt_activation_heatmap_resnet_P62
+    _run_make_filt_activation_heatmap_resnet_P62, \
+    _run_cnt_abs_nb_sensi_c_assim_t_on_slides
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -185,12 +186,32 @@ if __name__ == '__main__':
             end = start + step_len - 1
                 
     
-    if 3 in task_ids:
+    if 3.1 in task_ids:
+        ''' old '''
         clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-06.pkl'
-        sp_clsts = [0]
         
-        _run_cnt_tis_pct_sensi_clsts_assim_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
+        ''' on NN-Cluster '''
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
+        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+                          '2_1_1_1_0']
+        
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        
+        _run_cnt_tis_pct_sensi_c_assim_t_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
+    if 3.2 in task_ids:
+        ''' on NN-Cluster '''
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
+        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+                          '2_1_1_1_0']
+        
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        
+        _run_cnt_abs_nb_sensi_c_assim_t_on_slides(ENV_task, clustering_pkl_name, sp_clsts, assimilate_pkl_name)
     
     if 10 in task_ids:
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']

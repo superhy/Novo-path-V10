@@ -779,6 +779,32 @@ def plot_clst_gp_tis_pct_abs_nb_ball_df_fib(ENV_task, ENV_ball_ant,
     '''
     pass
 
+''' -------------------------------------------------------- '''
+
+def plot_sc_at_tp_nb_ball_grades_scatter(ENV_task, _someargs_, only_sc=True):
+    '''
+    PS:
+        sc_at -> sensi_c_assim_t
+        tp_nb -> tissue_percentage and abs_number
+        
+    TODO: finish this function, args are not filled all
+    '''
+    
+def plot_sc_at_tis_pct_ball_grades_box(ENV_task, _someargs_):
+    '''
+    PS:
+        sc_at -> sensi_c_assim_t
+        
+    TODO: finish this function, args are not filled all
+    '''
+    
+def plot_sc_at_abs_nb_ball_grades_box(ENV_task, _someargs_):
+    '''
+    PS:
+        sc_at -> sensi_c_assim_t
+        
+    TODO: finish this function, args are not filled all
+    '''
 
 def plot_cross_labels_parcats(ENV_task, 
                               ball_s_csv_filename, stea_s_csv_filename, lob_s_csv_filename):
