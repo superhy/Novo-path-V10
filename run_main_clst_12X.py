@@ -124,13 +124,14 @@ if __name__ == '__main__':
         
         ''' rough '''
         # assim_ratio = 0.01
-        # fills=[3, 3, 3, 3]
+        # fills=[3, 3, 3, 4]
         ''' mid '''
         # assim_ratio = 0.002
-        # fills=[3, 3, 3, 3, 3]
+        # fills=[3, 3, 3, 4]
         ''' closest '''
         assim_ratio = 0.001
-        fills=[3, 3, 3, 3, 3]
+        fills=[3, 3, 3, 4]
+        
         exc_clustered=False
         _run_tiles_assimilate_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
                                               tile_net_filename=tile_net_filename,
