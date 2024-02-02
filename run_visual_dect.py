@@ -139,8 +139,8 @@ if __name__ == '__main__':
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
         ''' --- rough assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
-        ''' --- mid-close assimilate --- '''
-        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-01-27.pkl'
+        ''' --- cluster-each assimilate --- '''
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl'
         cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
                           '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
                           '2_1_1_1_0']
@@ -164,8 +164,8 @@ if __name__ == '__main__':
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
         ''' --- rough assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
-        ''' --- mid-close assimilate --- '''
-        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-01-27.pkl'
+        ''' --- cluster-each assimilate --- '''
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl'
         cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
                           '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
                           '2_1_1_1_0']
