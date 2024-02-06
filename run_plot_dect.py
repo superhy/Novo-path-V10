@@ -57,7 +57,9 @@ if __name__ == '__main__':
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='filt-ball')
     if 2 in task_ids:
         # spatmap_pkl_name = 'clst-[1, 3]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
-        spatmap_pkl_name = '17-clst-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-26-[0-50].pkl' # [0, 50] pick test at home 2024.1
+        # spatmap_pkl_name = '17-clst-a-spat[0-10]_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # [0, 10] pick test at home 2024.1
+        # spatmap_pkl_name = '17-clst-a-spat[0-50]-0.002_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        spatmap_pkl_name = '17-clst-a-spat[0-50]-0.01_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         
         draw_org = True
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)
