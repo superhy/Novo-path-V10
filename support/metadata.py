@@ -254,6 +254,67 @@ def count_flinc_stain_amount(ENV_task, xlsx_filepath):
             
     print('count stain: %s with slides: %d' % (ENV_task.STAIN_TYPE, nb_stain_slides))
     return nb_stain_slides
+
+def extract_henning_marta_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type):
+    '''
+    parse the henning's analysis results file and generate a dict for usual dataframe in this project
+    '''
+    # read the Excel and CSV files
+    df_excel = pd.read_excel(slide_info_xlsx_path)
+    df_csv = pd.read_csv(henning_csv_path)
+    # fill the N/A at Level column as 'a'
+    df_excel['Level'] = df_excel['Level'].fillna('a')
+
+    # mapping SubjectID & Level to case_ID & slice
+    df_excel['SubjectID'] = df_excel['SubjectID'].apply(lambda x: f'P_{x}')
+    df_excel.rename(columns={'Slide': 'slide_id', 'SubjectID': 'case_ID', 'Level': 'slice'}, inplace=True)
+    # filtering out the line with the corresponding stain_type
+    df_excel_filtered = df_excel[df_excel['Stain'] == stain_type]
+
+    # connect the 2 DataFrame
+    merged_df = pd.merge(df_excel_filtered, df_csv, on=['case_ID', 'slice'])
+    # print(merged_df)
+    # print(merged_df.columns)
+
+    # decide the results need to be extract
+    stain_to_percent = {'HE': 'fat_percent', 'PSR': 'collagen_percent', 'CD45': 'CD45_percent', 'P62': 'P62_percent'}
+    analysis_percent = stain_to_percent.get(stain_type, 'P62_percent')
+    print('load results for: ', analysis_percent)
+    # fill the N/A value as 0.0
+    merged_df[analysis_percent] = merged_df[analysis_percent].fillna(0.0)
+
+    # structure the slide_id and generate the dict to store the results
+    result_dict = {}
+    for _, row in merged_df.iterrows():
+        slide_id = f"sl{str(row['slide_id']).zfill(3)}"
+        analysis_value = row[analysis_percent]
+        result_dict[slide_id] = analysis_value
+
+    return result_dict
+
+def _prod_henning_marta_percentages(ENV_task, slide_info_xlsx_name, henning_csv_name):
+    '''
+    '''
+    stain_type = ENV_task.STAIN_TYPE
+    slide_info_xlsx_path = os.path.join(ENV_task.META_FOLDER, slide_info_xlsx_name)
+    henning_csv_path = os.path.join(ENV_task.META_FOLDER, henning_csv_name)
+    
+    # extract the analysis results
+    analysis_dict = extract_henning_marta_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type)
+    print(analysis_dict)
+    
+    stain_title_prefix_dict = {'HE': 'steatosis', 'PSR': 'fibrosis', 'CD45': 'lobular_inflammation', 'P62': 'ballooning'}
+    stain_title = stain_title_prefix_dict[stain_type]
+    
+    # Create a DataFrame from the analysis result dictionary
+    df_analysis = pd.DataFrame(list(analysis_dict.items()), columns=['slide_id', f'{stain_title}_percentage'])
+    
+    # Construct the CSV file name
+    csv_file_name = f"{stain_type}_{stain_title}_percentage.csv"
+    
+    # Write the DataFrame to a CSV file
+    df_analysis.to_csv(os.path.join(ENV_task.META_FOLDER, csv_file_name), index=False)
+    print(f"Henning and Marta\'s analysis results have been saved to the file: {csv_file_name}")
     
     
 def _load_clinical_labels(show_hv):
@@ -493,6 +554,12 @@ if __name__ == '__main__':
     pkg_param_lob_hv = (ENV_FLINC_P62_LOB_BI, {0: [-1], 1:[3]}, 'lobular_inflammation_score-hv')
     # _ = _prod_bi_label_combine_labels(pkg_param_ball_hv[0], pkg_param_ball_hv[1], pkg_param_ball_hv[2])
     # _ = _prod_bi_label_combine_labels(pkg_param_stea_hv[0], pkg_param_stea_hv[1], pkg_param_stea_hv[2])
-    _ = _prod_bi_label_combine_labels(pkg_param_lob_hv[0], pkg_param_lob_hv[1], pkg_param_lob_hv[2])
+    # _ = _prod_bi_label_combine_labels(pkg_param_lob_hv[0], pkg_param_lob_hv[1], pkg_param_lob_hv[2])
     
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
+
+    
+    _prod_henning_marta_percentages(ENV_task=ENV_FLINC_P62_U, 
+                                    slide_info_xlsx_name='FLINC_23910-158_withSubjectID.xlsx', 
+                                    henning_csv_name='flinc_quantitative_pathology - add Marta results.csv')
+
