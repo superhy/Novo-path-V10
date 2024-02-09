@@ -255,7 +255,7 @@ def count_flinc_stain_amount(ENV_task, xlsx_filepath):
     print('count stain: %s with slides: %d' % (ENV_task.STAIN_TYPE, nb_stain_slides))
     return nb_stain_slides
 
-def extract_henning_marta_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type):
+def extract_henning_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type):
     '''
     parse the henning's analysis results file and generate a dict for usual dataframe in this project
     '''
@@ -286,36 +286,93 @@ def extract_henning_marta_fraction_data(slide_info_xlsx_path, henning_csv_path, 
     # structure the slide_id and generate the dict to store the results
     result_dict = {}
     for _, row in merged_df.iterrows():
-        slide_id = f"sl{str(row['slide_id']).zfill(3)}"
+        slide_id = f"Sl{str(row['slide_id']).zfill(3)}"
         analysis_value = row[analysis_percent]
         result_dict[slide_id] = analysis_value
 
     return result_dict
 
-def _prod_henning_marta_percentages(ENV_task, slide_info_xlsx_name, henning_csv_name):
+def _prod_henning_percentages(ENV_task, slide_info_xlsx_name, henning_csv_name):
     '''
+    generate the csv file as original percentage value
     '''
     stain_type = ENV_task.STAIN_TYPE
     slide_info_xlsx_path = os.path.join(ENV_task.META_FOLDER, slide_info_xlsx_name)
     henning_csv_path = os.path.join(ENV_task.META_FOLDER, henning_csv_name)
     
     # extract the analysis results
-    analysis_dict = extract_henning_marta_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type)
-    print(analysis_dict)
+    analysis_dict = extract_henning_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type)
     
     stain_title_prefix_dict = {'HE': 'steatosis', 'PSR': 'fibrosis', 'CD45': 'lobular_inflammation', 'P62': 'ballooning'}
     stain_title = stain_title_prefix_dict[stain_type]
     
     # Create a DataFrame from the analysis result dictionary
     df_analysis = pd.DataFrame(list(analysis_dict.items()), columns=['slide_id', f'{stain_title}_percentage'])
+    print(df_analysis)
     
     # Construct the CSV file name
-    csv_file_name = f"{stain_type}_{stain_title}_percentage.csv"
+    csv_file_name = f'{stain_type}_{stain_title}_percentage.csv'
     
     # Write the DataFrame to a CSV file
     df_analysis.to_csv(os.path.join(ENV_task.META_FOLDER, csv_file_name), index=False)
     print(f"Henning and Marta\'s analysis results have been saved to the file: {csv_file_name}")
     
+def _prod_henning_pct_grade_labels(ENV_task, slide_info_xlsx_name, henning_csv_name, label_ranges):
+    '''
+    generate the csv file as range grades, default using for P62_percentage from Henning
+    
+    Args:
+        label_ranges: can be [(0, 0.2), (0.2, 1), (1, )]
+            cannot have (, a) like (, 0.2), cannot be None
+    '''
+    stain_type = ENV_task.STAIN_TYPE
+    slide_info_xlsx_path = os.path.join(ENV_task.META_FOLDER, slide_info_xlsx_name)
+    henning_csv_path = os.path.join(ENV_task.META_FOLDER, henning_csv_name)
+    # extract the analysis results
+    analysis_dict = extract_henning_fraction_data(slide_info_xlsx_path, henning_csv_path, stain_type)
+    
+    stain_title_prefix_dict = {'HE': 'steatosis', 'PSR': 'fibrosis', 'CD45': 'lobular_inflammation', 'P62': 'ballooning'}
+    stain_title = stain_title_prefix_dict[stain_type]
+    
+    df_labels = pd.DataFrame(columns=['slide_id', f'{stain_title}_percentage_label'])
+    for slide_id, percentage in analysis_dict.items():
+        label = None
+        for i, range_ in enumerate(label_ranges):
+            if len(range_) == 2 and range_[0] <= percentage <= range_[1]:
+                label = i
+                break
+            elif len(range_) == 1 and percentage > range_[0]:
+                label = i
+                break
+        
+        # setup the default label
+        if label is None:
+            label = len(label_ranges) - 1
+        
+        df_labels = df_labels.append({'slide_id': slide_id, f'{stain_title}_percentage_label': label}, ignore_index=True)
+    
+    print(df_labels)
+    # Construct the CSV file name
+    csv_file_name = f'{stain_type}_{stain_title}_percentage_label.csv'
+    
+    # Write the DataFrame to a CSV file
+    df_labels.to_csv(os.path.join(ENV_task.META_FOLDER, csv_file_name), index=False)
+    print(f"Henning and Marta\'s analysis grade labels have been saved to the file: {csv_file_name}")
+    
+def load_percentages_from_csv(ENV_task, percentage_csv_name=None):
+    '''
+    load back Henning and Marta's percentage results from csv file
+    '''
+    stain_title_prefix_dict = {'HE': 'steatosis', 'PSR': 'fibrosis', 'CD45': 'lobular_inflammation', 'P62': 'ballooning'}
+    stain_type = ENV_task.STAIN_TYPE
+    stain_title = stain_title_prefix_dict[stain_type]
+    
+    if percentage_csv_name is None:
+        percentage_csv_name = f'{stain_type}_{stain_title}_percentage.csv'
+        
+    df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, percentage_csv_name))
+    results_dict = pd.Series(df[f'{stain_title}_percentage'].values, index=df['slide_id']).to_dict()
+    return results_dict
     
 def _load_clinical_labels(show_hv):
     
@@ -559,7 +616,12 @@ if __name__ == '__main__':
 #     print(ENV_FLINC_HE_STEA.PROJECT_NAME)
 
     
-    _prod_henning_marta_percentages(ENV_task=ENV_FLINC_P62_U, 
+    _prod_henning_percentages(ENV_task=ENV_FLINC_P62_U, 
                                     slide_info_xlsx_name='FLINC_23910-158_withSubjectID.xlsx', 
                                     henning_csv_name='flinc_quantitative_pathology - add Marta results.csv')
+    
+    _prod_henning_pct_grade_labels(ENV_task=ENV_FLINC_P62_U, 
+                                    slide_info_xlsx_name='FLINC_23910-158_withSubjectID.xlsx', 
+                                    henning_csv_name='flinc_quantitative_pathology - add Marta results.csv',
+                                    label_ranges=[(0, 0.2), (0.2, 1), (1, )])
 

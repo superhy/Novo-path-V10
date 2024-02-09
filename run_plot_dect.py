@@ -10,7 +10,8 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     _plot_groups_K_embeds_scatter, plot_clsts_tis_pct_abs_nb_box, \
     plot_clst_gp_tis_pct_abs_nb_box, plot_cross_labels_parcats, \
     plot_cross_labels_parcats_lmh, plot_clst_gp_tis_pct_abs_nb_ball_df_stea, \
-    plot_clst_gp_tis_pct_abs_nb_ball_df_lob
+    plot_clst_gp_tis_pct_abs_nb_ball_df_lob, plot_henning_fraction_dist, \
+    plot_he_rpt_henning_label_parcats
 from support import env_flinc_p62
 
 
@@ -30,10 +31,13 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
-    task_ids = [2]
+    # task_ids = [2]
     # task_ids = [1]
     # task_ids = [10.5]
     # task_ids = [29.3, 29.4]
+    
+    task_ids = [30.2]
+    
     # task_ids = [201, 201.1]
     
     if 0 in task_ids:
@@ -215,7 +219,15 @@ if __name__ == '__main__':
         for i, gp_prefixs in enumerate(gp_prefixs_list):
             plot_clst_gp_tis_pct_abs_nb_ball_df_lob(ENV_task, ENV_annotation_hv, lob_csv_filename, 
                                                     tis_pct_pkl_name, gp_prefixs, hl_prefixs_list[i],
-                                                    tis_pct, 'lightsalmon')         
+                                                    tis_pct, 'lightsalmon')
+            
+    if 30.1 in task_ids:
+        percentage_csv_name = 'P62_ballooning_percentage.csv'
+        plot_henning_fraction_dist(ENV_task, percentage_csv_name)  
+    if 30.2 in task_ids:
+        score_csv_name = 'P62_ballooning_score.csv'
+        percentage_label_csv_name = 'P62_ballooning_percentage_label.csv'
+        plot_he_rpt_henning_label_parcats(ENV_task, score_csv_name, percentage_label_csv_name)
     
     if 201 in task_ids:
         '''

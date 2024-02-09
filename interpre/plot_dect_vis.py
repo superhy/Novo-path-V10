@@ -13,12 +13,14 @@ from interpre.prep_tools import load_vis_pkg_from_pkl
 from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
     df_p62_s_clst_and_assim_t_p_ball_corr
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sns
 from support.files import parse_slideid_from_filepath, parse_caseid_from_slideid
-from support.metadata import query_task_label_dict_fromcsv
+from support.metadata import query_task_label_dict_fromcsv, \
+    load_percentages_from_csv
 from wsi.slide_tools import slide_to_scaled_np_image
 
 
@@ -805,6 +807,56 @@ def plot_sc_at_abs_nb_ball_grades_box(ENV_task, _someargs_):
         
     TODO: finish this function, args are not filled all
     '''
+    
+def plot_he_rpt_henning_label_parcats(ENV_task,
+                                      score_csv_name, percentage_label_csv_name):
+    '''
+    '''
+    score_csv_path = os.path.join(ENV_task.META_FOLDER, score_csv_name)
+    percentage_label_csv_path = os.path.join(ENV_task.META_FOLDER, percentage_label_csv_name)
+    
+    # Read CSV files
+    df_score = pd.read_csv(score_csv_path)
+    df_percentage_label = pd.read_csv(percentage_label_csv_path)
+    
+    # Merge the two DataFrames on 'slide_id'
+    merged_df = pd.merge(df_score, df_percentage_label, on='slide_id', suffixes=('_score', '_label'))
+    print(merged_df)
+    
+    # Create a Parallel Categories Diagram (Parcats) to show the label transitions
+    fig = go.Figure(data=[
+        go.Parcats(
+            dimensions=[
+                {'label': 'H&E report grade', 'values': merged_df[df_score.columns[1]],
+                 'categoryorder': 'array', 'categoryarray': [0, 1, 2]},
+                {'label': 'pathologist fraction grade', 'values': merged_df[df_percentage_label.columns[1]],
+                 'categoryorder': 'array', 'categoryarray': [0, 1, 2]}
+            ],
+            line=dict(
+                color=merged_df[df_score.columns[1]],  # Use the score for coloring
+                colorscale='Viridis',  # You can choose other color scales
+                # colorscale=[[0, 'dodgerblue'], [0.5, 'lightcoral'], [1, 'turquoise']],  # setup the color scale
+                shape='hspline'  # Make the lines smooth
+            ),
+            hoverinfo='all'
+        )
+    ])
+    
+    # Update layout of the figure
+    fig.update_layout(
+        margin=dict(l=40, b=75, r=80, t=20, pad=0),
+        title='Ballooning Score to Ballooning Percentage Label Transition',
+        title_font_size=25,
+        font_size=20,
+        autosize=False,
+        width=900, 
+        height=900,
+        title_x=0.5, 
+        title_y=0.05
+    )
+    
+    # fig.show()
+    fig.write_html('fig_he_rpt_percenatge_trans.html', auto_open=True)
 
 def plot_cross_labels_parcats(ENV_task, 
                               ball_s_csv_filename, stea_s_csv_filename, lob_s_csv_filename):
@@ -940,6 +992,38 @@ def plot_cross_labels_parcats_lmh(ENV_task,
         )
     # fig.show()
     fig.write_html('fig_label_trans_lmh.html', auto_open=True)
+    
+def plot_henning_fraction_dist(ENV_task, percentage_csv_name=None, auto_bins=False):
+    '''
+    visualisation the distribution of bio-marker percentage from Henning and Marta's results
+    '''
+    percentage_dict = load_percentages_from_csv(ENV_task, percentage_csv_name)
+    percentage_values = np.asarray(list(percentage_dict.values()))
+    
+    plt.figure(figsize=(12, 3))
+    data_le_0_2 = percentage_values[percentage_values <= 0.2]
+    data_bt_0_2_1 = percentage_values[(0.2 < percentage_values) & (percentage_values <= 1)]
+    data_gt_1 = percentage_values[percentage_values > 1]
+    sns.histplot(data_le_0_2, color='orange', kde=False, binwidth=0.05)
+    sns.histplot(data_bt_0_2_1, color='skyblue', kde=False, binwidth=0.05)
+    sns.histplot(data_gt_1, color='red', kde=False, binwidth=0.05)
+    # sns.histplot(percentage_values, kde=True, color='skyblue', line_kws={'color': 'blue'}) # shutdown KDE
+    # sns.kdeplot(data_le_0_2, bw_method='scott', cut=0, clip=(0, 1), color='black')
+    
+    orange_patch = mpatches.Patch(color='orange', label='≤ 0.2')
+    skyblue_patch = mpatches.Patch(color='skyblue', label='0.2 - 1')
+    red_patch = mpatches.Patch(color='red', label='> 1')
+    plt.legend(handles=[orange_patch, skyblue_patch, red_patch])
+        
+    plt.xlim(-0.05, )
+    # plt.ylim(0, 50)
+    plt.title(f'Distribution of {ENV_task.STAIN_TYPE} Percentage')
+    plt.xlabel(f'{ENV_task.STAIN_TYPE} percentage')
+    plt.ylabel('Frequency')
+    # using histplot and turn on the KDE fitting
+    
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == '__main__':
     pass
