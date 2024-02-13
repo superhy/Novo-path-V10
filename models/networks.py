@@ -555,7 +555,7 @@ class ViT_D3_H4_T(ViT_base):
    
 class AttentionPool(nn.Module):
     
-    def __init__(self, embedding_dim, output_dim):
+    def __init__(self, embedding_dim, output_dim, with_att_L_loss=False):
         super(AttentionPool, self).__init__()
         
         self.name = 'AttPool'
@@ -564,6 +564,7 @@ class AttentionPool(nn.Module):
         self.att_layer_width = [256, 128]
         self.output_layer_width = 128
         self.att_dim = 1
+        self.with_att_L_loss = with_att_L_loss
         
         self.encoder = nn.Sequential(
             nn.Dropout(p=0.5),
@@ -592,10 +593,12 @@ class AttentionPool(nn.Module):
         X_e = self.bn(X_e.transpose(-2, -1)).transpose(-2, -1)
         att = self.attention(X_e)
         att = att.transpose(-2, -1)
-        ''' record the attention value (before softmax) '''
+        ''' record the attention value (before softmax or sigmoid) '''
         # att_r = torch.squeeze(att, dim=1)
-        att = F.softmax(att, dim=-1)
-#         att = torch.sigmoid(att)
+        if self.with_att_L_loss is False:
+            att = F.softmax(att, dim=-1)
+        else:
+            att = torch.sigmoid(att)
         mask = (torch.arange(att.shape[-1], device=att.device).expand(att.shape) < bag_lens.unsqueeze(1).unsqueeze(1)).byte()
         att = att * mask
         
@@ -611,7 +614,7 @@ class AttentionPool(nn.Module):
     
 class GatedAttentionPool(nn.Module):
     
-    def __init__(self, embedding_dim, output_dim):
+    def __init__(self, embedding_dim, output_dim, with_att_L_loss=False):
         super(GatedAttentionPool, self).__init__()
         
         self.name = 'GatedAttPool'
@@ -620,6 +623,7 @@ class GatedAttentionPool(nn.Module):
         self.att_layer_width = [256, 128]
         self.output_layer_width = 128
         self.att_dim = 1
+        self.with_att_L_loss = with_att_L_loss
         
         self.encoder = nn.Sequential(
             nn.Dropout(p=0.5),
@@ -659,9 +663,12 @@ class GatedAttentionPool(nn.Module):
         att_V = self.attention_V(X_e)
         att = self.attention(att_V * att_U)
         att = att.transpose(-2, -1)
-        ''' record the attention value (before softmax) '''
+        ''' record the attention value (before softmax or sigmoid) '''
         # att_r = torch.squeeze(att, dim=1)
-        att = F.softmax(att, dim=-1)
+        if self.with_att_L_loss is False:
+            att = F.softmax(att, dim=-1)
+        else:
+            att = torch.sigmoid(att)
         
         mask = (torch.arange(att.shape[-1], device=att.device).expand(att.shape) < bag_lens.unsqueeze(1).unsqueeze(1)).byte()
         att = att * mask

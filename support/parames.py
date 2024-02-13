@@ -117,7 +117,9 @@ class parames_task(parames_basic):
                  try_k_0=200,
                  try_k_1=50,
                  num_tk_epoch=20,
-                 stop_tk_acc=0.7):
+                 stop_tk_acc=0.7,
+                 output_dim = 2 # added at 2024.2.12 for classes > 3
+                 ):
         """
         Args:
             seg_train_folder_name:
@@ -245,6 +247,7 @@ class parames_task(parames_basic):
         self.TRY_K_1 = try_k_1 # for imbalance label-1
         self.NUM_TK_EPOCH = num_tk_epoch
         self.STOP_TK_ACC = stop_tk_acc
+        self.OUTPUT_DIM = output_dim
     
     def refresh_fold_suffix(self, new_fold_suffix):
         '''

@@ -71,6 +71,22 @@ class DiceBCELoss(nn.Module):
 def dice_bce_loss():
     return DiceBCELoss().cuda()
 
+
+class L1AttLoss(nn.Module):
+    def __init__(self):
+        super(L1AttLoss, self).__init__()
+    
+    def forward(self, attentions, label=0, alpha=0.5):
+        weights = 1 / (1 + alpha * label.float())        
+        l1_loss = torch.norm(attentions, p=1) # L1 loss
+        
+        # weighted sparse loss
+        sparse_loss = (weights * l1_loss).mean()
+        return sparse_loss
+    
+def get_attention_l1_loss():
+    return L1AttLoss().cuda()
+
 ''' <up> segmentation loss, <down> classification loss '''
 
 def dice_loss():
@@ -358,6 +374,54 @@ def train_agt_epoch(net, train_loader, loss, optimizer, epoch_info: tuple=(-2, -
                                                                                       str(time.elapsed())[:-5])
     return train_log
 
+def train_agt_lp_epoch(net, train_loader, loss, optimizer, 
+                       y_lp_loss=None, att_lp_loss=None, alpha_side_loss=0.5, 
+                       epoch_info: tuple=(-2, -2)):
+    """
+    trainer for slide-level(WSI) feature aggregation and/or classification
+    this trainer will contain L(x) loss calculation, like L0, L1, L2... for y (output) or attention
+    
+    Args:
+        net: diff with other training function, net need to input <mat_X, bag_dim>
+        data_loader:
+        loss:
+        optimizer:
+        epoch: the idx of running epoch (default: None (unknown))
+    """
+    net.train()
+    epoch_cls_loss, epoch_sparse_loss, epoch_acc_sum, batch_count, time = 0.0, 0.0, 0.0, 0, Time()
+    
+    for mat_X, bag_dim, y in train_loader:
+        mat_X = mat_X.cuda()
+        bag_dim = bag_dim.cuda()
+        y = y.cuda()
+        # feed forward
+        y_pred, att_r, _ = net(mat_X, bag_dim)
+        sparse_loss = 0
+        if y_lp_loss != None:
+            sparse_loss += y_lp_loss(y_pred)
+        if att_lp_loss != None:
+            sparse_loss += att_lp_loss(att_r, y)
+        cls_loss = loss(y_pred, y)
+        sparse_loss *= alpha_side_loss
+        batch_loss = cls_loss + sparse_loss 
+        # BP
+        optimizer.zero_grad()
+        batch_loss.backward()
+        optimizer.step()
+        # loss count
+        epoch_cls_loss += cls_loss.cpu().item()
+        epoch_sparse_loss += sparse_loss.cpu().item()
+        epoch_acc_sum += (y_pred.argmax(dim=1) == y).sum().cpu().item()
+        batch_count += 1
+    
+    train_log = 'epoch [%d/%d], cls_loss-> %.3f, sparse_loss-> %.3f, train acc-> %.3f, time: %s sec' % (epoch_info[0] + 1, epoch_info[1],
+                                                                                      epoch_cls_loss / batch_count,
+                                                                                      epoch_sparse_loss / batch_count,
+                                                                                      epoch_acc_sum / len(train_loader.dataset),
+                                                                                      str(time.elapsed())[:-5])
+    return train_log
+
 
 ''' -------------- function of classification evaluation -------------- '''
     
@@ -434,7 +498,7 @@ def train_seg_epoch(train_loader, net, loss, optimizer, epoch_info=(-2, -2)):
              optimizer.state_dict()['param_groups'][0]['lr'], 
              train_loss_sum / batch_count, str(time.elapsed())[:-5] ))
     
-def test_seg_epoch(test_loader, net, loss, prediction=False):
+def test_start_epoch(test_loader, net, loss, prediction=False):
     """
     """
     net.eval()

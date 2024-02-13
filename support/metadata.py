@@ -311,7 +311,7 @@ def _prod_henning_percentages(ENV_task, slide_info_xlsx_name, henning_csv_name):
     print(df_analysis)
     
     # Construct the CSV file name
-    csv_file_name = f'{stain_type}_{stain_title}_percentage.csv'
+    csv_file_name = f'{stain_type}_{stain_title}_pct.csv'
     
     # Write the DataFrame to a CSV file
     df_analysis.to_csv(os.path.join(ENV_task.META_FOLDER, csv_file_name), index=False)
@@ -353,7 +353,7 @@ def _prod_henning_pct_grade_labels(ENV_task, slide_info_xlsx_name, henning_csv_n
     
     print(df_labels)
     # Construct the CSV file name
-    csv_file_name = f'{stain_type}_{stain_title}_percentage_label.csv'
+    csv_file_name = f'{stain_type}_{stain_title}_pct_lbl.csv'
     
     # Write the DataFrame to a CSV file
     df_labels.to_csv(os.path.join(ENV_task.META_FOLDER, csv_file_name), index=False)

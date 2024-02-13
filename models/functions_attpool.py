@@ -13,7 +13,7 @@ from models import functions
 from models.datasets import load_slides_tileslist, Simple_Tile_Dataset, \
     SlideMatrix_Dataset
 from models.functions import regular_evaluation, store_evaluation_roc, \
-    train_agt_epoch
+    train_agt_epoch, train_agt_lp_epoch
 from models.networks import GatedAttentionPool, AttentionPool, \
     reload_net, store_net, ViT_D3_H4_T, ViT_D6_H8, ViT_D9_H12, BasicResNet18
 import numpy as np
@@ -241,7 +241,9 @@ class AttPool_MIL():
     MIL with Attention Pooling based method
     '''
     def __init__(self, ENV_task, encoder=None, aggregator_name='GatedAttPool', 
-                 model_filename=None, test_seg_epoch=1, test_mode=False):
+                 model_filename=None, test_start_epoch=1, 
+                 y_L_loss=None, att_L_loss=None, alpha_L_loss=0.5,
+                 test_mode=False):
         
         if model_filename is None and test_mode is True:
             warnings.warn('no trained model for testing, please check!')
@@ -255,6 +257,9 @@ class AttPool_MIL():
         self.model_store_dir = self.ENV_task.MODEL_FOLDER
         pt_prefix = 'pt_' if model_filename is not None and model_filename.find('PTAGT') != -1 else ''
         if test_mode is True:
+            if self.ENV_task.TEST_PART_PROP <= 0.0:
+                warnings.warn('there is no test set, please check!')
+                return
             pt_prefix = 'pt_' if model_filename.find('-pt_') != -1 else ''
         self.alg_name = '{}{}Pool{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
                                                 self.ENV_task.FOLD_SUFFIX, _env_task_name)
@@ -271,8 +276,13 @@ class AttPool_MIL():
         self.last_eval_epochs = self.ENV_task.NUM_LAST_EVAL_EPOCHS
         self.overall_stop_loss = self.ENV_task.OVERALL_STOP_LOSS if model_filename is None or \
             model_filename.find('PTAGT') == -1 else self.ENV_task.OVERALL_STOP_LOSS_PT
-        self.test_seg_epoch = test_seg_epoch
+        self.test_start_epoch = test_start_epoch
         self.record_points = self.ENV_task.ATTPOOL_RECORD_EPOCHS
+        self._output_dim = self.ENV_task.OUTPUT_DIM
+        
+        self.y_L_loss = y_L_loss
+        self.att_L_loss = att_L_loss
+        self.alpha_L_loss = alpha_L_loss
         
         if encoder is None:
             self.encoder = BasicResNet18(output_dim=2)
@@ -287,26 +297,30 @@ class AttPool_MIL():
                                                                           force_refresh=False, print_info=False)
         else:
             self.train_slidemat_file_sets = []
-        self.test_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
-                                                                     encoder_net=self.encoder.backbone, for_train=False if not self.ENV_task.DEBUG_MODE else True,
-                                                                     force_refresh=False, print_info=False)   
+        if self.ENV_task.TEST_PART_PROP > 0.0 and self.ENV_task.DEBUG_MODE is False:
+            self.test_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
+                                                                         encoder_net=self.encoder.backbone, 
+                                                                         for_train=False if not self.ENV_task.DEBUG_MODE else True,
+                                                                         force_refresh=False, print_info=False) 
+        else:
+            self.test_slidemat_file_sets = []
         
         print('train slides: %d, test slides: %d, time: %s' % (len(self.train_slidemat_file_sets), 
                                                                len(self.test_slidemat_file_sets), 
                                                                str(init_time.elapsed())))
         
-        if len(self.train_slidemat_file_sets) > 0:
+        if len(self.train_slidemat_file_sets) > 0 and test_mode is False:
             embedding_dim = np.load(self.train_slidemat_file_sets[0][2]).shape[-1]
         else:
             ''' for test mode '''
             embedding_dim = np.load(self.test_slidemat_file_sets[0][2]).shape[-1]
         
         if aggregator_name == 'GatedAttPool':
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
         elif aggregator_name == 'AttPool':
-            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
         else:
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
         self.check_point = None
         if model_filename != None:
             if model_filename.find(self.aggregator.name) == -1:
@@ -357,12 +371,21 @@ class AttPool_MIL():
         if self.check_point != None:
             epoch += self.check_point['epoch']
             
-        train_log = train_agt_epoch(self.aggregator, train_slidemat_loader, 
-                                    self.criterion, self.optimizer,
-                                    epoch_info=(epoch, self.num_epoch))
+        if self.y_L_loss is None and self.att_L_loss is None:
+            train_log = train_agt_epoch(self.aggregator, train_slidemat_loader, 
+                                        self.criterion, self.optimizer,
+                                        epoch_info=(epoch, self.num_epoch))
+        else:
+            train_log = train_agt_lp_epoch(self.aggregator, train_slidemat_loader, 
+                                           self.criterion, self.optimizer,
+                                           self.y_L_loss, self.att_L_loss, self.alpha_L_loss,
+                                           epoch_info=(epoch, self.num_epoch))
         print(train_log)
         
-        attpool_current_loss = float(train_log[train_log.find('loss->') + 6: train_log.find(', train')])
+        if self.y_L_loss is None and self.att_L_loss is None:
+            attpool_current_loss = float(train_log[train_log.find('loss->') + 6: train_log.find(', train')])
+        else:
+            attpool_current_loss = float(train_log[train_log.find('loss->') + 6: train_log.find(', sparse')])
         if epoch >= self.num_least_epoch - 1 and attpool_current_loss < self.overall_stop_loss:
             overall_epoch_stop = True
         return overall_epoch_stop
@@ -390,7 +413,7 @@ class AttPool_MIL():
             overall_epoch_stop = self.slide_epoch(epoch, train_slidemat_loader, overall_epoch_stop)
             
             # evaluation
-            if not self.test_seg_epoch == None and epoch + 1 >= self.test_seg_epoch:
+            if not self.test_start_epoch == None and epoch + 1 >= self.test_start_epoch and len(self.test_slidemat_set) > 0:
                 print('>>> In testing...', end='')
                 test_log, test_loss, y_pred_scores, y_labels = self.predict(test_slidemat_loader)
                 test_acc, _, _, test_auc = functions.regular_evaluation(y_pred_scores, y_labels)
@@ -403,6 +426,8 @@ class AttPool_MIL():
                     checkpoint_auc = test_auc
                     self.record(epoch, checkpoint_auc)
                 print('>>> on attpool -> test acc: %.4f, test auc: %.4f' % (test_acc, test_auc))
+            else:
+                print('--- no test ---')
                 
             epoch += 1
             
@@ -459,6 +484,13 @@ class AttPool_MIL():
 def _run_train_attpool_resnet18(ENV_task, exist_model_name=None):
     encoder = BasicResNet18(output_dim=2)
     method = AttPool_MIL(ENV_task, encoder, 'AttPool', model_filename=exist_model_name)
+    method.optimize()
+    
+def _run_train_attpool_resnet18_att_L1(ENV_task, exist_model_name=None, alpha_L1=0.5):
+    encoder = BasicResNet18(output_dim=2)
+    att_L1_loss = functions.L1AttLoss()
+    method = AttPool_MIL(ENV_task, encoder, 'AttPool', model_filename=exist_model_name,
+                         att_L_loss=att_L1_loss, alpha_L_loss=alpha_L1)
     method.optimize()
 
 def _run_train_gated_attpool_resnet18(ENV_task, exist_model_name=None):
