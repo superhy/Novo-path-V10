@@ -54,7 +54,7 @@ task_ids = [2]
 
 ENV_task = ENV_FLINC_P62_BALL_PCT
 
-all_train = True
+all_train = False
 
 
 if __name__ == '__main__':

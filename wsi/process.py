@@ -144,6 +144,8 @@ def slide_tiles_split_keep_object_cls(ENV_task, all_train=False):
     for label_item in cls_path_dict.keys():
         cls_test_num_dict[label_item] = round(len(cls_path_dict[label_item]) * test_prop)
         
+    print(cls_test_num_dict)
+        
     # write train set
     print('<---------- store the train tiles list ---------->')
     train_allcls_path_list = []

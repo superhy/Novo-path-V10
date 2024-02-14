@@ -19,8 +19,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 
-task_ids = [20]
-# task_ids = [20.1]
+# task_ids = [20]
+task_ids = [20.1]
 fold_suffix = '-[0]'
 # fold_suffix = '-[5-9]'
 # fold_suffix = ENV_task.FOLD_SUFFIX
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         # folds = ['-5', '-6', '-7', '-8', '-9']
         for f in folds:
             ENV_task.refresh_fold_suffix(f)
-            _run_train_attpool_resnet18_att_L1(ENV_task, alpha_L1=0.05)
+            _run_train_attpool_resnet18_att_L1(ENV_task, alpha_L1=0.2)
         
         
         

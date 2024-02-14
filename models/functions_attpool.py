@@ -316,11 +316,14 @@ class AttPool_MIL():
             embedding_dim = np.load(self.test_slidemat_file_sets[0][2]).shape[-1]
         
         if aggregator_name == 'GatedAttPool':
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim,
+                                                 with_att_L_loss=self.att_L_loss is not None)
         elif aggregator_name == 'AttPool':
-            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
+            self.aggregator = AttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim,
+                                            with_att_L_loss=self.att_L_loss is not None)
         else:
-            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim)
+            self.aggregator = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=self._output_dim,
+                                                 with_att_L_loss=self.att_L_loss is not None)
         self.check_point = None
         if model_filename != None:
             if model_filename.find(self.aggregator.name) == -1:
