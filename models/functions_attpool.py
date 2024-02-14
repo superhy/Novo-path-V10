@@ -419,7 +419,7 @@ class AttPool_MIL():
             if not self.test_start_epoch == None and epoch + 1 >= self.test_start_epoch and len(self.test_slidemat_set) > 0:
                 print('>>> In testing...', end='')
                 test_log, test_loss, y_pred_scores, y_labels = self.predict(test_slidemat_loader)
-                test_acc, _, _, test_auc = functions.regular_evaluation(y_pred_scores, y_labels)
+                test_acc, _, _, test_auc = functions.regular_evaluation(y_pred_scores, y_labels, self._output_dim)
                  
                 queue_auc.append(test_auc)
                 if len(queue_auc) > self.last_eval_epochs:
@@ -472,7 +472,10 @@ class AttPool_MIL():
                 epoch_acc_sum += (y_pred.argmax(dim=1) == y).sum().cpu().item()
                 batch_count += 1
                 
-                y_pred_scores.extend(y_pred.detach().cpu().numpy()[:, -1].tolist())
+                if self._output_dim > 2:
+                    y_pred_scores.extend(y_pred.detach().cpu().numpy().tolist())
+                else:
+                    y_pred_scores.extend(y_pred.detach().cpu().numpy()[:, -1].tolist())
                 y_labels.extend(y.cpu().numpy().tolist())
         
         test_log = 'test_loss-> %.4f, time: %s sec' % (epoch_loss_sum / batch_count,

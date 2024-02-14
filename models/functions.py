@@ -425,13 +425,18 @@ def train_agt_lp_epoch(net, train_loader, loss, optimizer,
 
 ''' -------------- function of classification evaluation -------------- '''
     
-def regular_evaluation(y_scores, y_label):
+def regular_evaluation(y_scores, y_label, output_dim=2):
     '''
     '''
-    y_pred = np.array([1 if score > 0.5 else 0 for score in y_scores.tolist()])
+    # y_pred = np.array([1 if score > 0.5 else 0 for score in y_scores.tolist()])
+    y_pred = np.argmax(y_scores, axis=1)
     acc = metrics.balanced_accuracy_score(y_label, y_pred)
-    fpr, tpr, threshold = metrics.roc_curve(y_label, y_scores)
-    auc = metrics.auc(fpr, tpr)
+    if output_dim > 2:
+        fpr, tpr = float('nan'), float('nan')
+        auc = metrics.roc_auc_score(y_label, y_scores, average='weighted', multi_class='ovr')
+    else:
+        fpr, tpr, threshold = metrics.roc_curve(y_label, y_scores)
+        auc = metrics.auc(fpr, tpr)
         
     return acc, fpr, tpr, auc
 

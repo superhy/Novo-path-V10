@@ -55,7 +55,7 @@ if __name__ == '__main__':
         # folds = ['-5', '-6', '-7', '-8', '-9']
         for f in folds:
             ENV_task.refresh_fold_suffix(f)
-            _run_train_attpool_resnet18_att_L1(ENV_task, alpha_L1=0.2)
+            _run_train_attpool_resnet18_att_L1(ENV_task, alpha_L1=0.1)
         
         
         
