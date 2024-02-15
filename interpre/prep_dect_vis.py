@@ -35,7 +35,7 @@ from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
-    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV
+    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_BALL_PCT
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization, Time
@@ -934,7 +934,8 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
-    ENV_annotation = ENV_FLINC_P62_BALL_BI
+    # ENV_annotation = ENV_FLINC_P62_BALL_BI
+    ENV_annotation = ENV_FLINC_P62_BALL_PCT
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
 
     tile_encoder = BasicResNet18(output_dim=2)

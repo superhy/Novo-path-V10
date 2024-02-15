@@ -1,0 +1,607 @@
+![Initial Stage] test mode: False
+Initializing the training/testing slide matrices..., train slides: 201, test slides: 50, time: 0:00:25.797454
+On-standby: Pool-0_ballooning_pct_lbl algorithm, Network: AttPool, train on -> cuda
+automatically find CSV file: P62_ballooning_pct_lbl.csv
+![Training Stage]
+In training...epoch [1/300], cls_loss-> 729.177, sparse_loss-> 10091.209, train acc-> 0.254, time: 0:00:33.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.5139, test auc: 0.6829
+In training...epoch [2/300], cls_loss-> 249.035, sparse_loss-> 7767.760, train acc-> 0.587, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.5347, test auc: 0.6127
+In training...epoch [3/300], cls_loss-> 165.147, sparse_loss-> 5658.658, train acc-> 0.592, time: 0:00:24.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.5347, test auc: 0.6029
+In training...epoch [4/300], cls_loss-> 94.837, sparse_loss-> 4130.423, train acc-> 0.612, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.5347, test auc: 0.5932
+In training...epoch [5/300], cls_loss-> 68.848, sparse_loss-> 3033.316, train acc-> 0.607, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.5347, test auc: 0.5921
+In training...epoch [6/300], cls_loss-> 52.660, sparse_loss-> 2299.157, train acc-> 0.587, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5855
+In training...epoch [7/300], cls_loss-> 38.233, sparse_loss-> 1819.511, train acc-> 0.582, time: 0:00:24.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5588
+In training...epoch [8/300], cls_loss-> 29.932, sparse_loss-> 1558.353, train acc-> 0.512, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5854
+In training...epoch [9/300], cls_loss-> 24.017, sparse_loss-> 1323.395, train acc-> 0.562, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5671
+In training...epoch [10/300], cls_loss-> 22.757, sparse_loss-> 1159.885, train acc-> 0.537, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5638
+In training...epoch [11/300], cls_loss-> 17.737, sparse_loss-> 950.799, train acc-> 0.572, time: 0:00:26.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.5468
+In training...epoch [12/300], cls_loss-> 16.032, sparse_loss-> 904.399, train acc-> 0.552, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5467
+In training...epoch [13/300], cls_loss-> 11.991, sparse_loss-> 837.396, train acc-> 0.572, time: 0:00:25.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5579
+In training...epoch [14/300], cls_loss-> 10.200, sparse_loss-> 735.680, train acc-> 0.587, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5559
+In training...epoch [15/300], cls_loss-> 8.118, sparse_loss-> 597.206, train acc-> 0.552, time: 0:00:25.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5330
+In training...epoch [16/300], cls_loss-> 7.839, sparse_loss-> 531.684, train acc-> 0.532, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5322
+In training...epoch [17/300], cls_loss-> 11.911, sparse_loss-> 496.724, train acc-> 0.512, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5273
+In training...epoch [18/300], cls_loss-> 8.379, sparse_loss-> 523.339, train acc-> 0.552, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5347
+In training...epoch [19/300], cls_loss-> 7.306, sparse_loss-> 409.358, train acc-> 0.597, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.5063
+In training...epoch [20/300], cls_loss-> 5.144, sparse_loss-> 392.204, train acc-> 0.557, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4747
+In training...epoch [21/300], cls_loss-> 5.409, sparse_loss-> 397.246, train acc-> 0.507, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4672
+In training...epoch [22/300], cls_loss-> 4.556, sparse_loss-> 338.078, train acc-> 0.557, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4666
+In training...epoch [23/300], cls_loss-> 5.389, sparse_loss-> 338.554, train acc-> 0.547, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4683
+In training...epoch [24/300], cls_loss-> 3.668, sparse_loss-> 264.924, train acc-> 0.532, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4575
+In training...epoch [25/300], cls_loss-> 5.179, sparse_loss-> 308.222, train acc-> 0.478, time: 0:00:22.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4569
+In training...epoch [26/300], cls_loss-> 4.372, sparse_loss-> 323.195, train acc-> 0.478, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4589
+In training...epoch [27/300], cls_loss-> 2.536, sparse_loss-> 211.395, train acc-> 0.517, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4572
+In training...epoch [28/300], cls_loss-> 3.152, sparse_loss-> 200.590, train acc-> 0.557, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4562
+In training...epoch [29/300], cls_loss-> 2.724, sparse_loss-> 197.699, train acc-> 0.473, time: 0:00:22.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.4444, test auc: 0.4530
+In training...epoch [30/300], cls_loss-> 3.437, sparse_loss-> 200.077, train acc-> 0.483, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4497
+In training...epoch [31/300], cls_loss-> 2.477, sparse_loss-> 196.153, train acc-> 0.473, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4509
+In training...epoch [32/300], cls_loss-> 3.496, sparse_loss-> 250.839, train acc-> 0.478, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4492
+In training...epoch [33/300], cls_loss-> 3.115, sparse_loss-> 176.663, train acc-> 0.532, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4481
+In training...epoch [34/300], cls_loss-> 2.287, sparse_loss-> 167.158, train acc-> 0.483, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4506
+In training...epoch [35/300], cls_loss-> 2.337, sparse_loss-> 161.557, train acc-> 0.488, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4495
+In training...epoch [36/300], cls_loss-> 2.423, sparse_loss-> 171.858, train acc-> 0.488, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.4340, test auc: 0.4463
+In training...epoch [37/300], cls_loss-> 2.863, sparse_loss-> 156.584, train acc-> 0.483, time: 0:00:23.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.4435
+In training...epoch [38/300], cls_loss-> 1.706, sparse_loss-> 112.244, train acc-> 0.527, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.4236, test auc: 0.4424
+In training...epoch [39/300], cls_loss-> 1.636, sparse_loss-> 129.230, train acc-> 0.493, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4424
+In training...epoch [40/300], cls_loss-> 1.991, sparse_loss-> 112.015, train acc-> 0.443, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4470
+In training...epoch [41/300], cls_loss-> 1.568, sparse_loss-> 121.221, train acc-> 0.478, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4442
+In training...epoch [42/300], cls_loss-> 1.808, sparse_loss-> 101.208, train acc-> 0.483, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4453
+In training...epoch [43/300], cls_loss-> 1.369, sparse_loss-> 112.297, train acc-> 0.448, time: 0:00:24.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4435
+In training...epoch [44/300], cls_loss-> 1.610, sparse_loss-> 113.094, train acc-> 0.443, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4132, test auc: 0.4397
+In training...epoch [45/300], cls_loss-> 1.251, sparse_loss-> 85.377, train acc-> 0.527, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3924, test auc: 0.4400
+In training...epoch [46/300], cls_loss-> 1.532, sparse_loss-> 109.170, train acc-> 0.458, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3819, test auc: 0.4422
+In training...epoch [47/300], cls_loss-> 1.393, sparse_loss-> 85.330, train acc-> 0.428, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3819, test auc: 0.4689
+In training...epoch [48/300], cls_loss-> 1.380, sparse_loss-> 78.113, train acc-> 0.473, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3611, test auc: 0.4692
+In training...epoch [49/300], cls_loss-> 3.166, sparse_loss-> 114.413, train acc-> 0.463, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3507, test auc: 0.4741
+In training...epoch [50/300], cls_loss-> 1.517, sparse_loss-> 87.152, train acc-> 0.423, time: 0:00:24.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3299, test auc: 0.4734
+In training...epoch [51/300], cls_loss-> 1.358, sparse_loss-> 83.596, train acc-> 0.463, time: 0:00:25.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3299, test auc: 0.4739
+In training...epoch [52/300], cls_loss-> 1.295, sparse_loss-> 99.810, train acc-> 0.443, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3090, test auc: 0.4751
+In training...epoch [53/300], cls_loss-> 1.192, sparse_loss-> 68.025, train acc-> 0.438, time: 0:00:25.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2778, test auc: 0.4777
+In training...epoch [54/300], cls_loss-> 1.564, sparse_loss-> 76.849, train acc-> 0.433, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2361, test auc: 0.4852
+In training...epoch [55/300], cls_loss-> 1.357, sparse_loss-> 60.276, train acc-> 0.433, time: 0:00:26.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2465, test auc: 0.4857
+In training...epoch [56/300], cls_loss-> 1.374, sparse_loss-> 67.192, train acc-> 0.388, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3368, test auc: 0.4874
+In training...epoch [57/300], cls_loss-> 1.370, sparse_loss-> 56.875, train acc-> 0.423, time: 0:00:28.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3264, test auc: 0.4863
+In training...epoch [58/300], cls_loss-> 1.240, sparse_loss-> 78.048, train acc-> 0.383, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3160, test auc: 0.4906
+In training...epoch [59/300], cls_loss-> 1.287, sparse_loss-> 69.035, train acc-> 0.423, time: 0:00:24.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2951, test auc: 0.4954
+In training...epoch [60/300], cls_loss-> 1.239, sparse_loss-> 52.529, train acc-> 0.393, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2951, test auc: 0.4967
+In training...epoch [61/300], cls_loss-> 1.050, sparse_loss-> 53.457, train acc-> 0.418, time: 0:00:25.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2951, test auc: 0.4950
+In training...epoch [62/300], cls_loss-> 1.635, sparse_loss-> 63.161, train acc-> 0.398, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.4062, test auc: 0.4952
+In training...epoch [63/300], cls_loss-> 1.136, sparse_loss-> 52.129, train acc-> 0.438, time: 0:00:25.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.4062, test auc: 0.4972
+In training...epoch [64/300], cls_loss-> 1.120, sparse_loss-> 48.457, train acc-> 0.388, time: 0:00:24.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3750, test auc: 0.4950
+In training...epoch [65/300], cls_loss-> 1.567, sparse_loss-> 77.773, train acc-> 0.353, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3750, test auc: 0.5015
+In training...epoch [66/300], cls_loss-> 1.250, sparse_loss-> 58.346, train acc-> 0.413, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3646, test auc: 0.4969
+In training...epoch [67/300], cls_loss-> 1.057, sparse_loss-> 41.146, train acc-> 0.428, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3646, test auc: 0.5025
+In training...epoch [68/300], cls_loss-> 1.136, sparse_loss-> 50.342, train acc-> 0.403, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3646, test auc: 0.4984
+In training...epoch [69/300], cls_loss-> 1.296, sparse_loss-> 60.704, train acc-> 0.343, time: 0:00:24.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3542, test auc: 0.5051
+In training...epoch [70/300], cls_loss-> 1.603, sparse_loss-> 70.646, train acc-> 0.398, time: 0:00:25.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3542, test auc: 0.5046
+In training...epoch [71/300], cls_loss-> 1.037, sparse_loss-> 34.093, train acc-> 0.448, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3542, test auc: 0.5055
+In training...epoch [72/300], cls_loss-> 1.055, sparse_loss-> 50.508, train acc-> 0.378, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3542, test auc: 0.5111
+In training...epoch [73/300], cls_loss-> 1.174, sparse_loss-> 67.848, train acc-> 0.393, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3542, test auc: 0.5111
+In training...epoch [74/300], cls_loss-> 1.020, sparse_loss-> 36.915, train acc-> 0.413, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3438, test auc: 0.5318
+In training...epoch [75/300], cls_loss-> 1.059, sparse_loss-> 44.114, train acc-> 0.373, time: 0:00:25.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3438, test auc: 0.5419
+In training...epoch [76/300], cls_loss-> 1.258, sparse_loss-> 69.444, train acc-> 0.368, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3438, test auc: 0.5453
+In training...epoch [77/300], cls_loss-> 1.031, sparse_loss-> 31.955, train acc-> 0.353, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5608
+In training...epoch [78/300], cls_loss-> 0.987, sparse_loss-> 32.338, train acc-> 0.418, time: 0:00:22.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5851
+In training...epoch [79/300], cls_loss-> 1.015, sparse_loss-> 43.243, train acc-> 0.358, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5612
+In training...epoch [80/300], cls_loss-> 1.328, sparse_loss-> 47.592, train acc-> 0.378, time: 0:00:21.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5850
+In training...epoch [81/300], cls_loss-> 1.058, sparse_loss-> 61.923, train acc-> 0.403, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6105
+In training...epoch [82/300], cls_loss-> 0.959, sparse_loss-> 40.155, train acc-> 0.403, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6135
+In training...epoch [83/300], cls_loss-> 1.013, sparse_loss-> 36.047, train acc-> 0.368, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6119
+In training...epoch [84/300], cls_loss-> 1.104, sparse_loss-> 36.774, train acc-> 0.363, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6214
+In training...epoch [85/300], cls_loss-> 1.151, sparse_loss-> 37.232, train acc-> 0.373, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6225
+In training...epoch [86/300], cls_loss-> 1.120, sparse_loss-> 29.919, train acc-> 0.368, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6281
+In training...epoch [87/300], cls_loss-> 1.377, sparse_loss-> 54.274, train acc-> 0.353, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6158
+In training...epoch [88/300], cls_loss-> 1.081, sparse_loss-> 29.160, train acc-> 0.403, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6157
+In training...epoch [89/300], cls_loss-> 1.054, sparse_loss-> 40.755, train acc-> 0.383, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6192
+In training...epoch [90/300], cls_loss-> 0.985, sparse_loss-> 33.094, train acc-> 0.388, time: 0:00:25.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6397
+In training...epoch [91/300], cls_loss-> 1.123, sparse_loss-> 31.735, train acc-> 0.338, time: 0:00:23.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6291
+In training...epoch [92/300], cls_loss-> 1.057, sparse_loss-> 31.485, train acc-> 0.358, time: 0:00:24.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6397
+In training...epoch [93/300], cls_loss-> 1.081, sparse_loss-> 35.247, train acc-> 0.423, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6391
+In training...epoch [94/300], cls_loss-> 1.148, sparse_loss-> 37.051, train acc-> 0.338, time: 0:00:22.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6393
+In training...epoch [95/300], cls_loss-> 1.069, sparse_loss-> 31.978, train acc-> 0.343, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6365
+In training...epoch [96/300], cls_loss-> 0.991, sparse_loss-> 26.974, train acc-> 0.358, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6304
+In training...epoch [97/300], cls_loss-> 1.234, sparse_loss-> 42.811, train acc-> 0.323, time: 0:00:25.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6215
+In training...epoch [98/300], cls_loss-> 1.076, sparse_loss-> 24.464, train acc-> 0.358, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6292
+In training...epoch [99/300], cls_loss-> 1.059, sparse_loss-> 38.875, train acc-> 0.308, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6353
+In training...epoch [100/300], cls_loss-> 0.940, sparse_loss-> 23.847, train acc-> 0.333, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6314
+In training...epoch [101/300], cls_loss-> 0.975, sparse_loss-> 20.118, train acc-> 0.333, time: 0:00:27.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6258
+In training...epoch [102/300], cls_loss-> 0.984, sparse_loss-> 25.521, train acc-> 0.343, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6135
+In training...epoch [103/300], cls_loss-> 1.083, sparse_loss-> 27.818, train acc-> 0.333, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6141
+In training...epoch [104/300], cls_loss-> 1.072, sparse_loss-> 28.629, train acc-> 0.318, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6135
+In training...epoch [105/300], cls_loss-> 0.986, sparse_loss-> 29.473, train acc-> 0.343, time: 0:00:25.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6164
+In training...epoch [106/300], cls_loss-> 1.141, sparse_loss-> 30.398, train acc-> 0.308, time: 0:00:24.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6164
+In training...epoch [107/300], cls_loss-> 0.998, sparse_loss-> 25.947, train acc-> 0.353, time: 0:00:25.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6164
+In training...epoch [108/300], cls_loss-> 1.018, sparse_loss-> 31.909, train acc-> 0.328, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6107
+In training...epoch [109/300], cls_loss-> 1.038, sparse_loss-> 18.914, train acc-> 0.348, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6141
+In training...epoch [110/300], cls_loss-> 1.127, sparse_loss-> 26.484, train acc-> 0.363, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6141
+In training...epoch [111/300], cls_loss-> 0.988, sparse_loss-> 20.482, train acc-> 0.348, time: 0:00:25.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6135
+In training...epoch [112/300], cls_loss-> 1.070, sparse_loss-> 31.039, train acc-> 0.398, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6115
+In training...epoch [113/300], cls_loss-> 0.982, sparse_loss-> 16.061, train acc-> 0.368, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6092
+In training...epoch [114/300], cls_loss-> 0.983, sparse_loss-> 29.058, train acc-> 0.353, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6056
+In training...epoch [115/300], cls_loss-> 1.047, sparse_loss-> 21.488, train acc-> 0.388, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6050
+In training...epoch [116/300], cls_loss-> 1.045, sparse_loss-> 24.823, train acc-> 0.348, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6056
+In training...epoch [117/300], cls_loss-> 0.968, sparse_loss-> 20.907, train acc-> 0.348, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6039
+In training...epoch [118/300], cls_loss-> 1.030, sparse_loss-> 17.034, train acc-> 0.358, time: 0:00:22.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6022
+In training...epoch [119/300], cls_loss-> 1.019, sparse_loss-> 17.760, train acc-> 0.328, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6016
+In training...epoch [120/300], cls_loss-> 0.966, sparse_loss-> 18.889, train acc-> 0.299, time: 0:00:24.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5988
+In training...epoch [121/300], cls_loss-> 0.974, sparse_loss-> 13.822, train acc-> 0.289, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5987
+In training...epoch [122/300], cls_loss-> 0.999, sparse_loss-> 15.999, train acc-> 0.274, time: 0:00:24.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5987
+In training...epoch [123/300], cls_loss-> 0.994, sparse_loss-> 20.648, train acc-> 0.303, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5971
+In training...epoch [124/300], cls_loss-> 1.029, sparse_loss-> 14.159, train acc-> 0.294, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6034
+In training...epoch [125/300], cls_loss-> 1.039, sparse_loss-> 24.585, train acc-> 0.274, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.5976
+In training...epoch [126/300], cls_loss-> 1.029, sparse_loss-> 20.291, train acc-> 0.274, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6078
+In training...epoch [127/300], cls_loss-> 0.932, sparse_loss-> 17.725, train acc-> 0.284, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6020
+In training...epoch [128/300], cls_loss-> 1.085, sparse_loss-> 21.817, train acc-> 0.284, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6078
+In training...epoch [129/300], cls_loss-> 1.025, sparse_loss-> 20.738, train acc-> 0.289, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6090
+In training...epoch [130/300], cls_loss-> 0.980, sparse_loss-> 13.362, train acc-> 0.269, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6118
+In training...epoch [131/300], cls_loss-> 0.993, sparse_loss-> 13.789, train acc-> 0.323, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6140
+In training...epoch [132/300], cls_loss-> 1.022, sparse_loss-> 16.151, train acc-> 0.313, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6164
+In training...epoch [133/300], cls_loss-> 1.026, sparse_loss-> 19.222, train acc-> 0.279, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6164
+In training...epoch [134/300], cls_loss-> 1.028, sparse_loss-> 17.471, train acc-> 0.274, time: 0:00:26.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6153
+In training...epoch [135/300], cls_loss-> 1.011, sparse_loss-> 14.397, train acc-> 0.264, time: 0:00:22.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6193
+In training...epoch [136/300], cls_loss-> 1.062, sparse_loss-> 13.865, train acc-> 0.269, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6159
+In training...epoch [137/300], cls_loss-> 1.063, sparse_loss-> 20.731, train acc-> 0.239, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6215
+In training...epoch [138/300], cls_loss-> 1.024, sparse_loss-> 14.422, train acc-> 0.264, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6223
+In training...epoch [139/300], cls_loss-> 0.992, sparse_loss-> 17.960, train acc-> 0.254, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6178
+In training...epoch [140/300], cls_loss-> 1.029, sparse_loss-> 21.795, train acc-> 0.269, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6248
+In training...epoch [141/300], cls_loss-> 1.098, sparse_loss-> 17.774, train acc-> 0.264, time: 0:00:21.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6265
+In training...epoch [142/300], cls_loss-> 1.072, sparse_loss-> 20.845, train acc-> 0.229, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6254
+In training...epoch [143/300], cls_loss-> 1.001, sparse_loss-> 14.999, train acc-> 0.274, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6249
+In training...epoch [144/300], cls_loss-> 1.023, sparse_loss-> 15.684, train acc-> 0.264, time: 0:00:22.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6210
+In training...epoch [145/300], cls_loss-> 0.972, sparse_loss-> 16.310, train acc-> 0.269, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6336
+In training...epoch [146/300], cls_loss-> 1.023, sparse_loss-> 17.786, train acc-> 0.229, time: 0:00:22.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6353
+In training...epoch [147/300], cls_loss-> 1.073, sparse_loss-> 16.106, train acc-> 0.224, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6301
+In training...epoch [148/300], cls_loss-> 0.987, sparse_loss-> 15.079, train acc-> 0.279, time: 0:00:22.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6239
+In training...epoch [149/300], cls_loss-> 1.136, sparse_loss-> 20.958, train acc-> 0.224, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6433
+In training...epoch [150/300], cls_loss-> 1.009, sparse_loss-> 12.552, train acc-> 0.244, time: 0:00:23.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6456
+In training...epoch [151/300], cls_loss-> 1.032, sparse_loss-> 17.869, train acc-> 0.229, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6433
+In training...epoch [152/300], cls_loss-> 1.016, sparse_loss-> 14.912, train acc-> 0.224, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6467
+In training...epoch [153/300], cls_loss-> 0.991, sparse_loss-> 14.611, train acc-> 0.249, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6479
+In training...epoch [154/300], cls_loss-> 0.989, sparse_loss-> 12.780, train acc-> 0.254, time: 0:00:24.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6485
+In training...epoch [155/300], cls_loss-> 1.034, sparse_loss-> 12.265, train acc-> 0.239, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6496
+In training...epoch [156/300], cls_loss-> 1.004, sparse_loss-> 12.513, train acc-> 0.274, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6509
+In training...epoch [157/300], cls_loss-> 1.001, sparse_loss-> 10.405, train acc-> 0.219, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6525
+In training...epoch [158/300], cls_loss-> 1.061, sparse_loss-> 19.203, train acc-> 0.224, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6531
+In training...epoch [159/300], cls_loss-> 1.175, sparse_loss-> 17.882, train acc-> 0.219, time: 0:00:22.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6531
+In training...epoch [160/300], cls_loss-> 1.011, sparse_loss-> 12.902, train acc-> 0.239, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6540
+In training...epoch [161/300], cls_loss-> 1.048, sparse_loss-> 12.565, train acc-> 0.279, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6552
+In training...epoch [162/300], cls_loss-> 1.073, sparse_loss-> 18.118, train acc-> 0.239, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6592
+In training...epoch [163/300], cls_loss-> 1.003, sparse_loss-> 13.868, train acc-> 0.279, time: 0:00:25.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6569
+In training...epoch [164/300], cls_loss-> 1.032, sparse_loss-> 9.064, train acc-> 0.234, time: 0:00:26.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6586
+In training...epoch [165/300], cls_loss-> 1.029, sparse_loss-> 15.004, train acc-> 0.269, time: 0:00:25.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6569
+In training...epoch [166/300], cls_loss-> 1.002, sparse_loss-> 16.913, train acc-> 0.269, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6570
+In training...epoch [167/300], cls_loss-> 1.025, sparse_loss-> 12.059, train acc-> 0.239, time: 0:00:22.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6570
+In training...epoch [168/300], cls_loss-> 1.028, sparse_loss-> 9.434, train acc-> 0.229, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6564
+In training...epoch [169/300], cls_loss-> 1.092, sparse_loss-> 14.214, train acc-> 0.209, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6581
+In training...epoch [170/300], cls_loss-> 1.024, sparse_loss-> 13.531, train acc-> 0.239, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6542
+In training...epoch [171/300], cls_loss-> 0.997, sparse_loss-> 16.961, train acc-> 0.219, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6537
+In training...epoch [172/300], cls_loss-> 1.021, sparse_loss-> 15.026, train acc-> 0.244, time: 0:00:25.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6553
+In training...epoch [173/300], cls_loss-> 1.059, sparse_loss-> 14.597, train acc-> 0.264, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6580
+In training...epoch [174/300], cls_loss-> 1.024, sparse_loss-> 10.516, train acc-> 0.224, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6569
+In training...epoch [175/300], cls_loss-> 1.062, sparse_loss-> 12.058, train acc-> 0.224, time: 0:00:26.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6569
+In training...epoch [176/300], cls_loss-> 1.017, sparse_loss-> 10.214, train acc-> 0.264, time: 0:00:24.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6575
+In training...epoch [177/300], cls_loss-> 1.056, sparse_loss-> 37.919, train acc-> 0.204, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6553
+In training...epoch [178/300], cls_loss-> 1.012, sparse_loss-> 8.102, train acc-> 0.234, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3333, test auc: 0.6549
+In training...epoch [179/300], cls_loss-> 1.195, sparse_loss-> 24.731, train acc-> 0.209, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6581
+In training...epoch [180/300], cls_loss-> 1.026, sparse_loss-> 10.958, train acc-> 0.214, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6558
+In training...epoch [181/300], cls_loss-> 1.020, sparse_loss-> 8.848, train acc-> 0.214, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6559
+In training...epoch [182/300], cls_loss-> 1.043, sparse_loss-> 7.947, train acc-> 0.234, time: 0:00:24.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6542
+In training...epoch [183/300], cls_loss-> 1.011, sparse_loss-> 11.888, train acc-> 0.199, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6542
+In training...epoch [184/300], cls_loss-> 1.165, sparse_loss-> 17.751, train acc-> 0.209, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6577
+In training...epoch [185/300], cls_loss-> 1.004, sparse_loss-> 9.787, train acc-> 0.234, time: 0:00:24.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6576
+In training...epoch [186/300], cls_loss-> 1.044, sparse_loss-> 7.089, train acc-> 0.239, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6565
+In training...epoch [187/300], cls_loss-> 1.020, sparse_loss-> 11.081, train acc-> 0.194, time: 0:00:24.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6547
+In training...epoch [188/300], cls_loss-> 0.999, sparse_loss-> 8.329, train acc-> 0.219, time: 0:00:26.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6547
+In training...epoch [189/300], cls_loss-> 1.070, sparse_loss-> 15.182, train acc-> 0.244, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6564
+In training...epoch [190/300], cls_loss-> 1.012, sparse_loss-> 7.703, train acc-> 0.264, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6569
+In training...epoch [191/300], cls_loss-> 1.024, sparse_loss-> 6.856, train acc-> 0.204, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6568
+In training...epoch [192/300], cls_loss-> 1.043, sparse_loss-> 8.950, train acc-> 0.219, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6582
+In training...epoch [193/300], cls_loss-> 1.075, sparse_loss-> 9.442, train acc-> 0.224, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6560
+In training...epoch [194/300], cls_loss-> 1.013, sparse_loss-> 10.099, train acc-> 0.244, time: 0:00:21.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6593
+In training...epoch [195/300], cls_loss-> 1.028, sparse_loss-> 8.503, train acc-> 0.219, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6583
+In training...epoch [196/300], cls_loss-> 1.065, sparse_loss-> 8.317, train acc-> 0.224, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6583
+In training...epoch [197/300], cls_loss-> 1.412, sparse_loss-> 20.192, train acc-> 0.209, time: 0:00:24.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6593
+In training...epoch [198/300], cls_loss-> 1.028, sparse_loss-> 11.497, train acc-> 0.234, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6609
+In training...epoch [199/300], cls_loss-> 1.042, sparse_loss-> 9.327, train acc-> 0.229, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6624
+In training...epoch [200/300], cls_loss-> 1.044, sparse_loss-> 19.054, train acc-> 0.219, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6616
+In training...epoch [201/300], cls_loss-> 1.048, sparse_loss-> 9.748, train acc-> 0.244, time: 0:00:24.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6611
+In training...epoch [202/300], cls_loss-> 1.027, sparse_loss-> 6.584, train acc-> 0.224, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6615
+In training...epoch [203/300], cls_loss-> 1.023, sparse_loss-> 7.325, train acc-> 0.249, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6626
+In training...epoch [204/300], cls_loss-> 1.016, sparse_loss-> 7.748, train acc-> 0.239, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6626
+In training...epoch [205/300], cls_loss-> 1.037, sparse_loss-> 6.601, train acc-> 0.204, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6632
+In training...epoch [206/300], cls_loss-> 1.107, sparse_loss-> 20.018, train acc-> 0.219, time: 0:00:25.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6632
+In training...epoch [207/300], cls_loss-> 1.094, sparse_loss-> 18.507, train acc-> 0.164, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6621
+In training...epoch [208/300], cls_loss-> 1.020, sparse_loss-> 8.267, train acc-> 0.159, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6643
+In training...epoch [209/300], cls_loss-> 0.995, sparse_loss-> 7.566, train acc-> 0.174, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6621
+In training...epoch [210/300], cls_loss-> 1.036, sparse_loss-> 12.068, train acc-> 0.154, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6610
+In training...epoch [211/300], cls_loss-> 1.035, sparse_loss-> 7.261, train acc-> 0.159, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6610
+In training...epoch [212/300], cls_loss-> 1.058, sparse_loss-> 9.685, train acc-> 0.189, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6576
+In training...epoch [213/300], cls_loss-> 1.041, sparse_loss-> 5.383, train acc-> 0.159, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6591
+In training...epoch [214/300], cls_loss-> 1.044, sparse_loss-> 11.938, train acc-> 0.194, time: 0:00:22.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6594
+In training...epoch [215/300], cls_loss-> 1.013, sparse_loss-> 7.674, train acc-> 0.204, time: 0:00:22.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6599
+In training...epoch [216/300], cls_loss-> 1.035, sparse_loss-> 5.410, train acc-> 0.184, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6599
+In training...epoch [217/300], cls_loss-> 0.995, sparse_loss-> 9.787, train acc-> 0.204, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6576
+In training...epoch [218/300], cls_loss-> 1.029, sparse_loss-> 8.130, train acc-> 0.149, time: 0:00:26.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3556, test auc: 0.6586
+In training...epoch [219/300], cls_loss-> 1.000, sparse_loss-> 7.248, train acc-> 0.159, time: 0:00:24.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6599
+In training...epoch [220/300], cls_loss-> 1.030, sparse_loss-> 6.885, train acc-> 0.169, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6588
+In training...epoch [221/300], cls_loss-> 1.029, sparse_loss-> 6.831, train acc-> 0.174, time: 0:00:25.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6599
+In training...epoch [222/300], cls_loss-> 1.046, sparse_loss-> 5.874, train acc-> 0.179, time: 0:00:23.1 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6577
+In training...epoch [223/300], cls_loss-> 1.077, sparse_loss-> 7.539, train acc-> 0.194, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6589
+In training...epoch [224/300], cls_loss-> 1.041, sparse_loss-> 5.520, train acc-> 0.194, time: 0:00:25.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6605
+In training...epoch [225/300], cls_loss-> 1.037, sparse_loss-> 8.791, train acc-> 0.184, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6589
+In training...epoch [226/300], cls_loss-> 1.047, sparse_loss-> 7.555, train acc-> 0.209, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6584
+In training...epoch [227/300], cls_loss-> 1.032, sparse_loss-> 8.740, train acc-> 0.189, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6599
+In training...epoch [228/300], cls_loss-> 1.052, sparse_loss-> 4.440, train acc-> 0.174, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6595
+In training...epoch [229/300], cls_loss-> 1.042, sparse_loss-> 5.697, train acc-> 0.209, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6587
+In training...epoch [230/300], cls_loss-> 1.034, sparse_loss-> 5.135, train acc-> 0.214, time: 0:00:26.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6582
+In training...epoch [231/300], cls_loss-> 1.046, sparse_loss-> 6.962, train acc-> 0.204, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6589
+In training...epoch [232/300], cls_loss-> 1.034, sparse_loss-> 5.315, train acc-> 0.189, time: 0:00:25.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6589
+In training...epoch [233/300], cls_loss-> 1.012, sparse_loss-> 9.015, train acc-> 0.209, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6589
+In training...epoch [234/300], cls_loss-> 1.039, sparse_loss-> 7.480, train acc-> 0.194, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6580
+In training...epoch [235/300], cls_loss-> 1.023, sparse_loss-> 5.768, train acc-> 0.189, time: 0:00:22.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6571
+In training...epoch [236/300], cls_loss-> 1.086, sparse_loss-> 6.193, train acc-> 0.179, time: 0:00:25.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6602
+In training...epoch [237/300], cls_loss-> 1.061, sparse_loss-> 11.481, train acc-> 0.179, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6589
+In training...epoch [238/300], cls_loss-> 1.018, sparse_loss-> 9.785, train acc-> 0.139, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6585
+In training...epoch [239/300], cls_loss-> 1.044, sparse_loss-> 5.846, train acc-> 0.194, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6586
+In training...epoch [240/300], cls_loss-> 1.056, sparse_loss-> 4.485, train acc-> 0.174, time: 0:00:24.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6582
+In training...epoch [241/300], cls_loss-> 1.029, sparse_loss-> 4.867, train acc-> 0.214, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6582
+In training...epoch [242/300], cls_loss-> 1.039, sparse_loss-> 6.625, train acc-> 0.164, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6595
+In training...epoch [243/300], cls_loss-> 1.036, sparse_loss-> 5.576, train acc-> 0.169, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6590
+In training...epoch [244/300], cls_loss-> 1.111, sparse_loss-> 6.787, train acc-> 0.169, time: 0:00:24.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6568
+In training...epoch [245/300], cls_loss-> 1.041, sparse_loss-> 7.978, train acc-> 0.184, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6534
+In training...epoch [246/300], cls_loss-> 1.062, sparse_loss-> 6.406, train acc-> 0.149, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6483
+In training...epoch [247/300], cls_loss-> 1.059, sparse_loss-> 5.399, train acc-> 0.184, time: 0:00:25.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6478
+In training...epoch [248/300], cls_loss-> 1.023, sparse_loss-> 4.934, train acc-> 0.214, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6493
+In training...epoch [249/300], cls_loss-> 1.012, sparse_loss-> 5.815, train acc-> 0.164, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6482
+In training...epoch [250/300], cls_loss-> 1.039, sparse_loss-> 5.702, train acc-> 0.194, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6495
+In training...epoch [251/300], cls_loss-> 1.042, sparse_loss-> 4.637, train acc-> 0.174, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6580
+In training...epoch [252/300], cls_loss-> 1.044, sparse_loss-> 5.513, train acc-> 0.179, time: 0:00:21.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6506
+In training...epoch [253/300], cls_loss-> 1.049, sparse_loss-> 3.903, train acc-> 0.184, time: 0:00:21.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6532
+In training...epoch [254/300], cls_loss-> 1.060, sparse_loss-> 7.803, train acc-> 0.164, time: 0:00:22.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6574
+In training...epoch [255/300], cls_loss-> 1.027, sparse_loss-> 4.643, train acc-> 0.179, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6513
+In training...epoch [256/300], cls_loss-> 1.055, sparse_loss-> 8.059, train acc-> 0.169, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6566
+In training...epoch [257/300], cls_loss-> 1.038, sparse_loss-> 5.601, train acc-> 0.149, time: 0:00:24.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6493
+In training...epoch [258/300], cls_loss-> 1.068, sparse_loss-> 5.839, train acc-> 0.159, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6489
+In training...epoch [259/300], cls_loss-> 1.033, sparse_loss-> 5.991, train acc-> 0.169, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6465
+In training...epoch [260/300], cls_loss-> 1.033, sparse_loss-> 3.798, train acc-> 0.174, time: 0:00:23.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6465
+In training...epoch [261/300], cls_loss-> 1.011, sparse_loss-> 6.244, train acc-> 0.179, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6554
+In training...epoch [262/300], cls_loss-> 1.056, sparse_loss-> 10.421, train acc-> 0.164, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6543
+In training...epoch [263/300], cls_loss-> 1.028, sparse_loss-> 9.165, train acc-> 0.189, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6463
+In training...epoch [264/300], cls_loss-> 1.039, sparse_loss-> 5.038, train acc-> 0.164, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6475
+In training...epoch [265/300], cls_loss-> 1.048, sparse_loss-> 5.441, train acc-> 0.164, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6475
+In training...epoch [266/300], cls_loss-> 1.047, sparse_loss-> 4.451, train acc-> 0.174, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6460
+In training...epoch [267/300], cls_loss-> 1.057, sparse_loss-> 5.538, train acc-> 0.164, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6464
+In training...epoch [268/300], cls_loss-> 1.055, sparse_loss-> 4.818, train acc-> 0.154, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6470
+In training...epoch [269/300], cls_loss-> 1.051, sparse_loss-> 7.120, train acc-> 0.159, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6470
+In training...epoch [270/300], cls_loss-> 1.063, sparse_loss-> 4.102, train acc-> 0.179, time: 0:00:23.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6470
+In training...epoch [271/300], cls_loss-> 1.049, sparse_loss-> 4.756, train acc-> 0.184, time: 0:00:23.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6470
+In training...epoch [272/300], cls_loss-> 1.032, sparse_loss-> 4.762, train acc-> 0.159, time: 0:00:25.4 sec
+>>> In testing...>>> on attpool -> test acc: 0.2000, test auc: 0.6465
+In training...epoch [273/300], cls_loss-> 1.053, sparse_loss-> 4.656, train acc-> 0.169, time: 0:00:23.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6465
+In training...epoch [274/300], cls_loss-> 1.055, sparse_loss-> 12.175, train acc-> 0.154, time: 0:00:21.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6460
+In training...epoch [275/300], cls_loss-> 1.066, sparse_loss-> 3.048, train acc-> 0.159, time: 0:00:24.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6471
+In training...epoch [276/300], cls_loss-> 1.025, sparse_loss-> 5.645, train acc-> 0.189, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6464
+In training...epoch [277/300], cls_loss-> 1.048, sparse_loss-> 3.837, train acc-> 0.159, time: 0:00:26.0 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6470
+In training...epoch [278/300], cls_loss-> 1.054, sparse_loss-> 7.761, train acc-> 0.139, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.3111, test auc: 0.6475
+In training...epoch [279/300], cls_loss-> 1.044, sparse_loss-> 5.955, train acc-> 0.179, time: 0:00:25.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6462
+In training...epoch [280/300], cls_loss-> 1.052, sparse_loss-> 4.216, train acc-> 0.169, time: 0:00:24.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6465
+In training...epoch [281/300], cls_loss-> 1.050, sparse_loss-> 3.442, train acc-> 0.174, time: 0:00:24.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6465
+In training...epoch [282/300], cls_loss-> 1.044, sparse_loss-> 4.694, train acc-> 0.199, time: 0:00:22.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6465
+In training...epoch [283/300], cls_loss-> 1.043, sparse_loss-> 3.677, train acc-> 0.179, time: 0:00:24.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6454
+In training...epoch [284/300], cls_loss-> 1.056, sparse_loss-> 5.266, train acc-> 0.174, time: 0:00:22.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2000, test auc: 0.6460
+In training...epoch [285/300], cls_loss-> 1.019, sparse_loss-> 6.083, train acc-> 0.169, time: 0:00:23.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2000, test auc: 0.6460
+In training...epoch [286/300], cls_loss-> 1.053, sparse_loss-> 7.037, train acc-> 0.149, time: 0:00:24.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2000, test auc: 0.6460
+In training...epoch [287/300], cls_loss-> 1.057, sparse_loss-> 3.643, train acc-> 0.179, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2444, test auc: 0.6460
+In training...epoch [288/300], cls_loss-> 1.065, sparse_loss-> 4.457, train acc-> 0.179, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2000, test auc: 0.6460
+In training...epoch [289/300], cls_loss-> 1.047, sparse_loss-> 5.923, train acc-> 0.164, time: 0:00:23.8 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6465
+In training...epoch [290/300], cls_loss-> 1.060, sparse_loss-> 4.932, train acc-> 0.159, time: 0:00:21.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2667, test auc: 0.6470
+In training...epoch [291/300], cls_loss-> 1.045, sparse_loss-> 5.712, train acc-> 0.149, time: 0:00:22.5 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6460
+In training...epoch [292/300], cls_loss-> 1.049, sparse_loss-> 3.459, train acc-> 0.164, time: 0:00:23.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6481
+In training...epoch [293/300], cls_loss-> 1.038, sparse_loss-> 4.236, train acc-> 0.179, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6487
+In training...epoch [294/300], cls_loss-> 1.061, sparse_loss-> 4.244, train acc-> 0.174, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6483
+In training...epoch [295/300], cls_loss-> 1.054, sparse_loss-> 4.022, train acc-> 0.169, time: 0:00:25.3 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6492
+In training...epoch [296/300], cls_loss-> 1.071, sparse_loss-> 4.246, train acc-> 0.149, time: 0:00:23.9 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6487
+In training...epoch [297/300], cls_loss-> 1.059, sparse_loss-> 3.374, train acc-> 0.179, time: 0:00:24.6 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6483
+In training...epoch [298/300], cls_loss-> 1.093, sparse_loss-> 4.826, train acc-> 0.144, time: 0:00:23.7 sec
+>>> In testing...>>> on attpool -> test acc: 0.2222, test auc: 0.6489
+In training...epoch [299/300], cls_loss-> 1.040, sparse_loss-> 3.706, train acc-> 0.204, time: 0:00:25.2 sec
+>>> In testing...>>> on attpool -> test acc: 0.2889, test auc: 0.6489
+In training...epoch [300/300], cls_loss-> 1.047, sparse_loss-> 5.075, train acc-> 0.204, time: 0:00:23.6 sec
+>>> In testing...store the milestone point</data/slides/yang_p62/models/checkpoint_AttPool-Pool-0_ballooning_pct_lbl_[300]2024-02-15.pth>, >>> on attpool -> test acc: 0.2889, test auc: 0.6489
+[0.6488942924687606]
+### final evaluation on attpool -> average test auc: 0.6489

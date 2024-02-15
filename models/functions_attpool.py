@@ -261,8 +261,9 @@ class AttPool_MIL():
                 warnings.warn('there is no test set, please check!')
                 return
             pt_prefix = 'pt_' if model_filename.find('-pt_') != -1 else ''
-        self.alg_name = '{}{}Pool{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
-                                                self.ENV_task.FOLD_SUFFIX, _env_task_name)
+        L1_str = '' if y_L_loss==None and att_L_loss==None else '-L1'
+        self.alg_name = '{}{}Pool{}{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
+                                                L1_str, self.ENV_task.FOLD_SUFFIX, _env_task_name)
         
         print('![Initial Stage] test mode: {}'.format(test_mode))
         print('Initializing the training/testing slide matrices...', end=', ')
