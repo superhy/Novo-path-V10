@@ -28,6 +28,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+    # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT
     
     task_ids = [1]
     # task_ids = [2.1]
@@ -51,13 +52,13 @@ if __name__ == '__main__':
         #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
         
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
-        agt_model_filenames = ['checkpoint_AttPool-Pool-0_ballooning_pct_lbl_[221]2024-02-14.pth']
+        agt_model_filenames = ['checkpoint_AttPool-Pool-0_ballooning_pct_lbl_[114]2024-02-15.pth']
         
-        K_ratio = 0.25
-        att_thd = 0.25
+        K_ratio = 0.3
+        att_thd = 0.2
         boost_rate = 2.0
-        pkg_range = [-41, -1]
-        # pkg_range = None
+        # pkg_range = [-41, -1]
+        pkg_range = None
         cut_left = False
         fills = [3, 3, 3, 4]
         

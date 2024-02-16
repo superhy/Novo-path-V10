@@ -315,7 +315,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
     return org_np_img, heat_s_clst_col
 
 
-def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
+def make_topK_attention_heatmap_package(ENV_task, ENV_annotation, agt_model_filenames, label_dict,
                                         cut_left=True, tile_encoder=None, K_ratio=0.3, att_thd=0.25, 
                                         boost_rate=2.0, fills=[3], color_map='bwr', pkg_range=None, only_soft_map=False):
     """
@@ -337,7 +337,7 @@ def make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dic
     else:
         tile_encoder = tile_encoder.cuda()
     
-    _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, tile_encoder, 
+    _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder, 
                                                       agt_model_filenames, label_dict,
                                                       K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
     
@@ -929,7 +929,8 @@ def _run_get_top_act_tiles_embeds_allslides(ENV_task, tile_net_filename, K=100):
     store_nd_dict_pkl(ENV_task.STATISTIC_STORE_DIR, slide_K_t_embeds_dict, K_t_embeds_pkl_name)
     print(f'store the embedding (ft & org) for top tiles at {os.path.join(ENV_task.STATISTIC_STORE_DIR, K_t_embeds_pkl_name)}')
 
-def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
+def _run_make_topK_attention_heatmap_resnet_P62(ENV_task,
+                                                agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
@@ -939,7 +940,8 @@ def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, c
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
 
     tile_encoder = BasicResNet18(output_dim=2)
-    make_topK_attention_heatmap_package(ENV_task, agt_model_filenames, label_dict,
+    make_topK_attention_heatmap_package(ENV_task, ENV_annotation,
+                                        agt_model_filenames, label_dict,
                                         cut_left, tile_encoder, K_ratio, att_thd, boost_rate, 
                                         fills, color_map, pkg_range)
     

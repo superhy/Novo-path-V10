@@ -25,7 +25,7 @@ class Time:
     
 def normalization(data):
     _range = np.max(data) - np.min(data)
-    return (data - np.min(data) + 1e-8) / (_range + 1e-8)
+    return (data - np.min(data) + 1e-4) / (_range + 1e-4)
 
 def normalization_sk(data, mode='l2'):
     ''' >>> deprecated for the moment <<< '''

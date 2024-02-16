@@ -21,7 +21,7 @@ from support.tools import normalization, normalization_sk
 from wsi.tiles_tools import indicate_slide_tile_loc
 
 
-def select_top_att_tiles(ENV_task, tile_encoder, 
+def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder, 
                          agt_model_filenames, label_dict,
                          K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None):
     '''
@@ -64,9 +64,9 @@ def select_top_att_tiles(ENV_task, tile_encoder,
     embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
     # embedding_dim = 512 # TODO: on whole cohort, remember to change back
     if agt_model_filenames[0].find('GatedAttPool') != -1:
-        attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=2)
+        attpool_net = GatedAttentionPool(embedding_dim=embedding_dim, output_dim=ENV_annotation.OUTPUT_DIM)
     else:
-        attpool_net = AttentionPool(embedding_dim=embedding_dim, output_dim=2)
+        attpool_net = AttentionPool(embedding_dim=embedding_dim, output_dim=ENV_annotation.OUTPUT_DIM)
     
     slidemat_set = datasets.SlideMatrix_Dataset(slide_matrix_file_sets, label_dict, label_free=True)
     slidemat_loader = functions.get_data_loader(slidemat_set, batch_size_onslides, slidemat_loader_num_workers, 
@@ -100,7 +100,7 @@ def select_top_att_tiles(ENV_task, tile_encoder,
         avg_attscores = average_vectors(list_of_attscores)
         # normalisation after averaging
         avg_attscores = normalization(avg_attscores)
-        # print(avg_attscores, len(avg_attscores))
+        print(avg_attscores, (avg_attscores > 0.1).sum() )
         
         nb_tiles = len(slide_tileidxs_list)
         # print(nb_tiles)
