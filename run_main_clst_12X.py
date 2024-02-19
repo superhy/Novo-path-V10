@@ -24,8 +24,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
+task_ids = [120]
 # task_ids = [129]
-task_ids = [129.5]
+# task_ids = [129.5]
+
 task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
 if __name__ == '__main__':
