@@ -35,7 +35,8 @@ from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
-    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_BALL_PCT
+    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_BALL_PCT,\
+    ENV_FLINC_P62_BALL_PCT_BI
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
 from support.tools import normalization, Time
@@ -338,7 +339,7 @@ def make_topK_attention_heatmap_package(ENV_task, ENV_annotation, agt_model_file
         tile_encoder = tile_encoder.cuda()
     
     _, slide_k_tiles_atts_dict = select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder, 
-                                                      agt_model_filenames, label_dict,
+                                                      agt_model_filenames, label_dict, [],
                                                       K_ratio, att_thd, fills=fills, pkg_range=pkg_range)
     
     slide_topK_att_heatmap_dict = {}
@@ -929,14 +930,13 @@ def _run_get_top_act_tiles_embeds_allslides(ENV_task, tile_net_filename, K=100):
     store_nd_dict_pkl(ENV_task.STATISTIC_STORE_DIR, slide_K_t_embeds_dict, K_t_embeds_pkl_name)
     print(f'store the embedding (ft & org) for top tiles at {os.path.join(ENV_task.STATISTIC_STORE_DIR, K_t_embeds_pkl_name)}')
 
-def _run_make_topK_attention_heatmap_resnet_P62(ENV_task,
+def _run_make_topK_attention_heatmap_resnet_P62(ENV_task, ENV_annotation,
                                                 agt_model_filenames, cut_left, K_ratio=0.2, att_thd=0.5, 
                                                 boost_rate=1.0, fills=[3], color_map='bwr', pkg_range=[0, 50]):
     '''
     load the label_dict then call the <make_topK_attention_heatmap_package>
     '''
-    # ENV_annotation = ENV_FLINC_P62_BALL_BI
-    ENV_annotation = ENV_FLINC_P62_BALL_PCT
+   
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
 
     tile_encoder = BasicResNet18(output_dim=2)

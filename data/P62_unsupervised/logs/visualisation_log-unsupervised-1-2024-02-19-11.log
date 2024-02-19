@@ -1,0 +1,229 @@
+automatically find CSV file: P62_ballooning_pct_lbl_bi.csv
+remove the old dirs: ['D:/eclipse-workspace\\Novo-path-V10\\data/P62_unsupervised/encodes/128-0/train_encode'].
+get the tiles encoding matrix for slide: 23910-158_Sl004-C4-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl004-C4-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl009-C7-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl009-C7-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl021-C14-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl021-C14-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl022-C14-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl022-C14-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl028-C18-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl028-C18-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl041-C32-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl041-C32-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl042-C32-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl042-C32-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl047-C36-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl047-C36-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl052-C42-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl052-C42-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl060-C55-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl060-C55-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl218-C322-P62
+Store slide tiles matrix at: D:/eclipse-workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl218-C322-P62-(tiles_encode).npy
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth
+<-- load the tiles' attention score for 11 slides -->
+originally attention tiles: 944 in slide: 23910-158_Sl004-C4-P62
+fill surrounding tiles: 438 in round: 1
+fill surrounding tiles: 535 in round: 2
+fill surrounding tiles: 599 in round: 3
+fill surrounding tiles: 203 in round: 4
+all/k selection ratio in this slide: (17606 / 2719)
+originally attention tiles: 187 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 58 in round: 1
+fill surrounding tiles: 66 in round: 2
+fill surrounding tiles: 79 in round: 3
+fill surrounding tiles: 23 in round: 4
+all/k selection ratio in this slide: (4271 / 413)
+originally attention tiles: 895 in slide: 23910-158_Sl021-C14-P62
+fill surrounding tiles: 495 in round: 1
+fill surrounding tiles: 524 in round: 2
+fill surrounding tiles: 528 in round: 3
+fill surrounding tiles: 199 in round: 4
+all/k selection ratio in this slide: (9453 / 2641)
+originally attention tiles: 1377 in slide: 23910-158_Sl022-C14-P62
+fill surrounding tiles: 817 in round: 1
+fill surrounding tiles: 733 in round: 2
+fill surrounding tiles: 709 in round: 3
+fill surrounding tiles: 285 in round: 4
+all/k selection ratio in this slide: (9355 / 3921)
+originally attention tiles: 529 in slide: 23910-158_Sl028-C18-P62
+fill surrounding tiles: 180 in round: 1
+fill surrounding tiles: 162 in round: 2
+fill surrounding tiles: 154 in round: 3
+fill surrounding tiles: 51 in round: 4
+all/k selection ratio in this slide: (5869 / 1076)
+originally attention tiles: 2922 in slide: 23910-158_Sl041-C32-P62
+fill surrounding tiles: 2110 in round: 1
+fill surrounding tiles: 1800 in round: 2
+fill surrounding tiles: 1423 in round: 3
+fill surrounding tiles: 613 in round: 4
+all/k selection ratio in this slide: (11690 / 8868)
+originally attention tiles: 264 in slide: 23910-158_Sl042-C32-P62
+fill surrounding tiles: 113 in round: 1
+fill surrounding tiles: 145 in round: 2
+fill surrounding tiles: 152 in round: 3
+fill surrounding tiles: 54 in round: 4
+all/k selection ratio in this slide: (4640 / 728)
+originally attention tiles: 1330 in slide: 23910-158_Sl047-C36-P62
+fill surrounding tiles: 836 in round: 1
+fill surrounding tiles: 707 in round: 2
+fill surrounding tiles: 628 in round: 3
+fill surrounding tiles: 222 in round: 4
+all/k selection ratio in this slide: (8065 / 3723)
+originally attention tiles: 84 in slide: 23910-158_Sl052-C42-P62
+fill surrounding tiles: 30 in round: 1
+fill surrounding tiles: 36 in round: 2
+fill surrounding tiles: 34 in round: 3
+fill surrounding tiles: 13 in round: 4
+all/k selection ratio in this slide: (3456 / 197)
+originally attention tiles: 167 in slide: 23910-158_Sl060-C55-P62
+fill surrounding tiles: 32 in round: 1
+fill surrounding tiles: 36 in round: 2
+fill surrounding tiles: 50 in round: 3
+fill surrounding tiles: 12 in round: 4
+all/k selection ratio in this slide: (9681 / 297)
+originally attention tiles: 6209 in slide: 23910-158_Sl218-C322-P62
+fill surrounding tiles: 3848 in round: 1
+fill surrounding tiles: 2640 in round: 2
+fill surrounding tiles: 2151 in round: 3
+fill surrounding tiles: 851 in round: 4
+all/k selection ratio in this slide: (24836 / 15699)
+final highlighted tiles:  2719
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl004-C4-P62
+added topK attention map numpy info set for slide: 23910-158_Sl004-C4-P62
+final highlighted tiles:  413
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK attention map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  2641
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl021-C14-P62
+added topK attention map numpy info set for slide: 23910-158_Sl021-C14-P62
+final highlighted tiles:  3921
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl022-C14-P62
+added topK attention map numpy info set for slide: 23910-158_Sl022-C14-P62
+final highlighted tiles:  1076
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl028-C18-P62
+added topK attention map numpy info set for slide: 23910-158_Sl028-C18-P62
+final highlighted tiles:  8868
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl041-C32-P62
+added topK attention map numpy info set for slide: 23910-158_Sl041-C32-P62
+final highlighted tiles:  728
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl042-C32-P62
+added topK attention map numpy info set for slide: 23910-158_Sl042-C32-P62
+final highlighted tiles:  3723
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl047-C36-P62
+added topK attention map numpy info set for slide: 23910-158_Sl047-C36-P62
+final highlighted tiles:  197
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl052-C42-P62
+added topK attention map numpy info set for slide: 23910-158_Sl052-C42-P62
+final highlighted tiles:  297
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl060-C55-P62
+added topK attention map numpy info set for slide: 23910-158_Sl060-C55-P62
+final highlighted tiles:  15699
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl218-C322-P62
+added topK attention map numpy info set for slide: 23910-158_Sl218-C322-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl
+automatically find CSV file: P62_ballooning_pct_lbl_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth
+<-- load the tiles' attention score for 11 slides -->
+originally attention tiles: 325 in slide: 23910-158_Sl004-C4-P62
+fill surrounding tiles: 24 in round: 1
+fill surrounding tiles: 17 in round: 2
+fill surrounding tiles: 6 in round: 3
+fill surrounding tiles: 4 in round: 4
+all/k selection ratio in this slide: (17606 / 376)
+originally attention tiles: 62 in slide: 23910-158_Sl009-C7-P62
+fill surrounding tiles: 2 in round: 1
+fill surrounding tiles: 2 in round: 2
+fill surrounding tiles: 1 in round: 3
+fill surrounding tiles: 0 in round: 4
+all/k selection ratio in this slide: (4271 / 67)
+originally attention tiles: 359 in slide: 23910-158_Sl021-C14-P62
+fill surrounding tiles: 35 in round: 1
+fill surrounding tiles: 31 in round: 2
+fill surrounding tiles: 28 in round: 3
+fill surrounding tiles: 26 in round: 4
+all/k selection ratio in this slide: (9453 / 479)
+originally attention tiles: 574 in slide: 23910-158_Sl022-C14-P62
+fill surrounding tiles: 116 in round: 1
+fill surrounding tiles: 85 in round: 2
+fill surrounding tiles: 74 in round: 3
+fill surrounding tiles: 74 in round: 4
+all/k selection ratio in this slide: (9355 / 923)
+originally attention tiles: 325 in slide: 23910-158_Sl028-C18-P62
+fill surrounding tiles: 75 in round: 1
+fill surrounding tiles: 32 in round: 2
+fill surrounding tiles: 25 in round: 3
+fill surrounding tiles: 19 in round: 4
+all/k selection ratio in this slide: (5869 / 476)
+originally attention tiles: 1110 in slide: 23910-158_Sl041-C32-P62
+fill surrounding tiles: 196 in round: 1
+fill surrounding tiles: 162 in round: 2
+fill surrounding tiles: 144 in round: 3
+fill surrounding tiles: 121 in round: 4
+all/k selection ratio in this slide: (11690 / 1733)
+originally attention tiles: 61 in slide: 23910-158_Sl042-C32-P62
+fill surrounding tiles: 1 in round: 1
+fill surrounding tiles: 1 in round: 2
+fill surrounding tiles: 1 in round: 3
+fill surrounding tiles: 0 in round: 4
+all/k selection ratio in this slide: (4640 / 64)
+originally attention tiles: 485 in slide: 23910-158_Sl047-C36-P62
+fill surrounding tiles: 77 in round: 1
+fill surrounding tiles: 66 in round: 2
+fill surrounding tiles: 50 in round: 3
+fill surrounding tiles: 48 in round: 4
+all/k selection ratio in this slide: (8065 / 726)
+originally attention tiles: 26 in slide: 23910-158_Sl052-C42-P62
+fill surrounding tiles: 4 in round: 1
+fill surrounding tiles: 3 in round: 2
+fill surrounding tiles: 2 in round: 3
+fill surrounding tiles: 3 in round: 4
+all/k selection ratio in this slide: (3456 / 38)
+originally attention tiles: 48 in slide: 23910-158_Sl060-C55-P62
+fill surrounding tiles: 0 in round: 1
+fill surrounding tiles: 0 in round: 2
+fill surrounding tiles: 0 in round: 3
+fill surrounding tiles: 0 in round: 4
+all/k selection ratio in this slide: (9681 / 48)
+originally attention tiles: 2326 in slide: 23910-158_Sl218-C322-P62
+fill surrounding tiles: 613 in round: 1
+fill surrounding tiles: 465 in round: 2
+fill surrounding tiles: 388 in round: 3
+fill surrounding tiles: 318 in round: 4
+all/k selection ratio in this slide: (24836 / 4110)
+final highlighted tiles:  376
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl004-C4-P62
+added topK attention map numpy info set for slide: 23910-158_Sl004-C4-P62
+final highlighted tiles:  67
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl009-C7-P62
+added topK attention map numpy info set for slide: 23910-158_Sl009-C7-P62
+final highlighted tiles:  479
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl021-C14-P62
+added topK attention map numpy info set for slide: 23910-158_Sl021-C14-P62
+final highlighted tiles:  923
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl022-C14-P62
+added topK attention map numpy info set for slide: 23910-158_Sl022-C14-P62
+final highlighted tiles:  476
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl028-C18-P62
+added topK attention map numpy info set for slide: 23910-158_Sl028-C18-P62
+final highlighted tiles:  1733
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl041-C32-P62
+added topK attention map numpy info set for slide: 23910-158_Sl041-C32-P62
+final highlighted tiles:  64
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl042-C32-P62
+added topK attention map numpy info set for slide: 23910-158_Sl042-C32-P62
+final highlighted tiles:  726
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl047-C36-P62
+added topK attention map numpy info set for slide: 23910-158_Sl047-C36-P62
+final highlighted tiles:  38
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl052-C42-P62
+added topK attention map numpy info set for slide: 23910-158_Sl052-C42-P62
+final highlighted tiles:  48
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl060-C55-P62
+added topK attention map numpy info set for slide: 23910-158_Sl060-C55-P62
+final highlighted tiles:  4110
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl218-C322-P62
+added topK attention map numpy info set for slide: 23910-158_Sl218-C322-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl

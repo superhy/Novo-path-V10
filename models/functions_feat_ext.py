@@ -22,7 +22,7 @@ from wsi.tiles_tools import indicate_slide_tile_loc
 
 
 def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder, 
-                         agt_model_filenames, label_dict,
+                         agt_model_filenames, label_dict, filter_out_slide_keys=[],
                          K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None):
     '''
     select the top attention tiles by the attention pool aggregator
@@ -90,7 +90,10 @@ def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder,
         slide_keys_list = list(slides_tileidxs_dict.keys())[pkg_range[0]: pkg_range[1]]
     else:
         slide_keys_list = list(slides_tileidxs_dict.keys())
-    for slide_id in slide_keys_list:
+    # filter out the tiles from some slides which is None of interesting regions (like health volunteers, HV)
+    filtered_slide_keys_list = [item for item in slide_keys_list if item not in filter_out_slide_keys]
+        
+    for slide_id in filtered_slide_keys_list:
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
         # calculate the attention value (average) from multi-fold
         list_of_attscores = []
@@ -100,7 +103,7 @@ def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder,
         avg_attscores = average_vectors(list_of_attscores)
         # normalisation after averaging
         avg_attscores = normalization(avg_attscores)
-        print(avg_attscores, (avg_attscores > 0.1).sum() )
+        # print(avg_attscores, (avg_attscores > 0.1).sum() )
         
         nb_tiles = len(slide_tileidxs_list)
         # print(nb_tiles)

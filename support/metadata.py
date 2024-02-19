@@ -373,6 +373,16 @@ def load_percentages_from_csv(ENV_task, percentage_csv_name=None):
     df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, percentage_csv_name))
     results_dict = pd.Series(df[f'{stain_title}_percentage'].values, index=df['slide_id']).to_dict()
     return results_dict
+
+def get_slide_ids_with_b_cpt_lower_than_thd(csv_file_path, threshold=0.05):
+    '''
+    get slide_ids for those with pct_value lower than threshold
+    '''
+    df = pd.read_csv(csv_file_path)
+    filtered_df = df[df['ballooning_percentage'] < threshold]
+    slide_ids = filtered_df['slide_id'].tolist()
+    
+    return slide_ids
     
 def _load_clinical_labels(show_hv):
     

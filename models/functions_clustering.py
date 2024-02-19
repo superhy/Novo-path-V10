@@ -1120,8 +1120,9 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
     print(res_dict)
     
 def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_filenames,
-                                          K_ratio, att_thd, fills, manu_n_clusters=5,
-                                          tiles_r_tuples_pkl_name=None):
+                                          K_ratio, att_thd, fills, 
+                                          filter_out_slide_keys=[],
+                                          manu_n_clusters=5, tiles_r_tuples_pkl_name=None):
     '''
     clustering the tiles with high attention values 
     by classification trained on H&E reports annotations
@@ -1136,6 +1137,7 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     
     att_all_tiles_list, _ = select_top_att_tiles(ENV_task, tile_encoder,
                                                  agt_model_filenames, label_dict,
+                                                 filter_out_slide_keys,
                                                  K_ratio=K_ratio, att_thd=att_thd, fills=fills)
     
     # if we set up manu_n_clusters=3 here, only 3 clusters

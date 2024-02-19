@@ -22,7 +22,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 if __name__ == '__main__':
     
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
-    ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
+    # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_BI
+    # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT
+    ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT_BI
+    
     ENV_annotation_stea = env_flinc_p62.ENV_FLINC_P62_STEA_BI
     ENV_annotation_lob = env_flinc_p62.ENV_FLINC_P62_LOB_BI
     
@@ -31,21 +34,22 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
+    task_ids = [1]
     # task_ids = [2]
-    # task_ids = [1]
     # task_ids = [10.5]
     # task_ids = [29.3, 29.4]
-    
-    task_ids = [30.2]
-    
+    # task_ids = [30.2]
     # task_ids = [201, 201.1]
     
     if 0 in task_ids:
         pass
     if 1 in task_ids:
-        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
-        # heatmap_pkl_name = 'actK_map_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pkl'
-        # heatmap_pkl_name = 'actK_map_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-25.pkl'
+        ''' Dec 2023, below '''
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
+        ''' Feb 2024, below '''
+        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[46]2024-02-16.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_[90]2024-02-15.pkl'
         print(heatmap_pkl_name)
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
     if 1.1 in task_ids:

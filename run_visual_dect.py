@@ -18,6 +18,8 @@ from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, 
     _run_cnt_abs_nb_sensi_c_assim_t_on_slides
 from run_main import Logger
 from support import env_flinc_p62, tools
+from support.env_flinc_p62 import ENV_FLINC_P62_BALL_PCT_BI, \
+    ENV_FLINC_P62_BALL_PCT
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
@@ -52,17 +54,23 @@ if __name__ == '__main__':
         #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
         
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
-        agt_model_filenames = ['checkpoint_AttPool-Pool-0_ballooning_pct_lbl_[114]2024-02-15.pth']
         
-        K_ratio = 0.3
-        att_thd = 0.2
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_[90]2024-02-15.pth']
+        # ENV_annotation = ENV_FLINC_P62_BALL_PCT
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[46]2024-02-16.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth']
+        ENV_annotation = ENV_FLINC_P62_BALL_PCT_BI
+        
+        K_ratio = 0.25
+        att_thd = 0.25
         boost_rate = 2.0
         # pkg_range = [-41, -1]
         pkg_range = None
         cut_left = False
-        fills = [3, 3, 3, 4]
+        fills = [3, 3, 4]
         
-        _run_make_topK_attention_heatmap_resnet_P62(ENV_task, agt_model_filenames, cut_left,
+        _run_make_topK_attention_heatmap_resnet_P62(ENV_task, ENV_annotation,
+                                                    agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, 'bwr', pkg_range)
     if 1.1 in task_ids:
         '''
