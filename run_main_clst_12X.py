@@ -64,6 +64,7 @@ if __name__ == '__main__':
         # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
         tiles_r_tuples_pkl_name = None
         
+        ''' filtered out slides, actually here is case_id '''
         # filter_out_slide_keys = []
         Low_pct_slide_keys = get_slide_ids_with_b_cpt_lower_than_thd(os.path.join(ENV_task.META_FOLDER, 'P62_ballooning_pct.csv'),
                                                                      threshold=0.05)
