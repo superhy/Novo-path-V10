@@ -1,7 +1,6 @@
 '''
 @author: superhy
 '''
-
 ''' ------------ select top attention tiles for un-supervised analysis ------------ '''
 
 import math
@@ -17,6 +16,7 @@ from models import functions, datasets, functions_attpool, networks, \
 from models.datasets import Simple_Tile_Dataset
 from models.networks import GatedAttentionPool, AttentionPool
 import numpy as np
+from support.files import parse_caseid_from_slideid
 from support.tools import normalization, normalization_sk
 from wsi.tiles_tools import indicate_slide_tile_loc
 
@@ -91,7 +91,7 @@ def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder,
     else:
         slide_keys_list = list(slides_tileidxs_dict.keys())
     # filter out the tiles from some slides which is None of interesting regions (like health volunteers, HV)
-    filtered_slide_keys_list = [item for item in slide_keys_list if item not in filter_out_slide_keys]
+    filtered_slide_keys_list = [item for item in slide_keys_list if parse_caseid_from_slideid(item) not in filter_out_slide_keys]
         
     for slide_id in filtered_slide_keys_list:
         slide_tileidxs_list = slides_tileidxs_dict[slide_id]
@@ -103,7 +103,7 @@ def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder,
         avg_attscores = average_vectors(list_of_attscores)
         # normalisation after averaging
         avg_attscores = normalization(avg_attscores)
-        # print(avg_attscores, (avg_attscores > 0.1).sum() )
+        # print(slide_id, (avg_attscores > 0.1).sum() )
         
         nb_tiles = len(slide_tileidxs_list)
         # print(nb_tiles)

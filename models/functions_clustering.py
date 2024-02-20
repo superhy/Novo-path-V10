@@ -1135,9 +1135,9 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     tile_encoder = tile_encoder.cuda()
     label_dict = query_task_label_dict_fromcsv(ENV_annotation)
     
-    att_all_tiles_list, _ = select_top_att_tiles(ENV_task, tile_encoder,
-                                                 agt_model_filenames, label_dict,
-                                                 filter_out_slide_keys,
+    att_all_tiles_list, _ = select_top_att_tiles(ENV_task, ENV_annotation, 
+                                                 tile_encoder, agt_model_filenames, label_dict,
+                                                 filter_out_slide_keys=filter_out_slide_keys,
                                                  K_ratio=K_ratio, att_thd=att_thd, fills=fills)
     
     # if we set up manu_n_clusters=3 here, only 3 clusters

@@ -99,7 +99,14 @@ def filter_singlesldie_top_thd_attKtiles(tiles_all_list, slide_tileidxs_list, sl
     # print('sorted: ', sort_attscores)
         
     if thd is not None:
-        thd_idx = np.where(sort_attscores < thd)[0][0] if reverse is False else np.where(sort_attscores > thd)[0][0]
+        # print(np.where(sort_attscores < thd), np.max(sort_attscores))
+        thd_idx = len(sort_attscores) - 1
+        if np.max(sort_attscores) < thd and reverse is True:
+            pass
+        elif np.min(sort_attscores) > thd and reverse is False:
+            pass
+        else:
+            thd_idx = np.where(sort_attscores < thd)[0][0] if reverse is False else np.where(sort_attscores > thd)[0][0]
         thd_K = thd_idx if thd_idx < K else K
     else:
         thd_K = K
