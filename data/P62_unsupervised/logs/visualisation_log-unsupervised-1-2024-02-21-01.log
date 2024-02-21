@@ -1,0 +1,25 @@
+automatically find CSV file: P62_ballooning_pct_lbl_bi.csv
+get the tiles encoding matrix for slide: 23910-158_Sl241-CHV-40-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl241-CHV-40-P62-(tiles_encode).npy
+get the tiles encoding matrix for slide: 23910-158_Sl250-CHV-72-P62
+Store slide tiles matrix at: D:/workspace\Novo-path-V10\data/P62_unsupervised/encodes/128-0/train_encode\23910-158_Sl250-CHV-72-P62-(tiles_encode).npy
+automatically find CSV file: P62_ballooning_pct_lbl_bi.csv
+load model from: D:/FLINC_dataset/slides/yang_p62\models\checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth
+<-- load the tiles' attention score for 2 slides -->
+originally attention tiles: 2386 in slide: 23910-158_Sl241-CHV-40-P62
+fill surrounding tiles: 1492 in round: 1
+fill surrounding tiles: 1424 in round: 2
+fill surrounding tiles: 552 in round: 3
+all/k selection ratio in this slide: (18442 / 5854)
+originally attention tiles: 7783 in slide: 23910-158_Sl250-CHV-72-P62
+fill surrounding tiles: 5292 in round: 1
+fill surrounding tiles: 3563 in round: 2
+fill surrounding tiles: 1264 in round: 3
+all/k selection ratio in this slide: (31132 / 17902)
+final highlighted tiles:  5854
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl241-CHV-40-P62
+added topK attention map numpy info set for slide: 23910-158_Sl241-CHV-40-P62
+final highlighted tiles:  17902
+generate attention score heatmap (both hard and soft) for slide: 23910-158_Sl250-CHV-72-P62
+added topK attention map numpy info set for slide: 23910-158_Sl250-CHV-72-P62
+Store topK attention map numpy package as: topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl
