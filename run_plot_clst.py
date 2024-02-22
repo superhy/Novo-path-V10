@@ -90,7 +90,8 @@ if __name__ == '__main__':
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
         # clst_tiledemo_pkl_name = 'clst-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
         # clst_tiledemo_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
-        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        # clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dev 2023
+        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
         
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 23 in task_ids:
@@ -143,8 +144,6 @@ if __name__ == '__main__':
             ball_label_fname = 'P62_ballooning_score_bi.csv'
             # query_slide_id = '23910-158_Sl278-C18-CD45'
             plot_biomarker_clsts_avg_dist(ENV_task, tis_pct_pkl_name, ball_label_fname, nb_clst=nb_clst)
-    if 29.11 in task_ids:
-        '''  '''
     if 29.2 in task_ids:
         ''' CD45 '''
         # tis_pct_pkl_name = 'clst-tis-pct_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # nb_clst=6

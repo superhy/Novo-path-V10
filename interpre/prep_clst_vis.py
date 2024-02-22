@@ -777,7 +777,6 @@ def top_pop_slides_4_ref_group(ENV_task, slide_iso_gath_nb_dict, lobular_label_f
         lowest_gath_slides_ids.append(slide_id_list[ord])
     
     return top_iso_slides_ids, lowest_iso_slides_ids, top_gath_slides_ids, lowest_gath_slides_ids
-    
         
     
 ''' --------- tissue percentage --------- '''

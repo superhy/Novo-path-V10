@@ -11,7 +11,8 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     plot_clst_gp_tis_pct_abs_nb_box, plot_cross_labels_parcats, \
     plot_cross_labels_parcats_lmh, plot_clst_gp_tis_pct_abs_nb_ball_df_stea, \
     plot_clst_gp_tis_pct_abs_nb_ball_df_lob, plot_henning_fraction_dist, \
-    plot_he_rpt_henning_label_parcats
+    plot_he_rpt_henning_label_parcats, plot_tis_pct_dist_clsts_in_slides, \
+    plot_tis_pct_henning_fraction_correlation
 from support import env_flinc_p62
 
 
@@ -34,9 +35,11 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
-    task_ids = [1]
+    # task_ids = [1]
     # task_ids = [2]
     # task_ids = [10.5]
+    # task_ids = [29.11, 29.12, 29.13]
+    task_ids = [29.2, 29.21]
     # task_ids = [29.3, 29.4]
     # task_ids = [30.2]
     # task_ids = [201, 201.1]
@@ -115,7 +118,42 @@ if __name__ == '__main__':
             for i, _env_annotation in enumerate(ENV_annotation_list):
                 plot_clsts_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
                                               branch_prefix, avail_labels_list[i], tis_pct)
+    if 29.11 in task_ids:
+        ''' plot distribution across all slides for tissue percentage of each (sub)cluster '''
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name)
+    if 29.12 in task_ids:
+        ''' same with 29.11, only on slides with henning's fraction >= 0.2 '''
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                          on_fraction_thd=0.2, higher_thd=True, color='cyan')
+    if 29.13 in task_ids:
+        ''' same with 29.11, only on slides with henning's fraction < 0.2 '''
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                          on_fraction_thd=0.2, higher_thd=False, color='darkorange')
+    
     if 29.2 in task_ids:
+        ''' 
+        plot the correlation between tissue percentage and henning's P62 fraction 
+            across all slides for each (sub)cluster 
+        '''
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name) 
+    if 29.21 in task_ids:
+        ''' 
+        same with 29.2, only count slides with henning's fraction >= 0.2
+        '''
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                                  higher_fraction_thd=0.2, color='turquoise') 
+    
+    if 29.3 in task_ids:
         '''
         same with above, calculate the distribution 
         '''
@@ -143,7 +181,7 @@ if __name__ == '__main__':
             for i, _env_annotation in enumerate(ENV_annotation_list):
                 plot_clst_gp_tis_pct_abs_nb_box(ENV_task, _env_annotation, tis_pct_pkl_name, 
                                                 gp_prefixs, avail_labels_list[i], tis_pct)
-    if 29.3 in task_ids:
+    if 29.31 in task_ids:
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         stea_csv_filename = 'P62_steatosis_score.csv'
         
@@ -185,7 +223,7 @@ if __name__ == '__main__':
             plot_clst_gp_tis_pct_abs_nb_ball_df_stea(ENV_task, ENV_annotation_hv, stea_csv_filename, 
                                                      tis_pct_pkl_name, gp_prefixs, hl_prefixs_list[i], 
                                                      tis_pct, set_color)
-    if 29.4 in task_ids:
+    if 29.32 in task_ids:
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         lob_csv_filename = 'P62_lobular_inflammation_score.csv'
         

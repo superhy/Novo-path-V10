@@ -6,14 +6,16 @@ Created on 25 Nov 2022
 import os
 
 from scipy.stats.kde import gaussian_kde
+from scipy.stats.stats import pearsonr
 
 from interpre.draw_maps import draw_original_image, draw_attention_heatmap
 from interpre.prep_dect_vis import redu_K_embeds_distribution
 from interpre.prep_tools import load_vis_pkg_from_pkl
 from interpre.statistics import df_p62_s_clst_assim_tis_pct_ball_dist, \
     df_p62_s_clst_and_assim_t_p_ball_corr
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+from models.functions_clustering import load_clustering_pkg_from_pkl
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -1024,6 +1026,208 @@ def plot_henning_fraction_dist(ENV_task, percentage_csv_name=None, auto_bins=Fal
     
     plt.tight_layout()
     plt.show()
+    
+''' -------------------------------------------------------------------------------- '''
+    
+def calculate_entropy(values, bins=80):
+    """
+    calculate the entropy for a distribution
+    """
+    # split into many bins to statistic the probability in different ranges
+    hist, bin_edges = np.histogram(values, bins=bins, density=True)
+    probabilities = hist * np.diff(bin_edges)
+    # entropy
+    entropy = -np.sum(probabilities * np.log(probabilities + 1e-6))  # avoid log(0)
+    return entropy
+
+def gini_coefficient(values):
+    """ 
+    calculate Gini coefficient
+    """
+    # sort the values
+    sorted_values = sorted(values)
+    n = len(values)
+    cumulative_sum = sum((i+1)*val for i, val in enumerate(sorted_values))
+    # use formulate
+    gini = (2 * cumulative_sum) / (n * sum(sorted_values)) - (n + 1) / n
+    return gini
+    
+def plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                      on_fraction_thd=0.0, higher_thd=True, color='cornflowerblue'):
+    '''
+    count the distribution of each (sub)cluster's tissue percentage on all slides
+    PS: best here to plot for each label of (sub)cluster one by one
+    
+    Args:
+        on_fraction_thd: cannot be < 0.0
+    '''
+    meta_folder = ENV_task.META_FOLDER
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    clst_hiera_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clst_hiera_pkl_name)
+    # load the cluster labels and remove the repeated
+    unique_clst_labels = set([res for res, _, _, _ in clst_hiera_res_pkg])
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(heatmap_store_dir, tis_pct_pkl_name)
+    
+    tissue_pct_by_label = {label: [] for label in unique_clst_labels}
+    # load the tissue percentage in slides
+    if on_fraction_thd > 0.0:
+        ballooning_df = pd.read_csv(os.path.join(meta_folder, 'P62_ballooning_pct.csv'))
+        if higher_thd:
+            filtered_ballooning_df = ballooning_df[ballooning_df['ballooning_percentage'] >= on_fraction_thd]
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                if case_id in filtered_ballooning_df['slide_id'].values:
+                    for label in unique_clst_labels:
+                        if label in tis_pct_dict:
+                            tissue_pct_by_label[label].append(tis_pct_dict[label])
+        else:
+            filtered_ballooning_df = ballooning_df[ballooning_df['ballooning_percentage'] < on_fraction_thd]
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                if case_id in filtered_ballooning_df['slide_id'].values:
+                    for label in unique_clst_labels:
+                        if label in tis_pct_dict:
+                            tissue_pct_by_label[label].append(tis_pct_dict[label])
+    else:
+        for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+            for label in unique_clst_labels:
+                if label in tis_pct_dict:
+                    tissue_pct_by_label[label].append(tis_pct_dict[label])
+                
+    img_save_folder = os.path.join(heatmap_store_dir, 'clst_tis-pct_dist_in_slides')
+    if not os.path.exists(img_save_folder):
+        os.makedirs(img_save_folder)
+        print(f'folder newly created: {img_save_folder}...')
+    else:
+        print(f'folder already exists: {img_save_folder}...')
+        
+    # make plot and save the figures for each label one by one
+    for label, percentages in tissue_pct_by_label.items():
+        if on_fraction_thd == 0.0:
+            plt.figure(figsize=(10, 10))  
+        else:
+            plt.figure(figsize=(5, 10))
+        # print(len(percentages))
+        percentages = np.array(percentages) * 100
+        nb_bins = 80 if on_fraction_thd==0.0 else 30
+        sns.histplot(percentages, bins=nb_bins, kde=True, color=color)
+        
+        # calculate the gini score (close to 0 -> more average) and entropy (higher -> more average)
+        gini = gini_coefficient(percentages)
+        entropy = calculate_entropy(percentages, bins=nb_bins)
+        
+        plt.title(f'Tissue Percentage Distribution for {label}')
+        plt.xlabel('Tissue Percentage (%)')
+        plt.ylabel('Density')
+        plt.text(0.95, 0.95, f'Gini: {gini:.2f}\nEntropy: {entropy:.2f}', 
+                 transform=plt.gca().transAxes, fontsize=20, horizontalalignment='right',
+                 verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+        plt.tight_layout()
+    
+        h_l_str = 'h' if higher_thd else 'l'
+        filter_suffix = '' if on_fraction_thd == 0.0 else f'_{h_l_str}-{on_fraction_thd}'
+        plot_f_name = f"{img_save_folder}/tissue_percentage_distribution-{label}{filter_suffix}.png"
+        plt.savefig(plot_f_name)
+        plt.close()
+    
+        print(f'plot saved: {plot_f_name}')
+        
+def plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                              higher_fraction_thd=0.0, color='salmon'):
+    '''
+    statistic and plot the correlation between tissue percentage of each cluster
+        and henning's fraction score, to find the ballooning sensitive clusters
+        
+    PS: best here to plot for each label of (sub)cluster one by one
+    '''
+    meta_folder = ENV_task.META_FOLDER
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    clst_hiera_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clst_hiera_pkl_name)
+    # load the cluster labels and remove the repeated
+    unique_clst_labels = set([res for res, _, _, _ in clst_hiera_res_pkg])
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(heatmap_store_dir, tis_pct_pkl_name)
+    
+    henning_fraction_df = pd.read_csv(os.path.join(meta_folder, 'P62_ballooning_pct.csv'))
+    print(henning_fraction_df)
+    filtered_henning_fraction_df = henning_fraction_df[henning_fraction_df['ballooning_percentage'] > higher_fraction_thd]
+    correlation_results = {}
+    
+    img_save_folder = os.path.join(heatmap_store_dir, 'clst_tis-pct_henning-fract_corr')
+    if not os.path.exists(img_save_folder):
+        os.makedirs(img_save_folder)
+        print(f'folder newly created: {img_save_folder}...')
+    else:
+        print(f'folder already exists: {img_save_folder}...')
+    
+    # for each cluster, calculate the correlation and plot the scatter
+    for label in unique_clst_labels:
+        tissue_pcts = []
+        henning_fractions = []
+    
+        # load tissue percentage and henning fractions of all slides
+        if higher_fraction_thd == 0.0:
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                if label in tis_pct_dict:
+                    tissue_pct = tis_pct_dict[label]
+                    # slide_id in csv actually is case_id
+                    case_id = parse_caseid_from_slideid(slide_id)
+                    ballooning_pct = henning_fraction_df[henning_fraction_df['slide_id'] == case_id]['ballooning_percentage'].values[0]
+        
+                    tissue_pcts.append(tissue_pct)
+                    henning_fractions.append(ballooning_pct)
+        else:
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                # only pick the slides with henning's fraction higher than 0.2
+                if case_id in filtered_henning_fraction_df['slide_id'].values:
+                    if label in tis_pct_dict:
+                        tissue_pct = tis_pct_dict[label]
+                        ballooning_pct = filtered_henning_fraction_df[filtered_henning_fraction_df['slide_id'] == case_id]['ballooning_percentage'].values[0]
+        
+                        tissue_pcts.append(tissue_pct)
+                        henning_fractions.append(ballooning_pct)
+    
+        tissue_pcts = np.array(tissue_pcts) * 100 # use %
+        # pearson score
+        correlation, _ = pearsonr(tissue_pcts, henning_fractions)
+        correlation_results[label] = correlation
+    
+        # scatter and regression line
+        if higher_fraction_thd == 0.0:
+            plt.figure(figsize=(10, 8))
+        else:
+            plt.figure(figsize=(5, 8))
+        sns.regplot(x=tissue_pcts, y=henning_fractions, color=color)
+        if higher_fraction_thd == 0.0:
+            plt.title(f'Tissue Percentage vs. Pathologist P62 Fraction for {label}')
+        else:
+            plt.title(f'Tis Pct vs. Pat P62 Frat for {label}')
+        plt.xlabel('Tissue Percentage')
+        plt.ylabel('Pathologist P62 Fraction')
+        if higher_fraction_thd == 0.0:
+            plt.ylim(0, 2.0)
+        else:
+            plt.ylim(0, 5.0)
+        
+        # embed the text of pearson score to the figures
+        plt.text(0.05, 0.95, f'Pearson Correlation: {correlation:.2f}', 
+                 transform=plt.gca().transAxes, fontsize=20, 
+                 verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.5))
+        plt.tight_layout()
+        
+        filter_suffix = '' if higher_fraction_thd == 0.0 else f'_h-{higher_fraction_thd}'
+        save_path = os.path.join(img_save_folder, f'tis-pct_vs_fraction_{label}{filter_suffix}.png') 
+        plt.savefig(save_path)
+        plt.close()
+        print(f"figure for {label} saved: {save_path}")
+    
+    # print the correlation results
+    print("Correlation results:")
+    for label, correlation in correlation_results.items():
+        print(f"{label}: {correlation:.2f}")
+
 
 if __name__ == '__main__':
     pass

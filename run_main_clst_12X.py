@@ -184,7 +184,7 @@ if __name__ == '__main__':
             print('need to re-load clustering results first!')
         
         assim_ratio = 0.001
-        fills=[3, 3, 3, 4]
+        fills=[3, 3, 4]
         
         exc_clustered=False
         _run_tiles_assimilate_each_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 

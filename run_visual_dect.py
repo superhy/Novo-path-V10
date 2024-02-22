@@ -260,6 +260,7 @@ if __name__ == '__main__':
                                                      K_ratio, act_thd, boost_rate, fills, color_map, pkg_range)
     if 11.1 in task_ids:
         '''
+        -- temporarily deprecated
         visualisation for negative activation map
         (for steatosis_score_hv and lobular_inflammation_score_hv)
         '''    
@@ -283,6 +284,7 @@ if __name__ == '__main__':
                                                      fills, lob_cmap, pkg_range)
     if 11.2 in task_ids:
         '''
+        -- temporarily deprecated
         visualisation of positive - negative activation map
         (keep the activation for ballooning and discard the activation for steatosis and lobular_inflammation)
         '''

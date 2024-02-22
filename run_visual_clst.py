@@ -71,6 +71,9 @@ if __name__ == '__main__':
         _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, 
                                              keep_org_slide=True, cut_left=True)
     if 22 in task_ids:
+        '''
+        generate the tile demos for clusters/sub-clusters
+        '''
         ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2023-03-02.pkl' # clst-6
@@ -80,9 +83,10 @@ if __name__ == '__main__':
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         
-        nb_sample=300
+        nb_sample=200
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     if 23 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'
@@ -115,7 +119,8 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         
         # for clst only for key tiles, must load slides_tiles_dict to count the nb_tiss in each slide
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # on server n4 p62
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # on server n4 p62
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         slides_tiles_dict = load_slides_tileslist(ENV_task)
         
         _run_cnt_tis_pct_abs_num_clsts_on_slides(ENV_task, clustering_pkl_name, slides_tiles_dict)
