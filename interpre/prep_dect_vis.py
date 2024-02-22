@@ -252,7 +252,8 @@ def topK_score_heatmap_single_scaled_slide(ENV_task, k_slide_tiles_list, k_score
     return org_np_img, heat_np, heat_hard_cv2, heat_soft_cv2
 
 
-def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_assim_tiles_list, slide_id, labels_picked, cut_left=False):
+def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_assim_tiles_list, slide_id, labels_picked, cut_left=False,
+                                        color_map='coolwarm'):
     '''
     generate the clusters spatial map on single slide
     
@@ -298,7 +299,7 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         white_mask[h, w] = 0.0
     print('checked %d tiles assimilated from sensitive clusters.' % len(slide_assim_tiles_list) )
     
-    c_panel = cmapy.cmap('coolwarm')
+    c_panel = cmapy.cmap(color_map)
     heat_s_clst = image_tools.np_to_pil(heat_s_clst).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
     heat_s_clst = np.float64(heat_s_clst) / 255

@@ -8,11 +8,12 @@ import sys
 
 from interpre.prep_clst_vis import pick_clusters_by_prefix
 from models.functions_clustering import _run_keamns_region_ctx_encode_vit_6_8, \
-    _run_kmeans_attKtiles_encode_resnet18, _run_tiles_assimilate_centre_encode_resnet18, \
+    _run_kmeans_attKtiles_encode_resnet18, _run_tiles_assimilate_centre_clst_en_resnet18, \
     load_clustering_pkg_from_pkl, _run_kmeans_act_K_tiles_encode_resnet18, \
     _run_hierarchical_kmeans_encode_same, \
     _run_kmeans_filter_act_K_tiles_encode_resnet18, \
-    _run_tiles_assimilate_each_encode_resnet18
+    _run_tiles_assimilate_each_clst_en_resnet18, \
+    _run_tiles_assimilate_each_clst_1by1_en_resnet18
 from run_main import Logger
 from support import env_flinc_cd45, tools, env_flinc_p62
 from support.env_flinc_p62 import ENV_FLINC_P62_STEA_BI, ENV_FLINC_P62_LOB_BI
@@ -25,9 +26,9 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 # 2023.11.06 on PC test of 58 slides
 # task_ids = [120]
-task_ids = [123]
+# task_ids = [123]
 # task_ids = [129]
-# task_ids = [129.5]
+task_ids = [129.51]
 
 task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
@@ -138,11 +139,12 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
-        tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # Dec 2023
+        tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above Dec 2023
             
         cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
                             '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
-                            '2_1_1_1_0']
+                            '2_1_1_1_0'] # before Dec 2023
+        # cluster_groups = [] # need new
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
         str_time = Time().date
@@ -162,19 +164,25 @@ if __name__ == '__main__':
         fills=[3, 3, 3, 4]
         
         exc_clustered=False
-        _run_tiles_assimilate_centre_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
-                                              tile_net_filename=tile_net_filename,
-                                              exc_clustered=exc_clustered, 
-                                              assim_ratio=assim_ratio, fills=fills,
-                                              record_t_tuples_name=record_t_tuples_name,
-                                              load_t_tuples_name=load_t_tuples_name)
+        _run_tiles_assimilate_centre_clst_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
+                                                      tile_net_filename=tile_net_filename,
+                                                      exc_clustered=exc_clustered, 
+                                                      assim_ratio=assim_ratio, fills=fills,
+                                                      record_t_tuples_name=record_t_tuples_name,
+                                                      load_t_tuples_name=load_t_tuples_name)
     if 129.5 in task_ids:
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
-        tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # Dec 2023
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
-        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
-                            '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
-                            '2_1_1_1_0']
+        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
+        tile_net_filename = None # using resnet from imagenet here
+        
+        # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+        #                     '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+        #                     '2_1_1_1_0'] # before Dec 2023
+        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+                          '2_0_1_0_0', '2_1_0_1_1',
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
         str_time = Time().date
@@ -187,13 +195,43 @@ if __name__ == '__main__':
         fills=[3, 3, 4]
         
         exc_clustered=False
-        _run_tiles_assimilate_each_encode_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
-                                              tile_net_filename=tile_net_filename,
-                                              exc_clustered=exc_clustered, 
-                                              assim_ratio=assim_ratio, fills=fills,
-                                              record_t_tuples_name=record_t_tuples_name,
-                                              load_t_tuples_name=load_t_tuples_name)
+        _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
+                                                    tile_net_filename=tile_net_filename,
+                                                    exc_clustered=exc_clustered, 
+                                                    assim_ratio=assim_ratio, fills=fills,
+                                                    record_t_tuples_name=record_t_tuples_name,
+                                                    load_t_tuples_name=load_t_tuples_name)
+    if 129.51 in task_ids:
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
+        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
+        tile_net_filename = None # using resnet from imagenet here
+        
+        # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+        #                     '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+        #                     '2_1_1_1_0'] # before Dec 2023
+        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+                          '2_0_1_0_0', '2_1_0_1_1',
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        
+        str_time = Time().date
+        record_t_tuples_name=f'remain_tiles_encode_{len(cluster_groups)}c-{str_time}.pkl'
+        load_t_tuples_name=None
+        if load_t_tuples_name is None:
+            print('need to re-load clustering results first!')
+        
+        assim_ratio = 0.001
+        fills=[3, 3, 4]
+        
+        exc_clustered=False
+        _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
+                                                         tile_net_filename=tile_net_filename,
+                                                         exc_clustered=exc_clustered, 
+                                                         assim_ratio=assim_ratio, fills=fills,
+                                                         record_t_tuples_name=record_t_tuples_name,
+                                                         load_t_tuples_name=load_t_tuples_name)
         
         
         

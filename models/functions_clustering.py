@@ -628,7 +628,7 @@ class Feature_Assimilate():
         Args:
             clustering_res_pkg = [(res, encodes[i], tiles[i], slide_ids[i])...]
             attK_clst: if the cluster results from attention K clustering?
-            exc_clustered: when assimilating, if exclude the tiles which has been included in any cluster?
+            exc_clustered: when assimilating, if exclude the tiles which has been included in any other cluster?
         '''
         self._env_task = ENV_task
         self.for_train = True if self._env_task.DEBUG_MODE else False
@@ -650,6 +650,7 @@ class Feature_Assimilate():
         self.sensitive_labels = sensitive_labels
         sensitive_res = []
         self.sensitive_tiles = []
+        self.clst_sensi_tiles_dict = {}
         
         self.record_t_tuples_name = record_t_tuples_name if load_t_tuples_name is None else None
         self.load_t_tuples_name = load_t_tuples_name
@@ -673,6 +674,13 @@ class Feature_Assimilate():
             if res in self.sensitive_labels:
                 sensitive_res.append((res, encode, tile, slide_id))
                 self.sensitive_tiles.append((tile, slide_id))
+                print('> loaded tiles for all sensitive clusters.')
+                if res not in self.clst_sensi_tiles_dict.keys():
+                    self.clst_sensi_tiles_dict[res] = []
+                    self.clst_sensi_tiles_dict[res].append((tile, slide_id))
+                else:
+                    self.clst_sensi_tiles_dict[res].append((tile, slide_id))
+                print('> loaded tiles for each sensitive cluster, as a dictionary: {label <-> sensitive tiles for this cluster}.')
                 
             tile_key = '{}-h{}-w{}'.format(slide_id, tile.h_id, tile.w_id)
             if attK_clst and exc_clustered:
@@ -690,10 +698,10 @@ class Feature_Assimilate():
         # self.ext_clst_id = last_clst + 1 # this is the clst_id of assimilated additional tiles
         if assim_centre is True:
             self.sensitive_centre = self.avg_encode_sensitive_tiles(sensitive_res)
-            self.key_clusters_centres = None
+            self.key_clusters_centres, self.key_clusters = None, []
         else:
             self.sensitive_centre = None
-            self.key_clusters_centres = self.avg_encode_each_key_cluster(sensitive_res)
+            self.key_clusters_centres, self.key_clusters = self.avg_encode_each_key_cluster(sensitive_res)
         self.remain_tiles_tuples = self.load_remain_tiles_encodes(s_tile_keys_dict)
         if self.record_t_tuples_name is not None:
             self.store_remain_tiles_encode_tuples(self.remain_tiles_tuples, self.record_t_tuples_name) 
@@ -739,10 +747,11 @@ class Feature_Assimilate():
         '''
         calculate the encode centre for each key cluster
         '''
-        key_clusters_centres = []
+        key_clusters_centres, sensi_clst_lbls = [], []
         for label in self.sensitive_labels:
             # get all encodes from current label (cluster)
             encodes = [item[1] for item in sensitive_res_tuples if item[0] == label]
+            sensi_clst_lbls.append(label)
             
             try:
                 encodes_array = np.array(encodes)
@@ -752,7 +761,7 @@ class Feature_Assimilate():
             # calculate the encode centre of current label
             centre = np.mean(encodes_array, axis=0)
             key_clusters_centres.append(centre)
-        return key_clusters_centres
+        return key_clusters_centres, sensi_clst_lbls
                 
         
     def gen_tiles_richencode_tuples(self, remain_tiles_list):
@@ -881,8 +890,11 @@ class Feature_Assimilate():
             return []
         
         assimilated = set()  # To keep track of tiles already assimilated, no repeat
+        clst_assimilated_dict = {}
+        
+        self.key_clusters
     
-        for centre in self.key_clusters_centres:
+        for i, centre in enumerate(self.key_clusters_centres):
             # Compute distances for remaining tiles to current centre
             distances = [(np.linalg.norm(np.array(encode) - centre), encode, tile, slide_id)
                          for encode, tile, slide_id in self.remain_tiles_tuples if (tile, slide_id) not in assimilated]
@@ -899,14 +911,20 @@ class Feature_Assimilate():
             print(f"--- distance threshold for top {self.assimilate_ratio} to centre {centre}: {distance_threshold}")
             
             # Update the set of assimilated tiles
-            assimilated.update((tile, slide_id) for _, _, tile, slide_id in sorted_tuples[:assimilate_pct_index])
+            assim_tuples = [(tile, slide_id) for _, _, tile, slide_id in sorted_tuples[:assimilate_pct_index] ]
+            assimilated.update(assim_tuples)
+            # record the assimilated tuples for each cluster
+            clst_assimilated = set(assim_tuples)
+            clst_assimilated_dict[self.key_clusters[i]] = list(clst_assimilated)
+            
         
         print('> assimilated %d tiles with close distance.' % len(assimilated))
         # assim_tuples = list(assimilated)
-        return list(assimilated)
+        return list(assimilated), clst_assimilated_dict
     
-    def fill_void_4_assim_sensi_tiles(self, assim_tile_tuples, fills=[4]):
+    def fill_void_4_assim_sensi_tiles(self, assim_tile_tuples, fills=[3]):
         '''
+        fill the void for all key-clusters' hot points and assimilated patches
         '''
         hot_tiles_tuples = self.sensitive_tiles + assim_tile_tuples
         # categorise tiles for each slide
@@ -937,13 +955,65 @@ class Feature_Assimilate():
         print('> filled void %d tiles' % len(filled_tuples))
         return filled_tuples
     
+    def fill_void_4_assim_sensi_tiles_1by1_clst(self, clst_assimilated_dict, fills=[3]):
+        '''
+        fill the void for each cluster's hot points and assimilated patches, one by one
+        '''
+        clst_filled_tps_dict = {}
+        for clst_lbl in clst_assimilated_dict.keys():
+            clst_sensi_t_tps = self.clst_sensi_tiles_dict[clst_lbl]
+            clst_assim_tile_t_tps = clst_assimilated_dict[clst_lbl]
+            clst_hot_t_tps = clst_sensi_t_tps + clst_assim_tile_t_tps
+            
+            # categorise tiles for each slide
+            slide_tile_dict = {}
+            for i, tile_tuple in enumerate(clst_hot_t_tps):
+                tile, slide_id = tile_tuple
+                tile.change_to_pc_root(self._env_task)
+                # print(tile.original_slide_filepath)
+                if slide_id not in slide_tile_dict.keys():
+                    slide_tile_dict[slide_id] = []
+                    slide_tile_dict[slide_id].append(tile)
+                else:
+                    slide_tile_dict[slide_id].append(tile)
+            
+            print('We have %d slides in list which contain hot-spot tiles' % (len(slide_tile_dict) ) )
+            c_filled_tuples = []
+            for slide_id in slide_tile_dict.keys():
+                if slide_id not in self.slide_t_key_tiles_dict.keys():
+                    print(f'Warning!!! This slide: {slide_id} is not in the slide list of local folder!')
+                    continue
+                slide_tiles_list = slide_tile_dict[slide_id]
+                t_key_tile_dict = self.slide_t_key_tiles_dict[slide_id]
+                filled_tiles_list, _ = fill_surrounding_void(self._env_task, slide_tiles_list, [1.0]*len(slide_tiles_list), 
+                                                             slide_id, tile_key_loc_dict=t_key_tile_dict, 
+                                                             fills=fills, inc_org_tiles_list=False)
+                slide_filled_tuples = [(t, slide_id) for t in filled_tiles_list]
+                c_filled_tuples.extend(slide_filled_tuples)
+                
+            clst_filled_tps_dict[clst_lbl] = c_filled_tuples
+            print(f'> filled void {len(c_filled_tuples)} tiles for cluster: {clst_lbl}')
+        return clst_filled_tps_dict
+    
     def store(self, assim_tuples, filled_tuples=[]):
         '''
+        store all assimilated(not include original sensitive tiles from clusters) and filled results
         '''
         assim_tuples.extend(filled_tuples)
         assimilate_pkl_name = 'assimilate_{}{}.pkl'.format(self.alg_name, Time().date)
         store_clustering_pkl(self.model_store_dir, assim_tuples, assimilate_pkl_name)
-        print('store the assimilate_to_centre tiles at: {} / {}'.format(self.model_store_dir, assimilate_pkl_name))
+        print('store the assimilate_to_centre(s) tiles at: {} / {}'.format(self.model_store_dir, assimilate_pkl_name))
+        
+    def store_each_clst(self, clst_assimilated_dict, clst_filled_tps_dict):
+        '''
+        store assimilated(not include original sensitive tiles from clusters) and filled results for each cluster one by one
+        '''
+        for clst_lbl in clst_assimilated_dict.keys():
+            if clst_lbl in clst_filled_tps_dict.keys():
+                clst_assimilated_dict[clst_lbl].extend(clst_filled_tps_dict[clst_lbl])
+        c_assimilate_pkl_name = 'assimilate_1by1_{}{}.pkl'.format(self.alg_name, Time().date)
+        store_clustering_pkl(self.model_store_dir, clst_assimilated_dict, c_assimilate_pkl_name)
+        print('store the assimilate_to_centre tiles for each cluster(1by1) at: {} / {}'.format(self.model_store_dir, c_assimilate_pkl_name))
         
   
 ''' ------ further split the clustering results into more refined clusters ------ '''
@@ -1264,9 +1334,9 @@ def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
     return hierarchical_res_pkg
     
 
-def _run_tiles_assimilate_centre_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
+def _run_tiles_assimilate_centre_clst_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                                  tile_net_filename=None, exc_clustered=True,
-                                                 assim_ratio=0.01, fills=[4],
+                                                 assim_ratio=0.01, fills=[3],
                                                  record_t_tuples_name=None, load_t_tuples_name=None):
     '''
     '''
@@ -1282,9 +1352,9 @@ def _run_tiles_assimilate_centre_encode_resnet18(ENV_task, clustering_pkl_name, 
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
     assimilating.store(assim_tuples, filled_tuples)
     
-def _run_tiles_assimilate_each_encode_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
+def _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                                tile_net_filename=None, exc_clustered=True,
-                                               assim_ratio=0.01, fills=[4],
+                                               assim_ratio=0.01, fills=[3],
                                                record_t_tuples_name=None, load_t_tuples_name=None):
     '''
     '''
@@ -1295,9 +1365,30 @@ def _run_tiles_assimilate_each_encode_resnet18(ENV_task, clustering_pkl_name, se
                                       attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=False,
                                       record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name)
-    assim_tuples = assimilating.assimilate_to_each()
+    assim_tuples, _ = assimilating.assimilate_to_each()
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
     assimilating.store(assim_tuples, filled_tuples)
+    
+def _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
+                                                     tile_net_filename=None, exc_clustered=True,
+                                                     assim_ratio=0.01, fills=[3],
+                                                     record_t_tuples_name=None, load_t_tuples_name=None):
+    '''
+    '''
+    tile_encoder = networks.BasicResNet18(output_dim=2)
+    clustering_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, clustering_pkl_name)
+    assimilating = Feature_Assimilate(ENV_task, clustering_res_pkg, sensitive_labels, 
+                                      encoder=tile_encoder, tile_en_filename=tile_net_filename,
+                                      attK_clst=True, exc_clustered=exc_clustered,
+                                      assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=False,
+                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name)
+    assim_tuples, clst_assimilated_dict = assimilating.assimilate_to_each()
+    # record the together results
+    filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
+    assimilating.store(assim_tuples, filled_tuples)
+    # record the one by one results (as dictionary)
+    clst_filled_tps_dict = assimilating.fill_void_4_assim_sensi_tiles_1by1_clst(clst_assimilated_dict)
+    assimilating.store_each_clst(clst_assimilated_dict, clst_filled_tps_dict)
     
     
 ''' ---- some other clustering algorithm ---- '''
