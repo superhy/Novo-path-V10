@@ -205,7 +205,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
-        clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         tile_net_filename = None # using resnet from imagenet here
         
         # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
