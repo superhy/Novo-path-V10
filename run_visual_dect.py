@@ -146,14 +146,20 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
         ''' on NN-Cluster '''
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         ''' --- rough assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
         ''' --- cluster-each assimilate --- '''
-        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl'
-        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
-                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
-                          '2_1_1_1_0']
+        # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl' # before Dec 2023
+        assimilate_pkl_name = ''
+        
+        # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+        #                   '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+        #                   '2_1_1_1_0'] # before Dec 2023
+        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+                          '2_0_1_0_0', '2_1_0_1_1',
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
         
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         cut_left = False
@@ -169,16 +175,37 @@ if __name__ == '__main__':
         else:
             _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left, part_vis=part_vis)
-    if 2.19 in task_ids:
+    if 2.11 in task_ids:
+        '''
+        plot the heatmap for sensitive clusters and their assimilated patches on slides
+        each sensi_clst (its assim_tiles)
+        '''
+        color_panels = ['Greens', 'magma', 'Oranges', 'cividis', 'cool', 'purples',
+                        'PuRd', 'Blues', 'Reds', 'GnBu']
+        
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # TODO:
+        
+    if 2.18 in task_ids:
+        '''
+        same with 2.1 (on all slides), just make it on batch, all together is too big,
+            make it separated and storage representatively. 
+        '''
         ''' on NN-Cluster '''
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' 
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         ''' --- rough assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
         ''' --- cluster-each assimilate --- '''
-        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl'
-        cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
-                          '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
-                          '2_1_1_1_0']
+        # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl' # before Dec 2023
+        assimilate_pkl_name = ''
+        
+        # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
+        #                   '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
+        #                   '2_1_1_1_0'] # before Dec 2023
+        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+                          '2_0_1_0_0', '2_1_0_1_1',
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
         
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         cut_left = True
