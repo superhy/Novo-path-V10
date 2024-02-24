@@ -7,6 +7,7 @@ Created on 7 Oct 2022
 import os
 import warnings
 
+from PIL import Image
 from einops.einops import rearrange
 import torch
 from vit_pytorch.vit import ViT
@@ -17,9 +18,9 @@ import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 from models.functions import optimizer_adam_basic
 from models.functions_clustering import assign_label
-from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
 from models.functions_feat_ext import symm_adjmats, gen_edge_adjmats, \
     filter_node_pos_t_adjmat, node_pos_t_adjmat
+from models.functions_graph import nx_graph_from_npadj, nx_neb_graph_from_symadj
 from models.networks import ViT_Region_4_6, store_net, reload_net, \
     check_reuse_net
 import networkx as nx
@@ -34,6 +35,7 @@ from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
+from wsi import image_tools
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
@@ -63,6 +65,17 @@ def test_filter_slide_img():
     print(pil_img)
     # pil_img.save('test_slide_filter.jpg')
     pil_img.show()
+    
+def test_transfer_ihc_dab():
+    
+    # jpeg_name = '23910-158_Sl149-C146-P62-tile_h137-w993_.jpeg'
+    # jpeg_name = '23910-158_Sl004-C4-P62-tile_h69-w746_.jpeg'
+    jpeg_name = '23910-158_Sl160-C158-P62-tile_h66-w770_.jpeg'
+    pil_img = Image.open(os.path.join('D:\\FLINC_dataset\\slides\\yang_p62\\visualization\\heatmap\\hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20\\selected\\cluster-3_1_1_0_1', jpeg_name) )
+    dab_img = image_tools.pil_rgb_2_ihc_dab(pil_img)
+    print(dab_img)
+    
+    dab_img.show()
     
 def test_vit_forward():
     v = ViT(
@@ -300,7 +313,8 @@ def _test_assign_label():
 
     
 if __name__ == '__main__':
-    test_filter_slide_img() # 1
+    # test_filter_slide_img() # 1
+    test_transfer_ihc_dab()
     # test_vit_forward() # 2
     # test_networkx() # 3
 
