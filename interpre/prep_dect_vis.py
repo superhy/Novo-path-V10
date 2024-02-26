@@ -16,6 +16,7 @@ import PIL
 import cmapy
 import cv2
 from sklearn.manifold._t_sne import TSNE
+import matplotlib.colors as mcolors
 import torch
 from torch.nn.functional import softmax
 
@@ -35,7 +36,7 @@ from models.networks import BasicResNet18, GatedAttentionPool, AttentionPool, \
     reload_net
 import numpy as np
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_BI, ENV_FLINC_P62_STEA_BI, \
-    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_BALL_PCT,\
+    ENV_FLINC_P62_LOB_BI, ENV_FLINC_P62_BALL_HV, ENV_FLINC_P62_BALL_PCT, \
     ENV_FLINC_P62_BALL_PCT_BI
 from support.files import parse_caseid_from_slideid
 from support.metadata import query_task_label_dict_fromcsv
@@ -88,6 +89,35 @@ def load_assim_res_tiles(model_store_dir, assimilate_pkl_name):
             slide_assim_tiles_dict[slide_id].append(tile)
     
     return slide_assim_tiles_dict
+
+def load_1by1_assim_res_tiles(model_store_dir, c_assimilate_pkl_name):
+    '''
+    Load assimilated tiles for each sensitive cluster and organize them by slide ID and cluster label.
+    
+    Parames:
+        model_store_dir: The directory where the pickle file is stored.
+        c_assimilate_pkl_name: The name of the pickle file containing the assimilated tiles data.
+    
+    Return:
+        {
+            slide_id: {
+                        clst_lbl: [tile ...]
+                    } 
+        }
+    '''
+    c_assimilate_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, c_assimilate_pkl_name)
+    
+    slides_2_clst_assim_tiles_dict = {}
+    for clst_lbl, tiles_tuples in c_assimilate_res_pkg.items():
+        for tile_tuple in tiles_tuples:
+            tile, slide_id = tile_tuple
+            if slide_id not in slides_2_clst_assim_tiles_dict:
+                slides_2_clst_assim_tiles_dict[slide_id] = {}
+            if clst_lbl not in slides_2_clst_assim_tiles_dict[slide_id]:
+                slides_2_clst_assim_tiles_dict[slide_id][clst_lbl] = []
+            slides_2_clst_assim_tiles_dict[slide_id][clst_lbl].append(tile)
+    
+    return slides_2_clst_assim_tiles_dict
 
 def att_heatmap_single_scaled_slide(ENV_task, slide_info_tuple, attpool_net,
                                     for_train, load_attK=0, img_inter_methods='box',
@@ -315,6 +345,82 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
         heat_s_clst_col = keep_right_half(heat_s_clst_col)
         org_np_img = keep_right_half(org_np_img)
     return org_np_img, heat_s_clst_col
+
+def gen_single_slide_1by1_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_c_assimilated_dict, 
+                                       slide_id, labels_picked, cut_left=False, 
+                                       colors=['red', 'green', 'blue', 'orange', 'pink']*2):
+    '''
+    Generate the clusters spatial map on single slide with specified colors for each selected cluster and its assimilated tiles.
+    Returns NumPy array of the heatmap and original slide image.
+    '''
+    
+    def apply_mask(heat, white_mask):
+        new_heat = np.uint32(np.float32(heat) + np.float32(white_mask))
+        new_heat = np.uint8(np.minimum(new_heat, 255))
+        return new_heat
+    
+    def lighten_color(color, factor=0.5):
+        '''
+        Lightens the given color by mixing it with white.
+    
+        Parameters:
+        - color: The original color (as a NumPy array) with values in the range 0 to 1.
+        - factor: A float value between 0 and 1. Higher values make the color lighter.
+    
+        Returns:
+        - A NumPy array representing the lightened color, with values in the range 0 to 1.
+        '''
+        white = np.array([1.0, 1.0, 1.0])
+        return (1 - factor) * color + factor * white
+    
+    def keep_right_half(img):
+        height, width, _ = img.shape
+        start_col = width // 2
+        return img[:, start_col:]
+    
+    slide_tile_clst_tuples[0][0].change_to_pc_root(ENV_task) # in case use server trained model on PC
+    slide_np, _ = slide_tile_clst_tuples[0][0].get_np_scaled_slide()
+    H = round(slide_np.shape[0] * ENV_task.SCALE_FACTOR / ENV_task.TILE_H_SIZE)
+    W = round(slide_np.shape[1] * ENV_task.SCALE_FACTOR / ENV_task.TILE_W_SIZE)
+    heat_s_clst_col = np.ones((H, W, 3), dtype=np.float64)
+    white_mask = np.ones((H, W, 3), dtype=np.float64)
+    
+    for label, color_name in zip(labels_picked, colors):
+        color = np.array(mcolors.to_rgb(color_name))  # Convert color name to RGB
+        for tile, tile_label in slide_tile_clst_tuples:
+            if tile_label == label:
+                h, w = tile.h_id - 1, tile.w_id - 1
+                if h >= H or w >= W or h < 0 or w < 0:
+                    warnings.warn('Out of range coordinates.')
+                    continue
+                heat_s_clst_col[h, w] = color  # Assign color to the heatmap
+                white_mask[h, w] = 0.0  # Update mask
+        
+        # Process assimilated tiles for the current cluster
+        if slide_c_assimilated_dict is None:
+            continue
+        for tile in slide_c_assimilated_dict.get(label, []):
+            h, w = tile.h_id - 1, tile.w_id - 1
+            if h >= H or w >= W or h < 0 or w < 0:
+                warnings.warn('Out of range coordinates.')
+                continue
+            heat_s_clst_col[h, w] = lighten_color(color, factor=0.25)  # Use lighten_color function to get lighter color
+            white_mask[h, w] = 0.0
+            
+    heat_s_clst_col = image_tools.np_to_pil(heat_s_clst_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+    white_mask = image_tools.np_to_pil(white_mask).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)
+            
+    org_image, _ = slide_tools.original_slide_and_scaled_pil_image(slide_tile_clst_tuples[0][0].original_slide_filepath,
+                                                                   ENV_task.SCALE_FACTOR, print_opening=False)
+    org_np_img = image_tools.pil_to_np_rgb(org_image)
+    heat_s_clst_col = apply_mask(heat_s_clst_col, white_mask)
+    
+    print(f'generate picked {len(labels_picked)} 1by1 clusters and the assim tiles\' spatial map for slide: {slide_id}')
+    if cut_left:
+        print('--- cut left, only keep right part!')
+        heat_s_clst_col = keep_right_half(heat_s_clst_col)
+        org_np_img = keep_right_half(org_np_img)
+    return org_np_img, heat_s_clst_col 
 
 
 def make_topK_attention_heatmap_package(ENV_task, ENV_annotation, agt_model_filenames, label_dict,
@@ -612,6 +718,49 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
     clst_s_spatmap_pkl_name = clst_s_spatmap_pkl_name.replace('hiera-res', new_name)
     store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
     print('Store slides\' sensitive clusters (and assimilated) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
+    
+def make_spat_sensi_1by1_clst_assim_on_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
+                                              sp_clsts, cut_left, colors, part_vis=None):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    slide_tile_clst_dict = load_clst_res_slide_tile_label(model_store_dir, clustering_pkl_name)
+    slide_id_list = list(datasets.load_slides_tileslist(ENV_task, for_train=ENV_task.DEBUG_MODE).keys())
+    print('load the slide_ids we have, on the running client (PC or servers), got %d slides...' % len(slide_id_list))
+    if c_assimilate_pkl_name is not None:
+        slides_2_c_assim_tiles_dict = load_1by1_assim_res_tiles(model_store_dir, c_assimilate_pkl_name)
+        print('load the assimilate slide-cluster-tiles dictionary, for %d slides...' % len(slides_2_c_assim_tiles_dict))
+    else:
+        slides_2_c_assim_tiles_dict = None
+        print('assimilate tiles are not available!')
+    
+    slide_clst_s_spatmap_dict = {}
+    if part_vis is not None:
+        slide_id_list = slide_id_list[part_vis[0]: part_vis[1]]
+    for slide_id in slide_id_list:
+        if (slide_id not in slides_2_c_assim_tiles_dict.keys()) or (slide_id not in slide_tile_clst_dict.keys()):
+            print(f'skip slide id: {slide_id}')
+            continue
+        tile_clst_tuples = slide_tile_clst_dict[slide_id]
+        slide_c_assimilated_dict = slides_2_c_assim_tiles_dict[slide_id] if slides_2_c_assim_tiles_dict is not None else None
+        '''
+        2 key inputs:
+            1. tile_clst_tuples: which contains all clusters in this slide, so need to filter further
+            2. slides_2_c_assim_tiles_dict: which only contain the assimilating results (tiles) for the picked sensitive clusters
+        '''
+        org_np_img, heat_s_clst_col = gen_single_slide_1by1_clst_spatial(ENV_task, tile_clst_tuples, slide_c_assimilated_dict, 
+                                                                         slide_id, labels_picked=sp_clsts, cut_left=cut_left, colors=colors)
+        slide_clst_s_spatmap_dict[slide_id] = (org_np_img, heat_s_clst_col)
+            
+    new_name = f'{len(sp_clsts)}-1by1_c-a-spat' if c_assimilate_pkl_name is not None else f'{len(sp_clsts)}-1by1_c-spat'
+    suf_name = f'[{part_vis[0]}-{part_vis[1]}]' if part_vis is not None else f'[all]'
+    new_name += suf_name
+    clst_s_spatmap_pkl_name = clustering_pkl_name.replace('clst-res', new_name)
+    clst_s_spatmap_pkl_name = clst_s_spatmap_pkl_name.replace('hiera-res', new_name)
+    store_nd_dict_pkl(heat_store_dir, slide_clst_s_spatmap_dict, clst_s_spatmap_pkl_name)
+    print('Store slides\' 1by1 sensi-clsts (and assims, diff colors) spatial maps numpy package as: {}'.format(clst_s_spatmap_pkl_name))
     
     
 def make_tiles_demo_assimilated(ENV_task, assimilate_pkl_name, nb_sample=50):
@@ -1000,13 +1149,23 @@ def _run_make_filt_activation_heatmap_resnet_P62(ENV_task, tile_net_filenames, n
                                          pkg_range, only_soft_map)
     
     
-def _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, 
+def _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, 
                                             cut_left=True, part_vis=None):
     '''
     make the spatial map for sensitive clusters (and their assimilated tiles)
     '''
     make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
                                                 sp_clsts, cut_left, part_vis=part_vis)
+    
+def _run_make_spat_sensi_1by1_clsts_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, sp_clsts, 
+                                           cut_left=True, 
+                                           colors=['red', 'green', 'blue', 'orange', 'pink']*2, 
+                                           part_vis=None):
+    '''
+    make the spatial map for 1by1 sensitive clusters (and their assimilated tiles), with different colors
+    '''
+    make_spat_sensi_1by1_clst_assim_on_slides(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                                              sp_clsts, cut_left, colors, part_vis=part_vis)
     
 def _run_cnt_tis_pct_sensi_c_assim_t_on_slides(ENV_task, clustering_pkl_name, sensi_clsts, assimilate_pkl_name):
     '''

@@ -9,13 +9,13 @@ import sys
 
 from interpre.prep_clst_vis import pick_clusters_by_prefix
 from interpre.prep_dect_vis import _run_make_topK_attention_heatmap_resnet_P62, \
-    _run_make_spatial_sensi_clusters_assims, \
     _run_cnt_tis_pct_sensi_c_assim_t_on_slides, \
     _run_make_filt_attention_heatmap_resnet_P62, \
     _run_make_topK_activation_heatmap_resnet_P62, \
     _load_activation_score_resnet_P62, _run_get_top_act_tiles_embeds_allslides, \
     _run_make_filt_activation_heatmap_resnet_P62, \
-    _run_cnt_abs_nb_sensi_c_assim_t_on_slides
+    _run_cnt_abs_nb_sensi_c_assim_t_on_slides, \
+    _run_make_spat_sensi_1by1_clsts_assims, _run_make_spat_sensi_clsts_assims
 from run_main import Logger
 from support import env_flinc_p62, tools
 from support.env_flinc_p62 import ENV_FLINC_P62_BALL_PCT_BI, \
@@ -32,8 +32,8 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT
     
-    task_ids = [1]
-    # task_ids = [2.1]
+    # task_ids = [1]
+    task_ids = [2.11]
     # task_ids = [11.1]
     # task_ids = [10.5]
     # task_ids = [11.1]
@@ -137,10 +137,10 @@ if __name__ == '__main__':
             heat_style = 'clst'
         
         if heat_style == 'both':
-            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+            _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
                                                     sp_clsts, cut_left)
         else:
-            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+            _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left)
     if 2.1 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
@@ -170,21 +170,40 @@ if __name__ == '__main__':
             heat_style = 'clst'
         
         if heat_style == 'both':
-            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+            _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
                                                     sp_clsts, cut_left, part_vis=part_vis)
         else:
-            _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+            _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, None, 
                                                     sp_clsts, cut_left, part_vis=part_vis)
     if 2.11 in task_ids:
         '''
         plot the heatmap for sensitive clusters and their assimilated patches on slides
         each sensi_clst (its assim_tiles)
         '''
-        color_panels = ['Greens', 'magma', 'Oranges', 'cividis', 'cool', 'purples',
-                        'PuRd', 'Blues', 'Reds', 'GnBu']
+        colors = ['red', 'limegreen', 'cyan', 'royalblue', 'purple', 'hotpink',
+                  'salmon', 'greenyellow', 'mediumspringgreen', 'darkslateblue']
         
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        # TODO:
+        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl'
+        
+        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+                          '2_0_1_0_0', '2_1_0_1_1',
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+        
+        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        cut_left = False
+        # heat_style = 'clst'
+        part_vis = [0, 50]
+        heat_style = 'both'
+        if c_assimilate_pkl_name is None:
+            heat_style = 'clst'
+            
+        if heat_style == 'both':
+            _run_make_spat_sensi_1by1_clsts_assims(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
+                                                   sp_clsts, cut_left, colors, part_vis=part_vis)
+        else:
+            _run_make_spat_sensi_1by1_clsts_assims(ENV_task, clustering_pkl_name, None, 
+                                                   sp_clsts, cut_left, colors, part_vis=part_vis)
         
     if 2.18 in task_ids:
         '''
@@ -220,10 +239,10 @@ if __name__ == '__main__':
         while end < aprx_list_len:
             part_vis = [start, end]
             if heat_style == 'both':
-                _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
+                _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, assimilate_pkl_name, 
                                                         sp_clsts, cut_left, part_vis=part_vis)
             else:
-                _run_make_spatial_sensi_clusters_assims(ENV_task, clustering_pkl_name, None, 
+                _run_make_spat_sensi_clsts_assims(ENV_task, clustering_pkl_name, None, 
                                                         sp_clsts, cut_left, part_vis=part_vis)
             start += step_len
             end = start + step_len
