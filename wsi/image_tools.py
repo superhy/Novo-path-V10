@@ -67,6 +67,24 @@ def pil_rgb_2_ihc_dab(ihc_pil_img):
     # nparray -> pil
     return Image.fromarray(ihc_dab)
 
+def pil_rgb_2_ihc_dab_np(ihc_pil_img):
+    '''
+    transfer the pil_img to DAB(brown) channel,
+    should be only used for ihc stained slides(tiles)
+    
+    Ref: https://scikit-image.org/docs/stable/auto_examples/color_exposure/plot_ihc_color_separation.html
+    '''
+    # pil -> nparray
+    ihc_rgb = np.array(ihc_pil_img)
+    # transfer to IHC HEB space
+    ihc_hed = rgb2hed(ihc_rgb)
+    
+    # filtering to only have DAB channel
+    null = np.zeros_like(ihc_hed[:, :, 0])
+    ihc_dab = hed2rgb(np.stack((null, null, ihc_hed[:, :, 2]), axis=-1))
+    # scale the data range back to 0~255 UTF-8
+    ihc_dab = np.clip(ihc_dab, 0, 1)
+    return ihc_dab
 
 def pil_to_np_rgb(pil_img, show_np_info=False):
     """

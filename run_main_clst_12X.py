@@ -25,10 +25,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
-# task_ids = [120]
+task_ids = [120.1]
 # task_ids = [123]
 # task_ids = [129]
-task_ids = [129.51]
+# task_ids = [129.51]
 
 task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
@@ -68,12 +68,12 @@ if __name__ == '__main__':
         
         ''' filtered out slides, actually here is case_id '''
         # filter_out_slide_keys = []
-        Low_pct_slide_keys = get_slide_ids_with_b_cpt_lower_than_thd(os.path.join(ENV_task.META_FOLDER, 'P62_ballooning_pct.csv'),
+        low_pct_slide_keys = get_slide_ids_with_b_cpt_lower_than_thd(os.path.join(ENV_task.META_FOLDER, 'P62_ballooning_pct.csv'),
                                                                      threshold=0.05)
         HV_slide_keys = ['Sl240', 'Sl241', 'Sl242', 'Sl243', 'Sl244',
                          'Sl245', 'Sl246', 'Sl247', 'Sl248', 'Sl249', 'Sl250'] # these are health volunteers
         filter_out_slide_keys = HV_slide_keys
-        # filter_out_slide_keys = list(set(Low_pct_slide_keys + HV_slide_keys))
+        # filter_out_slide_keys = list(set(low_pct_slide_keys + HV_slide_keys))
         
         
         clustering_res_pkg = _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, 
@@ -82,6 +82,75 @@ if __name__ == '__main__':
                                                                    filter_out_slide_keys=filter_out_slide_keys,
                                                                    manu_n_clusters=manu_n_clusters,
                                                                    tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name)
+    if 120.1 in task_ids:
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[21]2024-02-27.pth'] # Feb 28, 2024 ihc_dab
+        
+        K_ratio = 0.1
+        att_thd =  0.25
+        fills = [3, 3]
+        manu_n_clusters=4
+        selection_ihc_dab=True # only deal with the image with ihc_dab brown channel, Feb 26 2024
+        clustering_ihc_dab=True # as above one
+        
+        # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
+        # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
+        tiles_r_tuples_pkl_name = None
+        
+        ''' filtered out slides, actually here is case_id '''
+        # filter_out_slide_keys = []
+        low_pct_slide_keys = get_slide_ids_with_b_cpt_lower_than_thd(os.path.join(ENV_task.META_FOLDER, 'P62_ballooning_pct.csv'),
+                                                                     threshold=0.05)
+        HV_slide_keys = ['Sl240', 'Sl241', 'Sl242', 'Sl243', 'Sl244',
+                         'Sl245', 'Sl246', 'Sl247', 'Sl248', 'Sl249', 'Sl250'] # these are health volunteers
+        filter_out_slide_keys = HV_slide_keys
+        # filter_out_slide_keys = list(set(low_pct_slide_keys + HV_slide_keys))
+        
+        
+        clustering_res_pkg = _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, 
+                                                                   agt_model_filenames,
+                                                                   K_ratio, att_thd, fills,
+                                                                   filter_out_slide_keys=filter_out_slide_keys,
+                                                                   manu_n_clusters=manu_n_clusters,
+                                                                   tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
+                                                                   selection_ihc_dab=selection_ihc_dab,
+                                                                   clustering_ihc_dab=clustering_ihc_dab)
+    if 120.2 in task_ids:
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth'] # Feb 20, 2024 org tile-img
+        
+        K_ratio = 0.25
+        att_thd =  0.25
+        fills = [3, 3, 4]
+        manu_n_clusters=4
+        selection_ihc_dab=False # select the tiles for clustering by original attention model (without ihc_dab training)
+        clustering_ihc_dab=True # clustering on the tile images with ihc_dab brown channel, Feb 28 2024
+        
+        # tiles_r_tuples_pkl_name = 'ViT-6-8-encode_2022-11-23.pkl'
+        # tiles_r_tuples_pkl_name = 'ViT-6-8-neb_encode_2022-11-27.pkl'
+        tiles_r_tuples_pkl_name = None
+        
+        ''' filtered out slides, actually here is case_id '''
+        # filter_out_slide_keys = []
+        low_pct_slide_keys = get_slide_ids_with_b_cpt_lower_than_thd(os.path.join(ENV_task.META_FOLDER, 'P62_ballooning_pct.csv'),
+                                                                     threshold=0.05)
+        HV_slide_keys = ['Sl240', 'Sl241', 'Sl242', 'Sl243', 'Sl244',
+                         'Sl245', 'Sl246', 'Sl247', 'Sl248', 'Sl249', 'Sl250'] # these are health volunteers
+        filter_out_slide_keys = HV_slide_keys
+        # filter_out_slide_keys = list(set(low_pct_slide_keys + HV_slide_keys))
+        
+        '''
+        because we use different tile features at selection(tiles for clustering) and clustering,
+        we need to delete all embedding cache in /data/<task_name>/ folder,
+        when we calling 120.2 running function. 
+        '''
+        clustering_res_pkg = _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, 
+                                                                   agt_model_filenames,
+                                                                   K_ratio, att_thd, fills,
+                                                                   filter_out_slide_keys=filter_out_slide_keys,
+                                                                   manu_n_clusters=manu_n_clusters,
+                                                                   tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
+                                                                   selection_ihc_dab=selection_ihc_dab,
+                                                                   clustering_ihc_dab=clustering_ihc_dab)
+    
     if 121 in task_ids:
         ''' @temporarily deprecated '''
         tile_net_filenames = ['checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth']
@@ -130,7 +199,7 @@ if __name__ == '__main__':
         # init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # 251 on server n4; Nov 2023
         init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # 251 on server n4; Feb 20, 2024
         silhouette_thd = 0.02
-        max_rounds = 4
+        max_rounds = 3
         
         hierarchical_res_pkg = _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
                                                                     silhouette_thd, max_rounds)
@@ -140,6 +209,7 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above Dec 2023
+        clst_in_ihc_dab = True if clustering_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
             
         cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
                             '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
@@ -169,20 +239,22 @@ if __name__ == '__main__':
                                                       exc_clustered=exc_clustered, 
                                                       assim_ratio=assim_ratio, fills=fills,
                                                       record_t_tuples_name=record_t_tuples_name,
-                                                      load_t_tuples_name=load_t_tuples_name)
+                                                      load_t_tuples_name=load_t_tuples_name,
+                                                      clst_in_ihc_dab=clst_in_ihc_dab)
     if 129.5 in task_ids:
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
         clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
         tile_net_filename = None # using resnet from imagenet here
+        clst_in_ihc_dab = True if clustering_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
         
         # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
         #                     '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
         #                     '2_1_1_1_0'] # before Dec 2023
         cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
                           '2_0_1_0_0', '2_1_0_1_1',
-                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024, on original tile img
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
         str_time = Time().date
@@ -191,8 +263,8 @@ if __name__ == '__main__':
         if load_t_tuples_name is None:
             print('need to re-load clustering results first!')
         
-        assim_ratio = 0.001
-        fills=[3, 3, 4]
+        assim_ratio = 0.002
+        fills=[3, 3, 3]
         
         exc_clustered=False
         _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
@@ -200,30 +272,33 @@ if __name__ == '__main__':
                                                     exc_clustered=exc_clustered, 
                                                     assim_ratio=assim_ratio, fills=fills,
                                                     record_t_tuples_name=record_t_tuples_name,
-                                                    load_t_tuples_name=load_t_tuples_name)
+                                                    load_t_tuples_name=load_t_tuples_name,
+                                                    clst_in_ihc_dab=clst_in_ihc_dab)
     if 129.51 in task_ids:
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
         clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         tile_net_filename = None # using resnet from imagenet here
+        clst_in_ihc_dab = True if clustering_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
         
         # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
         #                     '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
         #                     '2_1_1_1_0'] # before Dec 2023
         cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
                           '2_0_1_0_0', '2_1_0_1_1',
-                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024, on original tile img
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
         str_time = Time().date
         record_t_tuples_name=f'remain_tiles_encode_{len(cluster_groups)}c-{str_time}.pkl'
-        load_t_tuples_name=None
+        # load_t_tuples_name = 'remain_tiles_encode_7c-2024-02-23.pkl' # Feb 20, 2024
+        load_t_tuples_name = None
         if load_t_tuples_name is None:
             print('need to re-load clustering results first!')
         
-        assim_ratio = 0.001
-        fills=[3, 3, 4]
+        assim_ratio = 0.002
+        fills=[3, 3, 3]
         
         exc_clustered=False
         _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
@@ -231,7 +306,8 @@ if __name__ == '__main__':
                                                          exc_clustered=exc_clustered, 
                                                          assim_ratio=assim_ratio, fills=fills,
                                                          record_t_tuples_name=record_t_tuples_name,
-                                                         load_t_tuples_name=load_t_tuples_name)
+                                                         load_t_tuples_name=load_t_tuples_name,
+                                                         clst_in_ihc_dab=clst_in_ihc_dab)
         
         
         

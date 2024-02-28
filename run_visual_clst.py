@@ -9,7 +9,8 @@ from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
     _run_make_spatial_each_clusters_on_slides, \
     _run_cnt_tis_pct_abs_num_clsts_on_slides, _run_make_spatial_iso_gath_on_slides, \
     _run_make_spatial_levels_on_slides, \
-    _run_count_tis_pct_slides_ref_homo_sp_clst
+    _run_count_tis_pct_slides_ref_homo_sp_clst, \
+    _run_make_tiles_ihcdab_demo_clusters
 from interpre.prep_vit_graph import _run_make_vit_graph_adj_clusters, \
     _run_make_vit_neb_graph_adj_clusters
 from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
@@ -17,6 +18,7 @@ from interpre.prep_vit_heat import _run_vit_d6_h8_cls_map_slides, \
     _run_reg_ass_sp_clst_homotiles_slides
 from models.datasets import load_slides_tileslist
 from support import env_flinc_cd45, env_flinc_he, env_flinc_psr, env_flinc_p62
+
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
@@ -88,6 +90,15 @@ if __name__ == '__main__':
         
         nb_sample=200
         _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
+    if 22.1 in task_ids:
+        '''
+        generate the tile demos for clusters/sub-clusters
+        '''
+        clustering_pkl_name = '' # Feb 28 2024
+        
+        nb_sample=200
+        _run_make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
+        
     if 23 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2022-11-24.pkl'
         # clustering_pkl_name = 'clst-res_Kmeans-neb_encode_unsupervised2022-11-28.pkl'

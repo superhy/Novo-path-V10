@@ -52,7 +52,7 @@ def load_clustering_pkg_from_pkl(model_store_dir, clustering_pkl_name):
     return clustering_pkg       
 
 
-def load_tiles_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
+def load_tiles_en_rich_tuples(ENV_task, encoder, load_tile_list=None, get_ihc_dab=False):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     
@@ -73,7 +73,8 @@ def load_tiles_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
         tile_list = load_tile_list
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
-    tiles_en_nd, _ = access_encodes_imgs(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+    tiles_en_nd, _ = access_encodes_imgs(tile_list, encoder, ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER,
+                                         get_ihc_dab=get_ihc_dab)
     
     tiles_richencode_tuples = []
     for i, tile in enumerate(tile_list):
@@ -85,7 +86,7 @@ def load_tiles_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
     return tiles_richencode_tuples
 
 
-def load_tiles_neb_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
+def load_tiles_neb_en_rich_tuples(ENV_task, encoder, load_tile_list=None, get_ihc_dab=False):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine neighbor tiles for the key tile to generate the combination encode
@@ -108,7 +109,8 @@ def load_tiles_neb_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
     tiles_en_nd, tile_loc_dict = access_encodes_imgs(tile_list, encoder,
-                                                    ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)
+                                                    ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER,
+                                                    get_ihc_dab=get_ihc_dab)
     
     tiles_richencode_tuples = []
     for i, tile in enumerate(tile_list):
@@ -147,7 +149,7 @@ def load_tiles_slidectx_en_rich_tuples(ENV_task, encoder, load_tile_list=None):
 
 
 def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder, reg_encoder,
-                                        comb_layer, ctx_type, load_tile_list=None):
+                                        comb_layer, ctx_type, load_tile_list=None, get_ihc_dab=False):
     '''
     load all tiles from .pkl folder and generate the tiles rich encode tuple list for clustering
     for each tile -> combine the encode of tile and its regional context encode for the 
@@ -176,7 +178,8 @@ def load_tiles_regionctx_en_rich_tuples(ENV_task, encoder, reg_encoder,
         
     ''' >>>> the encoder here only support ViT <for the moment> '''
     tiles_en_nd, tile_loc_dict = access_encodes_imgs(tile_list, encoder,
-                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER)    
+                                                     ENV_task.MINI_BATCH_TILE, ENV_task.TILE_DATALOADER_WORKER,
+                                                     get_ihc_dab=get_ihc_dab)    
     
     '''
     be noted that the encode for tiles now is combined 
@@ -244,7 +247,8 @@ class Instance_Clustering():
 
     def __init__(self, ENV_task, encoder, cluster_name, embed_type='encode', encoder_filename=None,
                  tiles_r_tuples_pkl_name=None, key_tiles_list=None, exist_clustering=None,
-                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass', manu_n_clusters=None):
+                 reg_encoder=None, comb_layer=None, ctx_type='reg_ass', manu_n_clusters=None, 
+                 clst_in_ihc_dab=False):
         '''
         Args:
             ENV_task: task environment (hyper-parameters)
@@ -271,9 +275,11 @@ class Instance_Clustering():
         if encoder_filename is not None:
             self.encoder, _ = reload_net(self.encoder, os.path.join(self.model_store_dir, encoder_filename))
             self.encoder = self.encoder.cuda()
-        self.alg_name = '{}-{}-{}_{}'.format(self.cluster_name, 
+        self.clst_in_ihc_dab = clst_in_ihc_dab
+        ihc_dab_flag = '' if self.clst_in_ihc_dab == False else 'dab'
+        self.alg_name = '{}-{}-{}-{}_{}'.format(self.cluster_name, 
                                              'none' if self.encoder is None else self.encoder.name,
-                                             self.embed_type, _env_task_name)
+                                             self.embed_type, ihc_dab_flag, _env_task_name)
         self.n_clusters = ENV_task.NUM_CLUSTERS if manu_n_clusters is None else manu_n_clusters
         self.key_tiles_list = key_tiles_list
         
@@ -310,20 +316,24 @@ class Instance_Clustering():
         
         if self.embed_type == 'encode':
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                load_tile_list=self.key_tiles_list)
+                                                                load_tile_list=self.key_tiles_list,
+                                                                get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'neb_encode':
             tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                    load_tile_list=self.key_tiles_list)
+                                                                    load_tile_list=self.key_tiles_list,
+                                                                    get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'region_ctx':
             tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self.ENV_task, self.encoder,
                                                                           self.reg_encoder, self.comb_layer, self.ctx_type,
-                                                                          load_tile_list=self.key_tiles_list)
+                                                                          load_tile_list=self.key_tiles_list,
+                                                                          get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'graph':
+            ''' not available temporary '''
             tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self.ENV_task, self.encoder,
                                                                       load_tile_list=self.key_tiles_list)
         else:
             # default use the 'encode' mode
-            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder)
+            tiles_richencode_tuples = load_tiles_en_rich_tuples(self.ENV_task, self.encoder, get_ihc_dab=self.clst_in_ihc_dab)
         return tiles_richencode_tuples
     
     def fit_predict(self):
@@ -621,7 +631,8 @@ class Feature_Assimilate():
                  encoder, tile_en_filename=None, attK_clst=True, exc_clustered=True, 
                  assimilate_ratio=0.1, embed_type='encode', reg_encoder=None, 
                  comb_layer=None, ctx_type='reg_ass', assim_centre=True,
-                 record_t_tuples_name=None, load_t_tuples_name=None):
+                 record_t_tuples_name=None, load_t_tuples_name=None,
+                 clst_in_ihc_dab=False):
         '''
         TODO: annotations of this function
                 
@@ -643,8 +654,10 @@ class Feature_Assimilate():
         self.reg_encoder = reg_encoder
         self.comb_layer = comb_layer
         self.ctx_type = ctx_type
-        self.alg_name = 'ft_ass-{}-{}_{}'.format(self.embed_type, self.encoder.name,
-                                                 self._env_task.TASK_NAME)
+        self.clst_in_ihc_dab = clst_in_ihc_dab
+        ihc_dab_flag = '' if self.clst_in_ihc_dab == False else 'dab'
+        self.alg_name = 'ft_ass-{}-{}-{}_{}'.format(self.embed_type, self.encoder.name,
+                                                    ihc_dab_flag, self._env_task.TASK_NAME)
         
         self.clustering_res = clustering_res_pkg
         self.sensitive_labels = sensitive_labels
@@ -767,21 +780,26 @@ class Feature_Assimilate():
     def gen_tiles_richencode_tuples(self, remain_tiles_list):
         if self.embed_type == 'encode':
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self._env_task, self.encoder,
-                                                                load_tile_list=remain_tiles_list)
+                                                                load_tile_list=remain_tiles_list,
+                                                                get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'neb_encode':
             tiles_richencode_tuples = load_tiles_neb_en_rich_tuples(self.ENV_task, self.encoder,
-                                                                    load_tile_list=remain_tiles_list)
+                                                                    load_tile_list=remain_tiles_list,
+                                                                    get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'region_ctx':
             tiles_richencode_tuples = load_tiles_regionctx_en_rich_tuples(self._env_task, self.encoder,
                                                                           self.reg_encoder, self.comb_layer, self.ctx_type,
-                                                                          load_tile_list=remain_tiles_list)
+                                                                          load_tile_list=remain_tiles_list,
+                                                                          get_ihc_dab=self.clst_in_ihc_dab)
         elif self.embed_type == 'graph':
+            ''' not available temporary '''
             tiles_richencode_tuples = load_tiles_graph_en_rich_tuples(self._env_task, self.encoder,
                                                                       load_tile_list=remain_tiles_list)
         else:
             # default use the 'encode' mode
             tiles_richencode_tuples = load_tiles_en_rich_tuples(self._env_task, self.encoder,
-                                                                load_tile_list=remain_tiles_list)
+                                                                load_tile_list=remain_tiles_list,
+                                                                get_ihc_dab=self.clst_in_ihc_dab)
         print('> loaded {} remain tiles and their encodes.'.format(str(len(tiles_richencode_tuples)) ) )
         return tiles_richencode_tuples
     
@@ -1192,7 +1210,8 @@ def _run_keamns_region_ctx_encode_vit_6_8(ENV_task, vit_pt_name,
 def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_filenames,
                                           K_ratio, att_thd, fills, 
                                           filter_out_slide_keys=[],
-                                          manu_n_clusters=5, tiles_r_tuples_pkl_name=None):
+                                          manu_n_clusters=5, tiles_r_tuples_pkl_name=None,
+                                          selection_ihc_dab=False, clustering_ihc_dab=False):
     '''
     clustering the tiles with high attention values 
     by classification trained on H&E reports annotations
@@ -1208,14 +1227,16 @@ def _run_kmeans_attKtiles_encode_resnet18(ENV_task, ENV_annotation, agt_model_fi
     att_all_tiles_list, _ = select_top_att_tiles(ENV_task, ENV_annotation, 
                                                  tile_encoder, agt_model_filenames, label_dict,
                                                  filter_out_slide_keys=filter_out_slide_keys,
-                                                 K_ratio=K_ratio, att_thd=att_thd, fills=fills)
+                                                 K_ratio=K_ratio, att_thd=att_thd, fills=fills,
+                                                 get_ihc_dab=selection_ihc_dab)
     
     # if we set up manu_n_clusters=3 here, only 3 clusters
     clustering = Instance_Clustering(ENV_task=ENV_task, encoder=tile_encoder,
                                      cluster_name='Kmeans', embed_type='encode',
                                      tiles_r_tuples_pkl_name=tiles_r_tuples_pkl_name,
                                      key_tiles_list=att_all_tiles_list,
-                                     manu_n_clusters=manu_n_clusters)
+                                     manu_n_clusters=manu_n_clusters,
+                                     clst_in_ihc_dab=clustering_ihc_dab)
     
     clustering_res_pkg, cluster_centers = clustering.fit_predict()
     print('clustering number of centres:', len(cluster_centers))
@@ -1337,7 +1358,8 @@ def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
 def _run_tiles_assimilate_centre_clst_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                                  tile_net_filename=None, exc_clustered=True,
                                                  assim_ratio=0.01, fills=[3],
-                                                 record_t_tuples_name=None, load_t_tuples_name=None):
+                                                 record_t_tuples_name=None, load_t_tuples_name=None,
+                                                 clst_in_ihc_dab=False):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
@@ -1346,7 +1368,8 @@ def _run_tiles_assimilate_centre_clst_en_resnet18(ENV_task, clustering_pkl_name,
                                       encoder=tile_encoder, tile_en_filename=tile_net_filename,
                                       attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=True,
-                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name)
+                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name,
+                                      clst_in_ihc_dab=clst_in_ihc_dab)
     
     assim_tuples = assimilating.assimilate_to_centre()
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
@@ -1355,7 +1378,8 @@ def _run_tiles_assimilate_centre_clst_en_resnet18(ENV_task, clustering_pkl_name,
 def _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                                tile_net_filename=None, exc_clustered=True,
                                                assim_ratio=0.01, fills=[3],
-                                               record_t_tuples_name=None, load_t_tuples_name=None):
+                                               record_t_tuples_name=None, load_t_tuples_name=None,
+                                               clst_in_ihc_dab=False):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
@@ -1364,7 +1388,8 @@ def _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, s
                                       encoder=tile_encoder, tile_en_filename=tile_net_filename,
                                       attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=False,
-                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name)
+                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name,
+                                      clst_in_ihc_dab=clst_in_ihc_dab)
     assim_tuples, _ = assimilating.assimilate_to_each()
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []
     assimilating.store(assim_tuples, filled_tuples)
@@ -1372,7 +1397,8 @@ def _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, s
 def _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sensitive_labels, 
                                                      tile_net_filename=None, exc_clustered=True,
                                                      assim_ratio=0.01, fills=[3],
-                                                     record_t_tuples_name=None, load_t_tuples_name=None):
+                                                     record_t_tuples_name=None, load_t_tuples_name=None,
+                                                     clst_in_ihc_dab=False):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
@@ -1381,7 +1407,8 @@ def _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_na
                                       encoder=tile_encoder, tile_en_filename=tile_net_filename,
                                       attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=False,
-                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name)
+                                      record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name,
+                                      clst_in_ihc_dab=clst_in_ihc_dab)
     assim_tuples, clst_assimilated_dict = assimilating.assimilate_to_each()
     # record the together results
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []

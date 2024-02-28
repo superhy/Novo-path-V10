@@ -480,6 +480,31 @@ def make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     store_nd_dict_pkl(heat_store_dir, clst_tile_img_dict, clst_tiledemo_pkl_name)
     print('Store clusters tile demo image numpy package as: {}'.format(clst_tiledemo_pkl_name))
     
+def make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
+    '''
+    '''
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    
+    clst_tile_slideid_dict = load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name)
+    
+    clst_t_dab_img_dict = {}
+    for label in clst_tile_slideid_dict.keys():
+        tile_slideid_tuples = clst_tile_slideid_dict[label]
+        picked_tile_slideids = safe_random_sample(tile_slideid_tuples, nb_sample)
+        clst_t_dab_img_dict[label] = []
+        
+        for tile, slide_id in picked_tile_slideids:
+            tile_img = tile.get_np_tile()
+            tile_dab_img = tile.get_ihc_dab_np_tile()
+            clst_t_dab_img_dict[label].append((slide_id, tile, tile_img, tile_dab_img))
+        print(f'sampled {nb_sample} tile demos for cluster-{label}' )
+            
+    clst_t_dab_demo_pkl_name = clustering_pkl_name.replace('clst-res', 'clst-t_dab-demo')
+    clst_t_dab_demo_pkl_name = clst_t_dab_demo_pkl_name.replace('hiera-res', 'hiera-t_dab-demo')
+    store_nd_dict_pkl(heat_store_dir, clst_t_dab_img_dict, clst_t_dab_demo_pkl_name)
+    print('Store clusters tile demo image numpy package as: {}'.format(clst_t_dab_demo_pkl_name))
+    
 def make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
     '''
     '''
@@ -847,6 +872,9 @@ def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org
 def _run_make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
     make_tiles_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
     
+def _run_make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample=50):
+    make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
+
 def _run_make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst=None):
     make_spatial_each_clusters_on_slides(ENV_task, clustering_pkl_name, sp_clst)
 

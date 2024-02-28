@@ -109,12 +109,13 @@ class Simple_Tile_Dataset(Dataset):
         tiles_list: a tile list, can be a slide tile list or a combination tile list
     '''
     
-    def __init__(self, tiles_list, transform: transforms):
+    def __init__(self, tiles_list, transform: transforms, get_ihc_dab: bool=False):
         self.tiles_list = tiles_list
         
         self.transform = transform
         ''' make slide cache in memory '''
         self.cache_slide = ('none', None)
+        self.get_ihc_dab = get_ihc_dab
         
     def refresh_samples(self, new_tile_list):
         '''
@@ -124,6 +125,9 @@ class Simple_Tile_Dataset(Dataset):
         self.tiles_list = new_tile_list
         
     def __getitem__(self, index):
+        '''
+        get_ihc_dab: if load the ihc_dab stain, only return the image with brown channel
+        '''
         tile = self.tiles_list[index]
         
         ''' using slide cache '''
@@ -134,7 +138,10 @@ class Simple_Tile_Dataset(Dataset):
             _, preload_slide = tile.get_pil_scaled_slide()
             self.cache_slide = (loading_slide_id, preload_slide)
             
-        image = tile.get_pil_tile(preload_slide)
+        if self.get_ihc_dab:
+            image = tile.get_ihc_dab_tile(preload_slide)
+        else:
+            image = tile.get_pil_tile(preload_slide)
         image = self.transform(image)
         return image
         
@@ -146,6 +153,9 @@ class Simple_Tile_Dataset(Dataset):
 class TryK_MIL_Dataset(Dataset):
 
     def __init__(self, tiles_list, label_dict, transform: transforms, try_mode=False):
+        '''
+        TODO: There is currently no function to load ihc dab brown channel images
+        '''
         # objects of all tiles in a list
         self.tiles_list = tiles_list
         self.label_dict = label_dict
@@ -296,7 +306,7 @@ class SlideMatrix_Dataset(Dataset):
    
 class AttK_MIL_Dataset(Dataset):
     
-    def __init__(self, tiles_list, label_dict, transform: transforms):
+    def __init__(self, tiles_list, label_dict, transform: transforms, get_ihc_dab=False):
         self.tiles_list = tiles_list
         self.tiles_idxs_train_pool = []
         self.tiles_list_train_pool = tiles_list # will be refresh when training
@@ -305,6 +315,7 @@ class AttK_MIL_Dataset(Dataset):
         self.transform = transform
         ''' make slide cache in memory '''
         self.cache_slide = ('none', None)
+        self.get_ihc_dab = get_ihc_dab
         
     def refresh_data(self, filter_attK_slide_tileidx_dict):
         '''
@@ -322,6 +333,9 @@ class AttK_MIL_Dataset(Dataset):
         print('Dataset Info: [refresh training tile list, now with: %d tiles...]' % len(self.tiles_list_train_pool))
     
     def __getitem__(self, index):
+        '''
+        self.get_ihc_dab: if load the ihc_dab stain, only return the image with brown channel
+        '''
         tile = self.tiles_list_train_pool[index]
         case_id = parse_slide_caseid_from_filepath(tile.original_slide_filepath)
         
@@ -333,7 +347,10 @@ class AttK_MIL_Dataset(Dataset):
             _, preload_slide = tile.get_pil_scaled_slide()
             self.cache_slide = (loading_slide_id, preload_slide)
             
-        image = tile.get_pil_tile(preload_slide)
+        if self.get_ihc_dab:
+            image = tile.get_ihc_dab_tile(preload_slide)
+        else:
+            image = tile.get_pil_tile(preload_slide)
         image = self.transform(image)
         label = self.label_dict[case_id]
         
@@ -344,7 +361,7 @@ class AttK_MIL_Dataset(Dataset):
     
 class Rev_AttK_MIL_Dataset(Dataset):
      
-    def __init__(self, tiles_list, label_dict, transform: transforms):
+    def __init__(self, tiles_list, label_dict, transform: transforms, get_ihc_dab=False):
         self.tiles_list = tiles_list
         self.tiles_idxs_train_pool_neg = []
         self.tiles_list_train_pool_neg = tiles_list
@@ -354,6 +371,7 @@ class Rev_AttK_MIL_Dataset(Dataset):
         self.transform = transform
         ''' make slide cache in memory '''
         self.cache_slide_neg = ('none', None)
+        self.get_ihc_dab = get_ihc_dab
          
     def refresh_data(self, filter_revgN_slide_tileidx_dict):
         '''
@@ -371,6 +389,9 @@ class Rev_AttK_MIL_Dataset(Dataset):
         print('Dataset Info: [refresh reversed gradient training tile list, now with: %d negative tiles...]' % (len(self.tiles_idxs_train_pool_neg)))
      
     def __getitem__(self, index):
+        '''
+        get_ihc_dab: if load the ihc_dab stain, only return the image with brown channel
+        '''
         tile_neg = self.tiles_list_train_pool_neg[index]
          
         case_id_neg = parse_slide_caseid_from_filepath(tile_neg.original_slide_filepath)
@@ -384,7 +405,10 @@ class Rev_AttK_MIL_Dataset(Dataset):
             _, preload_slide_neg = tile_neg.get_pil_scaled_slide()
             self.cache_slide_neg = (loading_slide_neg_id, preload_slide_neg)
              
-        image_neg = tile_neg.get_pil_tile(preload_slide_neg)
+        if self.get_ihc_dab:
+            image_neg = tile_neg.get_ihc_dab_tile(preload_slide_neg)
+        else:
+            image_neg = tile_neg.get_pil_tile(preload_slide_neg)
         image_neg = self.transform(image_neg)
         label_neg = self.label_dict[case_id_neg]
          

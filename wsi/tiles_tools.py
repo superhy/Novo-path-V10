@@ -16,7 +16,7 @@ from support.env import ENV
 from support.files import parse_slideid_from_filepath
 from wsi import image_tools, slide_tools, filter_tools
 from wsi.filter_tools import tissue_percent
-from wsi.image_tools import pil_rgb_2_ihc_dab
+from wsi.image_tools import pil_rgb_2_ihc_dab, pil_rgb_2_ihc_dab_np
 
 
 sys.path.append("..")
@@ -204,6 +204,13 @@ class Tile:
     
     def get_np_tile(self, preload_slide=None):
         return tile_to_np_tile(self, preload_slide)
+    
+    def get_ihc_dab_np_tile(self, preload_slide=None):
+        '''
+        np_brown channel, only for IHC stained
+        '''
+        pil_tile = tile_to_pil_tile(self, preload_slide)
+        return pil_rgb_2_ihc_dab_np(pil_tile)
     
     def save_tile(self, label_type, _env_base_train_dir, preload_slide=None):
         save_display_tile(self, label_type, _env_base_train_dir, preload_slide,

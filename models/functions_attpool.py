@@ -111,7 +111,8 @@ def encode_tiles_4slides(tile_loader, en_net, slide_id='N/A', print_info=True):
     return slide_matrix
 
 
-def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num_workers, encoder_net, for_train=True, print_info=True):
+def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num_workers, encoder_net, 
+                                   for_train=True, print_info=True, get_ihc_dab=False):
     '''
     make the embedding matrices for all slides,
     which contains the encoding for each tile in the slide,
@@ -133,7 +134,9 @@ def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num
         tiles_list = slide_tiles_dict[slide_id]
         bag_dim = len(tiles_list)
         
-        tile_set = Simple_Tile_Dataset(tiles_list=tiles_list, transform=transform_augs)
+        tile_set = Simple_Tile_Dataset(tiles_list=tiles_list, 
+                                       transform=transform_augs, 
+                                       get_ihc_dab=get_ihc_dab)
         # need to set p_men=False for tile demo visualization, otherwise will out of memory
         tile_loader = functions.get_data_loader(tile_set, batch_size=batch_size_ontiles,
                                                 num_workers=tile_loader_num_workers, sf=False, p_mem=False)
@@ -153,7 +156,8 @@ def make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num
 
 
 def check_load_slide_matrix_files(ENV_task, batch_size_ontiles, tile_loader_num_workers,
-                                  encoder_net=None, force_refresh=False, for_train=True, print_info=True):
+                                  encoder_net=None, force_refresh=False, for_train=True, 
+                                  print_info=True, get_ihc_dab=False):
     """
     check the slide matrix files on disk
     If Ture: recovery them and return
@@ -178,7 +182,7 @@ def check_load_slide_matrix_files(ENV_task, batch_size_ontiles, tile_loader_num_
             clear_dir([slide_matrix_dir])
         slide_matrix_file_sets = make_slides_embedding_matrices(ENV_task, batch_size_ontiles, tile_loader_num_workers,
                                                                 encoder_net=encoder_net, for_train=for_train,
-                                                                print_info=print_info)
+                                                                print_info=print_info, get_ihc_dab=get_ihc_dab)
         
     return slide_matrix_file_sets
 
@@ -243,13 +247,14 @@ class AttPool_MIL():
     def __init__(self, ENV_task, encoder=None, aggregator_name='GatedAttPool', 
                  model_filename=None, test_start_epoch=1, 
                  y_L_loss=None, att_L_loss=None, alpha_L_loss=0.5,
-                 test_mode=False):
+                 test_mode=False, use_ihc_dab=False):
         
         if model_filename is None and test_mode is True:
             warnings.warn('no trained model for testing, please check!')
             return
         
         self.ENV_task = ENV_task
+        self.use_ihc_dab = use_ihc_dab
         ''' prepare some parames '''
         _env_task_name = self.ENV_task.TASK_NAME
         _env_loss_package = self.ENV_task.LOSS_PACKAGE
@@ -262,8 +267,9 @@ class AttPool_MIL():
                 return
             pt_prefix = 'pt_' if model_filename.find('-pt_') != -1 else ''
         L1_str = '' if y_L_loss==None and att_L_loss==None else '-L1'
-        self.alg_name = '{}{}Pool{}{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
-                                                L1_str, self.ENV_task.FOLD_SUFFIX, _env_task_name)
+        ihc_dab_flag = '' if self.use_ihc_dab == False else 'dab'
+        self.alg_name = '{}{}Pool{}{}-{}_{}'.format(pt_prefix, 'g_' if aggregator_name=='GatedAttPool' else '',
+                                                L1_str, self.ENV_task.FOLD_SUFFIX, ihc_dab_flag, _env_task_name)
         
         print('![Initial Stage] test mode: {}'.format(test_mode))
         print('Initializing the training/testing slide matrices...', end=', ')
@@ -295,14 +301,14 @@ class AttPool_MIL():
         if test_mode is False:
             self.train_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
                                                                           encoder_net=self.encoder.backbone, for_train=True, 
-                                                                          force_refresh=False, print_info=False)
+                                                                          force_refresh=False, print_info=False, get_ihc_dab=self.use_ihc_dab)
         else:
             self.train_slidemat_file_sets = []
         if self.ENV_task.TEST_PART_PROP > 0.0 and self.ENV_task.DEBUG_MODE is False:
             self.test_slidemat_file_sets = check_load_slide_matrix_files(self.ENV_task, self.batch_size_ontiles, self.tile_loader_num_workers, 
                                                                          encoder_net=self.encoder.backbone, 
                                                                          for_train=False if not self.ENV_task.DEBUG_MODE else True,
-                                                                         force_refresh=False, print_info=False) 
+                                                                         force_refresh=False, print_info=False, get_ihc_dab=self.use_ihc_dab) 
         else:
             self.test_slidemat_file_sets = []
         
@@ -505,21 +511,37 @@ def _run_train_gated_attpool_resnet18(ENV_task, exist_model_name=None):
     method = AttPool_MIL(ENV_task, encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
     
+def _run_train_gated_attpool_ihcdab_resnet18(ENV_task, exist_model_name=None):
+    encoder = BasicResNet18(output_dim=2)
+    method = AttPool_MIL(ENV_task, encoder, 'GatedAttPool', model_filename=exist_model_name, use_ihc_dab=True)
+    method.optimize()
+    
 def _run_train_attpool_vit_3_4_t(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D3_H4_T(image_size=ENV_task.TRANSFORMS_RESIZE,
                               patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
     
 def _run_train_attpool_vit_6_8(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
                             patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
+    method.optimize()
+    
+def _run_train_attpool_ihcdab_vit_6_8(ENV_task, vit_pt_name=None, exist_model_name=None):
+    vit_encoder = ViT_D6_H8(image_size=ENV_task.TRANSFORMS_RESIZE,
+                            patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
+    method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name,
+                         use_ihc_dab=True)
     method.optimize()
     
 def _run_train_attpool_vit_9_12(ENV_task, vit_pt_name=None, exist_model_name=None):
     vit_encoder = ViT_D9_H12(image_size=ENV_task.TRANSFORMS_RESIZE,
                              patch_size=int(ENV_task.TILE_H_SIZE / ENV_task.VIT_SHAPE), output_dim=2)
+    vit_encoder, _ = reload_net(vit_encoder, os.path.join(ENV_task.MODEL_FOLDER, vit_pt_name))
     method = AttPool_MIL(ENV_task, vit_encoder, 'GatedAttPool', model_filename=exist_model_name)
     method.optimize()
 

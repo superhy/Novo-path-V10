@@ -35,11 +35,11 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
-    # task_ids = [1]
+    task_ids = [1]
     # task_ids = [2]
     # task_ids = [10.5]
     # task_ids = [29.11, 29.12, 29.13]
-    task_ids = [29.2, 29.21]
+    # task_ids = [29.2, 29.21]
     # task_ids = [29.3, 29.4]
     # task_ids = [30.2]
     # task_ids = [201, 201.1]
@@ -50,9 +50,11 @@ if __name__ == '__main__':
         ''' Dec 2023, below '''
         # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pkl'
         ''' Feb 2024, below '''
-        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl'
-        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[46]2024-02-16.pkl'
-        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_[90]2024-02-15.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[18]2024-02-27.pkl'
+        heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[21]2024-02-27.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[24]2024-02-27.pkl'
+        # heatmap_pkl_name = 'topK_map_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[33]2024-02-27.pkl'
         print(heatmap_pkl_name)
         _plot_topK_scores_heatmaps(ENV_task, ENV_annotation, heatmap_pkl_name, folder_sfx='ball')
     if 1.1 in task_ids:
@@ -70,7 +72,8 @@ if __name__ == '__main__':
         # spatmap_pkl_name = 'clst-[1, 3]-a-spat_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         # spatmap_pkl_name = '17-clst-a-spat[0-10]_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # [0, 10] pick test at home 2024.1
         # spatmap_pkl_name = '17-clst-a-spat[0-50]-0.002_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
-        spatmap_pkl_name = '17-clst-a-spat[0-50]-0.01_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
+        # spatmap_pkl_name = '17-clst-a-spat[0-50]-0.01_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
+        spatmap_pkl_name = '7-1by1_c-a-spat[0-50]_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
         
         draw_org = True
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)

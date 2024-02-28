@@ -23,7 +23,7 @@ from wsi.tiles_tools import indicate_slide_tile_loc
 
 def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder, 
                          agt_model_filenames, label_dict, filter_out_slide_keys=[],
-                         K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None):
+                         K_ratio=0.3, att_thd=0.25, fills=[3], pkg_range=None, get_ihc_dab=False):
     '''
     select the top attention tiles by the attention pool aggregator
     using for some other tile-based analysis, like clustering. Indeed, most used for un-supervised analysis
@@ -60,7 +60,8 @@ def select_top_att_tiles(ENV_task, ENV_annotation, tile_encoder,
                                                                              batch_size_ontiles, 
                                                                              tile_loader_num_workers, 
                                                                              encoder_net=tile_encoder.backbone, 
-                                                                             force_refresh=False)
+                                                                             force_refresh=False,
+                                                                             get_ihc_dab=get_ihc_dab)
     embedding_dim = np.load(slide_matrix_file_sets[0][2]).shape[-1]
     # embedding_dim = 512 # TODO: on whole cohort, remember to change back
     if agt_model_filenames[0].find('GatedAttPool') != -1:
@@ -320,7 +321,8 @@ def filter_neg_att_tiles(slide_tiles_atts_dict, slide_neg_tiles_atts_dict):
 
 ''' load the feature from encoder for each tile '''
 
-def access_encodes_imgs(tiles, trained_encoder, batch_size, nb_workers):
+def access_encodes_imgs(tiles, trained_encoder, batch_size, nb_workers,
+                        get_ihc_dab=False):
     '''
     access and extract the encode with trained ViT model or ResNet model
     for a list of tiles
@@ -332,7 +334,7 @@ def access_encodes_imgs(tiles, trained_encoder, batch_size, nb_workers):
     
     # prepare the tile list dataloader
     transform = functions.get_zoom_transform()
-    tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
+    tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform, get_ihc_dab=get_ihc_dab)
     tiles_dataloader = functions.get_data_loader(dataset=tiles_set,
                                                      batch_size=batch_size,
                                                      num_workers=nb_workers,
@@ -528,7 +530,7 @@ def comput_region_ctx_comb_encodes(reg_radius, tiles_en_nd, tile_loc_dict, key_e
 ------------- access functions for pick up some visualization information ------------- 
 '''
     
-def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1):
+def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1, get_ihc_dab=False):
     '''
     access and extract the original signal of attention maps from trained ViT model
     for a list of tiles
@@ -549,7 +551,7 @@ def access_att_maps_vit(tiles, trained_vit, batch_size, nb_workers, layer_id=-1)
     
     # prepare the tile list dataloader
     transform = functions.get_zoom_transform()
-    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
+    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform, get_ihc_dab=get_ihc_dab)
     vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
                                                      batch_size=batch_size,
                                                      num_workers=nb_workers,
@@ -870,7 +872,7 @@ def filter_node_pos_t_adjmat(t_adjmat):
             
     return f_t_adjmat, f_id_pos_dict
     
-def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
+def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers, get_ihc_dab=False):
     '''
     access and extract the original signal of embeddings (for all heads) from trained ViT model
     for a list of tiles
@@ -892,7 +894,7 @@ def access_full_embeds_vit(tiles, trained_vit, batch_size, nb_workers):
     
     # prepare the tile list dataloader
     transform = functions.get_zoom_transform()
-    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform)
+    vis_tiles_set = Simple_Tile_Dataset(tiles_list=tiles, transform=transform, get_ihc_dab=get_ihc_dab)
     vis_tiles_dataloader = functions.get_data_loader(dataset=vis_tiles_set,
                                                      batch_size=batch_size,
                                                      num_workers=nb_workers,

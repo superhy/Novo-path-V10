@@ -130,6 +130,33 @@ def plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
             draw_original_image(clst_tiledeme_label_dir, tile_img, (tiledemo_str, '') )
         print(f'draw {len(tiledemo_slideid_tuple)} tile demos for cluster {label}, at: {clst_tiledeme_label_dir}' )
         
+def plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name):
+    '''
+    '''
+    heat_store_dir = ENV_task.HEATMAP_STORE_DIR
+    clst_t_dab_slideid_dict = load_vis_pkg_from_pkl(heat_store_dir, clst_t_dab_demo_pkl_name)
+    
+    clst_alg_name = clst_t_dab_demo_pkl_name[:clst_t_dab_demo_pkl_name.find('_encode')]
+    clst_tiledemo_dir = os.path.join(heat_store_dir, clst_alg_name)
+    if not os.path.exists(clst_tiledemo_dir):
+        os.makedirs(clst_tiledemo_dir)
+        print('create file dir {}'.format(clst_tiledemo_dir) )
+        
+    for label in clst_t_dab_slideid_dict.keys():
+        tdabdemo_slideid_tuple = clst_t_dab_slideid_dict[label]
+        clst_dir_name = f'cluster-{label}'
+        clst_tiledeme_label_dir = os.path.join(clst_tiledemo_dir, clst_dir_name)
+        if not os.path.exists(clst_tiledeme_label_dir):
+            os.makedirs(clst_tiledeme_label_dir)
+            print('create file dir {}'.format(clst_tiledeme_label_dir))
+        
+        for slide_id, tile, tile_img, tile_dab_img in tdabdemo_slideid_tuple:
+            tiledemo_str = '{}-tile_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
+            t_dab_demo_str = '{}-t_dab_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
+            draw_original_image(clst_tiledeme_label_dir, tile_img, (tiledemo_str, '') )
+            draw_original_image(clst_tiledeme_label_dir, tile_dab_img, (t_dab_demo_str, '') )
+        print(f'draw {len(tdabdemo_slideid_tuple)} tiles(with ihc-dab image) for clst {label}, at: {clst_tiledeme_label_dir}' )
+        
 def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     '''
     '''
@@ -321,6 +348,9 @@ def _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
     
 def _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name):
     plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
+    
+def _run_plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name):
+    plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name)
     
 def _run_plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):
     plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name)

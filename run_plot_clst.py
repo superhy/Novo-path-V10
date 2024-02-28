@@ -4,7 +4,6 @@
 
 import os
 
-from interpre.plot_dect_vis import _plot_draw_scaled_slide_imgs
 from interpre.plot_clst_stat import plot_biomarker_clsts_avg_dist, \
     plot_clsts_avg_dist_in_HV, plot_flex_clsts_avg_dist, \
     df_lobular_prop_group_dist, df_plot_lobular_prop_group_bar, \
@@ -17,7 +16,9 @@ from interpre.plot_clst_vis import _run_plot_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
     plot_demo_spatmap_4_sp_clst, plot_demo_spatmap_4_iso_group, \
-    _run_plot_slides_iso_spatmap, _run_plot_slides_levels_spatmap
+    _run_plot_slides_iso_spatmap, _run_plot_slides_levels_spatmap, \
+    _run_plot_clst_tile_ihcdab_demo
+from interpre.plot_dect_vis import _plot_draw_scaled_slide_imgs
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
 from interpre.plot_vit_heat import _run_plot_vit_cls_map, \
@@ -92,8 +93,11 @@ if __name__ == '__main__':
         # clst_tiledemo_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dev 2023
         clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
-        
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
+    if 22.1 in task_ids:
+        clst_t_dab_demo_pkl_name = '' # Feb 28 2024
+        _run_plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name)
+        
     if 23 in task_ids:
         # clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-encode_unsupervised2022-11-24.pkl'
         clst_s_spatmap_pkl_name = 'clst-s-spat_Kmeans-neb_encode_unsupervised2022-11-28.pkl'

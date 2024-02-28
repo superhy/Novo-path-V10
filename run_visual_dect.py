@@ -32,8 +32,8 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT
     
-    # task_ids = [1]
-    task_ids = [2.11]
+    task_ids = [1.1]
+    # task_ids = [2.1]
     # task_ids = [11.1]
     # task_ids = [10.5]
     # task_ids = [11.1]
@@ -57,14 +57,13 @@ if __name__ == '__main__':
         
         # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_[90]2024-02-15.pth']
         # ENV_annotation = ENV_FLINC_P62_BALL_PCT
-        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[46]2024-02-16.pth']
-        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_bi_[33]2024-02-19.pth'] # Feb 20 2024
         ENV_annotation = ENV_FLINC_P62_BALL_PCT_BI
         
         K_ratio = 0.25
         att_thd = 0.25
         boost_rate = 2.0
-        # pkg_range = [-41, -1]
+        # pkg_range = [-36, -1]
         pkg_range = None
         cut_left = False
         fills = [3, 3, 4]
@@ -73,6 +72,37 @@ if __name__ == '__main__':
                                                     agt_model_filenames, cut_left,
                                                     K_ratio, att_thd, boost_rate, fills, 'bwr', pkg_range)
     if 1.1 in task_ids:
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-1_ballooning_score_bi_[114]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-2_ballooning_score_bi_[125]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-3_ballooning_score_bi_[153]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-4_ballooning_score_bi_[99]2023-10-20.pth',
+        #                        'checkpoint_GatedAttPool-g_Pool-7_ballooning_score_bi_[149]2023-10-22.pth']
+        
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_score_bi_[159]2023-10-02.pth']
+        
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0_ballooning_pct_lbl_[90]2024-02-15.pth']
+        # ENV_annotation = ENV_FLINC_P62_BALL_PCT
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[18]2024-02-27.pth']
+        agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[21]2024-02-27.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[24]2024-02-27.pth']
+        # agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[33]2024-02-27.pth'] # Feb 26, 2024 ihc_dab
+        ENV_annotation = ENV_FLINC_P62_BALL_PCT_BI
+        get_ihc_dab=True # added Feb 26 2024
+        
+        K_ratio = 0.1
+        att_thd = 0.25
+        boost_rate = 2.0
+        # pkg_range = [-36, -1]
+        pkg_range = None
+        cut_left = False
+        only_soft_map=True # only generate the heatmap with soft attention value (0~1)
+        fills = [3, 3]
+        
+        _run_make_topK_attention_heatmap_resnet_P62(ENV_task, ENV_annotation,
+                                                    agt_model_filenames, cut_left,
+                                                    K_ratio, att_thd, boost_rate, fills, 'bwr', pkg_range,
+                                                    only_soft_map=only_soft_map, get_ihc_dab=get_ihc_dab)    
+    if 1.8 in task_ids:
         '''
         visualisation for negative attention map
         (for steatosis_score_bi and lobular_inflammation_score_bi)
@@ -95,7 +125,7 @@ if __name__ == '__main__':
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, lob_model_filenames, cut_left,
                                                     lob_K_ratio, lob_att_thd, boost_rate, fills, 
                                                     lob_cmap, pkg_range)
-    if 1.2 in task_ids:
+    if 1.9 in task_ids:
         '''
         visualisation of positive - negative attention map
         (keep the attention for ballooning and discard the attention for steatosis and lobular_inflammation)
@@ -121,7 +151,6 @@ if __name__ == '__main__':
                                                     neg_model_filenames_list, 
                                                     cut_left, K_ratio, att_thd, boost_rate, fills, 
                                                     neg_parames, 'bwr', pkg_range, only_soft_map)
-        
     
     if 2 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl'
@@ -147,12 +176,12 @@ if __name__ == '__main__':
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-11-04.pkl'
         ''' on NN-Cluster '''
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 20 2024
         ''' --- rough assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2023-12-15.pkl'
         ''' --- cluster-each assimilate --- '''
         # assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-01.pkl' # before Dec 2023
-        assimilate_pkl_name = ''
+        assimilate_pkl_name = 'assimilate_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl' # Feb 20 2024
         
         # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
         #                   '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
@@ -183,8 +212,8 @@ if __name__ == '__main__':
         colors = ['red', 'limegreen', 'cyan', 'royalblue', 'purple', 'hotpink',
                   'salmon', 'greenyellow', 'mediumspringgreen', 'darkslateblue']
         
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl'
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 20 2024
+        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl' # Feb 20 2024
         
         cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
                           '2_0_1_0_0', '2_1_0_1_1',
