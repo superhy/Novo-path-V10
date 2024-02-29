@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     # task_ids = [21, 22, 29.1]
     # task_ids = [29.2]
-    task_ids = [22]
+    task_ids = [22.1]
     # task_ids = [29.1]
     # task_ids = [61, 62]
     # task_ids = [29.3]
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 22.1 in task_ids:
-        clst_t_dab_demo_pkl_name = '' # Feb 28 2024
+        clst_t_dab_demo_pkl_name = 'hiera-t_dab-demo_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
         _run_plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name)
         
     if 23 in task_ids:

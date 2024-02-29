@@ -154,7 +154,7 @@ def plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name):
             tiledemo_str = '{}-tile_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
             t_dab_demo_str = '{}-t_dab_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
             draw_original_image(clst_tiledeme_label_dir, tile_img, (tiledemo_str, '') )
-            draw_original_image(clst_tiledeme_label_dir, tile_dab_img, (t_dab_demo_str, '') )
+            draw_original_image(clst_tiledeme_label_dir, tile_dab_img, (t_dab_demo_str, ''), one_channel=False)
         print(f'draw {len(tdabdemo_slideid_tuple)} tiles(with ihc-dab image) for clst {label}, at: {clst_tiledeme_label_dir}' )
         
 def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):

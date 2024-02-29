@@ -25,8 +25,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
-task_ids = [120.1]
-# task_ids = [123]
+# task_ids = [120.1]
+task_ids = [123]
 # task_ids = [129]
 # task_ids = [129.51]
 
@@ -197,7 +197,8 @@ if __name__ == '__main__':
         
     if 123 in task_ids:
         # init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # 251 on server n4; Nov 2023
-        init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # 251 on server n4; Feb 20, 2024
+        # init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # 251 on server n4; Feb 20, 2024
+        init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28, 2024, ihc-dab
         silhouette_thd = 0.02
         max_rounds = 3
         

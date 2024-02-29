@@ -33,7 +33,7 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22, 29]
-    task_ids = [29]
+    task_ids = [22.1]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -94,9 +94,9 @@ if __name__ == '__main__':
         '''
         generate the tile demos for clusters/sub-clusters
         '''
-        clustering_pkl_name = '' # Feb 28 2024
+        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
         
-        nb_sample=200
+        nb_sample=250
         _run_make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
         
     if 23 in task_ids:
