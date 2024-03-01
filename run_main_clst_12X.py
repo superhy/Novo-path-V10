@@ -25,8 +25,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
-# task_ids = [120.1]
-task_ids = [123]
+task_ids = [120.1]
+# task_ids = [123]
 # task_ids = [129]
 # task_ids = [129.51]
 
@@ -86,8 +86,8 @@ if __name__ == '__main__':
         agt_model_filenames = ['checkpoint_GatedAttPool-g_Pool-0-dab_ballooning_pct_lbl_bi_[21]2024-02-27.pth'] # Feb 28, 2024 ihc_dab
         
         K_ratio = 0.1
-        att_thd =  0.25
-        fills = [3, 3]
+        att_thd =  0.5
+        fills = [2, 3]
         manu_n_clusters=4
         selection_ihc_dab=True # only deal with the image with ihc_dab brown channel, Feb 26 2024
         clustering_ihc_dab=True # as above one
@@ -199,11 +199,13 @@ if __name__ == '__main__':
         # init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # 251 on server n4; Nov 2023
         # init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # 251 on server n4; Feb 20, 2024
         init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28, 2024, ihc-dab
+        clst_in_ihc_dab = True if init_clst_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
         silhouette_thd = 0.02
-        max_rounds = 3
+        max_rounds = 4
         
         hierarchical_res_pkg = _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
-                                                                    silhouette_thd, max_rounds)
+                                                                    silhouette_thd, max_rounds,
+                                                                    clst_in_ihc_dab=clst_in_ihc_dab)
     
     if 129 in task_ids:
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention

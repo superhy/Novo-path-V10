@@ -147,14 +147,16 @@ def plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name):
         clst_dir_name = f'cluster-{label}'
         clst_tiledeme_label_dir = os.path.join(clst_tiledemo_dir, clst_dir_name)
         if not os.path.exists(clst_tiledeme_label_dir):
-            os.makedirs(clst_tiledeme_label_dir)
-            print('create file dir {}'.format(clst_tiledeme_label_dir))
+            os.makedirs(os.path.join(clst_tiledeme_label_dir, 'org'))
+            os.makedirs(os.path.join(clst_tiledeme_label_dir, 'dab'))
+            print('create file dir (org/dab) {}'.format(clst_tiledeme_label_dir))
+            
         
         for slide_id, tile, tile_img, tile_dab_img in tdabdemo_slideid_tuple:
             tiledemo_str = '{}-tile_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
             t_dab_demo_str = '{}-t_dab_{}'.format(slide_id, 'h{}-w{}'.format(tile.h_id, tile.w_id) )
-            draw_original_image(clst_tiledeme_label_dir, tile_img, (tiledemo_str, '') )
-            draw_original_image(clst_tiledeme_label_dir, tile_dab_img, (t_dab_demo_str, ''), one_channel=False)
+            draw_original_image(os.path.join(clst_tiledeme_label_dir, 'org'), tile_img, (tiledemo_str, '') )
+            draw_original_image(os.path.join(clst_tiledeme_label_dir, 'dab'), tile_dab_img, (t_dab_demo_str, '') )
         print(f'draw {len(tdabdemo_slideid_tuple)} tiles(with ihc-dab image) for clst {label}, at: {clst_tiledeme_label_dir}' )
         
 def plot_slides_clst_each_spatmap(ENV_task, clst_s_spatmap_pkl_name):

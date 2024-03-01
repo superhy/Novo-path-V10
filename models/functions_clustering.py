@@ -1329,14 +1329,16 @@ def _run_kmeans_filter_act_K_tiles_encode_resnet18(ENV_task,
     
 
 def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name, 
-                                         silhouette_thd=0.5, max_rounds=3):
+                                         silhouette_thd=0.5, max_rounds=3,
+                                         clst_in_ihc_dab=False):
     '''
     TODO:
     '''
     init_clst_res_pkg = load_clustering_pkg_from_pkl(ENV_task.MODEL_FOLDER, init_clst_pkl_name)
     # this clustering object is not runnable, only used for hierarchical clustering
     sec_clustering = Instance_Clustering(ENV_task=ENV_task, encoder=None,
-                                         cluster_name='Kmeans', embed_type='encode')
+                                         cluster_name='Kmeans', embed_type='encode',
+                                         clst_in_ihc_dab=clst_in_ihc_dab)
     
     hierarchical_res_pkg = sec_clustering.hierarchical_clustering(init_clst_res_pkg, 
                                                                   silhouette_thd, max_rounds)

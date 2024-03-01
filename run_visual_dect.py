@@ -90,13 +90,13 @@ if __name__ == '__main__':
         get_ihc_dab=True # added Feb 26 2024
         
         K_ratio = 0.1
-        att_thd = 0.25
-        boost_rate = 2.0
+        att_thd = 0.5
+        boost_rate = 1.2
         # pkg_range = [-36, -1]
         pkg_range = None
         cut_left = False
         only_soft_map=True # only generate the heatmap with soft attention value (0~1)
-        fills = [3, 3]
+        fills = [2, 3]
         
         _run_make_topK_attention_heatmap_resnet_P62(ENV_task, ENV_annotation,
                                                     agt_model_filenames, cut_left,
