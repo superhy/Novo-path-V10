@@ -12,7 +12,8 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     plot_cross_labels_parcats_lmh, plot_clst_gp_tis_pct_abs_nb_ball_df_stea, \
     plot_clst_gp_tis_pct_abs_nb_ball_df_lob, plot_henning_fraction_dist, \
     plot_he_rpt_henning_label_parcats, plot_tis_pct_dist_clsts_in_slides, \
-    plot_tis_pct_henning_fraction_correlation
+    plot_tis_pct_henning_fraction_correlation, \
+    _run_filter_clsts_gini_ent_hl_fcorr_h
 from support import env_flinc_p62
 
 
@@ -39,7 +40,8 @@ if __name__ == '__main__':
     # task_ids = [2]
     # task_ids = [10.5]
     # task_ids = [29.11, 29.12, 29.13, 29.14, 29.15]
-    task_ids = [29.2, 29.21, 29.22]
+    # task_ids = [29.2, 29.21, 29.22]
+    task_ids = [29.19]
     # task_ids = [29.3, 29.4]
     # task_ids = [30.2]
     # task_ids = [201, 201.1]
@@ -180,15 +182,22 @@ if __name__ == '__main__':
         Filter out key clusters based on set statistical thresholds
         just print statistic results 
         '''
-        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
         # statistical thresholds on distributions
         gini_all, gini_h02, gini_h05 = 0.9, 0.8, 0.75 # <
-        gini_l02, gini_l005 = 0.85, 0.9 # >=
-        ent_all, ent_h02, ent_h05 = 1.0, 1.5, 2.0 # >=
-        ent_l02, ent_l005 = 2.0, 1.0 # <
+        gini_l02, gini_l005 = 0.5, 0.85 # >=
+        ent_all, ent_h02, ent_h05 = 1.0, 1.2, 2.0 # >=
+        ent_l02, ent_l005 = 2.5, 1.0 # <
         # statistical thresholds on correlations
-        pearson_all, pearson_h02, pearson_h05 = 0.2, 0.2, 0.2 # >
+        pearson_all, pearson_h02, pearson_h05 = 0.3, 0.25, 0.2 # >=
         
+        _ = _run_filter_clsts_gini_ent_hl_fcorr_h(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                  gini_all, gini_h02, gini_h05, 
+                                                  ent_all, ent_h02, ent_h05, 
+                                                  gini_l02, gini_l005, 
+                                                  ent_l02, ent_l005, 
+                                                  pearson_all, pearson_h02, pearson_h05)
         
     
     if 29.2 in task_ids:
