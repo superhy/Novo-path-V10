@@ -123,18 +123,21 @@ if __name__ == '__main__':
                                               branch_prefix, avail_labels_list[i], tis_pct)
     if 29.11 in task_ids:
         ''' plot distribution across all slides for tissue percentage of each (sub)cluster '''
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # Feb 2024
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name)
     if 29.12 in task_ids:
         ''' same with 29.11, only on slides with henning's fraction >= 0.2 '''
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # Feb 2024
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
                                           on_fraction_thd=0.2, higher_thd=True, color='cyan')
     if 29.13 in task_ids:
         ''' same with 29.11, only on slides with henning's fraction < 0.2 '''
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # Feb 2024
+        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
         tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
                                           on_fraction_thd=0.2, higher_thd=False, color='darkorange')

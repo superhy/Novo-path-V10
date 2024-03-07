@@ -1342,7 +1342,7 @@ def _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
     
     hierarchical_res_pkg = sec_clustering.hierarchical_clustering(init_clst_res_pkg, 
                                                                   silhouette_thd, max_rounds)
-    hierarchical_name = init_clst_pkl_name.replace('clst-res', 'hiera-res')
+    hierarchical_name = init_clst_pkl_name.replace('clst-res', f'hiera-res-r{max_rounds}')
     
     store_clustering_pkl(ENV_task.MODEL_FOLDER, hierarchical_res_pkg, hierarchical_name)
     print(f'load and storage clustering results as {hierarchical_name}: ')

@@ -33,7 +33,8 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
     # task_ids = [21, 22, 29]
-    task_ids = [22.1]
+    # task_ids = [22.1]
+    task_ids = [29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -94,9 +95,11 @@ if __name__ == '__main__':
         '''
         generate the tile demos for clusters/sub-clusters
         '''
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
+        clustering_pkl_name = 'hiera-r5-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        # clustering_pkl_name = 'hiera-r6-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r6
         
-        nb_sample=250
+        nb_sample=200
         _run_make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)
         
     if 23 in task_ids:
@@ -131,7 +134,9 @@ if __name__ == '__main__':
         
         # for clst only for key tiles, must load slides_tiles_dict to count the nb_tiss in each slide
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # on server n4 p62
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
+        # clustering_pkl_name = 'hiera-res-r6_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r6
         slides_tiles_dict = load_slides_tileslist(ENV_task)
         
         _run_cnt_tis_pct_abs_num_clsts_on_slides(ENV_task, clustering_pkl_name, slides_tiles_dict)

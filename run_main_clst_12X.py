@@ -201,7 +201,7 @@ if __name__ == '__main__':
         init_clst_pkl_name = 'clst-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28, 2024, ihc-dab
         clst_in_ihc_dab = True if init_clst_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
         silhouette_thd = 0.02
-        max_rounds = 4
+        max_rounds = 5
         
         hierarchical_res_pkg = _run_hierarchical_kmeans_encode_same(ENV_task, init_clst_pkl_name,
                                                                     silhouette_thd, max_rounds,
