@@ -1227,7 +1227,155 @@ def plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis
     print("Correlation results:")
     for label, correlation in correlation_results.items():
         print(f"{label}: {correlation:.2f}")
+        
+''' ----------------- some statistic and results printing functions  ----------------- '''
 
+def stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                       on_fraction_thd=0.0, higher_thd=True):
+    '''
+    statistic the gini and entropy results for clusters, and return
+    '''
+    meta_folder = ENV_task.META_FOLDER
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    clst_hiera_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clst_hiera_pkl_name)
+    # load the cluster labels and remove the repeated
+    unique_clst_labels = set([res for res, _, _, _ in clst_hiera_res_pkg])
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(heatmap_store_dir, tis_pct_pkl_name)
+    
+    tissue_pct_by_label = {label: [] for label in unique_clst_labels}
+    # load the tissue percentage in slides
+    if on_fraction_thd > 0.0:
+        ballooning_df = pd.read_csv(os.path.join(meta_folder, 'P62_ballooning_pct.csv'))
+        if higher_thd:
+            filtered_ballooning_df = ballooning_df[ballooning_df['ballooning_percentage'] >= on_fraction_thd]
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                if case_id in filtered_ballooning_df['slide_id'].values:
+                    for label in unique_clst_labels:
+                        if label in tis_pct_dict:
+                            tissue_pct_by_label[label].append(tis_pct_dict[label])
+        else:
+            filtered_ballooning_df = ballooning_df[ballooning_df['ballooning_percentage'] < on_fraction_thd]
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                if case_id in filtered_ballooning_df['slide_id'].values:
+                    for label in unique_clst_labels:
+                        if label in tis_pct_dict:
+                            tissue_pct_by_label[label].append(tis_pct_dict[label])
+    else:
+        for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+            for label in unique_clst_labels:
+                if label in tis_pct_dict:
+                    tissue_pct_by_label[label].append(tis_pct_dict[label])
+               
+    clst_gini_ent_dict= {}
+    for label, percentages in tissue_pct_by_label.items():
+        percentages = np.array(percentages) * 100
+        nb_bins = 80 if on_fraction_thd==0.0 else 30
+        # calculate the gini score (close to 0 -> more average) and entropy (higher -> more average)
+        gini = gini_coefficient(percentages)
+        entropy = calculate_entropy(percentages, bins=nb_bins)
+        
+        clst_gini_ent_dict[label] = (gini, entropy)
+        
+    return clst_gini_ent_dict
+
+def stat_f_corr_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                higher_fraction_thd=0.0):
+    '''
+    statistic the correlation pearson scores for clusters, and return
+    '''
+    meta_folder = ENV_task.META_FOLDER
+    model_store_dir = ENV_task.MODEL_FOLDER
+    heatmap_store_dir = ENV_task.HEATMAP_STORE_DIR
+    clst_hiera_res_pkg = load_clustering_pkg_from_pkl(model_store_dir, clst_hiera_pkl_name)
+    # load the cluster labels and remove the repeated
+    unique_clst_labels = set([res for res, _, _, _ in clst_hiera_res_pkg])
+    slide_tis_pct_dict = load_vis_pkg_from_pkl(heatmap_store_dir, tis_pct_pkl_name)
+    
+    henning_fraction_df = pd.read_csv(os.path.join(meta_folder, 'P62_ballooning_pct.csv'))
+    print(henning_fraction_df)
+    filtered_henning_fraction_df = henning_fraction_df[henning_fraction_df['ballooning_percentage'] > higher_fraction_thd]
+    clst_f_corr_dict = {}
+    
+    for label in unique_clst_labels:
+        tissue_pcts = []
+        henning_fractions = []
+    
+        # load tissue percentage and henning fractions of all slides
+        if higher_fraction_thd == 0.0:
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                if label in tis_pct_dict:
+                    tissue_pct = tis_pct_dict[label]
+                    # slide_id in csv actually is case_id
+                    case_id = parse_caseid_from_slideid(slide_id)
+                    ballooning_pct = henning_fraction_df[henning_fraction_df['slide_id'] == case_id]['ballooning_percentage'].values[0]
+        
+                    tissue_pcts.append(tissue_pct)
+                    henning_fractions.append(ballooning_pct)
+        else:
+            for slide_id, (tis_pct_dict, _) in slide_tis_pct_dict.items():
+                case_id = parse_caseid_from_slideid(slide_id)
+                # only pick the slides with henning's fraction higher than 0.2
+                if case_id in filtered_henning_fraction_df['slide_id'].values:
+                    if label in tis_pct_dict:
+                        tissue_pct = tis_pct_dict[label]
+                        ballooning_pct = filtered_henning_fraction_df[filtered_henning_fraction_df['slide_id'] == case_id]['ballooning_percentage'].values[0]
+        
+                        tissue_pcts.append(tissue_pct)
+                        henning_fractions.append(ballooning_pct)
+    
+        tissue_pcts = np.array(tissue_pcts) * 100 # use %
+        # pearson score
+        correlation, _ = pearsonr(tissue_pcts, henning_fractions)
+        clst_f_corr_dict[label] = correlation
+        
+    return clst_f_corr_dict
+
+def filter_clst_gini_ent_thd(clst_gini_ent_dict, gini_thd, ent_thd, higher_this_gini=True, higher_this_ent=True):
+    '''
+    pick(filter) the key clsts with gini entropy threshold
+    return the pick clst_label_list and gini_ent_dict
+    '''
+    picked_clsts, picked_clsts_gini_ent_dict = [], {}
+    for label, (gini, entropy) in clst_gini_ent_dict.items():
+        gini_right, ent_right = False, False
+        
+        if higher_this_gini is True:
+            gini_right = (gini >= gini_thd)
+        else:
+            gini_right = (gini < gini_thd)
+        
+        if higher_this_ent is True:
+            ent_right = (entropy >= ent_thd)
+        else:
+            ent_right = (entropy < ent_thd)
+            
+        if gini_right is True and ent_right is True:
+            picked_clsts.append(label)
+            picked_clsts_gini_ent_dict[label] = (gini, entropy)
+    
+    return picked_clsts, picked_clsts_gini_ent_dict
+
+def filter_clst_f_corr_thd(clst_f_corr_dict, fcorr_thd, higher_this_fcorr=True):
+    '''
+    pick(filter) the key clsts with fraction correlation threshold
+    return the pick clst_label_list and f_corr_dict
+    '''
+    picked_clsts, picked_clsts_f_corr_dict = [], {}
+    for label, correlation in clst_f_corr_dict.items():
+        f_corr_right = False
+        if higher_this_fcorr is True:
+            f_corr_right = (correlation >= fcorr_thd)
+        else:
+            f_corr_right = (correlation < fcorr_thd)
+        
+        if f_corr_right is True:
+            picked_clsts.append(label)
+            picked_clsts_f_corr_dict[label] = correlation
+            
+    picked_clsts, picked_clsts_f_corr_dict
 
 if __name__ == '__main__':
     pass

@@ -95,7 +95,8 @@ if __name__ == '__main__':
         clst_tiledemo_pkl_name = 'hiera-tiledemo_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 21 2024
         _run_plot_clst_tile_demo(ENV_task, clst_tiledemo_pkl_name)
     if 22.1 in task_ids:
-        clst_t_dab_demo_pkl_name = 'hiera-t_dab-demo_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
+        # clst_t_dab_demo_pkl_name = 'hiera-t_dab-demo_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
+        clst_t_dab_demo_pkl_name = 'hiera-t_dab-demo-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
         _run_plot_clst_tile_ihcdab_demo(ENV_task, clst_t_dab_demo_pkl_name)
         
     if 23 in task_ids:

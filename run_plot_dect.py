@@ -35,11 +35,11 @@ if __name__ == '__main__':
     ENV_annotation_hv_lob = env_flinc_p62.ENV_FLINC_P62_LOB_HV
 
     # task_ids = [0]
-    task_ids = [1]
+    # task_ids = [1]
     # task_ids = [2]
     # task_ids = [10.5]
-    # task_ids = [29.11, 29.12, 29.13]
-    # task_ids = [29.2, 29.21]
+    # task_ids = [29.11, 29.12, 29.13, 29.14, 29.15]
+    task_ids = [29.2, 29.21, 29.22]
     # task_ids = [29.3, 29.4]
     # task_ids = [30.2]
     # task_ids = [201, 201.1]
@@ -124,40 +124,112 @@ if __name__ == '__main__':
     if 29.11 in task_ids:
         ''' plot distribution across all slides for tissue percentage of each (sub)cluster '''
         # Feb 2024
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
-        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name)
     if 29.12 in task_ids:
         ''' same with 29.11, only on slides with henning's fraction >= 0.2 '''
         # Feb 2024
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
-        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
                                           on_fraction_thd=0.2, higher_thd=True, color='cyan')
     if 29.13 in task_ids:
         ''' same with 29.11, only on slides with henning's fraction < 0.2 '''
         # Feb 2024
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
-        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
         plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
                                           on_fraction_thd=0.2, higher_thd=False, color='darkorange')
+    if 29.14 in task_ids:
+        ''' same with 29.11, only on slides with henning's fraction >= 0.5 '''
+        # Feb 2024
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
+        plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                          on_fraction_thd=0.5, higher_thd=True, color='indigo')
+    if 29.15 in task_ids:
+        ''' same with 29.11, only on slides with henning's fraction < 0.05 '''
+        # Feb 2024
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
+        plot_tis_pct_dist_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                          on_fraction_thd=0.05, higher_thd=False, color='pink')
+    if 29.19 in task_ids:
+        ''' 
+        Filter out key clusters based on set statistical thresholds
+        just print statistic results 
+        '''
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
+        # statistical thresholds on distributions
+        gini_all, gini_h02, gini_h05 = 0.9, 0.8, 0.75 # <
+        gini_l02, gini_l005 = 0.85, 0.9 # >=
+        ent_all, ent_h02, ent_h05 = 1.0, 1.5, 2.0 # >=
+        ent_l02, ent_l005 = 2.0, 1.0 # <
+        # statistical thresholds on correlations
+        pearson_all, pearson_h02, pearson_h05 = 0.2, 0.2, 0.2 # >
+        
+        
     
     if 29.2 in task_ids:
         ''' 
         plot the correlation between tissue percentage and henning's P62 fraction 
             across all slides for each (sub)cluster 
         '''
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Feb 2024
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
         plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name) 
     if 29.21 in task_ids:
         ''' 
         same with 29.2, only count slides with henning's fraction >= 0.2
         '''
-        clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Feb 2024
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
         plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
-                                                  higher_fraction_thd=0.2, color='turquoise') 
+                                                  higher_fraction_thd=0.2, color='turquoise')
+    if 29.22 in task_ids:
+        ''' 
+        same with 29.2, only count slides with henning's fraction >= 0.5
+        '''
+        # Feb 2024
+        # clst_hiera_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' 
+        # tis_pct_pkl_name = 'hiera-tis-pct_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl'
+        # Mar 2024, ihc-dab, r5
+        clst_hiera_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' 
+        tis_pct_pkl_name = 'hiera-tis-pct-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl'
+        
+        plot_tis_pct_henning_fraction_correlation(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                                  higher_fraction_thd=0.5, color='navy') 
     
     if 29.3 in task_ids:
         '''
