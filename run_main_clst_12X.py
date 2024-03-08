@@ -25,10 +25,10 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 
 # 2023.11.06 on PC test of 58 slides
-task_ids = [120.1]
+# task_ids = [120.1]
 # task_ids = [123]
 # task_ids = [129]
-# task_ids = [129.51]
+task_ids = [129.51]
 
 task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
             print('need to re-load clustering results first!')
         
         assim_ratio = 0.002
-        fills=[3, 3, 3]
+        fills=[2, 3]
         
         exc_clustered=False
         _run_tiles_assimilate_each_clst_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
@@ -281,16 +281,23 @@ if __name__ == '__main__':
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
+        clustering_pkl_name = 'hiera-r5-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        
         tile_net_filename = None # using resnet from imagenet here
         clst_in_ihc_dab = True if clustering_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results
         
         # cluster_groups = ['0_1_0_0_0', '1_1_0_0_0', '1_1_0_0_1', '1_1_1_0_1',
         #                     '2_1_0_0_0', '2_1_0_0_1', '2_1_1_0_0', '2_1_1_0_1', 
         #                     '2_1_1_1_0'] # before Dec 2023
-        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
-                          '2_0_1_0_0', '2_1_0_1_1',
-                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024, on original tile img
+        # cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+        #                   '2_0_1_0_0', '2_1_0_1_1',
+        #                   '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024, on original tile img
+        cluster_groups = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', 
+                          '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_0_1_1_0_0', '0_0_1_1_1_1', 
+                          '0_1_0_1_0_1', '0_1_0_1_1_0', 
+                          '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', 
+                          '3_0_0_0_0_1'] # Mar 2024, on ihc-dab, r5
         sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
         
         str_time = Time().date
@@ -300,8 +307,8 @@ if __name__ == '__main__':
         if load_t_tuples_name is None:
             print('need to re-load clustering results first!')
         
-        assim_ratio = 0.002
-        fills=[3, 3, 3]
+        assim_ratio = 0.001
+        fills=[2, 3]
         
         exc_clustered=False
         _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 

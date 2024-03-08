@@ -13,7 +13,7 @@ from interpre.plot_dect_vis import _plot_topK_scores_heatmaps, \
     plot_clst_gp_tis_pct_abs_nb_ball_df_lob, plot_henning_fraction_dist, \
     plot_he_rpt_henning_label_parcats, plot_tis_pct_dist_clsts_in_slides, \
     plot_tis_pct_henning_fraction_correlation, \
-    _run_filter_clsts_gini_ent_hl_fcorr_h
+    _run_filter_clsts_gini_ent_hl_fcorr_h, _run_filter_clsts_gini_ent_h_fcorr_h
 from support import env_flinc_p62
 
 
@@ -198,6 +198,10 @@ if __name__ == '__main__':
                                                   gini_l02, gini_l005, 
                                                   ent_l02, ent_l005, 
                                                   pearson_all, pearson_h02, pearson_h05)
+        # _ = _run_filter_clsts_gini_ent_h_fcorr_h(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+        #                                          gini_all, gini_h02, gini_h05, 
+        #                                          ent_all, ent_h02, ent_h05, 
+        #                                          pearson_all, pearson_h02, pearson_h05)
         
     
     if 29.2 in task_ids:

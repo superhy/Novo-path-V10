@@ -1385,6 +1385,7 @@ def _run_filter_clsts_gini_ent_hl_fcorr_h(ENV_task, clst_hiera_pkl_name, tis_pct
                                           ent_l02, ent_l005,
                                           pearson_all, pearson_h02, pearson_h05):
     '''
+    pick sensitive clusters with bottom/up threshold on gini and entropy, bottom threshold on f_correlation
     '''
     clst_gini_ent_dict_all = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
                                                                 on_fraction_thd=0.0, higher_thd=False)
@@ -1434,7 +1435,66 @@ def _run_filter_clsts_gini_ent_hl_fcorr_h(ENV_task, clst_hiera_pkl_name, tis_pct
                   picked_fcorr_all, picked_fcorr_h02, picked_fcorr_h05]
     # get common set of lists in all_picked
     picked_clsts = reduce(lambda x, y: set(x) & set(y), all_picked)
-    print(f'finnal picked {len(picked_clsts)} clsts:\n{sorted(picked_clsts)}')
+    print(f'gini ent > + <, fcorr >, picked {len(picked_clsts)} clsts:\n{sorted(picked_clsts)}')
+    
+    return sorted(list(picked_clsts))
+
+def _run_filter_clsts_gini_ent_h_fcorr_h(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name,
+                                         gini_all, gini_h02, gini_h05,
+                                         ent_all, ent_h02, ent_h05,
+                                         pearson_all, pearson_h02, pearson_h05):
+    '''
+    @deprecated: Temporarily
+    pick sensitive clusters with only bottom threshold on gini and entropy, bottom threshold on f_correlation
+    '''
+    clst_gini_ent_dict_all = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                                on_fraction_thd=0.0, higher_thd=False)
+    clst_gini_ent_dict_h02 = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                                on_fraction_thd=0.2, higher_thd=True)
+    clst_gini_ent_dict_h05 = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                                on_fraction_thd=0.5, higher_thd=True)
+    clst_gini_ent_dict_l02 = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                                on_fraction_thd=0.2, higher_thd=False)
+    clst_gini_ent_dict_l005 = stat_dist_gini_ent_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, 
+                                                                 on_fraction_thd=0.05, higher_thd=False)
+    
+    clst_f_corr_dict_all = stat_f_corr_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, higher_fraction_thd=0.0)
+    clst_f_corr_dict_h02 = stat_f_corr_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, higher_fraction_thd=0.2)
+    clst_f_corr_dict_h05 = stat_f_corr_clsts_in_slides(ENV_task, clst_hiera_pkl_name, tis_pct_pkl_name, higher_fraction_thd=0.5)
+    
+    picked_gini_ent_all, _ = filter_clst_gini_ent_thd(clst_gini_ent_dict_all, 
+                                                      gini_thd=gini_all, ent_thd=ent_all, 
+                                                      higher_this_gini=False, higher_this_ent=True)
+    print(f'gini-all(<), ent-all(>=):\n{sorted(picked_gini_ent_all)}')
+    picked_gini_ent_h02, _ = filter_clst_gini_ent_thd(clst_gini_ent_dict_h02, 
+                                                      gini_thd=gini_h02, ent_thd=ent_h02, 
+                                                      higher_this_gini=False, higher_this_ent=True)
+    print(f'gini-h02(<), ent-h02(>=):\n{sorted(picked_gini_ent_h02)}')
+    picked_gini_ent_h05, _ = filter_clst_gini_ent_thd(clst_gini_ent_dict_h05, 
+                                                      gini_thd=gini_h05, ent_thd=ent_h05, 
+                                                      higher_this_gini=False, higher_this_ent=True)
+    print(f'gini-h05(<), ent-h05(>=):\n{sorted(picked_gini_ent_h05)}')
+    # picked_gini_ent_l02, _ = filter_clst_gini_ent_thd(clst_gini_ent_dict_l02, 
+    #                                                   gini_thd=gini_l02, ent_thd=ent_l02, 
+    #                                                   higher_this_gini=True, higher_this_ent=False)
+    # print(f'gini-l02(>=), ent-l02(<):\n{sorted(picked_gini_ent_l02)}')
+    # picked_gini_ent_l005, _ = filter_clst_gini_ent_thd(clst_gini_ent_dict_l005, 
+    #                                                    gini_thd=gini_l005, ent_thd=ent_l005, 
+    #                                                    higher_this_gini=True, higher_this_ent=False)
+    # print(f'gini-l005(>=), ent-l005(<):\n{sorted(picked_gini_ent_l005)}')
+    
+    picked_fcorr_all, _ = filter_clst_f_corr_thd(clst_f_corr_dict_all, fcorr_thd=pearson_all, higher_this_fcorr=True)
+    print(f'fcorr-all(>):\n{sorted(picked_fcorr_all)}')
+    picked_fcorr_h02, _ = filter_clst_f_corr_thd(clst_f_corr_dict_h02, fcorr_thd=pearson_h02, higher_this_fcorr=True)
+    print(f'fcorr-h02(>):\n{sorted(picked_fcorr_h02)}')
+    picked_fcorr_h05, _ = filter_clst_f_corr_thd(clst_f_corr_dict_h05, fcorr_thd=pearson_h05, higher_this_fcorr=True)
+    print(f'fcorr-h05(>):\n{sorted(picked_fcorr_h05)}')
+    
+    all_picked = [picked_gini_ent_all, picked_gini_ent_h02, picked_gini_ent_h05,
+                  picked_fcorr_all, picked_fcorr_h02, picked_fcorr_h05]
+    # get common set of lists in all_picked
+    picked_clsts = reduce(lambda x, y: set(x) & set(y), all_picked)
+    print(f'gini ent >, fcorr >, picked {len(picked_clsts)} clsts:\n{sorted(picked_clsts)}')
     
     return sorted(list(picked_clsts))
 
