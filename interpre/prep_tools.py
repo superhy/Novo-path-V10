@@ -6,6 +6,7 @@ import pickle
 import random
 
 from sklearn.manifold._t_sne import TSNE
+import umap
 
 import numpy as np
 
@@ -54,7 +55,17 @@ def tSNE_transform(vectors, output_dim=2):
     encodes_X = np.array(vectors)
     embed_X = TSNE(n_components=output_dim).fit_transform(encodes_X)
     embeds = embed_X.tolist()
-    return embeds 
+    return embeds
+
+def umap_transform(vectors, output_dim=2, n_neighbors=15, min_dist=0.1):
+    '''
+    same with above, just with umap as the reducer
+    '''
+    encodes_X = np.array(vectors)
+    reducer = umap.UMAP(n_components=output_dim, n_neighbors=n_neighbors, min_dist=min_dist)
+    embed_X = reducer.fit_transform(encodes_X)
+    embeds = embed_X.tolist()
+    return embeds
 
 
 if __name__ == '__main__':

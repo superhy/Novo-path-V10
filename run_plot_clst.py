@@ -12,12 +12,12 @@ from interpre.plot_clst_stat import plot_biomarker_clsts_avg_dist, \
     df_lobular_prop_level_elements, df_plot_lobular_prop_level_box, \
     df_plot_lobular_gp_tis_pct_box, df_lobular_tis_pct_groups, \
     dfs_plot_lobular_gp_tis_pct_box
-from interpre.plot_clst_vis import _run_plot_clst_scatter, \
+from interpre.plot_clst_vis import _run_plot_init_clst_scatter, \
     _run_plot_slides_clst_spatmap, _run_plot_clst_tile_demo, \
     _run_plot_slides_clst_each_spatmap, print_slide_tis_pct, \
     plot_demo_spatmap_4_sp_clst, plot_demo_spatmap_4_iso_group, \
     _run_plot_slides_iso_spatmap, _run_plot_slides_levels_spatmap, \
-    _run_plot_clst_tile_ihcdab_demo
+    _run_plot_clst_tile_ihcdab_demo, _run_plot_hiera_clst_scatter
 from interpre.plot_dect_vis import _plot_draw_scaled_slide_imgs
 from interpre.plot_graph import _run_plot_tiles_onehot_nx_graphs, \
     _run_plot_tiles_neb_nx_graphs
@@ -67,13 +67,32 @@ if __name__ == '__main__':
         _run_plot_vit_cls_map(ENV_task, clsmap_pkl_name)
     if 20 in task_ids:
         ''' CD45 '''
-        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
+        # clst_scatter_pkl_name = 'tsne_5000_clst-res_Kmeans-region_ctx_unsupervised2023-04-10.pkl'  # clst-6 reg
         
         ''' P62 '''
-        # clst_space_pkl_name = 'tsne_5000_clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
-        clst_space_pkl_name = 'tsne_0.05_clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
+        # clst_scatter_pkl_name = 'tsne_5000_clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # after attention n=5
+        clst_scatter_pkl_name = 'tsne_0.05_clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # n=4 PC
         
-        _run_plot_clst_scatter(ENV_task, clst_space_pkl_name)
+        _run_plot_init_clst_scatter(ENV_task, clst_scatter_pkl_name)
+    if 20.1 in task_ids:
+        ''' plot scatter for a part of clusters '''
+        
+        color_pan = ['lime', 'aquamarine', 'lightseagreen', 'green'
+                     'slategrey', 'lightsteelblue', 'royalblue', 'blue', 'navy',
+                     'palegreen', 'yellowgreen',
+                     'khaki', 'gold', 'orange', 'olive',
+                     'salmon',
+                     'pink', 'orchid', 'purple', 'crimson']
+        
+        clst_scatter_pkl_name = '' # Feb 28 2024, ihc-dab, r5
+        label_order = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', 
+                       '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_0_1_1_0_0', '0_0_1_1_1_1', 
+                       '0_1_0_1_0_1', '0_1_0_1_1_0', 
+                       '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', 
+                       '3_0_0_0_0_1'] # Mar 2024, on ihc-dab, r5
+        
+        _run_plot_hiera_clst_scatter(ENV_task, clst_scatter_pkl_name, color_pan, label_order)
+        
     if 21 in task_ids:
         ''' CD45 '''
         # clst_spatmaps_pkl_name = 'clst-spat_Kmeans-region_ctx_unsupervised2023-04-10.pkl'

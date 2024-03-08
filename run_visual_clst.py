@@ -4,7 +4,7 @@
 
 import os
 
-from interpre.prep_clst_vis import _run_make_clsuters_space_maps, \
+from interpre.prep_clst_vis import _run_make_clsuters_scatter, \
     _run_make_spatial_clusters_on_slides, _run_make_tiles_demo_clusters, \
     _run_make_spatial_each_clusters_on_slides, \
     _run_cnt_tis_pct_abs_num_clsts_on_slides, _run_make_spatial_iso_gath_on_slides, \
@@ -32,9 +32,10 @@ if __name__ == '__main__':
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
+    task_ids = [20]
     # task_ids = [21, 22, 29]
     # task_ids = [22.1]
-    task_ids = [29]
+    # task_ids = [29]
     # task_ids = [61, 62]
     # task_ids = [20, 21, 22, 29]
     # task_ids = [31]
@@ -57,9 +58,12 @@ if __name__ == '__main__':
         
         ''' p62 '''
         # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-10-26.pkl' # newly after attention
-        clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        # clustering_pkl_name = 'clst-res_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl' # 58 on PC n4
+        clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        # redu_mode = 'tsne'
+        redu_mode = 'umap'
         
-        _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=0.05)
+        _run_make_clsuters_scatter(ENV_task, clustering_pkl_name, r_picked=0.1, redu_mode=redu_mode)
     if 21 in task_ids:
         ''' cd45 '''
         # clustering_pkl_name = 'clst-res_Kmeans-encode_unsupervised2023-03-02.pkl'
@@ -96,8 +100,8 @@ if __name__ == '__main__':
         generate the tile demos for clusters/sub-clusters
         '''
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode-dab_unsupervised2024-02-28.pkl' # Feb 28 2024, ihc-dab
-        clustering_pkl_name = 'hiera-r5-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
-        # clustering_pkl_name = 'hiera-r6-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r6
+        clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        # clustering_pkl_name = 'hiera-res-r6_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r6
         
         nb_sample=200
         _run_make_tiles_ihcdab_demo_clusters(ENV_task, clustering_pkl_name, nb_sample)

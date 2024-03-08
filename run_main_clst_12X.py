@@ -282,7 +282,7 @@ if __name__ == '__main__':
         # tile_net_filename = 'checkpoint_ResNet18-TK_MIL-0_ballooning_score_bi_[5]2023-11-17.pth' # above, before Dec 2023
         
         # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        clustering_pkl_name = 'hiera-r5-res_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
         
         tile_net_filename = None # using resnet from imagenet here
         clst_in_ihc_dab = True if clustering_pkl_name.find('-dab_') != -1 else False # ihc_dab depend on original clustering results

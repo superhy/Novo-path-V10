@@ -14,7 +14,7 @@ import cv2
 from tqdm import tqdm
 
 from interpre.prep_tools import safe_random_sample, tSNE_transform, \
-    store_nd_dict_pkl, load_vis_pkg_from_pkl
+    store_nd_dict_pkl, load_vis_pkg_from_pkl, umap_transform
 from models import datasets
 from models.functions_clustering import load_clustering_pkg_from_pkl, \
     refine_sp_cluster_homoneig, refine_sp_cluster_levels
@@ -197,7 +197,7 @@ def load_clst_res_label_tile_slide(model_store_dir, clustering_pkl_name):
     return clst_tile_slideid_dict
     
 
-def clst_encode_redu_tsne(clst_encode_tuples):
+def clst_encode_redu(clst_encode_tuples, redu_mode='tsne'):
     '''
     using tSNE dim-reduction
     
@@ -209,9 +209,14 @@ def clst_encode_redu_tsne(clst_encode_tuples):
         encodes.append(encode)
         labels.append(label)
         
-    print('running t-SNE algorithm...')
+    print(f'running {redu_mode} algorithm...')
     time = Time()
-    embeds = tSNE_transform(encodes)
+    if redu_mode == 'tsne':
+        embeds = tSNE_transform(encodes)
+    elif redu_mode == 'umap':
+        embeds = umap_transform(encodes)
+    else:
+        embeds = tSNE_transform(encodes)
     print('finished with time: {}'.format(str(time.elapsed())[:-5]))
     
     clst_redu_en_dict = {}
@@ -227,7 +232,7 @@ def clst_encode_redu_tsne(clst_encode_tuples):
         
     return clst_redu_en_dict
 
-def make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=None):
+def make_clsuters_scatter(ENV_task, clustering_pkl_name, r_picked=None, redu_mode='tsne'):
     '''
     reduce the clusters points to a feature space
     store the clst - dim_redu space in pkl
@@ -236,8 +241,14 @@ def make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=None):
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
     _, clst_encode_list = load_clst_res_encode_label(model_store_dir, clustering_pkl_name, r_picked)
-    clst_redu_en_dict = clst_encode_redu_tsne(clst_encode_tuples=clst_encode_list)
-    clst_tsne_pkl_name = 'tsne_{}_{}'.format('all' if r_picked is None else str(r_picked), clustering_pkl_name)
+    if redu_mode == 'tsne':
+        clst_redu_en_dict = clst_encode_redu(clst_encode_tuples=clst_encode_list)
+    elif redu_mode == 'umap':
+        clst_redu_en_dict = clst_encode_redu(clst_encode_tuples=clst_encode_list, redu_mode='umap')
+    else:
+        clst_redu_en_dict = clst_encode_redu(clst_encode_tuples=clst_encode_list)
+    clst_tsne_pkl_name = '{}_{}_{}'.format(redu_mode, 'all' if r_picked is None else str(r_picked), 
+                                           clustering_pkl_name)
     store_nd_dict_pkl(stat_store_dir, clst_redu_en_dict, clst_tsne_pkl_name)
     print('done the clusters dim-reduction and store as: ', clst_tsne_pkl_name)
     
@@ -863,8 +874,8 @@ def avg_tis_pct_clst_on_slides(tissue_pct_dict_list):
     
 ''' ---------------------------------------------------------------------------------- '''
 
-def _run_make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked=0.01):
-    make_clsuters_space_maps(ENV_task, clustering_pkl_name, r_picked)
+def _run_make_clsuters_scatter(ENV_task, clustering_pkl_name, r_picked=0.01, redu_mode='tsne'):
+    make_clsuters_scatter(ENV_task, clustering_pkl_name, r_picked, redu_mode=redu_mode)
     
 def _run_make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide=True, cut_left=True):
     make_spatial_clusters_on_slides(ENV_task, clustering_pkl_name, keep_org_slide, cut_left=cut_left)

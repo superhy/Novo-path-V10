@@ -22,9 +22,10 @@ from wsi import slide_tools, image_tools
 colors_10 = ['blue', 'orange', 'green', 'red', 'purple', 
              'brown', 'pink', 'gray', 'olive', 'cyan']
 
-def plot_clst_scatter(clst_redu_en_dict):
+def plot_inital_clst_scatter(clst_redu_en_dict):
     '''
     using plotly tools for this chart
+    PS: very old version, in this function, cluster's label have to be a INT
     
     k: top_k attentional embeddings
     d: last_d attentional embeddings
@@ -40,7 +41,7 @@ def plot_clst_scatter(clst_redu_en_dict):
         # keep the label from 0 to 1
         labels.append(i)
         embed_nds.append(clst_redu_en_dict[i])
-        legend_names.append('cluster-%d' % (i + 1))
+        legend_names.append('cluster-%d' % (i))
     
     fig = go.Figure()
     for embeds, color, node_name in zip(embed_nds, colors, legend_names):
@@ -76,6 +77,74 @@ def plot_clst_scatter(clst_redu_en_dict):
         
     fig.write_html('fig5_demo_encodes.html', auto_open=True)
     
+def plot_hierarchical_clst_scatter(clst_redu_en_dict, color_pan=None, label_order=None):
+    '''
+    using plotly tools for this chart
+    PS: a new version, accept a string as the cluster's label,
+        support to plot only a part of clusters,
+        label_order determines the order in which colors are displayed
+    
+    k: top_k attentional embeddings
+    d: last_d attentional embeddings
+    
+    Args:
+        nb_demo: cut the first N embeds used as the demos
+        color_pan:
+        label_order: if None, take the list of keys() from clst_redu_en_dict
+    '''
+    
+    if color_pan == None:
+        color_pan = colors_10
+    
+    if label_order == None:
+        label_order = list(clst_redu_en_dict.keys())
+    colors = color_pan[:len(label_order)]
+    
+    labels, embed_nds, legend_names = [], [], []
+    for label in label_order:
+        labels.append(label)
+        embed_nds.append(clst_redu_en_dict[label])
+        legend_names.append('c: %d' % (label))
+    
+    # for i in range(len(clst_redu_en_dict.keys())):
+    #     # keep the label from 0 to 1
+    #     labels.append(i)
+    #     embed_nds.append(clst_redu_en_dict[i])
+    #     legend_names.append('cluster-%d' % (i))
+    
+    fig = go.Figure()
+    for embeds, color, node_name in zip(embed_nds, colors, legend_names):
+        fig.add_trace(go.Scatter(
+            x=embeds[:, 0], y=embeds[:, 1], mode='markers',
+            name=node_name,
+            marker=dict(
+                color=color,
+                size=5.0,
+                )
+            ))
+        
+    fig.update_layout(
+        plot_bgcolor='white',
+        margin=dict(l=10, b=10, r=10, t=10, pad=0),
+        xaxis=dict(
+            showticklabels=False
+            ),
+        yaxis=dict(
+            showticklabels=False
+            ),
+        legend=dict(
+            font=dict(color='black', size=24),
+            bordercolor='black',
+            borderwidth=1,
+            yanchor="top",
+            y=0.2,
+            xanchor="right",
+            x=0.2,
+            ),
+        width=1000, height=1000,
+        )
+        
+    fig.write_html('fig5_demo_encodes.html', auto_open=True)    
 
 def plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
     '''
@@ -341,9 +410,13 @@ def print_slide_tis_pct(ENV_task, tis_pct_pkl_name, query_slide_id):
 
 ''' ---------------------------------------------------------------------------------- '''
     
-def _run_plot_clst_scatter(ENV_task, clst_space_pkl_name):
+def _run_plot_init_clst_scatter(ENV_task, clst_space_pkl_name):
     clst_redu_en_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, clst_space_pkl_name)
-    plot_clst_scatter(clst_redu_en_dict)
+    plot_inital_clst_scatter(clst_redu_en_dict)
+    
+def _run_plot_hiera_clst_scatter(ENV_task, clst_space_pkl_name, color_pan, label_order):
+    clst_redu_en_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, clst_space_pkl_name)
+    plot_hierarchical_clst_scatter(clst_redu_en_dict, color_pan, label_order)
     
 def _run_plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
     plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name)
