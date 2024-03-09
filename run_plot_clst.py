@@ -91,6 +91,8 @@ if __name__ == '__main__':
                        '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', 
                        '3_0_0_0_0_1'] # Mar 2024, on ihc-dab, r5
         
+        # TODO: shoud running on mac, test the part cluster scatter ploting
+        
         _run_plot_hiera_clst_scatter(ENV_task, clst_scatter_pkl_name, color_pan, label_order)
         
     if 21 in task_ids:
