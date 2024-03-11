@@ -32,8 +32,9 @@ if __name__ == '__main__':
     ENV_task = env_flinc_p62.ENV_FLINC_P62_U
     # ENV_annotation = env_flinc_p62.ENV_FLINC_P62_BALL_PCT
     
-    task_ids = [1.1]
+    # task_ids = [1.1]
     # task_ids = [2.1]
+    task_ids = [2.11]
     # task_ids = [11.1]
     # task_ids = [10.5]
     # task_ids = [11.1]
@@ -209,17 +210,42 @@ if __name__ == '__main__':
         plot the heatmap for sensitive clusters and their assimilated patches on slides
         each sensi_clst (its assim_tiles)
         '''
-        colors = ['red', 'limegreen', 'cyan', 'royalblue', 'purple', 'hotpink',
-                  'salmon', 'greenyellow', 'mediumspringgreen', 'darkslateblue']
+        # colors = ['limegreen', 'royalblue', 'orange', 'red', 'purple', 'hotpink',
+        #           'salmon', 'greenyellow', 'mediumspringgreen', 'darkslateblue']
+        colors = ['greenyellow', 'mediumspringgreen', 'lime', 'aquamarine',
+                  'mediumseagreen', 'limegreen', 'seagreen',
+                  'green', 'forestgreen', # simi color - 1
+                  'dodgerblue', 'blue', # simi color - 2
+                  'yellow', 'gold', 'orange', 'darkorange', # simi color - 3
+                  'red' # simi color - 4
+                  ]
         
-        clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 20 2024
-        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl' # Feb 20 2024
+        # clustering_pkl_name = 'hiera-res_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 20 2024
+        # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18_unsupervised2024-02-25.pkl' # Feb 20 2024
         
-        cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
-                          '2_0_1_0_0', '2_1_0_1_1',
-                          '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+        clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
+        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-11.pkl' # Mar 2024, ihc-dab, r5
         
-        sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        # cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
+        #                   '2_0_1_0_0', '2_1_0_1_1',
+        #                   '3_0_1_0_0', '3_1_1_0_0', '3_1_1_0_1'] # Feb 2024
+        # sp_clsts = pick_clusters_by_prefix(ENV_task, clustering_pkl_name, cluster_groups)
+        
+        ''' or we can also define the sp_clsts as groups, or just directly give the sp_clsts '''
+        # sp_clsts = [['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1',
+        #              '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', 
+        #              '0_1_0_1_0_1', '0_1_0_1_1_0'],
+        #             ['0_0_1_1_0_0', '0_0_1_1_1_1'],
+        #             ['1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0'],
+        #             ['3_0_0_0_0_1']] # Mar 2024, on ihc-dab, r5
+        sp_clsts = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1',
+                    '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', 
+                    '0_1_0_1_0_1', '0_1_0_1_1_0', # simi color - 1
+                    '0_0_1_1_0_0', '0_0_1_1_1_1', # simi color - 2
+                    '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', # simi color - 3
+                    '3_0_0_0_0_1' # simi color - 4
+                ] # Mar 2024, on ihc-dab, r5, not grouped, all use diff (but similar) colors
+        
         cut_left = False
         # heat_style = 'clst'
         part_vis = [0, 50]
@@ -234,7 +260,7 @@ if __name__ == '__main__':
             _run_make_spat_sensi_1by1_clsts_assims(ENV_task, clustering_pkl_name, None, 
                                                    sp_clsts, cut_left, colors, part_vis=part_vis)
         
-    if 2.18 in task_ids:
+    if 2.16 in task_ids:
         '''
         same with 2.1 (on all slides), just make it on batch, all together is too big,
             make it separated and storage representatively. 

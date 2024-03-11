@@ -48,9 +48,10 @@ if __name__ == '__main__':
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
+    task_ids = [20.1]
     # task_ids = [21, 22, 29.1]
     # task_ids = [29.2]
-    task_ids = [22.1]
+    # task_ids = [22.1]
     # task_ids = [29.1]
     # task_ids = [61, 62]
     # task_ids = [29.3]
@@ -77,14 +78,14 @@ if __name__ == '__main__':
     if 20.1 in task_ids:
         ''' plot scatter for a part of clusters '''
         
-        color_pan = ['lime', 'aquamarine', 'lightseagreen', 'green'
+        color_pan = ['lime', 'aquamarine', 'lightseagreen', 'green',
                      'slategrey', 'lightsteelblue', 'royalblue', 'blue', 'navy',
                      'palegreen', 'yellowgreen',
                      'khaki', 'gold', 'orange', 'olive',
                      'salmon',
                      'pink', 'orchid', 'purple', 'crimson']
         
-        clst_scatter_pkl_name = '' # Feb 28 2024, ihc-dab, r5
+        clst_scatter_pkl_name = 'umap_0.1_hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
         label_order = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', 
                        '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_0_1_1_0_0', '0_0_1_1_1_1', 
                        '0_1_0_1_0_1', '0_1_0_1_1_0', 

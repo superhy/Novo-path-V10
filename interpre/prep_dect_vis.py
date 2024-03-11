@@ -348,10 +348,20 @@ def gen_single_slide_sensi_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_
 
 def gen_single_slide_1by1_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_c_assimilated_dict, 
                                        slide_id, labels_picked, cut_left=False, 
-                                       colors=['red', 'green', 'blue', 'orange', 'pink']*2):
+                                       colors=['green', 'blue', 'orange', 'red', 'pink']*2):
     '''
     Generate the clusters spatial map on single slide with specified colors for each selected cluster and its assimilated tiles.
     Returns NumPy array of the heatmap and original slide image.
+    
+    Args:
+        labels_picked: here can be a list of labels or a list of groups of labels
+            like: ['clst-1', 'clst-2', ...]
+            or: [
+                    ['clst-1', 'clst-2'],
+                    ['clst-3', 'clst-4'],
+                    ['clst-5'], 
+                    ...
+                ]
     '''
     
     def apply_mask(heat, white_mask):
@@ -388,7 +398,12 @@ def gen_single_slide_1by1_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_c
     for label, color_name in zip(labels_picked, colors):
         color = np.array(mcolors.to_rgb(color_name))  # Convert color name to RGB
         for tile, tile_label in slide_tile_clst_tuples:
-            if tile_label == label:
+            in_this_color = False
+            if isinstance(label, list):
+                in_this_color = (tile_label in label)
+            else:
+                in_this_color = (tile_label == label)
+            if in_this_color: # if tile_label == label:
                 h, w = tile.h_id - 1, tile.w_id - 1
                 if h >= H or w >= W or h < 0 or w < 0:
                     warnings.warn('Out of range coordinates.')
@@ -399,7 +414,14 @@ def gen_single_slide_1by1_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_c
         # Process assimilated tiles for the current cluster
         if slide_c_assimilated_dict is None:
             continue
-        for tile in slide_c_assimilated_dict.get(label, []):
+        
+        assim_tiles = []
+        if isinstance(label, list):
+            for lbl in label:
+                assim_tiles.extend(slide_c_assimilated_dict.get(lbl, []))
+        else:
+            assim_tiles = slide_c_assimilated_dict.get(label, [])
+        for tile in assim_tiles:
             h, w = tile.h_id - 1, tile.w_id - 1
             if h >= H or w >= W or h < 0 or w < 0:
                 warnings.warn('Out of range coordinates.')
@@ -727,6 +749,15 @@ def make_spatial_sensi_clusters_assim_on_slides(ENV_task, clustering_pkl_name, a
 def make_spat_sensi_1by1_clst_assim_on_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
                                               sp_clsts, cut_left, colors, part_vis=None):
     '''
+    Args:
+        sp_clsts: here can be a list of labels or a list of groups of labels
+            like: ['clst-1', 'clst-2', ...]
+            or: [
+                    ['clst-1', 'clst-2'],
+                    ['clst-3', 'clst-4'],
+                    ['clst-5'], 
+                    ...
+                ]
     '''
     model_store_dir = ENV_task.MODEL_FOLDER
     heat_store_dir = ENV_task.HEATMAP_STORE_DIR

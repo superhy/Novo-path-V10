@@ -104,7 +104,7 @@ def plot_hierarchical_clst_scatter(clst_redu_en_dict, color_pan=None, label_orde
     for label in label_order:
         labels.append(label)
         embed_nds.append(clst_redu_en_dict[label])
-        legend_names.append('c: %d' % (label))
+        legend_names.append(f'c: {label}')
     
     # for i in range(len(clst_redu_en_dict.keys())):
     #     # keep the label from 0 to 1
@@ -133,7 +133,7 @@ def plot_hierarchical_clst_scatter(clst_redu_en_dict, color_pan=None, label_orde
             showticklabels=False
             ),
         legend=dict(
-            font=dict(color='black', size=24),
+            font=dict(color='black', size=12),
             bordercolor='black',
             borderwidth=1,
             yanchor="top",
@@ -144,7 +144,7 @@ def plot_hierarchical_clst_scatter(clst_redu_en_dict, color_pan=None, label_orde
         width=1000, height=1000,
         )
         
-    fig.write_html('fig5_demo_encodes.html', auto_open=True)    
+    fig.write_html('fig5_hiera_demo_encodes.html', auto_open=False)    
 
 def plot_slides_clst_spatmap(ENV_task, clst_spatmaps_pkl_name):
     '''
