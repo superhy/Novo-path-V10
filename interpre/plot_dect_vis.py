@@ -3,7 +3,8 @@ Created on 25 Nov 2022
 
 @author: Yang Hu
 '''
-from _functools import reduce
+# from _functools import reduce
+from functools import reduce
 import os
 
 from scipy.stats.kde import gaussian_kde
