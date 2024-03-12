@@ -8,9 +8,11 @@ import os
 import warnings
 
 from PIL import Image
+import anndata
 from einops.einops import rearrange
 import torch
 from vit_pytorch.vit import ViT
+import h5py
 
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
@@ -30,12 +32,18 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from support.tools import normalization
+from wsi import slide_tools
 from wsi.filter_tools import apply_image_filters_he, apply_image_filters_psr, \
     apply_image_filters_cd45, apply_image_filters_p62
 from wsi.image_tools import np_to_pil
 from wsi.slide_tools import original_slide_and_scaled_pil_image, \
     slide_to_scaled_np_image
 from wsi import image_tools
+
+import collections
+import scipy.sparse as sp_sparse
+import tables
+import scanpy as sc
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
@@ -310,11 +318,93 @@ def _test_assign_label():
     values = [0.02, 0.07, 0.12, 0.16, 0.39, 0.78, 1.0]
     for v in values:
         print(assign_label(v))
+        
+''' - some functions for test on spatial transcriptomics data -'''
 
+def _test_read_tiff_image():
+    slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
+    img, slide = slide_tools.original_slide_and_scaled_pil_image(slide_filepath)
+    
+    print(slide.dimensions)
+    print(img)
+    # img.show()
+    
+def _test_read_hdf5_data():
+    hdf5_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5'
+    with h5py.File(hdf5_filepath, 'r') as h5_f:
+        # print all data list in this H5 file
+        h5_f.visit(print)
+ 
+def get_matrix_from_h5(filename):
+    CountMatrix = collections.namedtuple('CountMatrix', ['feature_ref', 'barcodes', 'matrix'])
+    
+    with tables.open_file(filename, 'r') as f:
+        mat_group = f.get_node(f.root, 'matrix')
+        barcodes = f.get_node(mat_group, 'barcodes').read()
+        data = getattr(mat_group, 'data').read()
+        indices = getattr(mat_group, 'indices').read()
+        indptr = getattr(mat_group, 'indptr').read()
+        shape = getattr(mat_group, 'shape').read()
+        matrix = sp_sparse.csc_matrix((data, indices, indptr), shape=shape)
+         
+        feature_ref = {}
+        feature_group = f.get_node(mat_group, 'features')
+        feature_ids = getattr(feature_group, 'id').read()
+        feature_names = getattr(feature_group, 'name').read()
+        feature_types = getattr(feature_group, 'feature_type').read()
+        feature_ref['id'] = feature_ids
+        feature_ref['name'] = feature_names
+        feature_ref['feature_type'] = feature_types
+        tag_keys = getattr(feature_group, '_all_tag_keys').read()
+        for key in tag_keys:
+            key_str = key.decode('utf-8') if isinstance(key, bytes) else key
+            feature_ref[key] = getattr(feature_group, key_str).read()
+         
+        return CountMatrix(feature_ref, barcodes, matrix)
+    
+def _test_parse_h5():
+    filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5"
+    filtered_matrix_h5 = get_matrix_from_h5(filtered_h5)
+    
+    matrix = filtered_matrix_h5.matrix
+    # feature_ref = filtered_matrix_h5.feature_ref
+    # dense_matrix = matrix.toarray()
+    # print(dense_matrix.shape)
+    # print(matrix)
+    
+    barcodes = filtered_matrix_h5.barcodes
+    # print(type(barcodes))
+    feature_names = filtered_matrix_h5.feature_ref['name']
+    df = pd.DataFrame(matrix.toarray().T, index=barcodes, columns=feature_names)
+    # print(df)
+    adata = anndata.AnnData(X=df.values, obs={'barcodes': df.index}, var={'genes': df.columns})
+    
+    print(adata.obs.all)
+    
+def _count_st_position_coords():
+    # df = pd.read_csv('/Volumes/Extreme SSD/st-data/tissue_positions.csv')
+    df = pd.read_csv('/Volumes/Extreme SSD/st-data/Spatial-Projection.csv')
+    nzero_X = df['X Coordinate'][df['X Coordinate'] > 0]
+    nzero_Y = df['Y Coordinate'][df['Y Coordinate'] > 0]
+    max_X, min_X = np.max(nzero_X), np.min(nzero_X)
+    max_Y, min_Y = np.max(nzero_Y), np.min(nzero_Y)
+    print(min_X, max_X )
+    print(min_Y, max_Y )
+    count_max_X = (df['X Coordinate'] > max_X - 100).sum()
+    count_max_Y = (df['Y Coordinate'] > max_Y - 100).sum()
+    print(count_max_X, count_max_Y)
+    rows_with_max_Y = df[df['Y Coordinate'] > max_Y - 100]
+    sorted_rows = rows_with_max_Y.sort_values(by='X Coordinate', ascending=True)
+    print(sorted_rows)
+
+        
+    # print(feature_ref[b'genome'])
+    # print(feature_ref['id'][:10])
+    # print(feature_ref['name'][:10])
     
 if __name__ == '__main__':
     # test_filter_slide_img() # 1
-    test_transfer_ihc_dab()
+    # test_transfer_ihc_dab()
     # test_vit_forward() # 2
     # test_networkx() # 3
 
@@ -328,6 +418,11 @@ if __name__ == '__main__':
     
     # _test_plot_box()
     # _test_assign_label()
+    
+    _test_read_tiff_image()
+    # _test_read_hdf5_data()
+    # _test_parse_h5()
+    _count_st_position_coords()
 
 
 
