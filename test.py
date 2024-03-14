@@ -363,20 +363,21 @@ def get_matrix_from_h5(filename):
         return CountMatrix(feature_ref, barcodes, matrix)
     
 def _test_parse_h5():
-    filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5"
+    # filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5"
+    filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_FFPE_Human_Skin_Melanoma_filtered_feature_bc_matrix.h5"
     filtered_matrix_h5 = get_matrix_from_h5(filtered_h5)
     
     matrix = filtered_matrix_h5.matrix
     # feature_ref = filtered_matrix_h5.feature_ref
-    # dense_matrix = matrix.toarray()
-    # print(dense_matrix.shape)
+    dense_matrix = matrix.toarray()
+    print(dense_matrix.shape)
     # print(matrix)
     
     barcodes = filtered_matrix_h5.barcodes
     # print(type(barcodes))
     feature_names = filtered_matrix_h5.feature_ref['name']
     df = pd.DataFrame(matrix.toarray().T, index=barcodes, columns=feature_names)
-    # print(df)
+    print(df)
     adata = anndata.AnnData(X=df.values, obs={'barcodes': df.index}, var={'genes': df.columns})
     
     print(adata.obs.all)
@@ -419,10 +420,10 @@ if __name__ == '__main__':
     # _test_plot_box()
     # _test_assign_label()
     
-    _test_read_tiff_image()
+    # _test_read_tiff_image()
     # _test_read_hdf5_data()
-    # _test_parse_h5()
-    _count_st_position_coords()
+    _test_parse_h5()
+    # _count_st_position_coords()
 
 
 
