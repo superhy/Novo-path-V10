@@ -426,7 +426,7 @@ def gen_single_slide_1by1_clst_spatial(ENV_task, slide_tile_clst_tuples, slide_c
             if h >= H or w >= W or h < 0 or w < 0:
                 warnings.warn('Out of range coordinates.')
                 continue
-            heat_s_clst_col[h, w] = lighten_color(color, factor=0.25)  # Use lighten_color function to get lighter color
+            heat_s_clst_col[h, w] = lighten_color(color, factor=0.0)  # Use lighten_color function to get lighter color
             white_mask[h, w] = 0.0
             
     heat_s_clst_col = image_tools.np_to_pil(heat_s_clst_col).resize((slide_np.shape[1], slide_np.shape[0]), PIL.Image.BOX)

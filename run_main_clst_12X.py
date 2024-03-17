@@ -307,7 +307,7 @@ if __name__ == '__main__':
         if load_t_tuples_name is None:
             print('need to re-load clustering results first!')
         
-        assim_ratio = 0.0025
+        assim_ratio = 0.005
         fills=[3, 3]
         
         exc_clustered=False
