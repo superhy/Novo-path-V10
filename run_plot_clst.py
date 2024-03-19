@@ -78,19 +78,35 @@ if __name__ == '__main__':
     if 20.1 in task_ids:
         ''' plot scatter for a part of clusters '''
         
-        color_pan = ['lime', 'aquamarine', 'lightseagreen', 'green',
-                     'slategrey', 'lightsteelblue', 'royalblue', 'blue', 'navy',
-                     'palegreen', 'yellowgreen',
-                     'khaki', 'gold', 'orange', 'olive',
-                     'salmon',
-                     'pink', 'orchid', 'purple', 'crimson']
+        # color_pan = ['lime', 'aquamarine', 'lightseagreen', 'green',
+        #              'slategrey', 'lightsteelblue', 'royalblue', 'blue', 'navy',
+        #              'palegreen', 'yellowgreen',
+        #              'khaki', 'gold', 'orange', 'olive',
+        #              'salmon',
+        #              'pink', 'orchid', 'purple', 'crimson']
+        color_pan = ['greenyellow', 'mediumspringgreen', 'lime', 'aquamarine',
+                    'mediumseagreen', 'limegreen', 'seagreen',
+                    'green', 'forestgreen', # simi color - 1
+                    'dodgerblue', 'blue', # simi color - 2
+                    'yellow', 'gold', 'orange', 'darkorange', # simi color - 3
+                    'red' # simi color - 4
+                ]
         
         clst_scatter_pkl_name = 'umap_0.1_hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar 2024, ihc-dab, r5
-        label_order = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', 
-                       '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_0_1_1_0_0', '0_0_1_1_1_1', 
-                       '0_1_0_1_0_1', '0_1_0_1_1_0', 
-                       '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', 
-                       '3_0_0_0_0_1'] # Mar 2024, on ihc-dab, r5
+        # label_order = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', 
+        #                '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_0_1_1_0_0', '0_0_1_1_1_1', 
+        #                '0_1_0_1_0_1', '0_1_0_1_1_0', 
+        #                '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', 
+        #                '3_0_0_0_0_1'] # Mar 2024, on ihc-dab, r5
+        label_order = ['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1',
+                        '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', 
+                        '0_1_0_1_0_1', '0_1_0_1_1_0', # simi color - 1
+                        '0_0_1_1_0_0', '0_0_1_1_1_1', # simi color - 2
+                        '1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0', # simi color - 3
+                        '3_0_0_0_0_1' # simi color - 4
+                    ] # Mar 2024, on ihc-dab, r5, not grouped, all use diff (but similar) colors
+        
+        
         
         # TODO: shoud running on mac, test the part cluster scatter ploting
         
