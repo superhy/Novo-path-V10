@@ -322,7 +322,8 @@ def _test_assign_label():
 ''' - some functions for test on spatial transcriptomics data -'''
 
 def _test_read_tiff_image():
-    slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
+    # slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
+    slide_filepath = '/Users/huyang/Desktop/Visium_FFPE_Human_Prostate_Acinar_Cell_Carcinoma_image.tif'
     img, slide = slide_tools.original_slide_and_scaled_pil_image(slide_filepath)
     
     print(slide.dimensions)
@@ -420,9 +421,9 @@ if __name__ == '__main__':
     # _test_plot_box()
     # _test_assign_label()
     
-    # _test_read_tiff_image()
+    _test_read_tiff_image()
     # _test_read_hdf5_data()
-    _test_parse_h5()
+    # _test_parse_h5()
     # _count_st_position_coords()
 
 
