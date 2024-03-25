@@ -324,8 +324,8 @@ def _test_assign_label():
 def _test_read_tiff_image():
     # slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
     # slide_filepath = '/Users/huyang/Desktop/Visium_FFPE_Human_Prostate_Acinar_Cell_Carcinoma_image.tif'
-    # slide_filepath = '/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
-    slide_filepath = '/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Glioblastoma_tissue_image.tif'
+    slide_filepath = 'E:\\PanoPath-Project\\st-data/CytAssist_11mm_FFPE_Human_Colorectal_Cancer_tissue_image.tif'
+    # slide_filepath = '/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Glioblastoma_tissue_image.tif'
     img, slide = slide_tools.original_slide_and_scaled_pil_image(slide_filepath)
     
     print(slide.dimensions)
@@ -367,7 +367,8 @@ def get_matrix_from_h5(filename):
     
 def _test_parse_h5():
     # filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5"
-    filtered_h5 = "/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_FFPE_Human_Skin_Melanoma_filtered_feature_bc_matrix.h5"
+    # filtered_h5 = "/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Colorectal_Cancer_filtered_feature_bc_matrix.h5"
+    filtered_h5 = "E:\\PanoPath-Project\\st-data/CytAssist_FFPE_Human_Lung_Squamous_Cell_Carcinoma_filtered_feature_bc_matrix.h5"
     filtered_matrix_h5 = get_matrix_from_h5(filtered_h5)
     
     matrix = filtered_matrix_h5.matrix
@@ -384,6 +385,7 @@ def _test_parse_h5():
     adata = anndata.AnnData(X=df.values, obs={'barcodes': df.index}, var={'genes': df.columns})
     
     print(adata.obs.all)
+    print(adata.var.all)
     
 def _count_st_position_coords():
     # df = pd.read_csv('/Volumes/Extreme SSD/st-data/tissue_positions.csv')
@@ -423,9 +425,9 @@ if __name__ == '__main__':
     # _test_plot_box()
     # _test_assign_label()
     
-    _test_read_tiff_image()
+    # _test_read_tiff_image()
     # _test_read_hdf5_data()
-    # _test_parse_h5()
+    _test_parse_h5()
     # _count_st_position_coords()
 
 
