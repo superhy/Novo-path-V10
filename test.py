@@ -324,12 +324,13 @@ def _test_assign_label():
 def _test_read_tiff_image():
     # slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
     # slide_filepath = '/Users/huyang/Desktop/Visium_FFPE_Human_Prostate_Acinar_Cell_Carcinoma_image.tif'
-    slide_filepath = 'E:/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
+    # slide_filepath = '/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
+    slide_filepath = '/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Kidney_tissue_image.tif'
     img, slide = slide_tools.original_slide_and_scaled_pil_image(slide_filepath)
     
     print(slide.dimensions)
     print(img)
-    # img.show()
+    img.show()
     
 def _test_read_hdf5_data():
     hdf5_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5'
@@ -366,7 +367,7 @@ def get_matrix_from_h5(filename):
     
 def _test_parse_h5():
     # filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_filtered_feature_bc_matrix.h5"
-    filtered_h5 = "/Volumes/Extreme SSD/st-data/CytAssist_FFPE_Human_Skin_Melanoma_filtered_feature_bc_matrix.h5"
+    filtered_h5 = "/Volumes/Extreme SSD/PanoPath-Project/st-data/CytAssist_FFPE_Human_Skin_Melanoma_filtered_feature_bc_matrix.h5"
     filtered_matrix_h5 = get_matrix_from_h5(filtered_h5)
     
     matrix = filtered_matrix_h5.matrix
