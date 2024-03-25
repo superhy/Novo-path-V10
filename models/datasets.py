@@ -99,6 +99,34 @@ def load_slides_tileslist(ENV_task, for_train=True):
         
     return slides_tiles_dict
 
+def load_part_slides_tileslist(ENV_task, slide_keys, for_train=True):
+    '''
+    load the tiles for a part of key slides
+    '''
+    
+    ''' prepare the parames '''
+    _env_process_slide_tile_pkl_train_dir = ENV_task.TASK_TILE_PKL_TRAIN_DIR
+    _env_process_slide_tile_pkl_test_dir = ENV_task.TASK_TILE_PKL_TEST_DIR
+#     label_type = ENV_task.LABEL_TYPE
+    
+    pkl_dir = _env_process_slide_tile_pkl_train_dir if for_train == True else _env_process_slide_tile_pkl_test_dir
+    
+    pkl_files = os.listdir(pkl_dir)
+    
+    key_slides_tiles_dict = {}
+    all_tiles_in_key_slides = []
+    for pkl_f in pkl_files:
+        # each slide each pkl
+        tiles_list = recovery_tiles_list_from_pkl(os.path.join(pkl_dir, pkl_f))
+        slide_id = tiles_list[0].query_slideid()
+        if parse_caseid_from_slideid(slide_id) in slide_keys:
+            # only load the tiles from key slides
+            all_tiles_in_key_slides.extend(tiles_list)
+            key_slides_tiles_dict[slide_id] = tiles_list
+            print(f'> load {len(tiles_list)} tiles for key slide: {slide_id}...')
+        
+    return all_tiles_in_key_slides, key_slides_tiles_dict
+
     
 class Simple_Tile_Dataset(Dataset):
     

@@ -14,7 +14,7 @@ from support.tools import Time
 from support.tools import np_info
 from skimage.color import rgb2hed, hed2rgb
 
-
+Image.MAX_IMAGE_PIXELS = None
 sys.path.append("..")
 
 def convert_rgb_to_bgr(img_rgb):

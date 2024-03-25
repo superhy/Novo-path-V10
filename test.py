@@ -323,7 +323,8 @@ def _test_assign_label():
 
 def _test_read_tiff_image():
     # slide_filepath = '/Volumes/Extreme SSD/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
-    slide_filepath = '/Users/huyang/Desktop/Visium_FFPE_Human_Prostate_Acinar_Cell_Carcinoma_image.tif'
+    # slide_filepath = '/Users/huyang/Desktop/Visium_FFPE_Human_Prostate_Acinar_Cell_Carcinoma_image.tif'
+    slide_filepath = 'E:/PanoPath-Project/st-data/CytAssist_11mm_FFPE_Human_Ovarian_Carcinoma_tissue_image.tif'
     img, slide = slide_tools.original_slide_and_scaled_pil_image(slide_filepath)
     
     print(slide.dimensions)

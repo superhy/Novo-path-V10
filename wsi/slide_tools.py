@@ -6,12 +6,14 @@ import math
 import sys
 
 import PIL
+from PIL.Image import Image
 from openslide import open_slide
 
 from support.env import ENV
 from wsi import image_tools
 
 
+Image.MAX_IMAGE_PIXELS = None
 sys.path.append("..")
 
 

@@ -632,7 +632,8 @@ class Feature_Assimilate():
                  assimilate_ratio=0.1, embed_type='encode', reg_encoder=None, 
                  comb_layer=None, ctx_type='reg_ass', assim_centre=True,
                  record_t_tuples_name=None, load_t_tuples_name=None,
-                 clst_in_ihc_dab=False):
+                 clst_in_ihc_dab=False, 
+                 hv_slide_keys=None, load_hv_remain_tiles=False):
         '''
         TODO: annotations of this function
                 
@@ -667,6 +668,8 @@ class Feature_Assimilate():
         
         self.record_t_tuples_name = record_t_tuples_name if load_t_tuples_name is None else None
         self.load_t_tuples_name = load_t_tuples_name
+        self.hv_slide_keys = ['Sl240', 'Sl241', 'Sl242', 'Sl243', 'Sl244',
+                              'Sl245', 'Sl246', 'Sl247', 'Sl248', 'Sl249', 'Sl250'] if hv_slide_keys is None else hv_slide_keys
         
         print('![Initial Stage] tiles assimilate_to_centre')
         # last_clst = 0 # count the last cluster id
@@ -715,7 +718,7 @@ class Feature_Assimilate():
         else:
             self.sensitive_centre = None
             self.key_clusters_centres, self.key_clusters = self.avg_encode_each_key_cluster(sensitive_res)
-        self.remain_tiles_tuples = self.load_remain_tiles_encodes(s_tile_keys_dict)
+        self.remain_tiles_tuples = self.load_remain_tiles_encodes(s_tile_keys_dict, load_hv_remain_tiles)
         if self.record_t_tuples_name is not None:
             self.store_remain_tiles_encode_tuples(self.remain_tiles_tuples, self.record_t_tuples_name) 
         print('prepare: 1. tiles with sensitive labels as similarity source \n\
@@ -822,7 +825,7 @@ class Feature_Assimilate():
         remain tiles from {self.model_store_dir} / {tiles_encode_tuples_fname}')
         return tiles_richencode_tuples
         
-    def load_remain_tiles_encodes(self, clst_s_tile_keys_dict):
+    def load_remain_tiles_encodes(self, clst_s_tile_keys_dict, load_hv_remain_tiles=False):
         '''
         load the tiles which are not participate in clustering 
         (at here, we use multi-threaded execution of tiles checking and loading)
@@ -853,6 +856,10 @@ class Feature_Assimilate():
             #     print('MULTI-PROCESS proceeding assigning...')
             #     load_tiles = list(tqdm(executor.map(process_tile, tiles_all_list), total=len(tiles_all_list), desc="Finding remains tiles"))
             #     remain_tiles_list = [tile for tile in load_tiles if tile is not None]
+            if load_hv_remain_tiles is True and (self.hv_slide_keys is not None and len(self.hv_slide_keys) > 0):
+                print('also load the tiles in hv slides (was excluded in clustering)...')
+                tiles_hv_list, _ = datasets.load_part_slides_tileslist(self._env_task, self.hv_slide_keys, self.for_train)
+                remain_tiles_list.extend(tiles_hv_list)
             print('need to load the embedding for %d not-yet-attention tiles...' % len(remain_tiles_list) )
                     
             return self.gen_tiles_richencode_tuples(remain_tiles_list)
@@ -909,8 +916,6 @@ class Feature_Assimilate():
         
         assimilated = set()  # To keep track of tiles already assimilated, no repeat
         clst_assimilated_dict = {}
-        
-        self.key_clusters
     
         for i, centre in enumerate(self.key_clusters_centres):
             # Compute distances for remaining tiles to current centre
@@ -1400,7 +1405,8 @@ def _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_na
                                                      tile_net_filename=None, exc_clustered=True,
                                                      assim_ratio=0.01, fills=[3],
                                                      record_t_tuples_name=None, load_t_tuples_name=None,
-                                                     clst_in_ihc_dab=False):
+                                                     clst_in_ihc_dab=False,
+                                                     hv_slide_keys=None, load_hv_remain_tiles=False):
     '''
     '''
     tile_encoder = networks.BasicResNet18(output_dim=2)
@@ -1410,7 +1416,8 @@ def _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_na
                                       attK_clst=True, exc_clustered=exc_clustered,
                                       assimilate_ratio=assim_ratio, embed_type='encode', assim_centre=False,
                                       record_t_tuples_name=record_t_tuples_name, load_t_tuples_name=load_t_tuples_name,
-                                      clst_in_ihc_dab=clst_in_ihc_dab)
+                                      clst_in_ihc_dab=clst_in_ihc_dab,
+                                      hv_slide_keys=hv_slide_keys, load_hv_remain_tiles=load_hv_remain_tiles)
     assim_tuples, clst_assimilated_dict = assimilating.assimilate_to_each()
     # record the together results
     filled_tuples = assimilating.fill_void_4_assim_sensi_tiles(assim_tuples, fills) if fills is not None else []

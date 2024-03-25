@@ -307,8 +307,12 @@ if __name__ == '__main__':
         if load_t_tuples_name is None:
             print('need to re-load clustering results first!')
         
-        assim_ratio = 0.005
+        # last edit: 24 Mar, 2024, add: load tiles in hv slides
+        assim_ratio = 0.004
         fills=[3, 3]
+        hv_slide_keys=['Sl240', 'Sl241', 'Sl242', 'Sl243', 'Sl244',
+                       'Sl245', 'Sl246', 'Sl247', 'Sl248', 'Sl249', 'Sl250'] # these are health volunteers
+        load_hv_remain_tiles=True
         
         exc_clustered=False
         _run_tiles_assimilate_each_clst_1by1_en_resnet18(ENV_task, clustering_pkl_name, sp_clsts, 
@@ -317,7 +321,9 @@ if __name__ == '__main__':
                                                          assim_ratio=assim_ratio, fills=fills,
                                                          record_t_tuples_name=record_t_tuples_name,
                                                          load_t_tuples_name=load_t_tuples_name,
-                                                         clst_in_ihc_dab=clst_in_ihc_dab)
+                                                         clst_in_ihc_dab=clst_in_ihc_dab,
+                                                         hv_slide_keys=hv_slide_keys,
+                                                         load_hv_remain_tiles=load_hv_remain_tiles)
         
         
         
