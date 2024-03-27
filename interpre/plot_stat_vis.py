@@ -20,50 +20,67 @@ from interpre.prep_tools import load_vis_pkg_from_pkl
 def plot_clst_group_props_sort_by_henning_frac(ENV_task, slide_group_props_dict, slide_frac_dict, 
                                                gp_name_list=['A', 'B', 'C', 'D', 'N'],
                                                color_dict={'A': 'green', 'B': 'blue', 'C': 'orange', 
-                                                           'D': 'red', 'N': 'grey'}):
+                                                           'D': 'red', 'N': 'lightgrey'}):
     '''
     stack bar plot
     '''
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
-    sns.set()  # setup seaborn fashion
+    sns.set_style('whitegrid')  # setup seaborn fashion
     
     # x-axis sorted by fraction score from Henning
     sorted_slides = sorted(slide_frac_dict, key=slide_frac_dict.get)
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(15, 6))
     
-    handles, labels = [], []
+    handles_dict = {}  # Initialize an empty dictionary to store unique handles for each cluster group
+    first_gp_drawn = set()  # Set to keep track of which group names have been drawn
+    
+    x_axis_fracs = [0.05, 0.1, 0.2, 0.3, 0.5, 1.0]
+    x_ticks = []  # List to store s_idx positions where x-axis labels will be shown
+    x_labels = [] # List to store the corresponding labels for the x_ticks
+    
+    # Find s_idx for the first slide_id that exceeds each value in x_axis_fracs
+    for frac in x_axis_fracs:
+        for s_idx, slide_id in enumerate(sorted_slides):
+            if slide_frac_dict[slide_id] >= frac:
+                x_ticks.append(s_idx)
+                x_labels.append(str(frac))  # Use the fraction value as the label
+                break  # Move to the next fraction value once the first exceeding slide_id is found
+    
     for s_idx, slide_id in enumerate(sorted_slides):
         if slide_id not in slide_group_props_dict.keys():
             continue
-        
+    
         bottom = 0
         for gp_name in gp_name_list:
             proportion = slide_group_props_dict[slide_id][gp_name]
-            color = color_dict.get(gp_name, 'grey')
-            handle = plt.bar(s_idx, proportion, bottom=bottom, color=color, label=f'c-group: {gp_name}')
-            handles.append(handle)
-            labels.append(f'c-group: {gp_name}')
+            color = color_dict.get(gp_name, 'lightgrey')
+            if f'group: {gp_name}' not in first_gp_drawn:
+                handle = plt.bar(s_idx, proportion, bottom=bottom, color=color, label=f'group: {gp_name}')
+                first_gp_drawn.add(f'group: {gp_name}')  # Mark this group name as drawn
+                handles_dict[f'group: {gp_name}'] = handle  # Store the handle in the dictionary
+            else:
+                plt.bar(s_idx, proportion, bottom=bottom, color=color)  # Don't add label to avoid duplicate legend entries
             bottom += proportion
-            
-    # create legend for all cluster group names
-    unique_labels, unique_handles = [], []
-    for handle, label in zip(handles, labels):
-        if label not in unique_labels:
-            unique_labels.append(label)
-            unique_handles.append(handle)
-    plt.legend(unique_handles, unique_labels)
-            
+        
+    # Create a legend using the handles and group names stored in the dictionary
+    plt.legend([handle[0] for handle in handles_dict.values()], handles_dict.keys(), title='Cluster groups')
+     
+    plt.xticks(x_ticks, x_labels)  # Set custom x-axis tick positions and labels
     plt.ylabel('Group Proportions')
-    plt.xlabel('Slide ID')
+    plt.xlabel('Slides with pathologist\'s P62 fraction score, shows fraction scores(%): low -> high')
     plt.legend(title='Cluster groups')
+    plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
     plt.tight_layout()
+    
+    plt.xlim(0, 250)
+    plt.ylim(0, 1.001)
     
     fig_name = f'clst_gp-{len(gp_name_list)}_props_sort_by_henning_frac.png'
     save_path = os.path.join(stat_store_dir, fig_name)
     plt.savefig(save_path)
     print(f'clst_group_props visualisation saved at {save_path}')
-    # plt.show()
+    plt.show()
     
 def _plot_c_group_props_by_henning_frac(ENV_task, slide_tile_label_dict_filename, clst_gps):
     '''
@@ -99,7 +116,7 @@ def plot_clsts_agts_corr_henning_frac(ENV_task, slide_agt_score_dict, slide_frac
     '''
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
-    gp_name_list = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'}
+    gp_name_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
     
     data = []
     for slide_id, group_scores in slide_agt_score_dict.items():
@@ -122,6 +139,7 @@ def plot_clsts_agts_corr_henning_frac(ENV_task, slide_agt_score_dict, slide_frac
         y_title_str = f'cluster: {gp_or_sp}'
     plt.ylabel(f'Aggregation Score for {y_title_str}')
     plt.xlabel('Pathologist\'s Frac Score')
+    plt.xlim(0, 2.0)
     
     fig_name = f'gp-{gp_or_sp}_agt_corr_henning_frac.png'
     save_path = os.path.join(stat_store_dir, fig_name)
@@ -135,7 +153,7 @@ def _plot_c_gp_agts_corr_henning_frac(ENV_task, c_gp_aggregation_filename):
     '''
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
-    gp_name_list = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'}
+    gp_name_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
     slide_gp_agt_score_dict, name_gps  = load_vis_pkg_from_pkl(stat_store_dir, 
                                                                c_gp_aggregation_filename)
     slide_ids = list(slide_gp_agt_score_dict.keys())
@@ -222,7 +240,7 @@ def _plot_c_gp_agts_dist_h_l_frac(ENV_task, c_gp_aggregation_filename, frac_thd=
     '''
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     
-    gp_name_list = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'}
+    gp_name_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']
     slide_gp_agt_score_dict, name_gps  = load_vis_pkg_from_pkl(stat_store_dir, 
                                                                c_gp_aggregation_filename)
     slide_ids = list(slide_gp_agt_score_dict.keys())

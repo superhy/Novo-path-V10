@@ -76,7 +76,7 @@ def proportion_clst_gp_on_each_slides(slide_tile_label_dict, clst_gps):
     # run for all the slide
     for slide_id, tiles in slide_tile_label_dict.items():
         # init proportion dict for each slide
-        slide_stats = {group_idx: 0 for group_idx in range(-1, len(clst_gps))}
+        slide_stats = {gp_names[group_idx]: 0 for group_idx in range(-1, len(clst_gps))}
         total_tiles = len(tiles)
         
         # go through every tile
@@ -95,6 +95,7 @@ def proportion_clst_gp_on_each_slides(slide_tile_label_dict, clst_gps):
         
         # calculate the proportion for each group
         slide_group_props_dict[slide_id] = {group_name: count / total_tiles for group_name, count in slide_stats.items()}
+        print(f'Traversed and counted the slide: {slide_id}')
     
     return slide_group_props_dict
 

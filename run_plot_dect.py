@@ -357,7 +357,7 @@ if __name__ == '__main__':
                                                     tis_pct, 'lightsalmon')
             
     if 30.1 in task_ids:
-        percentage_csv_name = 'P62_ballooning_percentage.csv'
+        percentage_csv_name = 'P62_ballooning_pct.csv'
         plot_henning_fraction_dist(ENV_task, percentage_csv_name)  
     if 30.2 in task_ids:
         score_csv_name = 'P62_ballooning_score.csv'

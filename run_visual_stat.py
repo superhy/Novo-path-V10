@@ -27,7 +27,7 @@ if __name__ == '__main__':
     
     log_name = 'statistic_log-{}-{}.log'.format(ENV_task.TASK_NAME + task_str,
                                                     str(tools.Time().start)[:13].replace(' ', '-'))
-    sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))\
+    sys.stdout = Logger(os.path.join(ENV_task.LOG_REPO_DIR, log_name))
     
     if 1 in task_ids:
         ''' --- cluster 1by1, ihc-dab r5 assimilate --- '''

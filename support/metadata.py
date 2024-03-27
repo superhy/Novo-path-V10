@@ -368,7 +368,7 @@ def load_percentages_from_csv(ENV_task, percentage_csv_name=None):
     stain_title = stain_title_prefix_dict[stain_type]
     
     if percentage_csv_name is None:
-        percentage_csv_name = f'{stain_type}_{stain_title}_percentage.csv'
+        percentage_csv_name = f'{stain_type}_{stain_title}_pct.csv'
         
     df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, percentage_csv_name))
     results_dict = pd.Series(df[f'{stain_title}_percentage'].values, index=df['slide_id']).to_dict()
