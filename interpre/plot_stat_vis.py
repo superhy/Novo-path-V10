@@ -128,7 +128,7 @@ def plot_clsts_agts_corr_henning_frac(ENV_task, slide_agt_score_dict, slide_frac
     # generate Pandas DataFrame
     df = pd.DataFrame(data, columns=['Slide ID', 'Aggregation Score', 'Frac Score'])
     
-    plt.figure(figsize=(6, 8))
+    plt.figure(figsize=(10, 6))
     # plot
     sns.regplot(x='Frac Score', y='Aggregation Score', data=df, order=2, scatter_kws={'s': 50})
     
@@ -139,7 +139,8 @@ def plot_clsts_agts_corr_henning_frac(ENV_task, slide_agt_score_dict, slide_frac
         y_title_str = f'cluster: {gp_or_sp}'
     plt.ylabel(f'Aggregation Score for {y_title_str}')
     plt.xlabel('Pathologist\'s Frac Score')
-    plt.xlim(0, 2.0)
+    plt.ylim(-0.05, 0.3)
+    plt.xlim(0, 5.0)
     
     fig_name = f'gp-{gp_or_sp}_agt_corr_henning_frac.png'
     save_path = os.path.join(stat_store_dir, fig_name)
