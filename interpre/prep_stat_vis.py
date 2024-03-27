@@ -3,11 +3,13 @@ Created on 24 Mar 2024
 
 @author: super
 '''
+from _plotly_utils.png import group
+import tqdm
+
 from interpre.prep_clst_vis import load_clst_res_slide_tile_label
 from interpre.prep_dect_vis import load_1by1_assim_res_tiles
-from interpre.prep_tools import store_nd_dict_pkl
+from interpre.prep_tools import store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
-from _plotly_utils.png import group
 
 
 def localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
@@ -96,13 +98,28 @@ def proportion_clst_gp_on_each_slides(slide_tile_label_dict, clst_gps):
     
     return slide_group_props_dict
 
-def aggregation_of_clst_gps_on_all_slides(slide_tile_label_dict, clst_gps, radius=5):
+
+def aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, clst_gps, radius=5):
     '''
+    calculate the aggregation score for each cluster group, search from neighbor_tile within a radius
+    
+    Return:
+        slide_gp_agt_score_dict, name_gps: 1: the statistic results; 
+                                      2: name dict to indicate the group name to the cluster group
     '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
     # Helper function to parse tile position from tile_id
-    def parse_tile_location(tile_id):
-        parts = tile_id.split('-')
+    def parse_tile_location(slide_id, tile_id):
+        tile_loc = tile_id.replace(slide_id, 'slide')
+        parts = tile_loc.split('-')
         return int(parts[1][1:]), int(parts[2][1:])  # h_id, w_id
+    
+    gp_names = {-1: 'N', 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 
+                6: 'G', 7: 'H', 8: 'I', 9: 'J', 10: 'K'}
+    name_gps = {}
+    for i, clst_gp in enumerate(clst_gps):
+        name_gps[gp_names[i]] = clst_gp
 
     # Map each cluster label to its group index
     label_to_group = {}
@@ -111,14 +128,14 @@ def aggregation_of_clst_gps_on_all_slides(slide_tile_label_dict, clst_gps, radiu
             label_to_group[label] = group_idx
 
     # Initialise the result dictionary
-    slide_group_scores = {}
+    slide_gp_agt_score_dict = {}
 
     for slide_id, tiles in slide_tile_label_dict.items():
-        group_counts = {group_idx: 0 for group_idx in range(len(clst_gps))}
-        total_counts = {group_idx: 0 for group_idx in range(len(clst_gps))}
+        group_counts = {g_idx: 0 for g_idx in range(len(clst_gps))}
+        total_counts = {g_idx: 0 for g_idx in range(len(clst_gps))}
 
-        for tile_id, clst_label in tiles.items():
-            h_id, w_id = parse_tile_location(tile_id)
+        for tile_id, clst_label in tiles.items(): # tqdm(, desc=f'load tiles in slide: {slide_id}'):
+            h_id, w_id = parse_tile_location(slide_id, tile_id)
 
             # Check if this tile's cluster label belongs to any group
             if clst_label in label_to_group:
@@ -132,23 +149,124 @@ def aggregation_of_clst_gps_on_all_slides(slide_tile_label_dict, clst_gps, radiu
                         if neighbor_tile_id not in tiles:
                             continue
 
-                        neighbor_label = tiles[neighbor_tile_id]
-                        if neighbor_label in label_to_group and label_to_group[neighbor_label] == group_idx:
+                        neighb_c_label = tiles[neighbor_tile_id]
+                        if neighb_c_label in label_to_group and label_to_group[neighb_c_label] == group_idx:
                             group_counts[group_idx] += 1
                         total_counts[group_idx] += 1
 
         # Calculate aggregation scores for each group
         agt_scores = {}
-        for group_idx in group_counts:
-            if total_counts[group_idx] > 0:
-                agt_scores[group_idx] = group_counts[group_idx] / total_counts[group_idx]
+        for g_idx in group_counts:
+            if total_counts[g_idx] > 0:
+                agt_scores[gp_names[g_idx]] = group_counts[g_idx] / total_counts[g_idx]
             else:
-                agt_scores[group_idx] = 0
+                agt_scores[gp_names[g_idx]] = 0
 
-        slide_group_scores[slide_id] = agt_scores
-        print('TODO:')
+        slide_gp_agt_score_dict[slide_id] = agt_scores
+        print(f'count aggregation score through all tiles in slide: {slide_id}...')
+        
+    aggregation_filename = f'agt_c-gps{len(clst_gps)}_rad{radius}.pkl'
+    store_nd_dict_pkl(stat_store_dir, (slide_gp_agt_score_dict, name_gps), aggregation_filename)
+    print('Store slides\' 1by1 clst groups aggregation score dict package as: {}'.format(aggregation_filename))
 
-    return slide_group_scores
+    return slide_gp_agt_score_dict, name_gps
+
+def aggregation_of_sp_clsts_on_all_slides(ENV_task, slide_tile_label_dict, sp_clsts, radius=5):
+    '''
+    calculate the aggregation score for selected sensitive clusters (one by one), 
+        search from neighbor_tile within a radius
+    
+    Return:
+        slide_spc_agt_score_dict
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
+    # Helper function to parse tile position from tile_id
+    def parse_tile_location(slide_id, tile_id):
+        tile_loc = tile_id.replace(slide_id, 'slide')
+        parts = tile_loc.split('-')
+        return int(parts[1][1:]), int(parts[2][1:])  # h_id, w_id
+
+    # Initialise the result dictionary
+    slide_spc_agt_score_dict = {}
+    for slide_id, tiles in slide_tile_label_dict.items():
+        group_counts = {sp_c: 0 for sp_c in sp_clsts}
+        total_counts = {sp_c: 0 for sp_c in sp_clsts}
+
+        for tile_id, clst_label in tiles.items(): # tqdm(, desc=f'load tiles in slide: {slide_id}'):
+            h_id, w_id = parse_tile_location(slide_id, tile_id)
+
+            # Check if this tile's cluster label belongs to any group
+            if clst_label in sp_clsts:
+                # Count tiles belonging to the same group within the radius
+                for h in range(h_id - radius, h_id + radius + 1):
+                    for w in range(w_id - radius, w_id + radius + 1):
+                        neighbor_tile_id = '{}-h{}-w{}'.format(slide_id, h, w)
+                        # Skip if the neighbor tile is not in the dictionary
+                        if neighbor_tile_id not in tiles:
+                            continue
+
+                        neighb_c_label = tiles[neighbor_tile_id]
+                        if neighb_c_label == clst_label:
+                            group_counts[clst_label] += 1
+                        total_counts[clst_label] += 1
+
+        # Calculate aggregation scores for each group
+        agt_scores = {}
+        for sp_c in group_counts:
+            if total_counts[sp_c] > 0:
+                agt_scores[sp_c] = group_counts[sp_c] / total_counts[sp_c]
+            else:
+                agt_scores[sp_c] = 0
+
+        slide_spc_agt_score_dict[slide_id] = agt_scores
+        print(f'count aggregation score through all tiles in slide: {slide_id}...')
+        
+    aggregation_filename = f'agt_sp-c{len(sp_clsts)}_rad{radius}.pkl'
+    store_nd_dict_pkl(stat_store_dir, slide_spc_agt_score_dict, aggregation_filename)
+    print('Store slides\' 1by1 sp clst aggregation score dict package as: {}'.format(aggregation_filename))
+
+    return slide_spc_agt_score_dict
+
+
+''' ----------- running functions ----------- '''
+def _run_localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name,
+                                        sp_clsts):
+    '''
+    '''
+    slide_tile_label_dict = localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name,
+                                                           sp_clsts)
+    return slide_tile_label_dict
+    
+def _run_agt_of_clst_gps_on_all_slides(ENV_task, slide_t_label_dict_fname, clst_gps, radius=5):
+    '''
+    '''
+    slide_tile_label_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, slide_t_label_dict_fname)
+    slide_gp_agt_score_dict, name_gps = aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, 
+                                                                              clst_gps, radius=radius)
+    return slide_gp_agt_score_dict, name_gps
+
+def _run_agt_of_clst_gps_on_all_slides_continue(ENV_task, slide_tile_label_dict, clst_gps, radius=5):
+    '''
+    '''
+    slide_gp_agt_score_dict, name_gps = aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, 
+                                                                              clst_gps, radius=radius)
+    return slide_gp_agt_score_dict, name_gps
+
+def _run_agt_of_sp_clsts_on_all_slides(ENV_task, slide_t_label_dict_fname, sp_clsts, radius=5):
+    '''
+    '''
+    slide_tile_label_dict = load_vis_pkg_from_pkl(ENV_task.STATISTIC_STORE_DIR, slide_t_label_dict_fname)
+    slide_spc_agt_score_dict = aggregation_of_sp_clsts_on_all_slides(ENV_task, slide_tile_label_dict, 
+                                                                     sp_clsts, radius=radius)
+    return slide_spc_agt_score_dict
+
+def _run_agt_of_sp_clsts_on_all_slides_continue(ENV_task, slide_tile_label_dict, sp_clsts, radius=5):
+    '''
+    '''
+    slide_spc_agt_score_dict, = aggregation_of_sp_clsts_on_all_slides(ENV_task, slide_tile_label_dict, 
+                                                                      sp_clsts, radius=radius)
+    return slide_spc_agt_score_dict
     
 
 if __name__ == '__main__':
