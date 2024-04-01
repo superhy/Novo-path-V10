@@ -227,7 +227,8 @@ if __name__ == '__main__':
         clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
         # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-11.pkl' # Mar 2024, ihc-dab, r5
         # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-15.pkl' # 15th Mar 2024, ihc-dab r5, 0.002[3,3]
-        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-19.pkl' # 19th Mar 2024, ihc-dab r5, 0.005[3,3]
+        # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-19.pkl' # 19th Mar 2024, ihc-dab r5, 0.005[3,3]
+        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-27.pkl' # 27th Mar 2024, ihc-dab r5, 0.004[3,3] with HV
         
         # cluster_groups = ['1_0_0_0_0', '1_0_0_0_1',
         #                   '2_0_1_0_0', '2_1_0_1_1',
@@ -286,7 +287,8 @@ if __name__ == '__main__':
         clustering_pkl_name = 'hiera-res-r5_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Feb 28 2024, ihc-dab, r5
         # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-11.pkl' # Mar 2024, ihc-dab, r5
         # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-15.pkl' # 15th Mar 2024, ihc-dab r5, 0.002[3,3]
-        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-19.pkl' # 19th Mar 2024, ihc-dab r5, 0.005[3,3]
+        # c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-19.pkl' # 19th Mar 2024, ihc-dab r5, 0.005[3,3]
+        c_assimilate_pkl_name = 'assimilate_1by1_ft_ass-encode-ResNet18-dab_unsupervised2024-03-27.pkl' # 27th Mar 2024, ihc-dab r5, 0.004[3,3] with HV
         
         ''' or we can also define the sp_clsts as groups, or just directly give the sp_clsts '''
         # sp_clsts = [['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1',

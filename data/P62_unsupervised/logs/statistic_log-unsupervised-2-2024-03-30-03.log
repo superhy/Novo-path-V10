@@ -1,0 +1,64 @@
+plot correlation with frac-score for group: 
+['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_1_0_1_0_1', '0_1_0_1_1_0'] >>>
+A: 0.59, p_value: 5.531567066341754e-25
+clst-gp: A or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-A_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_1_1_0_0', '0_0_1_1_1_1'] >>>
+B: 0.54, p_value: 2.7540385933363447e-20
+clst-gp: B or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-B_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0'] >>>
+C: 0.45, p_value: 8.183590425523001e-14
+clst-gp: C or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-C_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['3_0_0_0_0_1'] >>>
+D: 0.44, p_value: 1.6496065206517525e-13
+clst-gp: D or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-D_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_1_0_1_0_1', '0_1_0_1_1_0'] >>>
+A: 0.59, p_value: 5.531567066341754e-25
+clst-gp: A or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-A_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_1_1_0_0', '0_0_1_1_1_1'] >>>
+B: 0.54, p_value: 2.7540385933363447e-20
+clst-gp: B or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-B_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0'] >>>
+C: 0.45, p_value: 8.183590425523001e-14
+clst-gp: C or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-C_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['3_0_0_0_0_1'] >>>
+D: 0.44, p_value: 1.6496065206517525e-13
+clst-gp: D or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-D_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_1_0_1_0_1', '0_1_0_1_1_0'] >>>
+A: 0.54, p_value: 2.965621393436734e-20
+clst-gp: A or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-A_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_1_1_0_0', '0_0_1_1_1_1'] >>>
+B: 0.47, p_value: 1.6637168586037082e-15
+clst-gp: B or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-B_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0'] >>>
+C: 0.40, p_value: 3.41158803555845e-11
+clst-gp: C or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-C_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['3_0_0_0_0_1'] >>>
+D: 0.40, p_value: 7.050111443215266e-11
+clst-gp: D or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-D_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_0_0_0_0', '0_0_0_0_0_1', '0_0_0_1_1_0', '0_0_0_1_1_1', '0_0_1_0_0_0', '0_0_1_0_0_1', '0_0_1_0_1_1', '0_1_0_1_0_1', '0_1_0_1_1_0'] >>>
+A: 0.40, p_value: 8.228289659907216e-11
+clst-gp: A or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-A_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['0_0_1_1_0_0', '0_0_1_1_1_1'] >>>
+B: 0.29, p_value: 2.9788334142451263e-06
+clst-gp: B or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-B_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['1_0_0_0_1_0', '1_0_0_1_1_1', '1_0_1_0_0_0', '1_1_0_0_1_0'] >>>
+C: 0.25, p_value: 6.918042513132744e-05
+clst-gp: C or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-C_agt_corr_henning_frac.png
+plot correlation with frac-score for group: 
+['3_0_0_0_0_1'] >>>
+D: 0.35, p_value: 1.542929275374754e-08
+clst-gp: D or sp-clst corr frac-score visualisation saved at D:/FLINC_dataset/slides/yang_p62\visualization/statistic\clst_gp-D_agt_corr_henning_frac.png

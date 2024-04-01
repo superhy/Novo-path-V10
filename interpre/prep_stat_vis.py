@@ -10,6 +10,7 @@ from interpre.prep_clst_vis import load_clst_res_slide_tile_label
 from interpre.prep_dect_vis import load_1by1_assim_res_tiles
 from interpre.prep_tools import store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
+from support.tools import Time
 
 
 def localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
@@ -57,8 +58,7 @@ def localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_p
                 slide_tile_label_dict[slide_id][tile_id] = label
         print(f'localized the assimilated tile for slide: {slide_id}.')
         
-    new_name = f'{len(sp_clsts)}-1by1_c-a-local'
-    local_filename = clustering_pkl_name.replace('clst-res', new_name)
+    local_filename = f'c{len(sp_clsts)}-1by1_c-a-local_{Time().date}.pkl'
     store_nd_dict_pkl(stat_store_dir, slide_tile_label_dict, local_filename)
     print('Store slides\' 1by1 sensi-clsts (and assims) localized maps numpy package as: {}'.format(local_filename))
     
@@ -116,8 +116,11 @@ def aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, clst_
         parts = tile_loc.split('-')
         return int(parts[1][1:]), int(parts[2][1:])  # h_id, w_id
     
-    gp_names = {-1: 'N', 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 
-                6: 'G', 7: 'H', 8: 'I', 9: 'J', 10: 'K'}
+    if len(clst_gps) > 1:
+        gp_names = {-1: 'N', 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 
+                    6: 'G', 7: 'H', 8: 'I', 9: 'J', 10: 'K'}
+    else:
+        gp_names = {0: 'All'}
     name_gps = {}
     for i, clst_gp in enumerate(clst_gps):
         name_gps[gp_names[i]] = clst_gp
@@ -159,14 +162,17 @@ def aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, clst_
         agt_scores = {}
         for g_idx in group_counts:
             if total_counts[g_idx] > 0:
-                agt_scores[gp_names[g_idx]] = group_counts[g_idx] / total_counts[g_idx]
+                if total_counts[g_idx] > (radius * 2 + 1) ** 2:
+                    agt_scores[gp_names[g_idx]] = group_counts[g_idx] / total_counts[g_idx]
+                else:
+                    agt_scores[gp_names[g_idx]] = 0
             else:
                 agt_scores[gp_names[g_idx]] = 0
 
         slide_gp_agt_score_dict[slide_id] = agt_scores
         print(f'count aggregation score through all tiles in slide: {slide_id}...')
         
-    aggregation_filename = f'agt_c-gps{len(clst_gps)}_rad{radius}.pkl'
+    aggregation_filename = f'agt_c-gps{len(clst_gps)}_rad{radius}_{Time().date}.pkl'
     store_nd_dict_pkl(stat_store_dir, (slide_gp_agt_score_dict, name_gps), aggregation_filename)
     print('Store slides\' 1by1 clst groups aggregation score dict package as: {}'.format(aggregation_filename))
 
@@ -216,14 +222,17 @@ def aggregation_of_sp_clsts_on_all_slides(ENV_task, slide_tile_label_dict, sp_cl
         agt_scores = {}
         for sp_c in group_counts:
             if total_counts[sp_c] > 0:
-                agt_scores[sp_c] = group_counts[sp_c] / total_counts[sp_c]
+                if total_counts[sp_c] > (radius * 2 + 1) ** 2:
+                    agt_scores[sp_c] = group_counts[sp_c] / total_counts[sp_c]
+                else:
+                    agt_scores[sp_c] = 0
             else:
                 agt_scores[sp_c] = 0
 
         slide_spc_agt_score_dict[slide_id] = agt_scores
         print(f'count aggregation score through all tiles in slide: {slide_id}...')
         
-    aggregation_filename = f'agt_sp-c{len(sp_clsts)}_rad{radius}.pkl'
+    aggregation_filename = f'agt_sp-c{len(sp_clsts)}_rad{radius}_{Time().date}.pkl'
     store_nd_dict_pkl(stat_store_dir, slide_spc_agt_score_dict, aggregation_filename)
     print('Store slides\' 1by1 sp clst aggregation score dict package as: {}'.format(aggregation_filename))
 

@@ -102,6 +102,9 @@ def load_slides_tileslist(ENV_task, for_train=True):
 def load_part_slides_tileslist(ENV_task, slide_keys, for_train=True):
     '''
     load the tiles for a part of key slides
+    
+    Args:
+        slide_keys: mean case_ids of slides
     '''
     
     ''' prepare the parames '''
