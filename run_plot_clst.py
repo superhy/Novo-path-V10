@@ -48,10 +48,10 @@ if __name__ == '__main__':
     # ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [20.1]
+    # task_ids = [20.1]
     # task_ids = [21, 22, 29.1]
     # task_ids = [29.2]
-    # task_ids = [22.1]
+    task_ids = [22.1]
     # task_ids = [29.1]
     # task_ids = [61, 62]
     # task_ids = [29.3]

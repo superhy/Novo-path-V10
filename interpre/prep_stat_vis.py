@@ -3,6 +3,9 @@ Created on 24 Mar 2024
 
 @author: super
 '''
+import csv
+import os
+
 from _plotly_utils.png import group
 import tqdm
 
@@ -11,6 +14,7 @@ from interpre.prep_dect_vis import load_1by1_assim_res_tiles
 from interpre.prep_tools import store_nd_dict_pkl, load_vis_pkg_from_pkl
 from models import datasets
 from support.tools import Time
+from support.files import parse_caseid_from_slideid
 
 
 def localise_k_clsts_on_all_slides(ENV_task, clustering_pkl_name, c_assimilate_pkl_name, 
@@ -98,6 +102,48 @@ def proportion_clst_gp_on_each_slides(slide_tile_label_dict, clst_gps):
         print(f'Traversed and counted the slide: {slide_id}')
     
     return slide_group_props_dict
+
+def save_slide_group_props_to_csv(ENV_task, slide_group_props_dict):
+    '''
+    store the slide_group_props_dict into CSV
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    csv_file_path = os.path.join(stat_store_dir, 'slide_clusters_props.csv')
+    
+    gp_names = set()
+    for slide_props in slide_group_props_dict.values():
+        gp_names.update({gp_name for gp_name in slide_props.keys() if gp_name != 'N'})
+    
+    # CSV column titles
+    headers = ['slide_id'] + sorted(gp_names) + ['all']
+    
+    # open csv
+    rows_data = []
+    for slide_id, proportions in slide_group_props_dict.items():
+        # initialize the rows
+        row_data = {'slide_id': parse_caseid_from_slideid(slide_id)}
+        
+        # excluded
+        for gp_name, prop_value in proportions.items():
+            if gp_name != 'N':
+                row_data[gp_name] = prop_value
+        
+        # sum
+        total_prop = sum(value for key, value in proportions.items() if key != 'N')
+        # for column 'all'
+        row_data['all'] = total_prop
+        
+        rows_data.append(row_data)
+    
+    # sorted by 'case_id'
+    sorted_rows_data = sorted(rows_data, key=lambda x: x['slide_id'])
+    
+    # write into csv
+    with open(csv_file_path, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(sorted_rows_data)
+    print(f'store the slide_group_props_dict in: {csv_file_path}.')
 
 
 def aggregation_of_clst_gps_on_all_slides(ENV_task, slide_tile_label_dict, clst_gps, radius=5):

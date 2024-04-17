@@ -13,13 +13,15 @@ from matplotlib.ticker import FormatStrFormatter, MaxNLocator
 from scipy.stats.stats import pearsonr
 
 from interpre import prep_stat_vis
+from interpre.prep_stat_vis import save_slide_group_props_to_csv
 from interpre.prep_tools import load_vis_pkg_from_pkl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from support import metadata, tools
-from support.files import parse_caseid_from_slideid
+from support.files import parse_caseid_from_slideid, \
+    parse_23910_clinicalid_from_slideid
 
 
 def plot_clst_group_props_sort_by_henning_frac(ENV_task, slide_group_props_dict, slide_frac_dict, 
@@ -75,7 +77,7 @@ def plot_clst_group_props_sort_by_henning_frac(ENV_task, slide_group_props_dict,
      
     plt.xticks(x_ticks, x_labels)  # Set custom x-axis tick positions and labels
     plt.ylabel('Group Proportions')
-    plt.xlabel('Slides with pathologist\'s P62 fraction score, shows fraction scores(%): low -> high')
+    plt.xlabel('Slides with P62 preliminary dark-area fraction score, shows fraction scores(%): low -> high')
     plt.legend(title='Cluster groups')
     plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
     plt.tight_layout()
@@ -176,6 +178,7 @@ def _plot_c_group_props_by_henning_frac(ENV_task, slide_tile_label_dict_filename
         slide_frac_dict[s_id] = case_frac_dict[case_id]
     
     slide_group_props_dict = prep_stat_vis.proportion_clst_gp_on_each_slides(slide_tile_label_dict, clst_gps)
+    save_slide_group_props_to_csv(ENV_task, slide_group_props_dict)
     plot_clst_group_props_sort_by_henning_frac(ENV_task, slide_group_props_dict, slide_frac_dict)
     
 def _plot_c_gps_props_dist_in_slides(ENV_task, slide_tile_label_dict_filename, clst_gps, gp_names,
@@ -360,9 +363,9 @@ def _plot_sp_c_agts_corr_henning_frac(ENV_task, sp_c_aggregation_filename,
                                           colors=colors,
                                           xlims=xlims, ylims=ylims)
         
-def plot_agt_dist_h_l_henning_frac(ENV_task,slide_agt_score_dict, slide_frac_dict, 
+def plot_agt_dist_h_l_henning_frac2(ENV_task,slide_agt_score_dict, slide_frac_dict, 
                                    c_gp, frac_thd,
-                                   colors = ['salmon', 'lightseagreen']):
+                                   colors = ['salmon', 'lightseagreen', ]):
     '''
     '''
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
@@ -402,13 +405,67 @@ def plot_agt_dist_h_l_henning_frac(ENV_task,slide_agt_score_dict, slide_frac_dic
     plt.legend()
     plt.tight_layout()
     
-    fig_name = f'gp-{c_gp}_dist_h-l-frac-thd-{frac_thd}.png'
+    fig_name = f'gp-{c_gp}_dist_h-l-frac2-thd-{frac_thd}.png'
     save_path = os.path.join(stat_store_dir, fig_name)
     plt.savefig(save_path)
-    print(f'clst-gp: {c_gp} or sp-clst corr frac-score visualisation saved at {save_path}')
+    print(f'clst-gp: {c_gp} or sp-clst corr frac2-score visualisation saved at {save_path}')
+    # plt.show()
+    
+def plot_agt_dist_h_l_henning_frac3(ENV_task,slide_agt_score_dict, slide_frac_dict, 
+                                   c_gp, frac_thd_tuple,
+                                   colors = ['magenta', 'salmon', 'lightseagreen']):
+    '''
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
+    # prepare the data
+    scores_high_frac = [] # aggregation_score list for frac_score >= frac_thd[1]
+    scores_mid_frac = [] # aggregation_score list for frac_thd[0] <= frac_score < frac_thd[1]
+    scores_low_frac = [] # aggregation_score list for frac_score < frac_thd[0]
+
+    for slide_id, group_scores in slide_agt_score_dict.items():
+        # check if slide_id has specific c_gp's aggregation_score we want
+        if c_gp in group_scores:
+            aggregation_score = group_scores[c_gp]
+            frac_score = slide_frac_dict.get(slide_id, 0)
+            
+            # split different frac_score sets
+            if frac_score >= frac_thd_tuple[1]:
+                scores_high_frac.append(aggregation_score)
+            elif frac_score >= frac_thd_tuple[0] and frac_score < frac_thd_tuple[1]:
+                scores_mid_frac.append(aggregation_score)
+            else:
+                scores_low_frac.append(aggregation_score)
+    
+    # Set global font size
+    plt.rcParams.update({'font.size': 15})
+    
+    # plot
+    plt.figure(figsize=(6, 6))
+    sns.kdeplot(scores_high_frac, color=colors[0], fill=True, alpha=0.3, 
+                label=f'Slides with fraction >= {frac_thd_tuple[1]}')
+    sns.kdeplot(scores_mid_frac, color=colors[1], fill=True, alpha=0.3, 
+                label=f'{frac_thd_tuple[0]} <= Slides with fraction < {frac_thd_tuple[1]}')
+    sns.kdeplot(scores_low_frac, color=colors[2], fill=True, alpha=0.3, 
+                label=f'Slides with fraction < {frac_thd_tuple[0]}')
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # plt.xlim(-0.0, 1.0)
+    plt.title(f'Aggregation Score Distribution for Group {c_gp}')
+    plt.xlabel('Aggregation Score')
+    plt.xticks(rotation=30)
+    plt.ylabel('Density')
+    plt.legend()
+    plt.tight_layout()
+    
+    fig_name = f'gp-{c_gp}_dist_h-l-frac3-thd-{frac_thd_tuple}.png'
+    save_path = os.path.join(stat_store_dir, fig_name)
+    plt.savefig(save_path)
+    print(f'clst-gp: {c_gp} or sp-clst corr frac3-score visualisation saved at {save_path}')
     # plt.show()
 
-def _plot_c_gp_agts_dist_h_l_frac(ENV_task, c_gp_aggregation_filename, 
+def _plot_c_gp_agts_dist_h_l_frac2(ENV_task, c_gp_aggregation_filename, 
                                   frac_thd=0.2, colors = ['salmon', 'lightseagreen']):
     '''
     h_l_frac means higher or lower a threshold on fraction 
@@ -430,8 +487,33 @@ def _plot_c_gp_agts_dist_h_l_frac(ENV_task, c_gp_aggregation_filename,
     for i in range(len(name_gps)):
         print(f'plot agt distribution higher/lower frac-score for group: \n{name_gps[gp_name_list[i]]} >>>')
         clst_gp = gp_name_list[i]
-        plot_agt_dist_h_l_henning_frac(ENV_task, slide_gp_agt_score_dict, slide_frac_dict,
+        plot_agt_dist_h_l_henning_frac2(ENV_task, slide_gp_agt_score_dict, slide_frac_dict,
                                        c_gp=clst_gp, frac_thd=frac_thd, colors=colors)
+        
+def _plot_c_gp_agts_dist_h_l_frac3(ENV_task, c_gp_aggregation_filename, 
+                                   frac_thd_tuple=(0.2, 0.5), colors = ['magenta', 'salmon', 'lightseagreen']):
+    '''
+    h_l_frac means higher or lower a threshold on fraction 
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
+    slide_gp_agt_score_dict, name_gps  = load_vis_pkg_from_pkl(stat_store_dir, 
+                                                               c_gp_aggregation_filename)
+    gp_name_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'] if len(name_gps) > 1 else ['All']
+    slide_ids = list(slide_gp_agt_score_dict.keys())
+    
+    # load Henning's slide_frac_dict
+    slide_frac_dict = {}
+    case_frac_dict = metadata.load_percentages_from_csv(ENV_task)
+    for s_id in slide_ids:
+        case_id = parse_caseid_from_slideid(s_id)
+        slide_frac_dict[s_id] = case_frac_dict[case_id]
+        
+    for i in range(len(name_gps)):
+        print(f'plot agt distribution higher/lower frac-score for group: \n{name_gps[gp_name_list[i]]} >>>')
+        clst_gp = gp_name_list[i]
+        plot_agt_dist_h_l_henning_frac3(ENV_task, slide_gp_agt_score_dict, slide_frac_dict,
+                                        c_gp=clst_gp, frac_thd_tuple=frac_thd_tuple, colors=colors)
 
         
 def plot_agt_score_heatmap(ENV_task, slide_agt_score_dict, slide_frac_dict, label_sort, 
@@ -505,7 +587,7 @@ def plot_agt_score_heatmap(ENV_task, slide_agt_score_dict, slide_frac_dict, labe
     plt.yticks([])
     plt.ylabel('')
     plt.xticks([])
-    ax.set_xlabel('Slides with pathologist\'s P62 fraction score, left -> right with fraction scores(%): low -> high', 
+    ax.set_xlabel('Slides with P62 preliminary dark-area fraction score, left -> right with fraction scores(%): low -> high', 
                   labelpad=80)
     
     total_rows = len(label_sort)
@@ -624,6 +706,107 @@ def _plot_spc_gps_agt_heatmap_by_henning_frac(ENV_task, spc_gps_agt_filename_lis
     frac_markers = [0.05, 0.1, 0.2, 0.3, 0.5, 1.0]  
     plot_agt_score_heatmap(ENV_task, slide_spc_gps_agt_score_dict, slide_frac_dict, 
                            label_sort, y_markers, frac_markers)
+    
+    
+def load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name):
+    '''
+    load the the slide_ids with statistic results
+    and generate cohort slide_id -> marta's case_id dict to mapping marta's results
+    '''
+    
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    slide_spc_agt_score_dict = load_vis_pkg_from_pkl(stat_store_dir, any_vis_pkg_name)
+    slide_ids = list(slide_spc_agt_score_dict.keys())
+    
+    cohort_s_marta_p_dict = {}
+    for slide_id in slide_ids:
+        cohort_s_id = parse_caseid_from_slideid(slide_id)
+        cohort_p_id = parse_23910_clinicalid_from_slideid(slide_id)
+        if cohort_p_id.startswith('HV'):
+            marta_p_id = cohort_p_id.replace('-', '_')
+        else:
+            marta_p_id = f'P_{cohort_p_id}'
+        
+        cohort_s_marta_p_dict[cohort_s_id] = marta_p_id
+        
+    return cohort_s_marta_p_dict
+
+def plot_corr_between_items_from_2csv(ENV_task, cohort_s_marta_p_dict, 
+                                      x_csv_filename, y_csv_filename,
+                                      x_col_n, y_col_n,
+                                      x_thd_la=0.5):
+    '''
+    plot the correlation for values of 2 columns from 2 csv files
+    '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    x_idx, y_idx = 'slide_id', 'case_ID'
+    shown_name_dict = {'A': 'P62-group-A',
+                      'B': 'P62-group-B',
+                      'C': 'P62-group-C',
+                      'D': 'P62-group-D',
+                      'all': 'P62-sensitive_area',
+                      '0': 'Fibrosis-cluster_0',
+                      '1': 'Fibrosis-cluster_1',
+                      '2': 'Fibrosis-cluster_2',
+                      '3': 'Fibrosis-cluster_3',
+                      '4': 'Fibrosis-cluster_4',
+                      '5': 'Fibrosis-cluster_5',
+                      '6': 'Fibrosis-cluster_6'}
+    
+    # Load CSV files
+    x_df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, x_csv_filename) )
+    y_df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, y_csv_filename) )
+    # print(x_df)
+    # print(y_df)
+    
+    # Filter rows based on cohort_s_marta_p_dict mappings
+    filtered_x_df = x_df[x_df[x_idx].isin(cohort_s_marta_p_dict.keys())]
+    filtered_y_df = y_df[y_df[y_idx].isin(cohort_s_marta_p_dict.values())]
+    # print(filtered_x_df)
+    # print(filtered_y_df)
+    
+    # Create a new DataFrame to store matched rows based on cohort_s_marta_p_dict
+    matched_df = pd.DataFrame(columns=[x_col_n, y_col_n])
+    
+    # Iterate through the filtered_x_df and find matching rows in filtered_y_df based on the dictionary mapping
+    for x_id in filtered_x_df[x_idx]:
+        y_id = cohort_s_marta_p_dict[x_id] if x_idx != y_idx else x_id
+        if y_id in filtered_y_df[y_idx].values:
+            x_value = filtered_x_df[filtered_x_df[x_idx] == x_id][x_col_n].values[0]
+            y_value = filtered_y_df[filtered_y_df[y_idx] == y_id][y_col_n].values[0]
+            if pd.isna(x_value) or pd.isna(y_value) or x_value < x_thd_la:
+                print('found NaN, skip...')
+                continue
+            matched_df = matched_df.append({x_col_n: x_value, y_col_n: y_value}, ignore_index=True)
+    # print(matched_df, type(matched_df))
+    
+    # Get fake names for the axes if provided
+    x_label = shown_name_dict.get(x_col_n, x_col_n)
+    y_label = shown_name_dict.get(y_col_n, y_col_n)
+    
+    plt.figure(figsize=(6, 6))
+    # Plotting with regplot
+    sns.regplot(data=matched_df, x=x_col_n, y=y_col_n)
+    plt.title(f'Correlation between {x_label} and {y_label}')
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    
+    print(matched_df[x_col_n])
+    print(matched_df[y_col_n])
+    # Calculate Pearson correlation coefficient
+    pearson_coef, p_value = pearsonr(matched_df[x_col_n], matched_df[y_col_n])
+    print(f'Pearson correlation coefficient: {pearson_coef}')
+    # Annotate the plot with the Pearson correlation coefficient
+    plt.annotate(f'Pearson = {pearson_coef:.2f}', xy=(0.1, 0.9), xycoords='axes fraction')
+    
+    fig_name = f'corr_{x_label}-to-{y_label}.png'
+    save_path = os.path.join(stat_store_dir, fig_name)
+    plt.savefig(save_path)
+    print(f'correlation of {x_label} and {y_label} visualisation saved at {save_path}')
+    # plt.show()
 
 if __name__ == '__main__':
     pass
+
+
+

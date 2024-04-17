@@ -37,13 +37,13 @@ if __name__ == '__main__':
 
     # task_ids = [0]
     # task_ids = [1]
-    task_ids = [2]
+    task_ids = [2.1]
     # task_ids = [10.5]
     # task_ids = [29.11, 29.12, 29.13, 29.14, 29.15]
     # task_ids = [29.2, 29.21, 29.22]
     # task_ids = [29.19]
     # task_ids = [29.3, 29.4]
-    # task_ids = [30.2]
+    # task_ids = [30.1]
     # task_ids = [201, 201.1]
     
     if 0 in task_ids:
@@ -76,12 +76,27 @@ if __name__ == '__main__':
         # spatmap_pkl_name = '17-clst-a-spat[0-50]-0.002_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl'
         # spatmap_pkl_name = '17-clst-a-spat[0-50]-0.01_Kmeans-ResNet18-encode_unsupervised2023-11-26.pkl' # before Dec 2023
         # spatmap_pkl_name = '7-1by1_c-a-spat[0-50]_Kmeans-ResNet18-encode_unsupervised2024-02-20.pkl' # Feb 2024
-        spatmap_pkl_name = '16-1by1_c-a-spat[0-50]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar(0.002[3,3]) 2024, ihc-dab, simi-color groups
+        # spatmap_pkl_name = '16-1by1_c-a-spat[0-50]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar(0.002[3,3]) 2024, ihc-dab, simi-color groups
         # spatmap_pkl_name = '16-1by1_c-a-spat[0-50]-r5-asm05_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar(0.005[3,3]) 2024, ihc-dab, simi-color groups
-        # spatmap_pkl_name = '16-1by1_c-a-spat[0-50]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar(0.004[3,3]hv) 2024, ihc-dab, simi-color groups
+        spatmap_pkl_name = '16-1by1_c-a-spat[0-50]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl' # Mar(0.004[3,3]hv) 2024, ihc-dab, simi-color groups
         
         draw_org = True
         _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)
+    if 2.1 in task_ids:
+        # spatmap_pkl_name_list = ['16-1by1_c-a-spat[0-50]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+        #                          '16-1by1_c-a-spat[50-100]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+        #                          '16-1by1_c-a-spat[100-150]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+        #                          '16-1by1_c-a-spat[150-200]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+        #                          '16-1by1_c-a-spat[200-250]-r5-asm02_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl']
+        spatmap_pkl_name_list = ['16-1by1_c-a-spat[0-50]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+                                 '16-1by1_c-a-spat[50-100]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+                                 '16-1by1_c-a-spat[100-150]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+                                 '16-1by1_c-a-spat[150-200]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl',
+                                 '16-1by1_c-a-spat[200-250]-r5-asm04hv_Kmeans-ResNet18-encode-dab_unsupervised2024-03-01.pkl']
+        draw_org = True
+        for spatmap_pkl_name in spatmap_pkl_name_list:
+            _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)
+        
     if 3.1 in task_ids:
         s_clst_t_p_pkl_name = 'sensi_c-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assim_t_p_pkl_name = 'assim_t-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'

@@ -333,12 +333,13 @@ def _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_na
         org_img, heat_s_clst_col = slide_topk_heatmap_dict[slide_id]
             
         alg_name = spatmap_pkl_name[spatmap_pkl_name.find('-spat') + 6:-15]
+        range_suffix = spatmap_pkl_name[spatmap_pkl_name.find('['): spatmap_pkl_name.find(']')+1]
         if spatmap_pkl_name.find('-a-spat') != -1:
             single_multi_dir = os.path.join(_env_heatmap_store_dir, 'clst_assim_map')
-            spat_dir = os.path.join(single_multi_dir, 'clst_assim_dx')
+            spat_dir = os.path.join(single_multi_dir, f'clst_assim_dx{range_suffix}')
         else:
             single_multi_dir = os.path.join(_env_heatmap_store_dir, 'clst_map')
-            spat_dir = os.path.join(single_multi_dir, 'clst_dx')
+            spat_dir = os.path.join(single_multi_dir, f'clst_dx{range_suffix}')
             
         if not os.path.exists(os.path.join(_env_heatmap_store_dir, '{}//1'.format(spat_dir))):
             os.makedirs(os.path.join(_env_heatmap_store_dir, '{}//1'.format(spat_dir)))
@@ -1001,23 +1002,30 @@ def plot_henning_fraction_dist(ENV_task, percentage_csv_name=None, auto_bins=Fal
     '''
     visualisation the distribution of bio-marker percentage from Henning and Marta's results
     '''
+    stat_store_dir = ENV_task.STATISTIC_STORE_DIR
+    
     percentage_dict = load_percentages_from_csv(ENV_task, percentage_csv_name)
     percentage_values = np.asarray(list(percentage_dict.values()))
     
-    plt.figure(figsize=(12, 3))
+    plt.rcParams.update({'font.size': 25})
+    
+    plt.figure(figsize=(24, 6))
     data_le_0_2 = percentage_values[percentage_values <= 0.2]
-    data_bt_0_2_1 = percentage_values[(0.2 < percentage_values) & (percentage_values <= 1)]
+    data_bt_0_2_0_5 = percentage_values[(0.2 < percentage_values) & (percentage_values <= 0.5)]
+    data_bt_0_5_1 = percentage_values[(0.5 < percentage_values) & (percentage_values <= 1)]
     data_gt_1 = percentage_values[percentage_values > 1]
     sns.histplot(data_le_0_2, color='orange', kde=False, binwidth=0.05)
-    sns.histplot(data_bt_0_2_1, color='skyblue', kde=False, binwidth=0.05)
+    sns.histplot(data_bt_0_2_0_5, color='skyblue', kde=False, binwidth=0.05)
+    sns.histplot(data_bt_0_5_1, color='fuchsia', kde=False, binwidth=0.05)
     sns.histplot(data_gt_1, color='red', kde=False, binwidth=0.05)
     # sns.histplot(percentage_values, kde=True, color='skyblue', line_kws={'color': 'blue'}) # shutdown KDE
     # sns.kdeplot(data_le_0_2, bw_method='scott', cut=0, clip=(0, 1), color='black')
     
     orange_patch = mpatches.Patch(color='orange', label='≤ 0.2')
-    skyblue_patch = mpatches.Patch(color='skyblue', label='0.2 - 1')
+    skyblue_patch = mpatches.Patch(color='skyblue', label='0.2 ~ 0.5')
+    fuchsia_patch = mpatches.Patch(color='fuchsia', label='0.5 ~ 1')
     red_patch = mpatches.Patch(color='red', label='> 1')
-    plt.legend(handles=[orange_patch, skyblue_patch, red_patch])
+    plt.legend(handles=[orange_patch, skyblue_patch, fuchsia_patch, red_patch])
         
     plt.xlim(-0.05, )
     # plt.ylim(0, 50)
@@ -1025,9 +1033,13 @@ def plot_henning_fraction_dist(ENV_task, percentage_csv_name=None, auto_bins=Fal
     plt.xlabel(f'{ENV_task.STAIN_TYPE} percentage')
     plt.ylabel('Frequency')
     # using histplot and turn on the KDE fitting
-    
     plt.tight_layout()
-    plt.show()
+    
+    fig_name = f'P62-csv_ballooning_pct.png'
+    save_path = os.path.join(stat_store_dir, fig_name)
+    plt.savefig(save_path)
+    print(f'P62-csv_ballooning percentage distribution saved at {save_path}')
+    # plt.show()
     
 ''' -------------------------------------------------------------------------------- '''
     
