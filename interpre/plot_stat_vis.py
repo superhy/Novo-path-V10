@@ -9,16 +9,15 @@ import gc
 import os
 
 from matplotlib import patches
+from matplotlib.legend_handler import HandlerBase
 from matplotlib.lines import Line2D
-from matplotlib.collections import LineCollection
-from matplotlib.legend_handler import HandlerLineCollection
-
 from matplotlib.ticker import FormatStrFormatter, MaxNLocator
 from scipy.stats import pearsonr
 
 from interpre import prep_stat_vis
 from interpre.prep_stat_vis import save_slide_group_props_to_csv
 from interpre.prep_tools import load_vis_pkg_from_pkl
+import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,6 +25,7 @@ import seaborn as sns
 from support import metadata, tools
 from support.files import parse_caseid_from_slideid, \
     parse_23910_clinicalid_from_slideid
+from cmapy import cmap
 
 
 # from scipy.stats.stats import pearsonr
@@ -942,18 +942,41 @@ def calculate_pearson_correlation(df):
                 corr_matrix.loc[cols[i], cols[j]] = 1
                 p_value_matrix.loc[cols[i], cols[j]] = 0
 
-    return corr_matrix, p_value_matrix
+    return corr_matrix, p_value_matrix, len(df)
 
-def plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix):
+class HandlerCrossInBox(HandlerBase):
+    '''
+    create the cross for plotting legend
+    '''
+    def create_artists(self, legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans):
+        # Ensure the box is more square-like by adjusting the dimensions
+        box_size = min(width, height) * 1.2
+        center = 0.5 * width - xdescent, 0.5 * height - ydescent
+        # Create a rectangle as the box
+        box = patches.Rectangle([center[0] - box_size / 2, center[1] - box_size / 2], 
+                                box_size, box_size, edgecolor='black', facecolor='none', lw=1, transform=trans)
+        # Adjust cross lines to fit within the new box size, with finer lines
+        line1 = mlines.Line2D([center[0] - box_size / 3, center[0] + box_size / 3],
+                              [center[1] - box_size / 3, center[1] + box_size / 3], color='black', lw=1, transform=trans)
+        line2 = mlines.Line2D([center[0] - box_size / 3, center[0] + box_size / 3],
+                              [center[1] + box_size / 3, center[1] - box_size / 3], color='black', lw=1, transform=trans)
+        
+        return [box, line1, line2]
+
+def plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix, fig_path, title_str=''):
     '''
     '''
     # Create a heat map using an inverted triangle matrix
     mask = np.tril(np.ones_like(correlation_matrix, dtype=bool), k=-1)
     plt.figure(figsize=(15, 10))
-    cmap = sns.diverging_palette(230, 20, as_cmap=True)  # colour panel
+    # cmap = sns.diverging_palette(230, 20, as_cmap=True)  # colour panel
+    cmap = 'bwr'
     ax = sns.heatmap(correlation_matrix, mask=mask, annot=False, fmt=".2f", cmap=cmap, center=0,
                      square=True, linewidths=.5, cbar_kws={"shrink": .5, "pad": 0.2})
-    plt.title('Correlation heatmap cross all measurements')
+    if p_value_matrix is not None:
+        plt.title(f'Correlation heatmap cross all measurements (with 95% CIs){title_str}')
+    else:
+        plt.title(f'Correlation heatmap cross all measurements {title_str}')
     
     # set position of x and y axis
     ax.set_xticks(np.arange(correlation_matrix.shape[1]) + 0.5)
@@ -963,26 +986,28 @@ def plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix):
     ax.xaxis.tick_top()
     ax.yaxis.tick_right()
     
-    lines = [[(0, 0), (1, 1)], [(0, 1), (1, 0)]]
-    lc = LineCollection(lines, colors='black', linewidths=2)
-    cross_legend = plt.legend([lc], ['p-value > 0.05'], loc='upper left', 
-                              bbox_to_anchor=(1.3, 1), handler_map={LineCollection: HandlerLineCollection()})
-
-    # mark the p-value > 0.05 as a "X"
-    for i in range(p_value_matrix.shape[0]):
-        for j in range(p_value_matrix.shape[1]):
-            if p_value_matrix.iloc[i, j] > 0.05 and not mask[i, j]:
-                # cross from left-top to right-bottom
-                ax.plot([j, j+1], [i, i+1], color='black', lw=1)
-                # cross from right-top to left-bottom
-                ax.plot([j+1, j], [i, i+1], color='black', lw=1)
-                # frame
-                ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='black', lw=1))
+    if p_value_matrix is not None:
+        # shows cross legend
+        legend_handle = patches.Rectangle((0, 0), 1, 1, color='white', edgecolor='none')  # Invisible, used for spacing
+        plt.legend([legend_handle], ['p-value>0.05'], handler_map={patches.Rectangle: HandlerCrossInBox()},
+                   loc='upper left', bbox_to_anchor=(1.3, 1))
+    
+        # mark the p-value > 0.05 as a "X"
+        for i in range(p_value_matrix.shape[0]):
+            for j in range(p_value_matrix.shape[1]):
+                if p_value_matrix.iloc[i, j] > 0.05 and not mask[i, j]:
+                    # cross from left-top to right-bottom
+                    ax.plot([j, j+1], [i, i+1], color='black', lw=1)
+                    # cross from right-top to left-bottom
+                    ax.plot([j+1, j], [i, i+1], color='black', lw=1)
+                    # frame
+                    ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='black', lw=1))
                 
     plt.tight_layout()
-    plt.show()
+    plt.savefig(fig_path)
+    # plt.show()
     
-def _plot_pearson_corr_heatmap_p62_fibrosis(ENV_task, csv_file_names):
+def _plot_pearson_corr_heatmap_p62_fibrosis(ENV_task, csv_file_names, do_p_val=True):
     '''
     '''
     
@@ -992,8 +1017,40 @@ def _plot_pearson_corr_heatmap_p62_fibrosis(ENV_task, csv_file_names):
     
     combined_df = merge_csv_files(csv_file_paths)
     updated_df = give_column_names(combined_df)
-    correlation_matrix, p_value_matrix = calculate_pearson_correlation(updated_df)
-    plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix)
+    correlation_matrix, p_value_matrix, N = calculate_pearson_correlation(updated_df)
+    title_str = f', N = {N}'
+    
+    if do_p_val is False:
+        p_value_matrix = None
+        fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR,
+                            f'p62_fibrosis_corr_pearson_map-no_p_val.png')
+    else:
+        fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR,
+                            f'p62_fibrosis_corr_pearson_map.png')
+    plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix, fig_path, title_str)
+    
+def _plot_pearson_corr_heatmap_p62thd_fibrosis(ENV_task, csv_file_names, l_thd, do_p_val=True):
+    '''
+    '''
+    
+    csv_file_paths = []
+    for csv_name in csv_file_names:
+        csv_file_paths.append(os.path.join(ENV_task.META_FOLDER, csv_name))
+    
+    combined_df = merge_csv_files(csv_file_paths)
+    updated_df = give_column_names(combined_df)
+    filtered_df = updated_df[updated_df['Henning_dark_p62_frac'] >= l_thd]
+    correlation_matrix, p_value_matrix, N = calculate_pearson_correlation(filtered_df)
+    title_str = f', N = {N}, on Henning\'s fraction > {l_thd}%'
+    
+    if do_p_val is False:
+        p_value_matrix = None
+        fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR,
+                            f'p62-l{l_thd}_fibrosis_corr_pearson_map-no_p_val.png')
+    else:
+        fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR,
+                            f'p62-l{l_thd}_fibrosis_corr_pearson_map.png')
+    plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix, fig_path, title_str)
 
 if __name__ == '__main__':
     pass
