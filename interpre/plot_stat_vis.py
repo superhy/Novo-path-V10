@@ -4,13 +4,17 @@ Created on 24 Mar 2024
 @author: super
 '''
 
+import csv
 import gc
 import os
 
+from matplotlib import patches
 from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle
+from matplotlib.collections import LineCollection
+from matplotlib.legend_handler import HandlerLineCollection
+
 from matplotlib.ticker import FormatStrFormatter, MaxNLocator
-from scipy.stats.stats import pearsonr
+from scipy.stats import pearsonr
 
 from interpre import prep_stat_vis
 from interpre.prep_stat_vis import save_slide_group_props_to_csv
@@ -24,6 +28,7 @@ from support.files import parse_caseid_from_slideid, \
     parse_23910_clinicalid_from_slideid
 
 
+# from scipy.stats.stats import pearsonr
 def plot_clst_group_props_sort_by_henning_frac(ENV_task, slide_group_props_dict, slide_frac_dict, 
                                                gp_name_list=['A', 'B', 'C', 'D', 'N'],
                                                color_dict={'A': 'green', 'B': 'blue', 'C': 'orange', 
@@ -718,7 +723,7 @@ def load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name):
     slide_spc_agt_score_dict = load_vis_pkg_from_pkl(stat_store_dir, any_vis_pkg_name)
     slide_ids = list(slide_spc_agt_score_dict.keys())
     
-    cohort_s_marta_p_dict = {}
+    cohort_s_marta_p_dict, marta_p_cohort_s_dict = {}, {}
     for slide_id in slide_ids:
         cohort_s_id = parse_caseid_from_slideid(slide_id)
         cohort_p_id = parse_23910_clinicalid_from_slideid(slide_id)
@@ -728,8 +733,48 @@ def load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name):
             marta_p_id = f'P_{cohort_p_id}'
         
         cohort_s_marta_p_dict[cohort_s_id] = marta_p_id
+        marta_p_cohort_s_dict[marta_p_id] = cohort_s_id
         
-    return cohort_s_marta_p_dict
+    return cohort_s_marta_p_dict, marta_p_cohort_s_dict
+
+def _rewrite_csv_with_slide_id(ENV_task, old_csv_name, marta_p_cohort_s_dict):
+    '''
+    rewrite the csv file for aligning the column id of Yang and Marta
+    '''
+    
+    csv_file_path = os.path.join(ENV_task.META_FOLDER, old_csv_name)
+    output_csv_path = os.path.join(ENV_task.META_FOLDER, old_csv_name.replace('.csv', '_slideid.csv') )
+    
+    updated_rows = []
+    
+    with open(csv_file_path, mode='r', newline='') as file:
+        reader = csv.DictReader(file)
+        # check if 'case_ID' exist in csv file
+        if 'case_ID' not in reader.fieldnames:
+            raise ValueError("CSV does not contain 'case_ID' column.")
+        
+        # change the column title
+        fieldnames = [fn if fn != 'case_ID' else 'slide_id' for fn in reader.fieldnames]
+        
+        # check every line
+        for row in reader:
+            p_id = row['case_ID']
+            if p_id in marta_p_cohort_s_dict:
+                # replace patient_id to slide_id
+                row['slide_id'] = marta_p_cohort_s_dict[p_id]
+                del row['case_ID']
+                updated_rows.append(row)
+                print(row)
+            # if p_id not in the dict，just skip
+    ''' sort by slide_id '''
+    updated_rows.sort(key=lambda x: x['slide_id'])
+    
+    # write the new CSV file
+    with open(output_csv_path, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(updated_rows)
+    print(f'rewrote csv file for p_id -> slide_id, \nfrom {csv_file_path} to {output_csv_path}...')
 
 def plot_corr_between_items_from_2csv(ENV_task, cohort_s_marta_p_dict, 
                                       x_csv_filename, y_csv_filename,
@@ -741,17 +786,17 @@ def plot_corr_between_items_from_2csv(ENV_task, cohort_s_marta_p_dict,
     stat_store_dir = ENV_task.STATISTIC_STORE_DIR
     x_idx, y_idx = 'slide_id', 'case_ID'
     shown_name_dict = {'A': 'P62-group-A',
-                      'B': 'P62-group-B',
-                      'C': 'P62-group-C',
-                      'D': 'P62-group-D',
-                      'all': 'P62-sensitive_area',
-                      '0': 'Fibrosis-cluster_0',
-                      '1': 'Fibrosis-cluster_1',
-                      '2': 'Fibrosis-cluster_2',
-                      '3': 'Fibrosis-cluster_3',
-                      '4': 'Fibrosis-cluster_4',
-                      '5': 'Fibrosis-cluster_5',
-                      '6': 'Fibrosis-cluster_6'}
+                       'B': 'P62-group-B',
+                       'C': 'P62-group-C',
+                       'D': 'P62-group-D',
+                       'all': 'P62-all_sensi_area',
+                       '0': 'Fibrosis-cluster_0',
+                       '1': 'Fibrosis-cluster_1',
+                       '2': 'Fibrosis-cluster_2',
+                       '3': 'Fibrosis-cluster_3',
+                       '4': 'Fibrosis-cluster_4',
+                       '5': 'Fibrosis-cluster_5',
+                       '6': 'Fibrosis-cluster_6'}
     
     # Load CSV files
     x_df = pd.read_csv(os.path.join(ENV_task.META_FOLDER, x_csv_filename) )
@@ -804,6 +849,151 @@ def plot_corr_between_items_from_2csv(ENV_task, cohort_s_marta_p_dict,
     plt.savefig(save_path)
     print(f'correlation of {x_label} and {y_label} visualisation saved at {save_path}')
     # plt.show()
+    
+''' ------------- correlation calculate ------------- '''
+def merge_csv_files(csv_file_paths):
+    '''
+    merge different csv information into a big dataframe, using slide_id as the unique ID
+    '''
+    
+    combined_df = None
+    for file_path in csv_file_paths:
+        # read CSV
+        df = pd.read_csv(file_path)
+        # ensure slide_id as the only index
+        df.set_index('slide_id', inplace=True)
+        
+        if combined_df is None:
+            # initialise combined_df
+            combined_df = df
+        else:
+            # merge according to slide_id
+            combined_df = combined_df.join(df, how='left', rsuffix='_dup')
+
+    # remove the possible repeated columns
+    combined_df = combined_df.loc[:, ~combined_df.columns.str.contains('_dup')]
+    # set slide_id back as a normal index
+    combined_df.reset_index(inplace=True)
+    print(f'combined DataFrame as:\n{combined_df}')
+    
+    return combined_df
+
+def give_column_names(df):
+    '''
+    replace some stupid column names
+    '''
+    
+    shown_name_dict = {'A': 'P62-group-A',
+                       'B': 'P62-group-B',
+                       'C': 'P62-group-C',
+                       'D': 'P62-group-D',
+                       'all': 'P62-all_sensi_area',
+                       '0': 'Fibrosis-cluster_0',
+                       '1': 'Fibrosis-cluster_1',
+                       '2': 'Fibrosis-cluster_2',
+                       '3': 'Fibrosis-cluster_3',
+                       '4': 'Fibrosis-cluster_4',
+                       '5': 'Fibrosis-cluster_5',
+                       '6': 'Fibrosis-cluster_6',
+                       'ballooning_percentage': 'Henning_dark_p62_frac'}
+    
+    new_columns = [shown_name_dict.get(col, col) for col in df.columns]
+    df.columns = new_columns
+    print('replaced the nick name for some columns')
+    
+    return df
+
+# def calculate_pearson_correlation(df):
+#     '''
+#     '''
+#
+#     # exclude the column of slide_id and NaN lines
+#     if 'slide_id' in df.columns:
+#         df = df.drop('slide_id', axis=1)
+#     df = df.dropna()
+#
+#     # calculation of pearson_coef
+#     correlation_matrix = df.corr()
+#     # setup cross value as 0
+#     for i in range(len(correlation_matrix)):
+#         correlation_matrix.iloc[i, i] = 0
+#     print('calculated the Pearson correlation score')    
+#
+#     return correlation_matrix
+def calculate_pearson_correlation(df):
+    '''
+    '''
+    # exclude the column of slide_id and NaN lines
+    if 'slide_id' in df.columns:
+        df = df.drop('slide_id', axis=1)
+    df = df.dropna()
+    
+    cols = df.columns
+    corr_matrix = pd.DataFrame(data=np.zeros((len(cols), len(cols))), columns=cols, index=cols)
+    p_value_matrix = pd.DataFrame(data=np.zeros((len(cols), len(cols))), columns=cols, index=cols)
+
+    for i in range(len(cols)):
+        for j in range(len(cols)):
+            if i != j:
+                corr, p_value = pearsonr(df[cols[i]].dropna(), df[cols[j]].dropna())
+                corr_matrix.loc[cols[i], cols[j]] = corr
+                p_value_matrix.loc[cols[i], cols[j]] = p_value
+            else:
+                corr_matrix.loc[cols[i], cols[j]] = 1
+                p_value_matrix.loc[cols[i], cols[j]] = 0
+
+    return corr_matrix, p_value_matrix
+
+def plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix):
+    '''
+    '''
+    # Create a heat map using an inverted triangle matrix
+    mask = np.tril(np.ones_like(correlation_matrix, dtype=bool), k=-1)
+    plt.figure(figsize=(15, 10))
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)  # colour panel
+    ax = sns.heatmap(correlation_matrix, mask=mask, annot=False, fmt=".2f", cmap=cmap, center=0,
+                     square=True, linewidths=.5, cbar_kws={"shrink": .5, "pad": 0.2})
+    plt.title('Correlation heatmap cross all measurements')
+    
+    # set position of x and y axis
+    ax.set_xticks(np.arange(correlation_matrix.shape[1]) + 0.5)
+    ax.set_yticks(np.arange(correlation_matrix.shape[0]) + 0.5)
+    ax.set_xticklabels(correlation_matrix.columns, rotation=90, ha='left')
+    ax.set_yticklabels(correlation_matrix.index, rotation=0)
+    ax.xaxis.tick_top()
+    ax.yaxis.tick_right()
+    
+    lines = [[(0, 0), (1, 1)], [(0, 1), (1, 0)]]
+    lc = LineCollection(lines, colors='black', linewidths=2)
+    cross_legend = plt.legend([lc], ['p-value > 0.05'], loc='upper left', 
+                              bbox_to_anchor=(1.3, 1), handler_map={LineCollection: HandlerLineCollection()})
+
+    # mark the p-value > 0.05 as a "X"
+    for i in range(p_value_matrix.shape[0]):
+        for j in range(p_value_matrix.shape[1]):
+            if p_value_matrix.iloc[i, j] > 0.05 and not mask[i, j]:
+                # cross from left-top to right-bottom
+                ax.plot([j, j+1], [i, i+1], color='black', lw=1)
+                # cross from right-top to left-bottom
+                ax.plot([j+1, j], [i, i+1], color='black', lw=1)
+                # frame
+                ax.add_patch(plt.Rectangle((j, i), 1, 1, fill=False, edgecolor='black', lw=1))
+                
+    plt.tight_layout()
+    plt.show()
+    
+def _plot_pearson_corr_heatmap_p62_fibrosis(ENV_task, csv_file_names):
+    '''
+    '''
+    
+    csv_file_paths = []
+    for csv_name in csv_file_names:
+        csv_file_paths.append(os.path.join(ENV_task.META_FOLDER, csv_name))
+    
+    combined_df = merge_csv_files(csv_file_paths)
+    updated_df = give_column_names(combined_df)
+    correlation_matrix, p_value_matrix = calculate_pearson_correlation(updated_df)
+    plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix)
 
 if __name__ == '__main__':
     pass

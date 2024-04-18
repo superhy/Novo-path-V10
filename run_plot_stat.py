@@ -11,7 +11,8 @@ from interpre.plot_stat_vis import _plot_c_group_props_by_henning_frac, \
     _plot_c_gp_agts_dist_h_l_frac2, _plot_spc_agt_heatmap_by_henning_frac, \
     _plot_spc_gps_agt_heatmap_by_henning_frac, _plot_c_gps_props_dist_in_slides, \
     _plot_c_gp_props_box_in_diff_slides_025, _plot_c_gp_agts_dist_h_l_frac3, \
-    load_slide_ids_from_vis_pkg, plot_corr_between_items_from_2csv
+    load_slide_ids_from_vis_pkg, plot_corr_between_items_from_2csv, \
+    _rewrite_csv_with_slide_id, _plot_pearson_corr_heatmap_p62_fibrosis
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -25,7 +26,8 @@ if __name__ == '__main__':
     # task_ids = [2]
     # task_ids = [2.21]
     # task_ids = [2.6]
-    task_ids = [3.1]
+    # task_ids = [3.1]
+    task_ids = [3.2]
     
     task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
     
@@ -143,7 +145,7 @@ if __name__ == '__main__':
         
     if 3.1 in task_ids:
         any_vis_pkg_name = 'c16-1by1_c-a-local_2024-03-26.pkl'
-        cohort_s_marta_p_dict = load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name)
+        cohort_s_marta_p_dict, _ = load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name)
         print(cohort_s_marta_p_dict)
         
         x_csv_filename = 'P62_ballooning_pct.csv'
@@ -163,6 +165,24 @@ if __name__ == '__main__':
         plot_corr_between_items_from_2csv(ENV_task, cohort_s_marta_p_dict, 
                                           x_csv_filename, y_csv_filename, 
                                           x_col_n, y_col_n)
+    if 3.19 in task_ids:
+        '''
+        rewrite the csv file for aligning the column id of Yang and Marta
+        '''
+        any_vis_pkg_name = 'c16-1by1_c-a-local_2024-03-26.pkl'
+        _, marta_p_cohort_s_dict = load_slide_ids_from_vis_pkg(ENV_task, any_vis_pkg_name)
+        
+        for old_csv_name in ['fat-marta.csv', 'fibrosis_all_metrics_HVs-1-marta.csv']:
+            _rewrite_csv_with_slide_id(ENV_task, old_csv_name, marta_p_cohort_s_dict)  
+    if 3.2 in task_ids:
+        '''
+        plot the pearson corr of all measurements from csv files of Yang and Marta
+        '''
+        csv_file_names = ['P62_ballooning_pct.csv',
+                          'slide_clusters_props-yang.csv',
+                          'fibrosis_all_metrics_HVs-1-marta_slideid.csv',
+                          'fat-marta_slideid.csv']
+        _plot_pearson_corr_heatmap_p62_fibrosis(ENV_task, csv_file_names)
         
         
         
