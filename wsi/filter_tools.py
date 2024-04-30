@@ -180,7 +180,7 @@ def filter_grays(rgb, tolerance=15, output_type="bool", show_np_info=False):
     t = Time()
     (h, w, c) = rgb.shape
     
-    rgb = rgb.astype(np.int)
+    rgb = rgb.astype(np.int32)
     rg_diff = abs(rgb[:,:, 0] - rgb[:,:, 1]) <= tolerance
     rb_diff = abs(rgb[:,:, 0] - rgb[:,:, 2]) <= tolerance
     gb_diff = abs(rgb[:,:, 1] - rgb[:,:, 2]) <= tolerance

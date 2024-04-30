@@ -25,10 +25,10 @@ if __name__ == '__main__':
     # task_ids = [1]
     # task_ids = [1.1, 1.2]
     # task_ids = [2]
-    # task_ids = [2.21]
+    task_ids = [2.21]
     # task_ids = [2.6]
     # task_ids = [3.1]
-    task_ids = [3.2, 3.21]
+    # task_ids = [3.2, 3.21]
     
     task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
     
@@ -114,8 +114,8 @@ if __name__ == '__main__':
                                       frac_thd, colors)
     if 2.21 in task_ids:
         # c_gp_aggregation_filename = 'agt_c-gps4_rad5_2024-03-26.pkl'
-        # c_gp_aggregation_filename = 'agt_c-gps4_rad3_2024-03-29.pkl'
-        c_gp_aggregation_filename = 'agt_c-gps4_rad1_2024-03-29.pkl'
+        c_gp_aggregation_filename = 'agt_c-gps4_rad3_2024-03-29.pkl'
+        # c_gp_aggregation_filename = 'agt_c-gps4_rad1_2024-03-29.pkl'
         colors = ['magenta', 'salmon', 'lightseagreen'] # for 4 gps
         
         # c_gp_aggregation_filename = 'agt_c-gps1_rad5_2024-03-26.pkl'
@@ -123,7 +123,8 @@ if __name__ == '__main__':
         # c_gp_aggregation_filename = 'agt_c-gps1_rad1_2024-03-29.pkl'
         # colors = ['red', 'orange', 'blue'] # for 1 gps
         
-        frac_thd_tuple = (0.2, 0.5)
+        # frac_thd_tuple = (0, 0.2, 0.5)
+        frac_thd_tuple = (0.2, 0.3, 0.5)
         _plot_c_gp_agts_dist_h_l_frac3(ENV_task, c_gp_aggregation_filename, 
                                        frac_thd_tuple, colors)
     
@@ -133,13 +134,23 @@ if __name__ == '__main__':
     if 2.6 in task_ids:
         spc_gps_agt_filename_list = ['agt_sp-c16_rad5_2024-03-26.pkl',
                                      # 'agt_c-gps4_rad1_2024-03-29.pkl',
-                                     'agt_c-gps4_rad3_2024-03-29.pkl',
-                                     'agt_c-gps4_rad5_2024-03-26.pkl',
+                                     # 'agt_c-gps4_rad3_2024-03-29.pkl',
+                                     # 'agt_c-gps4_rad5_2024-03-26.pkl',
                                      # 'agt_c-gps1_rad1_2024-03-29.pkl',
-                                     'agt_c-gps1_rad3_2024-03-29.pkl',
-                                     'agt_c-gps1_rad5_2024-03-26.pkl']
+                                     # 'agt_c-gps1_rad3_2024-03-29.pkl',
+                                     # 'agt_c-gps1_rad5_2024-03-26.pkl'
+                                     ]
+        # spc_gps_agt_filename_list = ['agt_sp-c16_rad5_2024-03-26.pkl',
+        #                              # 'agt_c-gps4_rad1_2024-03-29.pkl',
+        #                              'agt_c-gps4_rad3_2024-03-29.pkl',
+        #                              'agt_c-gps4_rad5_2024-03-26.pkl',
+        #                              # 'agt_c-gps1_rad1_2024-03-29.pkl',
+        #                              'agt_c-gps1_rad3_2024-03-29.pkl',
+        #                              'agt_c-gps1_rad5_2024-03-26.pkl']
+        
+        given_y_markers = [0, 16]
         # given_y_markers = [0, 16, 20, 21]
-        given_y_markers = [0, 16, 24, 26]
+        # given_y_markers = [0, 16, 24, 26]
         # given_y_markers = [0, 16, 28, 31]
         _plot_spc_gps_agt_heatmap_by_henning_frac(ENV_task, spc_gps_agt_filename_list,
                                                   given_y_markers)

@@ -435,11 +435,11 @@ def plot_agt_dist_h_l_henning_frac3(ENV_task,slide_agt_score_dict, slide_frac_di
             frac_score = slide_frac_dict.get(slide_id, 0)
             
             # split different frac_score sets
-            if frac_score >= frac_thd_tuple[1]:
+            if frac_score >= frac_thd_tuple[2]:
                 scores_high_frac.append(aggregation_score)
-            elif frac_score >= frac_thd_tuple[0] and frac_score < frac_thd_tuple[1]:
+            elif frac_score >= frac_thd_tuple[1] and frac_score < frac_thd_tuple[2]:
                 scores_mid_frac.append(aggregation_score)
-            else:
+            elif frac_score >= frac_thd_tuple[0] and frac_score < frac_thd_tuple[1]:
                 scores_low_frac.append(aggregation_score)
     
     # Set global font size
@@ -448,11 +448,11 @@ def plot_agt_dist_h_l_henning_frac3(ENV_task,slide_agt_score_dict, slide_frac_di
     # plot
     plt.figure(figsize=(6, 6))
     sns.kdeplot(scores_high_frac, color=colors[0], fill=True, alpha=0.3, 
-                label=f'Slides with fraction >= {frac_thd_tuple[1]}')
+                label=f'Slides with fraction >= {frac_thd_tuple[2]}')
     sns.kdeplot(scores_mid_frac, color=colors[1], fill=True, alpha=0.3, 
-                label=f'{frac_thd_tuple[0]} <= Slides with fraction < {frac_thd_tuple[1]}')
+                label=f'{frac_thd_tuple[1]} <= Slides with fraction < {frac_thd_tuple[2]}')
     sns.kdeplot(scores_low_frac, color=colors[2], fill=True, alpha=0.3, 
-                label=f'Slides with fraction < {frac_thd_tuple[0]}')
+                label=f'{frac_thd_tuple[0]} <= Slides with fraction < {frac_thd_tuple[1]}')
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
 
@@ -496,7 +496,8 @@ def _plot_c_gp_agts_dist_h_l_frac2(ENV_task, c_gp_aggregation_filename,
                                        c_gp=clst_gp, frac_thd=frac_thd, colors=colors)
         
 def _plot_c_gp_agts_dist_h_l_frac3(ENV_task, c_gp_aggregation_filename, 
-                                   frac_thd_tuple=(0.2, 0.5), colors = ['magenta', 'salmon', 'lightseagreen']):
+                                   frac_thd_tuple=(0, 0.2, 0.5), 
+                                   colors = ['magenta', 'salmon', 'lightseagreen']):
     '''
     h_l_frac means higher or lower a threshold on fraction 
     '''
@@ -571,14 +572,16 @@ def plot_agt_score_heatmap(ENV_task, slide_agt_score_dict, slide_frac_dict, labe
                 agt_score = scores[clst_label]
                 data.append({'Slide ID': slide_id, 'Cluster Label': clst_label, 'Aggregation Score': agt_score})
     df = pd.DataFrame(data)
+    # print(df)
     
     if df.duplicated(subset=['Slide ID', 'Cluster Label']).any():
         print("Warning: Duplicated rows found. Please check the input data.")
         df = df.drop_duplicates(subset=['Slide ID', 'Cluster Label'])
     
     # transfer the data format for heatmap
-    heatmap_data = df.pivot("Cluster Label", "Slide ID", "Aggregation Score").reindex(index=label_sort, 
-                                                                                      columns=sorted_slides)
+    heatmap_data = df.pivot(index="Cluster Label", 
+                            columns="Slide ID", 
+                            values="Aggregation Score").reindex(index=label_sort, columns=sorted_slides)
     print(heatmap_data)
     
     plt.rcParams.update({'font.size': 40})

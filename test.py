@@ -58,7 +58,7 @@ def test_filter_slide_img():
     # slide_filepath = 'D:/FLINC_dataset/slides/yang_cd45_u/tissues/23910-158_Sl251-C2-CD45.ndpi'
     # slide_filepath = 'D:/FLINC_dataset/slides/yang_p62_u/tissues/23910-158_Sl006-C5-P62.ndpi'
     # slide_filepath = '23910-157_Sl001-C2-HE.ndpi'
-    slide_filepath = 'D:/FLINC_dataset/slides/yang_p62/tissues/23910-158_Sl240-CHV-19-P62.ndpi'
+    slide_filepath = 'D:/FLINC_dataset/slides/yang_p62/tissues/23910-158_Sl001-C2-P62.ndpi'
     
 #     slide_filepath = 'D:/IBD-Matthias/example_dx/slides/6574_20_l1 - 2022-08-02 13.26.48.ndpi'
     
@@ -409,7 +409,7 @@ def _count_st_position_coords():
     # print(feature_ref['name'][:10])
     
 if __name__ == '__main__':
-    # test_filter_slide_img() # 1
+    test_filter_slide_img() # 1
     # test_transfer_ihc_dab()
     # test_vit_forward() # 2
     # test_networkx() # 3
@@ -427,7 +427,7 @@ if __name__ == '__main__':
     
     # _test_read_tiff_image()
     # _test_read_hdf5_data()
-    _test_parse_h5()
+    # _test_parse_h5()
     # _count_st_position_coords()
 
 
