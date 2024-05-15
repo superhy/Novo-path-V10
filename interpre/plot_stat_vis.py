@@ -7,6 +7,7 @@ Created on 24 Mar 2024
 import csv
 import gc
 import os
+from PIL import Image, ImageDraw, ImageFont
 
 from matplotlib import patches
 from matplotlib.legend_handler import HandlerBase
@@ -1054,6 +1055,108 @@ def _plot_pearson_corr_heatmap_p62thd_fibrosis(ENV_task, csv_file_names, l_thd, 
         fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR,
                             f'p62-l{l_thd}_fibrosis_corr_pearson_map.png')
     plot_invert_tri_corr_heatmap(correlation_matrix, p_value_matrix, fig_path, title_str)
+    
+''' ------------ combine the org-heatmap into one picture ------------ '''
+
+def load_data(csv_path):
+    """ Load and clean the CSV file containing slide data. """
+    data = pd.read_csv(csv_path)
+    data['slide_id'] = data['slide_id'].apply(lambda x: x.strip())  # Clean slide IDs
+    return data
+
+def find_matching_images(directory):
+    """ Find and yield pairs of matched images from given directory. """
+    images_dict = {}
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if 'org' in file:
+                base_name = file.replace('org', '{type}')
+            elif 'hard' in file:
+                base_name = file.replace('hard', '{type}')
+            else:
+                continue
+
+            if base_name not in images_dict:
+                images_dict[base_name] = {}
+
+            type_key = 'org' if 'org' in file else 'hard'
+            images_dict[base_name][type_key] = os.path.join(root, file)
+
+    for base_name, paths in images_dict.items():
+        if 'org' in paths and 'hard' in paths:
+            yield (paths['org'], paths['hard'], base_name.format(type='combine'))
+
+def combine_images(image_path1, image_path2, text, output_path):
+    """ Combine two images side by side and append a much larger text area for large font sizes. """
+    img1 = Image.open(image_path1)
+    img2 = Image.open(image_path2)
+    font_size = 512  # Font size is 512 pixels
+    # Estimate needed text width: assuming each line could be as wide as the largest word or number times the number of characters
+    text_width = font_size * 8  # Let's assume the maximum width of text could be the width of 8 characters at this font size
+    total_width = img1.width + img2.width + text_width
+    max_height = max(img1.height, img2.height)
+
+    new_img = Image.new('RGB', (total_width, max_height), "white")
+    new_img.paste(img1, (0, 0))
+    new_img.paste(img2, (img1.width, 0))
+
+    # Draw text with a very large font
+    draw = ImageDraw.Draw(new_img)
+    try:
+        # Try to load a clearer, large font
+        font = ImageFont.truetype("arial.ttf", font_size)  # Using Arial font with 512 pixel size
+    except IOError:
+        # If unable to load the font, fallback to the default font
+        font = ImageFont.load_default()
+
+    text_x = img1.width + img2.width + 50  # Start drawing text 50 pixels right of the second image
+    text_y = 50  # Start drawing text 50 pixels down from the top
+    line_spacing = 600  # Increased line spacing to 600 pixels for large text
+
+    for line in text.split('\n'):
+        draw.text((text_x, text_y), line, fill="black", font=font)
+        text_y += line_spacing  # Move to the next line position
+
+    new_img.save(output_path)
+    print(f'Saved combined image at: {output_path}')
+    
+def extract_slide_id_from_filename(filename):
+    """ extract slide ID from filename"""
+    parts = filename.split('_')
+    if len(parts) > 1:
+        slide_id_part = parts[1]  # like: Sl006-C5-P62-combine
+        slide_id = slide_id_part.split('-')[0]  # get Sl006
+        return slide_id
+    return None
+
+def process_images(input_directory, output_directory, data):
+    """ Process each image pair and save the combined image. """
+    for org_path, hard_path, combined_name in find_matching_images(input_directory):
+        # extract slide_id
+        slide_id = extract_slide_id_from_filename(combined_name)
+        
+        print(f"Processing: {combined_name}")  # Debug information
+        print(f"Extracted slide_id: {slide_id}")
+
+        if slide_id in data['slide_id'].values:
+            slide_data = data[data['slide_id'] == slide_id].iloc[0] * 100
+            text = 'Cluster Prop:\n' + '\n'.join([f"{col} = {slide_data[col]:.2f}%" for col in ['A', 'B', 'C', 'D', 'all']])
+            output_path = os.path.join(output_directory, combined_name)
+            combine_images(org_path, hard_path, text, output_path)
+        else:
+            print(f"Slide ID {slide_id} not found in CSV.")
+
+def _combine_org_heatmap_proptext(ENV_task):
+    # Set paths
+    csv_path = os.path.join(ENV_task.META_FOLDER, 'slide_clusters_props-yang.csv')
+    input_directory = os.path.join(ENV_task.HEATMAP_STORE_DIR, 'clst_assim_map-8x-asm02')
+    output_directory = os.path.join(ENV_task.HEATMAP_STORE_DIR, 'clst_combine_map-8x-asm02')
+
+    # Load data and process images
+    slide_data = load_data(csv_path)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+    process_images(input_directory, output_directory, slide_data)
 
 if __name__ == '__main__':
     pass

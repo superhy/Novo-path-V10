@@ -13,7 +13,7 @@ from interpre.plot_stat_vis import _plot_c_group_props_by_henning_frac, \
     _plot_c_gp_props_box_in_diff_slides_025, _plot_c_gp_agts_dist_h_l_frac3, \
     load_slide_ids_from_vis_pkg, plot_corr_between_items_from_2csv, \
     _rewrite_csv_with_slide_id, _plot_pearson_corr_heatmap_p62_fibrosis, \
-    _plot_pearson_corr_heatmap_p62thd_fibrosis
+    _plot_pearson_corr_heatmap_p62thd_fibrosis, _combine_org_heatmap_proptext
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -25,10 +25,11 @@ if __name__ == '__main__':
     # task_ids = [1]
     # task_ids = [1.1, 1.2]
     # task_ids = [2]
-    task_ids = [2.21]
+    # task_ids = [2.21]
     # task_ids = [2.6]
     # task_ids = [3.1]
     # task_ids = [3.2, 3.21]
+    task_ids = [4]
     
     task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
     
@@ -210,6 +211,10 @@ if __name__ == '__main__':
         for l_thd in l_thds:
             _plot_pearson_corr_heatmap_p62thd_fibrosis(ENV_task, csv_file_names, 
                                                        l_thd=l_thd, do_p_val=do_p_val)
+            
+    if 4 in task_ids:
+        ''' combine the org-heatmap images '''
+        _combine_org_heatmap_proptext(ENV_task)
         
         
         

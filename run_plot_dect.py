@@ -96,7 +96,7 @@ if __name__ == '__main__':
         draw_org = True
         for spatmap_pkl_name in spatmap_pkl_name_list:
             _plot_spatial_sensi_clusters_assims(ENV_task, ENV_annotation, spatmap_pkl_name, draw_org=draw_org)
-        
+            
     if 3.1 in task_ids:
         s_clst_t_p_pkl_name = 'sensi_c-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
         assim_t_p_pkl_name = 'assim_t-tis-pct_Kmeans-ResNet18-encode_unsupervised2023-11-06.pkl'
