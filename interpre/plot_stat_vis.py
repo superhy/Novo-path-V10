@@ -1086,32 +1086,34 @@ def find_matching_images(directory):
         if 'org' in paths and 'hard' in paths:
             yield (paths['org'], paths['hard'], base_name.format(type='combine'))
 
-def combine_images(image_path1, image_path2, text, output_path):
-    """ Combine two images side by side and append a much larger text area for large font sizes. """
+def combine_images_vertically(image_path1, image_path2, text, output_path):
+    """ Combine two images vertically and append a text area to the right. """
     img1 = Image.open(image_path1)
     img2 = Image.open(image_path2)
     font_size = 512  # Font size is 512 pixels
-    # Estimate needed text width: assuming each line could be as wide as the largest word or number times the number of characters
-    text_width = font_size * 8  # Let's assume the maximum width of text could be the width of 8 characters at this font size
-    total_width = img1.width + img2.width + text_width
-    max_height = max(img1.height, img2.height)
+    text_width = font_size * 8  # Assuming the maximum width of text could be the width of 8 characters at this font size
 
-    new_img = Image.new('RGB', (total_width, max_height), "white")
+    # Calculate the total width and height needed for the combined image
+    total_width = max(img1.width, img2.width) + text_width
+    total_height = img1.height + img2.height
+
+    new_img = Image.new('RGB', (total_width, total_height), "white")
     new_img.paste(img1, (0, 0))
-    new_img.paste(img2, (img1.width, 0))
+    new_img.paste(img2, (0, img1.height))
 
     # Draw text with a very large font
     draw = ImageDraw.Draw(new_img)
     try:
         # Try to load a clearer, large font
-        font = ImageFont.truetype("arial.ttf", font_size)  # Using Arial font with 512 pixel size
+        font = ImageFont.truetype("arial.ttf", font_size)
     except IOError:
         # If unable to load the font, fallback to the default font
         font = ImageFont.load_default()
 
-    text_x = img1.width + img2.width + 50  # Start drawing text 50 pixels right of the second image
-    text_y = 50  # Start drawing text 50 pixels down from the top
-    line_spacing = 600  # Increased line spacing to 600 pixels for large text
+    # Start drawing text to the right of the widest image
+    text_x = max(img1.width, img2.width) + 50  # 50 pixels padding from the images
+    text_y = 50  # Start 50 pixels from the top
+    line_spacing = 600  # Adjust line spacing for large text
 
     for line in text.split('\n'):
         draw.text((text_x, text_y), line, fill="black", font=font)
@@ -1142,7 +1144,7 @@ def process_images(input_directory, output_directory, data):
             slide_data = data[data['slide_id'] == slide_id].iloc[0] * 100
             text = 'Cluster Prop:\n' + '\n'.join([f"{col} = {slide_data[col]:.2f}%" for col in ['A', 'B', 'C', 'D', 'all']])
             output_path = os.path.join(output_directory, combined_name)
-            combine_images(org_path, hard_path, text, output_path)
+            combine_images_vertically(org_path, hard_path, text, output_path)
         else:
             print(f"Slide ID {slide_id} not found in CSV.")
 
