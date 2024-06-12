@@ -13,7 +13,8 @@ from interpre.plot_stat_vis import _plot_c_group_props_by_henning_frac, \
     _plot_c_gp_props_box_in_diff_slides_025, _plot_c_gp_agts_dist_h_l_frac3, \
     load_slide_ids_from_vis_pkg, plot_corr_between_items_from_2csv, \
     _rewrite_csv_with_slide_id, _plot_pearson_corr_heatmap_p62_fibrosis, \
-    _plot_pearson_corr_heatmap_p62thd_fibrosis, _combine_org_heatmap_proptext
+    _plot_pearson_corr_heatmap_p62thd_fibrosis, _combine_org_heatmap_proptext, \
+    _plot_slides_umap_sp_features_idx
 from run_main import Logger
 from support import env_flinc_p62, tools
 
@@ -29,7 +30,8 @@ if __name__ == '__main__':
     # task_ids = [2.6]
     # task_ids = [3.1]
     # task_ids = [3.2, 3.21]
-    task_ids = [4]
+    # task_ids = [4]
+    task_ids = [3.3]
     
     task_str = '-' + '-'.join([str(lbl) for lbl in task_ids])
     
@@ -212,9 +214,36 @@ if __name__ == '__main__':
             _plot_pearson_corr_heatmap_p62thd_fibrosis(ENV_task, csv_file_names, 
                                                        l_thd=l_thd, do_p_val=do_p_val)
             
+    if 3.3 in task_ids:
+        csv_file_names = ['P62_ballooning_pct.csv',
+                          'slide_clusters_props-yang.csv',
+                          'fibrosis_all_metrics_HVs-1-marta_slideid.csv',
+                          'fat-marta_slideid.csv']
+        norm = True
+        split_value=2
+        keyword_feature_idx_dict = {'P62-clusters_Fibrosis': (['A', 'B', 'C', 'D', 'all'], 
+                                                              'fibrosis_score'),
+                                    'Fib-clusters_Fibrosis': (['0', '1', '2', '3', '4', '5', '6', 'all'], 
+                                                              'fibrosis_score'),
+                                    'Fat-clusters_Fibrosis': (['0 - 200 um', '200 - 400 um', '400 - 600 um', '600 - 800 um', 
+                                                               '800 - 1000 um', '1000 - 1200 um', '1200 - 1400 um', '1400 - 1600 um',
+                                                               '1600 - 1800 um', '1800 - 2000 um', '2000+ um',
+                                                               'mean_hole_size', 'median_hole_size', 'number_holes'], 
+                                                              'fibrosis_score')
+        }
+        
+        for keyword in keyword_feature_idx_dict.keys():
+            feature_columns = keyword_feature_idx_dict[keyword][0]
+            index_column = keyword_feature_idx_dict[keyword][1]
+            _plot_slides_umap_sp_features_idx(ENV_task, csv_file_names, 
+                                              feature_columns, index_column, 
+                                              fig_keyword=keyword, norm=norm, split_value=split_value)
+        
+            
     if 4 in task_ids:
         ''' combine the org-heatmap images '''
         _combine_org_heatmap_proptext(ENV_task)
+        
         
         
         

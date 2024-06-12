@@ -1166,9 +1166,29 @@ def _combine_org_heatmap_proptext(ENV_task):
     
 ''' --------- umap --------- '''
     
-def visualize_slide_data(csv_file_paths, feature_columns, index_column, norm=True):
+def check_clean_data(df):
     '''
-    Visualize slide data using UMAP projection and color coding based on a specific index column.
+    Replace NaN and negative values in dataframe with 0.0
+    '''
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+        
+    df = df.fillna(0.0)
+    df[df < 0.0] = 0.0
+    return df
+
+def split_index_column(df, index_column, split_value=None):
+    '''
+    Split the index_column into 'high' and 'low' categories based on its median.
+    '''
+    if split_value is None:
+        split_value = df[index_column].median()
+    df[f'{index_column}_category'] = df[index_column].apply(lambda x: f'{index_column}-high' if x >= split_value else f'{index_column}-low')
+    return df
+    
+def plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, norm=True, split_value=2):
+    '''
+    Visualize slide data using UMAP projection and color coding based on the feature vectors by metrics and a specific index column.
 
     :param csv_file_paths: List of paths to the CSV files
     :param feature_columns: List of columns to extract as features
@@ -1178,6 +1198,8 @@ def visualize_slide_data(csv_file_paths, feature_columns, index_column, norm=Tru
     '''
     # Merge CSV files into a big single dataframe
     combined_df = merge_csv_files(csv_file_paths)
+    combined_df = check_clean_data(combined_df)
+    print(combined_df)
     
     # Select the relevant features and the index column
     data = combined_df[feature_columns + [index_column]]
@@ -1186,18 +1208,36 @@ def visualize_slide_data(csv_file_paths, feature_columns, index_column, norm=Tru
     if norm:
         scaler = MinMaxScaler()
         data[feature_columns] = scaler.fit_transform(data[feature_columns])
+        print('normalised the data...')
+        
+    # Categorize the index column into 'high' and 'low'
+    data = split_index_column(data, index_column, split_value)
 
     # Prepare UMAP reduction
     umap_reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
     embedding = umap_reducer.fit_transform(data[feature_columns])
+    print('finished the UMAP embedding...')
     
     # Create a plot
-    plt.figure(figsize=(12, 8))
-    scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=data[index_column], 
-                              palette='viridis', s=100, legend='full')
+    plt.figure(figsize=(5, 5))
+    scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=data[f'{index_column}_category'], 
+                              palette={'fibrosis_score-low': 'blue', 'fibrosis_score-high': 'red'}, 
+                              s=30, legend='full')
     scatter.set_title('UMAP Projection of Slide Data')
     scatter.legend(title=index_column, title_fontsize='13', labelspacing=1.05, fontsize='11')
-    plt.show()
+    # plt.show()
+    plt.savefig(fig_path)
+    print(f'save the figure at: {fig_path}.')
+    
+def _plot_slides_umap_sp_features_idx(ENV_task, csv_file_names, feature_columns, index_column, fig_keyword, norm, split_value):
+    '''
+    '''
+    csv_file_paths = []
+    for csv_name in csv_file_names:
+        csv_file_paths.append(os.path.join(ENV_task.META_FOLDER, csv_name))
+    
+    fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR, f'slide-umap_{fig_keyword}.png')
+    plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, norm, split_value)
 
 if __name__ == '__main__':
     pass
