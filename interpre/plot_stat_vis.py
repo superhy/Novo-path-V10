@@ -7,8 +7,9 @@ Created on 24 Mar 2024
 import csv
 import gc
 import os
-from PIL import Image, ImageDraw, ImageFont
 
+from PIL import Image, ImageDraw, ImageFont
+from cmapy import cmap
 from matplotlib import patches
 from matplotlib.legend_handler import HandlerBase
 from matplotlib.lines import Line2D
@@ -22,11 +23,13 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+import umap
+
 import seaborn as sns
 from support import metadata, tools
 from support.files import parse_caseid_from_slideid, \
     parse_23910_clinicalid_from_slideid
-from cmapy import cmap
 
 
 # from scipy.stats.stats import pearsonr
@@ -1159,6 +1162,42 @@ def _combine_org_heatmap_proptext(ENV_task):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     process_images(input_directory, output_directory, slide_data)
+    
+    
+''' --------- umap --------- '''
+    
+def visualize_slide_data(csv_file_paths, feature_columns, index_column, norm=True):
+    '''
+    Visualize slide data using UMAP projection and color coding based on a specific index column.
+
+    :param csv_file_paths: List of paths to the CSV files
+    :param feature_columns: List of columns to extract as features
+    :param index_column: Column name to use for color coding in the plot
+    :param norm: Boolean, whether to norm feature columns
+    :return: None, shows a plot
+    '''
+    # Merge CSV files into a big single dataframe
+    combined_df = merge_csv_files(csv_file_paths)
+    
+    # Select the relevant features and the index column
+    data = combined_df[feature_columns + [index_column]]
+
+    # Normalize the feature data if requested
+    if norm:
+        scaler = MinMaxScaler()
+        data[feature_columns] = scaler.fit_transform(data[feature_columns])
+
+    # Prepare UMAP reduction
+    umap_reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
+    embedding = umap_reducer.fit_transform(data[feature_columns])
+    
+    # Create a plot
+    plt.figure(figsize=(12, 8))
+    scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=data[index_column], 
+                              palette='viridis', s=100, legend='full')
+    scatter.set_title('UMAP Projection of Slide Data')
+    scatter.legend(title=index_column, title_fontsize='13', labelspacing=1.05, fontsize='11')
+    plt.show()
 
 if __name__ == '__main__':
     pass
