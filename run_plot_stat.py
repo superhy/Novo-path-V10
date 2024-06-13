@@ -225,11 +225,18 @@ if __name__ == '__main__':
                                                               'fibrosis_score'),
                                     'Fib-clusters_Fibrosis': (['0', '1', '2', '3', '4', '5', '6', 'all'], 
                                                               'fibrosis_score'),
-                                    'Fat-clusters_Fibrosis': (['0 - 200 um', '200 - 400 um', '400 - 600 um', '600 - 800 um', 
+                                    'Fat-metrics_Fibrosis': (['0 - 200 um', '200 - 400 um', '400 - 600 um', '600 - 800 um', 
                                                                '800 - 1000 um', '1000 - 1200 um', '1200 - 1400 um', '1400 - 1600 um',
                                                                '1600 - 1800 um', '1800 - 2000 um', '2000+ um',
                                                                'mean_hole_size', 'median_hole_size', 'number_holes'], 
-                                                              'fibrosis_score')
+                                                               'fibrosis_score'),
+                                    'P62-Fib-Fat_features_Fibrosis': (['A', 'B', 'C', 'D', 'all',
+                                                                       '0', '1', '2', '3', '4', '5', '6', 'all',
+                                                                       '0 - 200 um', '200 - 400 um', '400 - 600 um', '600 - 800 um', 
+                                                                       '800 - 1000 um', '1000 - 1200 um', '1200 - 1400 um', '1400 - 1600 um',
+                                                                       '1600 - 1800 um', '1800 - 2000 um', '2000+ um',
+                                                                       'mean_hole_size', 'median_hole_size', 'number_holes'], 
+                                                                      'fibrosis_score')
         }
         
         for keyword in keyword_feature_idx_dict.keys():

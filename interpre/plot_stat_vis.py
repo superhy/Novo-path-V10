@@ -1186,7 +1186,7 @@ def split_index_column(df, index_column, split_value=None):
     df[f'{index_column}_category'] = df[index_column].apply(lambda x: f'{index_column}-high' if x >= split_value else f'{index_column}-low')
     return df
     
-def plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, norm=True, split_value=2):
+def plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, fig_keyword, norm=True, split_value=2):
     '''
     Visualize slide data using UMAP projection and color coding based on the feature vectors by metrics and a specific index column.
 
@@ -1221,9 +1221,9 @@ def plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_colu
     # Create a plot
     plt.figure(figsize=(5, 5))
     scatter = sns.scatterplot(x=embedding[:, 0], y=embedding[:, 1], hue=data[f'{index_column}_category'], 
-                              palette={'fibrosis_score-low': 'blue', 'fibrosis_score-high': 'red'}, 
+                              palette={'fibrosis_score-low': 'lightseagreen', 'fibrosis_score-high': 'salmon'}, 
                               s=30, legend='full')
-    scatter.set_title('UMAP Projection of Slide Data')
+    scatter.set_title(f'Slide distribution by features: {fig_keyword}')
     scatter.legend(title=index_column, title_fontsize='13', labelspacing=1.05, fontsize='11')
     # plt.show()
     plt.savefig(fig_path)
@@ -1237,7 +1237,7 @@ def _plot_slides_umap_sp_features_idx(ENV_task, csv_file_names, feature_columns,
         csv_file_paths.append(os.path.join(ENV_task.META_FOLDER, csv_name))
     
     fig_path = os.path.join(ENV_task.STATISTIC_STORE_DIR, f'slide-umap_{fig_keyword}.png')
-    plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, norm, split_value)
+    plot_slides_umap_sp_features_idx(csv_file_paths, feature_columns, index_column, fig_path, fig_keyword, norm, split_value)
 
 if __name__ == '__main__':
     pass
