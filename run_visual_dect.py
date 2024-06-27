@@ -307,7 +307,7 @@ if __name__ == '__main__':
         
         cut_left = False
         aprx_list_len = 260 # approximate maximum list length
-        step_len = 50
+        step_len = 5
         heat_style = 'both'
         if c_assimilate_pkl_name is None:
             heat_style = 'clst'

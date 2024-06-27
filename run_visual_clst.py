@@ -27,12 +27,12 @@ os.environ["KMP_DUPLICATE_LIB_OK"]  =  "TRUE"
 
 if __name__ == '__main__':
     
-    # ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
-    ENV_task = env_flinc_p62.ENV_FLINC_P62_U
+    ENV_task = env_flinc_cd45.ENV_FLINC_CD45_U
+    # ENV_task = env_flinc_p62.ENV_FLINC_P62_U
 #     ENV_task = env_flinc_he.ENV_FLINC_HE_STEA_C2
 #     ENV_task = env_flinc_psr.ENV_FLINC_PSR_FIB_C3
 
-    task_ids = [20]
+    task_ids = [24]
     # task_ids = [21, 22, 29]
     # task_ids = [22.1]
     # task_ids = [29]
